@@ -1,0 +1,22 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+.idea
+
+# Ignore Gradle build output directory
+build
+out
+**/*.jar
+
+# Ignore Intellij Idea generated files
+.idea
+*.iml
+lombok.config
+
+# Ignore testing dirs
+local-packages
+
+# Ignore stack file
+.aoc-stack.yml
+
+# Ignore downloaded sshkey
+sshkey.pem

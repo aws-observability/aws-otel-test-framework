@@ -1,0 +1,18 @@
+# action.yml
+name: 'AOCIntegTest'
+description: 'AOCIntegTest performs end-to-end integration test on the AOCAgent'
+inputs:
+  running_type:
+    description: 'running type'
+    required: false
+    default: 'integ-test'
+  opts:
+    description: 'opts'
+    required: false
+    default: '-t=EC2Test -s=build/packages/.aoc-stack-test.yml'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - "${{ inputs.running_type }}"
+    - "${{ inputs.opts }}"
