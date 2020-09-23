@@ -62,12 +62,12 @@ local-packages
 
 ### Run ECS Integ-test with EC2 on Sidecar mode (EMF Metrics)
 ```
-./gradlew :integ-test:run --args="integ-test -t=ECS_TEST -a=ECS_OPTIMIZED --package-version={the version you want to test} -e ecsLaunchType=EC2"
+./gradlew :integ-test:run --args="integ-test -t=ECS_TEST -a=ECS_OPTIMIZED --package-version={the version you want to test} -e ecsLaunchType=EC2 -e ecsTaskDef=ECS_EC2_TEMPLATE"
 ```
 
 ### Run ECS Integ-test with Fargate on Sidecar mode (EMF Metrics)
 ```
-./gradlew :integ-test:run --args="integ-test -t=ECS_TEST --package-version={the version you want to test} -e ecsLaunchType=FARGATE"
+./gradlew :integ-test:run --args="integ-test -t=ECS_TEST --package-version={the version you want to test} -e ecsLaunchType=FARGATE -e ecsTaskDef=ECS_FARGATE_TEMPLATE"
 ```
 
 ### Clean ECS testing resources
