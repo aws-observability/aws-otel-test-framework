@@ -1,0 +1,53 @@
+# create namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: eks-integ-test-{{instanceId}}
+  labels:
+    name: eks-integ-test-{{instanceId}}
+---
+# create deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{eksTestManifestName}}
+  namespace: eks-integ-test-{{instanceId}}
+  labels:
+    name: {{eksTestManifestName}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: {{eksTestManifestName}}
+  template:
+    metadata:
+      labels:
+        name: {{eksTestManifestName}}
+    spec:
+      containers:
+        - name: emitter
+          image: {{dataEmitterImage}}
+          env:
+          - name: OTEL_OTLP_ENDPOINT
+            value: "localhost:55680"
+          - name: INSTANCE_ID
+            value: "{{instanceId}}"
+          - name: OTEL_RESOURCE_ATTRIBUTES
+            value: "service.namespace=AWSObservability,service.name=CloudWatchOTService"
+          - name: S3_REGION
+            value: "{{stack.testingRegion}}"
+          - name: TRACE_DATA_BUCKET
+            value: "{{stack.traceDataS3BucketName}}"
+          - name: TRACE_DATA_S3_KEY
+            value: "{{instanceId}}"
+          imagePullPolicy: Always
+        - name: aoc-collector
+          image: {{aocImage}}
+          imagePullPolicy: Always
+          resources:
+            limits:
+              cpu:  256m
+              memory: 512Mi
+            requests:
+              cpu: 32m
+              memory: 24Mi

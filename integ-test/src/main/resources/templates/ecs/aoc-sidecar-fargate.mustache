@@ -1,0 +1,81 @@
+{
+  "family": "aoc-FARGATE",
+  "taskRoleArn": "{{ecsTaskRoleArn}}",
+  "executionRoleArn": "{{ecsExecutionRoleArn}}",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "aoc-emitter",
+      "image": "{{dataEmitterImage}}",
+      "essential": true,
+      "entryPoint": [],
+      "command": [],
+      "environment": [
+        {
+          "name": "OTEL_OTLP_ENDPOINT",
+          "value": "localhost:55680"
+        },
+        {
+          "name": "INSTANCE_ID",
+          "value": "{{instanceId}}"
+        },
+        {
+        "name": "OTEL_RESOURCE_ATTRIBUTES",
+        "value": "service.namespace=AWSObservability,service.name=CloudWatchOTService"
+        },
+        {
+        "name": "S3_REGION",
+        "value": "{{stack.testingRegion}}"
+        },
+        {
+        "name": "TRACE_DATA_BUCKET",
+        "value": "{{stack.traceDataS3BucketName}}"
+        },
+        {
+        "name": "TRACE_DATA_S3_KEY",
+        "value": "{{instanceId}}"
+        }
+      ],
+      "dependsOn": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ecs-cwagent-sidecar-emitter",
+          "awslogs-region": "{{region}}",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "True"
+        }
+      }
+    },
+    {
+      "name": "aoc-collector",
+      "image": "{{aocImage}}",
+      "portMappings": [
+        {
+          "containerPort": 55680,
+          "hostPort": 55680,
+          "protocol": "tcp"
+        }
+      ],
+      "essential": true,
+      "entryPoint": [],
+      "command": [],
+      "environment": [],
+      "dependsOn": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ecs-cwagent-sidecar-collector",
+          "awslogs-region": "{{region}}",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "True"
+        }
+      }
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "256",
+  "memory": "512"
+}
