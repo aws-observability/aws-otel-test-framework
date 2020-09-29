@@ -54,7 +54,7 @@ public class OTMetricAndTraceEmitterInstaller implements OTEmitterInstaller {
                 + "-e TRACE_DATA_BUCKET=%s -e TRACE_DATA_S3_KEY=%s "
                 + "-e OTEL_RESOURCE_ATTRIBUTES=service.namespace=%s,service.name=%s "
                 + "-e INSTANCE_ID=%s "
-                + "-e OTEL_OTLP_ENDPOINT=%s:55680 "
+                + "-e OTEL_EXPORTER_OTLP_ENDPOINT=%s:55680 "
                 + "-d %s",
             context.getStack().getTestingRegion(),
             context.getStack().getTraceDataS3BucketName(),

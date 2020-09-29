@@ -28,7 +28,7 @@ spec:
         - name: emitter
           image: {{dataEmitterImage}}
           env:
-          - name: OTEL_OTLP_ENDPOINT
+          - name: OTEL_EXPORTER_OTLP_ENDPOINT
             value: "localhost:55680"
           - name: INSTANCE_ID
             value: "{{instanceId}}"
