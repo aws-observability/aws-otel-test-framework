@@ -1,0 +1,27 @@
+extensions:
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:55680
+
+processors:
+
+exporters:
+  logging:
+    loglevel: debug
+  awsxray:
+    local_mode: true
+    region: 'us-west-2'
+  awsemf:
+    region: 'us-west-2'
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [awsxray]
+    metrics:
+      receivers: [otlp]
+      exporters: [logging, awsemf]
