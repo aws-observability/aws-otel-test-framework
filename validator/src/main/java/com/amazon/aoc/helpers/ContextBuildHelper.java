@@ -7,16 +7,14 @@ import com.amazon.aoc.models.Context;
 
 public class ContextBuildHelper {
   public Context buildContextFromEnvVars(){
-    Context context = new Context();
-
-    context.setRegion(System.getenv(GenericConstants.ENV_VAR_REGION.getVal()));
-    context.setAgentVersion(System.getenv(GenericConstants.ENV_VAR_AGENT_VERSION.getVal()));
-    context.setTraceDataS3BucketName(System.getenv(GenericConstants.ENV_VAR_TRACE_S3_BUCKET.getVal()));
-    context.setInstanceId(System.getenv(GenericConstants.ENV_VAR_INSTANCE_ID.getVal()));
-    context.setExpectedMetric(ExpectedMetric.valueOf(System.getenv(GenericConstants.ENV_VAR_EXPECTED_METRIC.getVal())));
-    context.setExpectedTrace(ExpectedTrace.valueOf(System.getenv(GenericConstants.ENV_VAR_EXPECTED_TRACE.getVal())));
-    context.setNamespace(System.getenv(GenericConstants.ENV_VAR_NAMESPACE.getVal()));
-
-    return context;
+    return new Context(
+      System.getenv(GenericConstants.ENV_VAR_AGENT_VERSION.getVal()),
+      System.getenv(GenericConstants.ENV_VAR_INSTANCE_ID.getVal()),
+      ExpectedMetric.valueOf(System.getenv(GenericConstants.ENV_VAR_EXPECTED_METRIC.getVal())),
+      ExpectedTrace.valueOf(System.getenv(GenericConstants.ENV_VAR_EXPECTED_TRACE.getVal())),
+      System.getenv(GenericConstants.ENV_VAR_NAMESPACE.getVal()),
+      System.getenv(GenericConstants.ENV_VAR_DATA_EMITTER_ENDPOINT.getVal()),
+      System.getenv(GenericConstants.ENV_VAR_REGION.getVal())
+    );
   }
 }

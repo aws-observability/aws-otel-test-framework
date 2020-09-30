@@ -5,5 +5,7 @@ sshkey_s3_bucket="aoc-ssh-key"
 sshkey_s3_public_key="aoc-ssh.pem"
 sshkey_s3_private_key="aoc-ssh-private"
 ssh_key_name="aoc-ssh-key-for-ec2"
-security_group_name="aoc-security-group"
+security_group_name="aoc-test-security-group"
 validator_path="/app/validator/bin/validator"
+
+testing_ami="amazonlinux2"

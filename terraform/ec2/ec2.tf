@@ -8,16 +8,12 @@ data "aws_s3_bucket_object" "ssh_private_key" {
 }
 
 resource "aws_instance" "aoc" {
-  ami                         = data.aws_ami.amazon-linux2.id
+  ami                         = data.aws_ami.selected.id
   instance_type               = "t2.micro"
   security_groups             = [var.security_group_name]
   associate_public_ip_address = true
   iam_instance_profile        = var.aoc_iam_role_name
   key_name                    = var.ssh_key_name
-
-  tags = {
-    Name = "terraform-integ-test"
-  }
 
   provisioner "file" {
     source = "../config/otconfig/default.yml"
@@ -55,15 +51,10 @@ resource "aws_instance" "emitter" {
   iam_instance_profile        = var.aoc_iam_role_name
   key_name                    = var.ssh_key_name
 
-
-  tags = {
-    Name = "terraform-integ-test"
-  }
-
   provisioner "remote-exec" {
     inline = [
       "sudo systemctl start docker",
-      "sudo docker run -e OTEL_RESOURCE_ATTRIBUTES=service.namespace=${var.otel_service_namespace},service.name=${var.otel_service_name} -e S3_REGION=${var.region} -e TRACE_DATA_BUCKET=${var.trace_data_bucket} -e TRACE_DATA_S3_KEY=${aws_instance.aoc.id} -e INSTANCE_ID=${aws_instance.aoc.id} -e OTEL_OTLP_ENDPOINT=${aws_instance.aoc.private_ip}:55680 -d josephwy/integ-test-emitter:multiplatform"
+      "sudo docker run -p 4567:4567 -e OTEL_RESOURCE_ATTRIBUTES=service.namespace=${var.otel_service_namespace},service.name=${var.otel_service_name} -e S3_REGION=${var.region} -e TRACE_DATA_BUCKET=${var.trace_data_bucket} -e TRACE_DATA_S3_KEY=${aws_instance.aoc.id} -e INSTANCE_ID=${aws_instance.aoc.id} -e OTEL_EXPORTER_OTLP_ENDPOINT=${aws_instance.aoc.private_ip}:55680 -d josephwy/integ-test-emitter:0.9.1"
     ]
 
     connection {
@@ -82,8 +73,8 @@ resource "aws_instance" "emitter" {
       INSTANCE_ID = aws_instance.aoc.id
       EXPECTED_METRIC = "DEFAULT_EXPECTED_METRIC"
       EXPECTED_TRACE = "DEFAULT_EXPECTED_TRACE"
-      TRACE_S3_BUCKET = var.trace_data_bucket
       NAMESPACE = "${var.otel_service_namespace}/${var.otel_service_name}"
+      DATA_EMITTER_ENDPOINT = "http://${aws_instance.emitter.public_ip}:4567/span0"
     }
   }
 }

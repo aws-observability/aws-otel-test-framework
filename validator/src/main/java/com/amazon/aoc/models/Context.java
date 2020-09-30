@@ -18,16 +18,28 @@ package com.amazon.aoc.models;
 import com.amazon.aoc.fileconfigs.ExpectedMetric;
 import com.amazon.aoc.fileconfigs.ExpectedTrace;
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
 public class Context {
+  @NonNull
   private String agentVersion;
+
+  @NonNull
   private String instanceId;
+
+  @NonNull
   private ExpectedMetric expectedMetric;
+
+  @NonNull
   private ExpectedTrace expectedTrace;
-  private String traceDataS3BucketName;
+
+  @NonNull
   private String namespace;
 
-  /** Test resources region. */
+  @NonNull
+  private String dataEmitterEndpoint;
+
+  @NonNull
   private String region;
 }

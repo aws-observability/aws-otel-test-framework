@@ -9,6 +9,8 @@ RUN curl -O https://releases.hashicorp.com/terraform/0.13.3/terraform_0.13.3_lin
 
 RUN tar -xvf /home/gradle/src/validator/build/distributions/validator.tar
 
+RUN rm -rf /home/gradle/src/terraform/.terraform
+
 
 ## runner
 FROM amazoncorretto:11

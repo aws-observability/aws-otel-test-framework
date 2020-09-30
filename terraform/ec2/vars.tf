@@ -18,3 +18,5 @@ variable "ssh_key_name" {}
 variable "security_group_name" {}
 
 variable "validator_path" {}
+
+variable "testing_ami" {}

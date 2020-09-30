@@ -25,16 +25,16 @@ import com.amazon.aoc.services.S3Service;
 import com.amazon.aoc.services.XRayService;
 import com.amazonaws.services.xray.model.Segment;
 import com.amazonaws.services.xray.model.Trace;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.extern.log4j.Log4j2;
-
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -56,7 +56,6 @@ public class TraceValidator implements IValidator {
   public void validate() throws Exception {
     List<Trace> expectedTraceList = this.getExpectedTrace();
     expectedTraceList.sort(Comparator.comparing(Trace::getId));
-
     RetryHelper.retry(
         MAX_RETRY_COUNT,
         () -> {
@@ -84,35 +83,6 @@ public class TraceValidator implements IValidator {
         });
   }
 
-  private List<Trace> getExpectedTrace() throws IOException {
-    // get expected trace from s3
-    String strTraceData =
-        s3Service.getS3ObjectAsString(
-            context.getTraceDataS3BucketName(),
-            context.getInstanceId() // we use instanceid as the s3key
-            );
-    log.info("get expected trace data from s3: {}", strTraceData);
-
-    // load traceData from json, we use json instead of yaml because storing yaml in s3 will lose
-    // the spaces so that the yaml format will be invalid to read
-    ObjectMapper mapper = new ObjectMapper(new JsonFactory());
-    TraceFromEmitter traceFromEmitter =
-        mapper.readValue(strTraceData.getBytes(StandardCharsets.UTF_8),
-            new TypeReference<TraceFromEmitter>() {});
-
-    // convert the trace data into xray format
-    String yamlExpectedTrace = mustacheHelper.render(context.getExpectedTrace(), traceFromEmitter);
-
-    // load xray trace from yaml
-    mapper = new ObjectMapper(new YAMLFactory());
-    List<Trace> expectedTraceList =
-        mapper.readValue(
-            yamlExpectedTrace.getBytes(StandardCharsets.UTF_8),
-            new TypeReference<List<Trace>>() {});
-
-    return expectedTraceList;
-  }
-
   private void compareTwoTraces(Trace trace1, Trace trace2) throws BaseException {
     // check trace id
     if (!trace1.getId().equals(trace2.getId())) {
@@ -132,5 +102,39 @@ public class TraceValidator implements IValidator {
         throw new BaseException(ExceptionCode.TRACE_SPAN_NOT_MATCHED);
       }
     }
+  }
+
+  // this endpoint will be a http endpoint including the path with get method
+  private List<Trace> getExpectedTrace() throws Exception {
+    OkHttpClient client = new OkHttpClient();
+    Request request = new Request.Builder()
+      .url(context.getDataEmitterEndpoint())
+      .build();
+
+    AtomicReference<String> responseContent = new AtomicReference<>();
+    RetryHelper.retry(()->{
+        try(Response response = client.newCall(request).execute()){
+          if(!response.isSuccessful()){
+            throw new BaseException(ExceptionCode.DATA_EMITTER_UNAVAILABLE);
+          }
+          responseContent.set(response.body().string());
+        }
+      }
+    );
+
+    TraceFromEmitter traceFromEmitter = new ObjectMapper().readValue(responseContent.get(), TraceFromEmitter.class);
+
+    // convert the trace data into xray format
+    Trace trace = new Trace();
+    trace.setId(traceFromEmitter.getTraceId());
+
+    List<Segment> segments = new ArrayList<>();
+    for(String spanId: traceFromEmitter.getSpanIdList()){
+      segments.add(new Segment().withId(spanId));
+    }
+    trace.setSegments(segments);
+
+    // we can support multi expected trace id to validate
+    return Arrays.asList(trace);
   }
 }

@@ -1,0 +1,8 @@
+version: "3.8"
+services:
+  terraform:
+    build:
+      context: .
+    command: ec2 v0.1.11-277599456
+    volumes:
+      - "~/.aws/credentials:/root/.aws/credentials"
