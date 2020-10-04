@@ -1,6 +1,4 @@
-provider "aws" {
-  region = var.region
-}
+
 
 data "aws_s3_bucket_object" "ssh_private_key" {
   bucket = var.sshkey_s3_bucket

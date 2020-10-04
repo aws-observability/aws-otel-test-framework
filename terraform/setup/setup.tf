@@ -1,6 +1,10 @@
 # in this module, we create the necessary common resources for the integ-tests, this setup module will only need to be executed once.
 # vpc, iam role, security group, the number of those resources could be limited, creating them concurrently for every pr would trigger throttling issue.
 
+module "common" {
+  source = "../common"
+}
+
 provider "aws" {
   region = var.region
 }
@@ -44,6 +48,14 @@ resource "aws_iam_role" "aoc_role" {
             },
             "Effect": "Allow",
             "Sid": ""
+        },
+        {
+          "Sid": "",
+          "Effect": "Allow",
+          "Principal": {
+            "Service": "ecs-tasks.amazonaws.com"
+          },
+          "Action": "sts:AssumeRole"
         }
     ]
 }
@@ -55,17 +67,9 @@ resource "aws_iam_role_policy_attachment" "ec2-read-only-policy-attachment" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
-
-# security group
-resource "aws_default_vpc" "default_vpc" {
-  tags = {
-    Name = "Default VPC"
-  }
-}
-
 resource "aws_security_group" "sg_22_80" {
   name   = var.security_group_name
-  vpc_id = aws_default_vpc.default_vpc.id
+  vpc_id = module.common.default_vpc_id
 
   ingress {
     from_port   = 22
