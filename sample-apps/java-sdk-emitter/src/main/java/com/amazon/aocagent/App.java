@@ -33,20 +33,11 @@ import java.util.List;
 import static spark.Spark.*;
 
 public class App {
-  static final String DEFAULT_OTLP_ENDPOINT = "localhost:55680";
   static final String REQUEST_START_TIME = "requestStartTime";
   static final String ENV_S3_REGION = "S3_REGION";
 
   private static MetricEmitter buildMetricEmitter(){
-    String otlpEndpoint = DEFAULT_OTLP_ENDPOINT;
-    // get otlp endpoint
-    String otlpEndpointFromEnvVar = System.getenv("OTEL_OTLP_ENDPOINT");
-    if(otlpEndpointFromEnvVar != null && !otlpEndpointFromEnvVar.trim().equals("")){
-      otlpEndpoint = otlpEndpointFromEnvVar;
-    }
-
-    return new MetricEmitter(otlpEndpoint);
-
+    return new MetricEmitter();
   }
 
   private static S3Service buildS3Service(){
@@ -60,6 +51,11 @@ public class App {
   public static void main(String[] args) {
     MetricEmitter metricEmitter = buildMetricEmitter();
     S3Service s3Service = buildS3Service();
+
+    get("/", (req, res) -> {
+      res.status(404);
+      return "404";
+    });
 
     get("/span0", (req, res) -> {
       Span currentSpan = TracingContextUtils.getCurrentSpan();
@@ -76,9 +72,6 @@ public class App {
           + "-" + traceId.substring(8);
 
       Response response = new Response(xrayTraceId, spanList);
-
-      // write the response to s3 for validation
-      s3Service.uploadTraceData(response);
 
       return response;
     }, new JsonTransformer());
