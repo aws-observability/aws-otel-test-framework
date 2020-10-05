@@ -1,0 +1,50 @@
+plugins {
+    id 'java'
+
+    id 'application'
+
+    // lombok
+    id "io.freefair.lombok" version "5.1.0"
+}
+
+version 'unspecified'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    // log
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
+
+    // mustache template
+    compile group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.8.9'
+
+    // apache io utils
+    compile group: 'commons-io', name: 'commons-io', version: '2.4'
+
+    // yaml reader
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.11.1'
+
+    // command cli
+    compile 'info.picocli:picocli:4.3.2'
+
+    compileOnly 'info.picocli:picocli-codegen:4.3.2'
+
+    // aws sdk
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.811')
+    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
+    implementation 'com.amazonaws:aws-java-sdk-xray'
+
+    // http client
+    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'com.amazon.aoc.App'
+}

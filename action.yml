@@ -5,14 +5,14 @@ inputs:
   running_type:
     description: 'running type'
     required: false
-    default: 'integ-test'
-  opts:
-    description: 'opts'
+    default: 'ec2'
+  agent_version:
+    description: 'agent version'
     required: false
-    default: '-t=EC2Test -s=build/packages/.aoc-stack-test.yml'
+    default: "0.9.0"
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - "${{ inputs.running_type }}"
-    - "${{ inputs.opts }}"
+    - "${{ inputs.agent_version }}"

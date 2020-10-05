@@ -1,16 +1,25 @@
-# this dockerfile is used for github action
 FROM gradle:6.5.0-jdk11 as builder
 
 # build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build
+RUN ./gradlew :validator:build
+RUN curl -O https://releases.hashicorp.com/terraform/0.13.3/terraform_0.13.3_linux_amd64.zip \
+  && unzip terraform_0.13.3_linux_amd64.zip -d /usr/bin/
 
-# settle down the executable
-FROM adoptopenjdk:11-jdk-hotspot
-COPY --from=builder /home/gradle/src/integ-test/build/distributions/integ-test-1.0.tar /app/
+RUN tar -xvf /home/gradle/src/validator/build/distributions/validator.tar
+
+RUN rm -rf /home/gradle/src/terraform/.terraform
+
+
+## runner
+FROM amazoncorretto:11
+
+COPY --from=builder /home/gradle/src/validator /app/validator
+COPY --from=builder /home/gradle/src/terraform /app/terraform
+COPY --from=builder /usr/bin/terraform /usr/bin/
+
 WORKDIR /app
-RUN tar -xvf integ-test-1.0.tar
 
 COPY entrypoint.sh /entrypoint.sh
 

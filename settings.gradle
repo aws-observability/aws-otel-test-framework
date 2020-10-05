@@ -9,4 +9,5 @@
 
 rootProject.name = 'aws-otel-collector-test-framework'
 include 'integ-test'
-include 'java-sdk-emitter'
+include 'validator'
+include ':sample-apps:java-sdk-emitter'
