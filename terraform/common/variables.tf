@@ -3,11 +3,11 @@ variable "region" {
 }
 
 variable "security_group_name" {
-  default = "aoc-test-security-group"
+  default = "aoc-vpc-security-group"
 }
 
 variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:0.9.1"
+  default = "josephwy/integ-test-emitter:ying"
 }
 
 variable "aoc_image_repo" {
@@ -28,4 +28,8 @@ variable "otel_service_namespace" {
 
 variable "otel_service_name" {
   default = "Terraform"
+}
+
+variable "aoc_vpc_name" {
+  default = "aoc-vpc"
 }

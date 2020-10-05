@@ -1,7 +1,10 @@
 package com.amazon.aoc;
 
+import com.amazon.aoc.callers.HttpCaller;
+import com.amazon.aoc.callers.ICaller;
 import com.amazon.aoc.helpers.ContextBuildHelper;
 import com.amazon.aoc.models.Context;
+import com.amazon.aoc.models.TraceFromEmitter;
 import com.amazon.aoc.validators.BatchedValidator;
 import com.amazon.aoc.validators.MetricValidator;
 import com.amazon.aoc.validators.TraceValidator;
@@ -14,6 +17,7 @@ public class App {
   public static void main(String[] args) throws Exception {
     Context context = new ContextBuildHelper().buildContextFromEnvVars();
     log.info(context);
+
     BatchedValidator batchedValidator = new BatchedValidator(Arrays.asList(
       new MetricValidator(),
       new TraceValidator()

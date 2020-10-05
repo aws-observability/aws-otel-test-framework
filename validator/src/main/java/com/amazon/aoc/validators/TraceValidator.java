@@ -15,6 +15,7 @@
 
 package com.amazon.aoc.validators;
 
+import com.amazon.aoc.callers.HttpCaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.helpers.MustacheHelper;
@@ -106,23 +107,7 @@ public class TraceValidator implements IValidator {
 
   // this endpoint will be a http endpoint including the path with get method
   private List<Trace> getExpectedTrace() throws Exception {
-    OkHttpClient client = new OkHttpClient();
-    Request request = new Request.Builder()
-      .url(context.getDataEmitterEndpoint())
-      .build();
-
-    AtomicReference<String> responseContent = new AtomicReference<>();
-    RetryHelper.retry(()->{
-        try(Response response = client.newCall(request).execute()){
-          if(!response.isSuccessful()){
-            throw new BaseException(ExceptionCode.DATA_EMITTER_UNAVAILABLE);
-          }
-          responseContent.set(response.body().string());
-        }
-      }
-    );
-
-    TraceFromEmitter traceFromEmitter = new ObjectMapper().readValue(responseContent.get(), TraceFromEmitter.class);
+    TraceFromEmitter traceFromEmitter = new HttpCaller().callSampleApp(context.getDataEmitterEndpoint());
 
     // convert the trace data into xray format
     Trace trace = new Trace();

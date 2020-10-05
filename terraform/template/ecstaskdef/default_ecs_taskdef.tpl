@@ -11,12 +11,11 @@
             "protocol": "tcp"
           }
       ],
-      "essential": true,
       "command": [],
       "environment": [
         {
           "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
-          "value": "172.17.0.1:55680"
+          "value": "127.0.0.1:55680"
         },
         {
           "name": "INSTANCE_ID",
@@ -39,7 +38,12 @@
         "value": "${testing_id}"
         }
       ],
-      "dependsOn": [],
+      "dependsOn": [
+        {
+            "containerName": "aoc-collector",
+            "condition": "START"
+        }
+      ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -64,7 +68,7 @@
       ],
       "secrets": [
         {
-            "name": "AOC_CONFIG_CONTENT",
+            "name": "AOT_CONFIG_CONTENT",
             "valueFrom": "${ssm_parameter_arn}"
         }
       ],

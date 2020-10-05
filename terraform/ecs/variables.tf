@@ -9,3 +9,7 @@ variable "otconfig_path" {
 variable "ecs_taskdef_path" {
   default = "../template/ecstaskdef/default_ecs_taskdef.tpl"
 }
+
+variable "ecs_launch_type" {
+  default = "EC2"
+}

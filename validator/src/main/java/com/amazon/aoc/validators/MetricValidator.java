@@ -15,6 +15,7 @@
 
 package com.amazon.aoc.validators;
 
+import com.amazon.aoc.callers.HttpCaller;
 import com.amazon.aoc.enums.GenericConstants;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
@@ -115,7 +116,10 @@ public class MetricValidator implements IValidator {
     }
   }
 
-  private List<Metric> getExpectedMetricList(Context context) throws IOException {
+  private List<Metric> getExpectedMetricList(Context context) throws Exception {
+    // call endpoint
+    new HttpCaller().callSampleApp(context.getDataEmitterEndpoint());
+
     // get expected metrics as yaml from config
     String yamlExpectedMetrics = mustacheHelper.render(context.getExpectedMetric(), context);
 

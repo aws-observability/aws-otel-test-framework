@@ -1,15 +1,3 @@
-output "default_vpc_id" {
-  value = aws_default_vpc.default_vpc.id
-}
-
-output "default_subnet_ids" {
-  value = data.aws_subnet_ids.default_subnet_ids.ids
-}
-
-output "aoc_security_group_id" {
-  value = data.aws_security_group.aoc_security_group.id
-}
-
 output "testing_id" {
   value = local.testing_id
 }
@@ -20,10 +8,6 @@ output "aoc_emitter_image" {
 
 output "aoc_image" {
   value = "${var.aoc_image_repo}:${var.aoc_version}"
-}
-
-output "aoc_iam_role_arn" {
-  value = data.aws_iam_role.aoc_iam_role.arn
 }
 
 output "validator_path" {
@@ -40,4 +24,28 @@ output "otel_service_namespace" {
 
 output "otel_service_name" {
   value = "Terraform"
+}
+
+output "ssh_key_name" {
+  value = "aoc-ssh-key-for-ec2"
+}
+
+output "sshkey_s3_bucket" {
+  value = "aoc-ssh-key"
+}
+
+output "sshkey_s3_private_key" {
+  value = "aoc-ssh-private"
+}
+
+output "aoc_iam_role_name" {
+  value = "aoc-e2e-iam-role"
+}
+
+output "aoc_vpc_name" {
+  value = "aoc-vpc"
+}
+
+output "aoc_vpc_security_group" {
+  value = "aoc-vpc-security-group"
 }
