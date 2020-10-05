@@ -1,20 +1,30 @@
-
-
-data "aws_s3_bucket_object" "ssh_private_key" {
-  bucket = var.sshkey_s3_bucket
-  key = var.sshkey_s3_private_key
+module "common" {
+  source = "../common"
 }
 
+module "basic_components" {
+  source = "../basic_components"
+}
+
+## get the ssh private key
+data "aws_s3_bucket_object" "ssh_private_key" {
+  bucket = module.common.sshkey_s3_bucket
+  key = module.common.sshkey_s3_private_key
+}
+
+
+## launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 is supported now]
 resource "aws_instance" "aoc" {
   ami                         = data.aws_ami.selected.id
   instance_type               = "t2.micro"
-  security_groups             = [var.security_group_name]
+  subnet_id                   = module.basic_components.aoc_public_subnet_ids[0]
+  vpc_security_group_ids      = [module.common.aoc_vpc_security_group]
   associate_public_ip_address = true
-  iam_instance_profile        = var.aoc_iam_role_name
-  key_name                    = var.ssh_key_name
+  iam_instance_profile        = module.common.aoc_iam_role_name
+  key_name                    = module.common.ssh_key_name
 
   provisioner "file" {
-    source = "../config/otconfig/default.yml"
+    source = var.otconfig_path
     destination = "/tmp/ot-default.yml"
 
     connection {
@@ -27,7 +37,7 @@ resource "aws_instance" "aoc" {
 
   provisioner "remote-exec" {
     inline = [
-      "wget https://${var.package_s3_bucket}.s3.amazonaws.com/amazon_linux/amd64/${var.agent_version}/aws-observability-collector.rpm",
+      "wget https://${var.package_s3_bucket}.s3.amazonaws.com/amazon_linux/amd64/${var.aoc_version}/aws-observability-collector.rpm",
       "sudo rpm -Uvh aws-observability-collector.rpm",
       "sudo /opt/aws/aws-observability-collector/bin/aws-observability-collector-ctl -c /tmp/ot-default.yml -a start"
     ]
@@ -41,18 +51,20 @@ resource "aws_instance" "aoc" {
   }
 }
 
+## launch a ec2 instance to install data emitter
 resource "aws_instance" "emitter" {
   ami                         = data.aws_ami.suse.id
   instance_type               = "t2.micro"
-  security_groups             = [var.security_group_name]
+  subnet_id                   = module.basic_components.aoc_public_subnet_ids[0]
+  vpc_security_group_ids      = [module.common.aoc_vpc_security_group]
   associate_public_ip_address = true
-  iam_instance_profile        = var.aoc_iam_role_name
-  key_name                    = var.ssh_key_name
+  iam_instance_profile        = module.common.aoc_iam_role_name
+  key_name                    = module.common.ssh_key_name
 
   provisioner "remote-exec" {
     inline = [
       "sudo systemctl start docker",
-      "sudo docker run -p 4567:4567 -e OTEL_RESOURCE_ATTRIBUTES=service.namespace=${var.otel_service_namespace},service.name=${var.otel_service_name} -e S3_REGION=${var.region} -e TRACE_DATA_BUCKET=${var.trace_data_bucket} -e TRACE_DATA_S3_KEY=${aws_instance.aoc.id} -e INSTANCE_ID=${aws_instance.aoc.id} -e OTEL_EXPORTER_OTLP_ENDPOINT=${aws_instance.aoc.private_ip}:55680 -d josephwy/integ-test-emitter:0.9.1"
+      "sudo docker run -p 4567:4567 -e OTEL_RESOURCE_ATTRIBUTES=service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name} -e INSTANCE_ID=${module.common.testing_id} -e OTEL_EXPORTER_OTLP_ENDPOINT=${aws_instance.aoc.private_ip}:55680 -d ${module.common.aoc_emitter_image}"
     ]
 
     connection {
@@ -64,14 +76,15 @@ resource "aws_instance" "emitter" {
   }
 
   provisioner "local-exec" {
-    command = var.validator_path
+    command = module.common.validator_path
+    working_dir = "../../"
     environment = {
-      AGENT_VERSION = var.agent_version
+      AGENT_VERSION = var.aoc_version
       REGION = var.region
-      INSTANCE_ID = aws_instance.aoc.id
+      INSTANCE_ID = module.common.testing_id
       EXPECTED_METRIC = "DEFAULT_EXPECTED_METRIC"
       EXPECTED_TRACE = "DEFAULT_EXPECTED_TRACE"
-      NAMESPACE = "${var.otel_service_namespace}/${var.otel_service_name}"
+      NAMESPACE = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
       DATA_EMITTER_ENDPOINT = "http://${aws_instance.emitter.public_ip}:4567/span0"
     }
   }

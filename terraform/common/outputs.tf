@@ -14,10 +14,6 @@ output "validator_path" {
   value = "./gradlew :validator:run"
 }
 
-output "aoc_version" {
-  value = var.aoc_version
-}
-
 output "otel_service_namespace" {
   value = "YingOtel"
 }

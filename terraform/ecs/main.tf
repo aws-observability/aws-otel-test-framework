@@ -1,5 +1,9 @@
 module "common" {
   source = "../common"
+
+  data_emitter_image = var.data_emitter_image
+  aoc_image_repo = var.aoc_image_repo
+  aoc_version = var.aoc_version
 }
 
 module "basic_components" {
@@ -140,7 +144,7 @@ resource "aws_ecs_service" "aoc" {
     command = module.common.validator_path
     working_dir = "../../"
     environment = {
-      AGENT_VERSION = module.common.aoc_version
+      AGENT_VERSION = var.aoc_version
       REGION = var.region
       INSTANCE_ID = module.common.testing_id
       EXPECTED_METRIC = "DEFAULT_EXPECTED_METRIC"
