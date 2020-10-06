@@ -141,17 +141,8 @@ resource "aws_ecs_service" "aoc" {
   }
 
   provisioner "local-exec" {
-    command = module.common.validator_path
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_lb.aoc_lb.dns_name}:4567'"
     working_dir = "../../"
-    environment = {
-      AGENT_VERSION = var.aoc_version
-      REGION = var.region
-      INSTANCE_ID = module.common.testing_id
-      EXPECTED_METRIC = "DEFAULT_EXPECTED_METRIC"
-      EXPECTED_TRACE = "DEFAULT_EXPECTED_TRACE"
-      NAMESPACE = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-      DATA_EMITTER_ENDPOINT = "http://${aws_lb.aoc_lb.dns_name}:4567/span0"
-    }
   }
 }
 

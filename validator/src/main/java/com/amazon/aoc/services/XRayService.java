@@ -32,6 +32,7 @@ public class XRayService {
 
   /**
    * List trace objects by ids.
+   *
    * @param traceIdList trace id list
    * @return trace object list
    */

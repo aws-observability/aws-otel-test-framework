@@ -19,7 +19,7 @@ import lombok.Getter;
 
 @Getter
 public enum ExpectedTrace implements FileConfig {
-  DEFAULT_EXPECTED_TRACE("/templates/validation/defaultExpectedTrace.mustache"),
+  DEFAULT_EXPECTED_TRACE("/expected-data-template/defaultExpectedTrace.mustache"),
   ;
 
   private String path;

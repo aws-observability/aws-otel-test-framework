@@ -15,10 +15,12 @@
 
 package com.amazon.aoc.validators;
 
+import com.amazon.aoc.callers.ICaller;
+import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.models.Context;
 
 public interface IValidator {
-  void init(Context context) throws Exception;
+  void init(Context context, ICaller caller, FileConfig expectedDataTemplate) throws Exception;
 
   void validate() throws Exception;
 }

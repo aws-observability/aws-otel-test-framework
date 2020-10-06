@@ -19,7 +19,7 @@ import lombok.Getter;
 
 @Getter
 public enum ExpectedMetric implements FileConfig {
-  DEFAULT_EXPECTED_METRIC("/templates/validation/defaultExpectedMetric.mustache"),
+  DEFAULT_EXPECTED_METRIC("/expected-data-template/defaultExpectedMetric.mustache"),
   ;
 
   private String path;
