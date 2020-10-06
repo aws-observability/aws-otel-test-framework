@@ -56,7 +56,7 @@ public class S3Release implements ITask {
   public void execute() throws Exception {
     log.info("context: {}", this.context);
     this.releasePackagesToS3();
-    this.printOutDownloadingLinks();
+    //this.printOutDownloadingLinks();
   }
 
   private void printOutDownloadingLinks() throws Exception {
