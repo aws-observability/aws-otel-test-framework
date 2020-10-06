@@ -15,10 +15,10 @@
 
 package com.amazon.aoc.validators;
 
-import com.amazon.aoc.callers.HttpCaller;
-import com.amazon.aoc.enums.GenericConstants;
+import com.amazon.aoc.callers.ICaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
+import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
@@ -47,14 +47,15 @@ public class MetricValidator implements IValidator {
   private static final String DEFAULT_DIMENSION_VALUE = "cloudwatch-otel";
 
   private MustacheHelper mustacheHelper = new MustacheHelper();
+  private ICaller caller;
   private Context context;
+  private FileConfig expectedMetric;
 
   @Override
   public void validate() throws Exception {
     log.info("Start metric validating");
     final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
-    CloudWatchService cloudWatchService =
-        new CloudWatchService(context.getRegion());
+    CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
 
     RetryHelper.retry(
         MAX_RETRY_COUNT,
@@ -118,10 +119,10 @@ public class MetricValidator implements IValidator {
 
   private List<Metric> getExpectedMetricList(Context context) throws Exception {
     // call endpoint
-    new HttpCaller().callSampleApp(context.getDataEmitterEndpoint());
+    caller.callSampleApp();
 
     // get expected metrics as yaml from config
-    String yamlExpectedMetrics = mustacheHelper.render(context.getExpectedMetric(), context);
+    String yamlExpectedMetrics = mustacheHelper.render(this.expectedMetric, context);
 
     // load metrics from yaml
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
@@ -143,10 +144,7 @@ public class MetricValidator implements IValidator {
     // search by metric name
     List<Metric> result = new ArrayList<>();
     for (String metricName : metricNameSet) {
-      result.addAll(
-          cloudWatchService.listMetrics(
-            context.getNamespace(),
-            metricName));
+      result.addAll(cloudWatchService.listMetrics(context.getMetricNamespace(), metricName));
     }
 
     return result;
@@ -192,17 +190,11 @@ public class MetricValidator implements IValidator {
     return rollupMetricList;
   }
 
-  private String metricToString(Metric metric) {
-    StringBuffer strMetric = new StringBuffer(metric.getMetricName() + "/");
-    for (Dimension dimension : metric.getDimensions()) {
-      strMetric.append(dimension.getName() + ":" + dimension.getValue());
-      strMetric.append(",");
-    }
-    return strMetric.toString();
-  }
-
   @Override
-  public void init(Context context) throws Exception {
+  public void init(Context context, ICaller caller, FileConfig expectedMetricTemplate)
+      throws Exception {
     this.context = context;
+    this.caller = caller;
+    this.expectedMetric = expectedMetricTemplate;
   }
 }

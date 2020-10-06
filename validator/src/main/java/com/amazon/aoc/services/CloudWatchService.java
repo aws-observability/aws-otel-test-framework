@@ -37,17 +37,14 @@ public class CloudWatchService {
 
   /**
    * listMetrics fetches metrics from CloudWatch.
+   *
    * @param nameSpace the metric namespace on CloudWatch
    * @param metricName the metric name on CloudWatch
    * @return List of Metrics
    */
-  public List<Metric> listMetrics(
-      final String nameSpace,
-      final String metricName) {
+  public List<Metric> listMetrics(final String nameSpace, final String metricName) {
     final ListMetricsRequest listMetricsRequest =
-        new ListMetricsRequest()
-            .withNamespace(nameSpace)
-            .withMetricName(metricName);
+        new ListMetricsRequest().withNamespace(nameSpace).withMetricName(metricName);
     return amazonCloudWatch.listMetrics(listMetricsRequest).getMetrics();
   }
 }

@@ -1,18 +1,18 @@
 # action.yml
-name: 'AOCIntegTest'
-description: 'AOCIntegTest performs end-to-end integration test on the AOCAgent'
+name: 'AOT-E2E'
+description: 'AOT testing framework'
 inputs:
   running_type:
     description: 'running type'
     required: false
-    default: 'ec2'
-  agent_version:
-    description: 'agent version'
+    default: 'validator'
+  opts:
+    description: 'opts'
     required: false
-    default: "0.9.0"
+    default: '-c default-validation.yml'
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - "${{ inputs.running_type }}"
-    - "${{ inputs.agent_version }}"
+    - "${{ inputs.opts }}"

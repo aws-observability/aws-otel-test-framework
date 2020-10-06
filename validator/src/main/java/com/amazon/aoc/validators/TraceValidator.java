@@ -15,27 +15,21 @@
 
 package com.amazon.aoc.validators;
 
-import com.amazon.aoc.callers.HttpCaller;
+import com.amazon.aoc.callers.ICaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
+import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
-import com.amazon.aoc.models.TraceFromEmitter;
-import com.amazon.aoc.services.S3Service;
+import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.services.XRayService;
-import com.amazonaws.services.xray.model.Segment;
 import com.amazonaws.services.xray.model.Trace;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import java.util.ArrayList;
+
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -44,13 +38,15 @@ public class TraceValidator implements IValidator {
   private static int MAX_RETRY_COUNT = 60;
   private Context context;
   private XRayService xrayService;
-  private S3Service s3Service;
+  private ICaller caller;
+  private FileConfig expectedTrace;
 
   @Override
-  public void init(Context context) throws Exception {
+  public void init(Context context, ICaller caller, FileConfig expectedTrace) throws Exception {
     this.context = context;
     this.xrayService = new XRayService(context.getRegion());
-    this.s3Service = new S3Service(context.getRegion());
+    this.caller = caller;
+    this.expectedTrace = expectedTrace;
   }
 
   @Override
@@ -75,10 +71,7 @@ public class TraceValidator implements IValidator {
           }
 
           for (int i = 0; i != expectedTraceList.size(); ++i) {
-            // remove the s3 span as the auto-instrumenting of s3 happens before we store trace data
-            // onto s3.
             Trace trace = traceList.get(i);
-            trace.getSegments().removeIf(span -> span.getDocument().contains("AWS::S3"));
             compareTwoTraces(expectedTraceList.get(i), trace);
           }
         });
@@ -90,6 +83,7 @@ public class TraceValidator implements IValidator {
       throw new BaseException(ExceptionCode.TRACE_ID_NOT_MATCHED);
     }
 
+    /*
     if (trace1.getSegments().size() != trace2.getSegments().size()) {
       throw new BaseException(ExceptionCode.TRACE_SPAN_LIST_NOT_MATCHED);
     }
@@ -102,24 +96,20 @@ public class TraceValidator implements IValidator {
           .equals(trace2.getSegments().get(i).getId())) {
         throw new BaseException(ExceptionCode.TRACE_SPAN_NOT_MATCHED);
       }
-    }
+    }*/
   }
 
   // this endpoint will be a http endpoint including the path with get method
   private List<Trace> getExpectedTrace() throws Exception {
-    TraceFromEmitter traceFromEmitter = new HttpCaller().callSampleApp(context.getDataEmitterEndpoint());
+    SampleAppResponse sampleAppResponse = this.caller.callSampleApp();
 
     // convert the trace data into xray format
     Trace trace = new Trace();
-    trace.setId(traceFromEmitter.getTraceId());
+    trace.setId(sampleAppResponse.getTraceId());
 
-    List<Segment> segments = new ArrayList<>();
-    for(String spanId: traceFromEmitter.getSpanIdList()){
-      segments.add(new Segment().withId(spanId));
-    }
-    trace.setSegments(segments);
+    // todo: construct the trace data from the template file
 
-    // we can support multi expected trace id to validate
+    // we can support multi expected trace id to validate if need
     return Arrays.asList(trace);
   }
 }

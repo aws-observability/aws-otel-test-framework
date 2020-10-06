@@ -15,31 +15,16 @@
 
 package com.amazon.aoc.models;
 
-import com.amazon.aoc.fileconfigs.ExpectedMetric;
-import com.amazon.aoc.fileconfigs.ExpectedTrace;
 import lombok.Data;
 import lombok.NonNull;
 
 @Data
 public class Context {
-  @NonNull
-  private String agentVersion;
+  @NonNull private String testingId;
 
-  @NonNull
-  private String instanceId;
+  @NonNull private String metricNamespace;
 
-  @NonNull
-  private ExpectedMetric expectedMetric;
+  @NonNull private String endpoint;
 
-  @NonNull
-  private ExpectedTrace expectedTrace;
-
-  @NonNull
-  private String namespace;
-
-  @NonNull
-  private String dataEmitterEndpoint;
-
-  @NonNull
-  private String region;
+  @NonNull private String region;
 }

@@ -5,6 +5,18 @@ plugins {
 
     // lombok
     id "io.freefair.lombok" version "5.1.0"
+
+    // check style
+    id 'checkstyle'
+}
+
+tasks.withType(Checkstyle) {
+    checkstyle {
+        toolVersion '8.33'
+        configFile = new File(projectDir, "src/main/resources/checkstyle.xml")
+        maxWarnings = 0
+        ignoreFailures = false
+    }
 }
 
 version 'unspecified'
@@ -42,6 +54,11 @@ dependencies {
 
     // http client
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
+
+    // command cli
+    compile 'info.picocli:picocli:4.3.2'
+
+    compileOnly 'info.picocli:picocli-codegen:4.3.2'
 }
 
 application {
