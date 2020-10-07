@@ -173,7 +173,8 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
   }
 
   provisioner "local-exec" {
-    command = "${module.common.validator_path} -c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+    working_dir = "../../"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name}'"
   }
 }
 

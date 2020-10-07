@@ -1,8 +1,0 @@
-version: "3.8"
-services:
-  terraform:
-    build:
-      context: .
-    command: terraform ecs -var-file="/app/terraform/testing-suites/statsd-ecs.tfvars"
-    volumes:
-      - "~/.aws/credentials:/root/.aws/credentials"
