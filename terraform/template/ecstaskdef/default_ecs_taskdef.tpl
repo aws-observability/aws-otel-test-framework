@@ -1,6 +1,6 @@
 [
     {
-      "name": "aoc-emitter",
+      "name": "${sample_app_container_name}",
       "image": "${data_emitter_image}",
       "cpu": 10,
       "memory": 256,
@@ -36,6 +36,10 @@
         {
         "name": "TRACE_DATA_S3_KEY",
         "value": "${testing_id}"
+        },
+        {
+            "name": "LISTEN_ADDRESS",
+            "value": "${sample_app_listen_address}"
         }
       ],
       "dependsOn": [

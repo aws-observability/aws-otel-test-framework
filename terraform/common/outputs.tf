@@ -45,3 +45,15 @@ output "aoc_vpc_name" {
 output "aoc_vpc_security_group" {
   value = "aoc-vpc-security-group"
 }
+
+output "sample_app_container_name" {
+  value = "aoc-emitter"
+}
+
+output "sample_app_listen_address_ip" {
+  value = "0.0.0.0"
+}
+
+output "sample_app_listen_address_port" {
+  value = "4567"
+}

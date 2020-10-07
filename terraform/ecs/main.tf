@@ -63,6 +63,8 @@ data "template_file" "task_def" {
     otel_service_namespace = module.common.otel_service_namespace
     otel_service_name = module.common.otel_service_name
     ssm_parameter_arn = aws_ssm_parameter.otconfig.name
+    sample_app_container_name = module.common.sample_app_container_name
+    sample_app_listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
   }
 }
 
@@ -102,7 +104,7 @@ resource "aws_lb_target_group" "aoc_lb_tg" {
   count = var.data_emitter_image != "" ? 1 : 0
 
   name = "aoc-lbtg-${module.common.testing_id}"
-  port = 4567
+  port = module.common.sample_app_listen_address_port
   protocol = "HTTP"
   target_type = "ip"
   vpc_id = module.basic_components.aoc_vpc_id
@@ -121,7 +123,7 @@ resource "aws_lb_listener" "aoc_lb_listener" {
   count = var.data_emitter_image != "" ? 1 : 0
 
   load_balancer_arn = aws_lb.aoc_lb[0].arn
-  port = 4567
+  port = 80
   protocol = "HTTP"
 
   default_action {
@@ -141,10 +143,9 @@ resource "aws_ecs_service" "aoc" {
   launch_type = var.ecs_launch_type
 
   load_balancer {
-
     target_group_arn = aws_lb_target_group.aoc_lb_tg[0].arn
-    container_name = "aoc-emitter"
-    container_port = 4567
+    container_name = module.common.sample_app_container_name
+    container_port = module.common.sample_app_listen_address_port
   }
 
   network_configuration {
@@ -153,7 +154,8 @@ resource "aws_ecs_service" "aoc" {
   }
 
   provisioner "local-exec" {
-    command = "${module.common.validator_path} -c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_lb.aoc_lb[0].dns_name}:4567"
+    working_dir = "../../"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_lb.aoc_lb[0].dns_name}'"
   }
 }
 
