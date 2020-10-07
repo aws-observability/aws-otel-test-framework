@@ -1,5 +1,8 @@
 module "common" {
   source = "../common"
+
+  data_emitter_image = var.data_emitter_image
+  aoc_version = var.aoc_version
 }
 
 module "basic_components" {
@@ -11,7 +14,6 @@ data "aws_s3_bucket_object" "ssh_private_key" {
   bucket = module.common.sshkey_s3_bucket
   key = module.common.sshkey_s3_private_key
 }
-
 
 ## launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 is supported now]
 resource "aws_instance" "aoc" {
@@ -53,6 +55,8 @@ resource "aws_instance" "aoc" {
 
 ## launch a ec2 instance to install data emitter
 resource "aws_instance" "emitter" {
+  # don't do lb if there's no sample app image
+  count = var.data_emitter_image == "" ? 1 : 0
   ami                         = data.aws_ami.suse.id
   instance_type               = "t2.micro"
   subnet_id                   = module.basic_components.aoc_public_subnet_ids[0]
@@ -64,7 +68,7 @@ resource "aws_instance" "emitter" {
   provisioner "remote-exec" {
     inline = [
       "sudo systemctl start docker",
-      "sudo docker run -p 4567:4567 -e OTEL_RESOURCE_ATTRIBUTES=service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name} -e INSTANCE_ID=${module.common.testing_id} -e OTEL_EXPORTER_OTLP_ENDPOINT=${aws_instance.aoc.private_ip}:55680 -d ${module.common.aoc_emitter_image}"
+      "sudo docker run -p 80:${module.common.sample_app_listen_address_port} -e LISTEN_ADDRESS='${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}' -e OTEL_RESOURCE_ATTRIBUTES=service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name} -e INSTANCE_ID=${module.common.testing_id} -e OTEL_EXPORTER_OTLP_ENDPOINT=${aws_instance.aoc.private_ip}:55680 -d ${module.common.aoc_emitter_image}"
     ]
 
     connection {
@@ -76,17 +80,8 @@ resource "aws_instance" "emitter" {
   }
 
   provisioner "local-exec" {
-    command = module.common.validator_path
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}'"
     working_dir = "../../"
-    environment = {
-      AGENT_VERSION = var.aoc_version
-      REGION = var.region
-      INSTANCE_ID = module.common.testing_id
-      EXPECTED_METRIC = "DEFAULT_EXPECTED_METRIC"
-      EXPECTED_TRACE = "DEFAULT_EXPECTED_TRACE"
-      NAMESPACE = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-      DATA_EMITTER_ENDPOINT = "http://${aws_instance.emitter.public_ip}:4567/span0"
-    }
   }
 }
 
