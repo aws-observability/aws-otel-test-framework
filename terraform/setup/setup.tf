@@ -16,7 +16,7 @@ resource "tls_private_key" "ssh_key" {
 }
 
 resource "aws_key_pair" "generated_key" {
-  key_name = module.common.ssh_key_name
+  key_name = var.sshkey_s3_bucket
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
