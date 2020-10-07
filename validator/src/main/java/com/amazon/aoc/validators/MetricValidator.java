@@ -44,7 +44,6 @@ import java.util.TreeSet;
 public class MetricValidator implements IValidator {
   private static int MAX_RETRY_COUNT = 60;
   private static final String DEFAULT_DIMENSION_NAME = "OTLib";
-  private static final String DEFAULT_DIMENSION_VALUE = "cloudwatch-otel";
 
   private MustacheHelper mustacheHelper = new MustacheHelper();
   private ICaller caller;
@@ -119,7 +118,9 @@ public class MetricValidator implements IValidator {
 
   private List<Metric> getExpectedMetricList(Context context) throws Exception {
     // call endpoint
-    caller.callSampleApp();
+    if (caller != null) {
+      caller.callSampleApp();
+    }
 
     // get expected metrics as yaml from config
     String yamlExpectedMetrics = mustacheHelper.render(this.expectedMetric, context);
@@ -153,6 +154,11 @@ public class MetricValidator implements IValidator {
   private List<Metric> rollupMetric(List<Metric> metricList) {
     List<Metric> rollupMetricList = new ArrayList<>();
     for (Metric metric : metricList) {
+      // get otlib dimension out
+      // assuming the first dimension is otlib, if not the validation fails
+      Dimension otlibDimension = metric.getDimensions().remove(0);
+      assert otlibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+
       // all dimension rollup
       Metric allDimensionsMetric = new Metric();
       allDimensionsMetric.setMetricName(metric.getMetricName());
@@ -160,7 +166,8 @@ public class MetricValidator implements IValidator {
       allDimensionsMetric.setDimensions(metric.getDimensions());
       allDimensionsMetric
           .getDimensions()
-          .add(new Dimension().withName(DEFAULT_DIMENSION_NAME).withValue(DEFAULT_DIMENSION_VALUE));
+          .add(new Dimension()
+            .withName(otlibDimension.getName()).withValue(otlibDimension.getValue()));
       rollupMetricList.add(allDimensionsMetric);
 
       // zero dimension rollup
@@ -169,7 +176,8 @@ public class MetricValidator implements IValidator {
       zeroDimensionMetric.setMetricName(metric.getMetricName());
       zeroDimensionMetric.setDimensions(
           Arrays.asList(
-              new Dimension().withName(DEFAULT_DIMENSION_NAME).withValue(DEFAULT_DIMENSION_VALUE)));
+              new Dimension()
+                .withName(otlibDimension.getName()).withValue(otlibDimension.getValue())));
       rollupMetricList.add(zeroDimensionMetric);
 
       // single dimension rollup
@@ -180,8 +188,8 @@ public class MetricValidator implements IValidator {
         singleDimensionMetric.setDimensions(
             Arrays.asList(
                 new Dimension()
-                    .withName(DEFAULT_DIMENSION_NAME)
-                    .withValue(DEFAULT_DIMENSION_VALUE)));
+                    .withName(otlibDimension.getName())
+                    .withValue(otlibDimension.getValue())));
         singleDimensionMetric.getDimensions().add(dimension);
         rollupMetricList.add(singleDimensionMetric);
       }

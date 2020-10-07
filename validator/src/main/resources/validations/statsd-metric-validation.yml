@@ -1,0 +1,4 @@
+-
+  validationType: "metric"
+  callingType: "none"
+  expectedMetricTemplate: "STATSD_EXPECTED_METRIC"

@@ -47,7 +47,8 @@ public class App implements Callable<Integer> {
         new ConfigLoadHelper().loadConfigFromFile(configPath);
 
     // build context
-    Context context = new Context(this.testingId, this.metricNamespace, this.endpoint, this.region);
+    Context context = new Context(this.testingId, this.metricNamespace, this.region);
+    context.setEndpoint(this.endpoint);
     log.info(context);
 
     // run validation

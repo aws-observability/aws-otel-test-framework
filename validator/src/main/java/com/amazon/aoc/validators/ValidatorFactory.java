@@ -44,6 +44,9 @@ public class ValidatorFactory {
       case "http":
         caller = new HttpCaller(context.getEndpoint(), validationConfig.getHttpPath());
         break;
+      case "none":
+        caller = null;
+        break;
       default:
         throw new BaseException(ExceptionCode.CALLER_TYPE_NOT_EXISTED);
     }

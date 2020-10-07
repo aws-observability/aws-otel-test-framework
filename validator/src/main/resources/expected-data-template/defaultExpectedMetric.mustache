@@ -3,6 +3,9 @@
   namespace: {{metricNamespace}}
   dimensions:
     -
+      name: OTLib
+      value: cloudwatch-otel
+    -
       name: apiName
       value: /span0
     -
@@ -12,6 +15,9 @@
   metricName: latency_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: OTLib
+      value: cloudwatch-otel
     -
       name: apiName
       value: /span1
@@ -23,6 +29,9 @@
   namespace: {{metricNamespace}}
   dimensions:
     -
+      name: OTLib
+      value: cloudwatch-otel
+    -
       name: apiName
       value: /span2
     -
@@ -32,6 +41,9 @@
   metricName: latency_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: OTLib
+      value: cloudwatch-otel
     -
       name: apiName
       value: /

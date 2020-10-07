@@ -10,9 +10,14 @@ inputs:
     description: 'opts'
     required: false
     default: '-c default-validation.yml'
+  platform:
+    description: "testing platform: ec2, ecs, eks"
+    required: false
+    default: "ecs"
 runs:
   using: 'docker'
   image: 'Dockerfile'
   args:
     - "${{ inputs.running_type }}"
+    - "${{ inputs.platform }}"
     - "${{ inputs.opts }}"
