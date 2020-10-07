@@ -24,7 +24,7 @@ public class Context {
 
   @NonNull private String metricNamespace;
 
-  @NonNull private String endpoint;
-
   @NonNull private String region;
+
+  private String endpoint;
 }

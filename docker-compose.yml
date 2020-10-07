@@ -3,6 +3,6 @@ services:
   terraform:
     build:
       context: .
-    command: ec2 v0.1.11-277599456
+    command: terraform ecs -var-file="/app/terraform/testing-suites/statsd-ecs.tfvars"
     volumes:
       - "~/.aws/credentials:/root/.aws/credentials"

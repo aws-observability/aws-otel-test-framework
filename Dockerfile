@@ -9,8 +9,9 @@ RUN curl -O https://releases.hashicorp.com/terraform/0.13.3/terraform_0.13.3_lin
 
 RUN tar -xvf /home/gradle/src/validator/build/distributions/validator.tar
 
-RUN rm -rf /home/gradle/src/terraform/.terraform
-
+RUN find . -name \*.terraform -type f -delete
+RUN find . -name \*.tfstate -type f -delete
+RUN find . -name \*.tfstate.backup -type f -delete
 
 ## runner
 FROM amazoncorretto:11

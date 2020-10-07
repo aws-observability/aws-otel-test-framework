@@ -40,6 +40,9 @@ data "template_file" "otconfig" {
 
   vars = {
     region = var.region
+    otel_service_namespace = module.common.otel_service_namespace
+    otel_service_name = module.common.otel_service_name
+    testing_id = module.common.testing_id
   }
 }
 resource "aws_ssm_parameter" "otconfig" {
@@ -85,12 +88,20 @@ resource "aws_ecs_task_definition" "aoc" {
 
 ## create elb
 resource "aws_lb" "aoc_lb" {
+  # don't do lb if there's no sample app image
+  count = var.data_emitter_image != "" ? 1 : 0
+
   # use public subnet to make the lb accessible from public internet
   subnets = module.basic_components.aoc_public_subnet_ids
   security_groups = [module.basic_components.aoc_security_group_id]
+  name = "aoc-lb-${module.common.testing_id}"
 }
 
 resource "aws_lb_target_group" "aoc_lb_tg" {
+  # don't do lb if there's no sample app image
+  count = var.data_emitter_image != "" ? 1 : 0
+
+  name = "aoc-lbtg-${module.common.testing_id}"
   port = 4567
   protocol = "HTTP"
   target_type = "ip"
@@ -106,31 +117,32 @@ resource "aws_lb_target_group" "aoc_lb_tg" {
 }
 
 resource "aws_lb_listener" "aoc_lb_listener" {
-  load_balancer_arn = aws_lb.aoc_lb.arn
+  # don't do lb if there's no sample app image
+  count = var.data_emitter_image != "" ? 1 : 0
+
+  load_balancer_arn = aws_lb.aoc_lb[0].arn
   port = 4567
   protocol = "HTTP"
 
   default_action {
     type = "forward"
-    target_group_arn = aws_lb_target_group.aoc_lb_tg.arn
+    target_group_arn = aws_lb_target_group.aoc_lb_tg[0].arn
   }
-}
-
-# debug
-output "dns_name" {
-  value = aws_lb.aoc_lb.dns_name
 }
 
 ## deploy
 resource "aws_ecs_service" "aoc" {
-  name = "aoc"
+  # don't do lb if there's no sample app image
+  count = var.data_emitter_image != "" ? 1 : 0
+  name = "aoctaskdef-${module.common.testing_id}"
   cluster = module.ecs_cluster.cluster_id
   task_definition = aws_ecs_task_definition.aoc.arn
   desired_count = 1
   launch_type = var.ecs_launch_type
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.aoc_lb_tg.arn
+
+    target_group_arn = aws_lb_target_group.aoc_lb_tg[0].arn
     container_name = "aoc-emitter"
     container_port = 4567
   }
@@ -141,8 +153,27 @@ resource "aws_ecs_service" "aoc" {
   }
 
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_lb.aoc_lb.dns_name}:4567'"
-    working_dir = "../../"
+    command = "${module.common.validator_path} -c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_lb.aoc_lb[0].dns_name}:4567"
+  }
+}
+
+# remove lb since there's no sample app, some test cases will drop in here, for example, ecsmetadata receiver test
+resource "aws_ecs_service" "aoc_without_sample_app" {
+  # don't do lb if there's no sample app image
+  count = var.data_emitter_image == "" ? 1 : 0
+  name = "aoc"
+  cluster = module.ecs_cluster.cluster_id
+  task_definition = aws_ecs_task_definition.aoc.arn
+  desired_count = 1
+  launch_type = var.ecs_launch_type
+
+  network_configuration {
+    subnets = module.basic_components.aoc_private_subnet_ids
+    security_groups = [module.basic_components.aoc_security_group_id]
+  }
+
+  provisioner "local-exec" {
+    command = "${module.common.validator_path} -c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   }
 }
 

@@ -14,15 +14,21 @@ cd setup && terraform init && terraform apply
 
 ## run with the default config
 ``
-cd ecs && terraform init && terraform apply
+docker-compose up --build
 ``
 
 ## run with the customized config
+change the docker-compose.yml
+
 ``
-cd ecs && terraform init && terraform apply -var="ecs_taskdef_path=../template/ecstaskdef/default_ecs_taskdef.tpl" -var="otconfig_path=../template/otconfig/default_otconfig.tpl" -var="ecs_launch_type=FARGATE"
+-var-file="/app/terraform/testing-suites/statsd-ecs.tfvars"
 ``
 
-check ecs/variables.tf for more input vars.
+then run
+
+``
+docker-compose up --build
+``
 
 # Run EC2
 

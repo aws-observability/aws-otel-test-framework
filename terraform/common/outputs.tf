@@ -11,7 +11,7 @@ output "aoc_image" {
 }
 
 output "validator_path" {
-  value = "./gradlew :validator:run"
+  value = "/app/validator/bin/validator"
 }
 
 output "otel_service_namespace" {
