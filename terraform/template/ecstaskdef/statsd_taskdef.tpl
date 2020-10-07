@@ -54,7 +54,7 @@
     },
     {
       "name": "aoc-collector",
-      "image": "gavindoudou/aocrepo:v0.1.10",
+      "image": "${aoc_image}",
       "cpu": 10,
       "memory": 256,
       "portMappings": [

@@ -29,3 +29,4 @@ variable "aoc_version" {
 variable "validation_config" {
   default = "default-validation.yml"
 }
+
