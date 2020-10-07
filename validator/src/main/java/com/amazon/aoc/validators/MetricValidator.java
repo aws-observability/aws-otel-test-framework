@@ -35,6 +35,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -137,15 +138,16 @@ public class MetricValidator implements IValidator {
 
   private List<Metric> listMetricFromCloudWatch(
       CloudWatchService cloudWatchService, List<Metric> expectedMetricList) throws IOException {
-    Set<String> metricNameSet = new HashSet();
+    // put namespace into the map key, so that we can use it to search metric
+    HashMap<String, String> metricNameMap = new HashMap<>();
     for (Metric metric : expectedMetricList) {
-      metricNameSet.add(metric.getMetricName());
+      metricNameMap.put(metric.getMetricName(), metric.getNamespace());
     }
 
     // search by metric name
     List<Metric> result = new ArrayList<>();
-    for (String metricName : metricNameSet) {
-      result.addAll(cloudWatchService.listMetrics(context.getMetricNamespace(), metricName));
+    for (String metricName : metricNameMap.keySet()) {
+      result.addAll(cloudWatchService.listMetrics(metricNameMap.get(metricName), metricName));
     }
 
     return result;
