@@ -30,3 +30,9 @@ variable "validation_config" {
   default = "default-validation.yml"
 }
 
+# set this option to false will disable validator to call the sample app
+# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
+variable "sample_app_callable" {
+  default = true
+}
+

@@ -139,21 +139,6 @@ resource "kubernetes_deployment" "aoc_deployment" {
           }
 
           env {
-            name = "S3_REGION"
-            value = var.region
-          }
-
-          env {
-            name = "TRACE_DATA_BUCKET"
-            value = "trace-expected-data"
-          }
-
-          env {
-            name = "TRACE_DATA_S3_KEY"
-            value = module.common.testing_id
-          }
-
-          env {
             name = "LISTEN_ADDRESS"
             value = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
           }
@@ -182,6 +167,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
 # create service upon the sample app
 resource "kubernetes_service" "sample_app_service" {
+  count = var.sample_app_callable ? 1 : 0
   metadata {
     name = "aoc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
@@ -201,9 +187,19 @@ resource "kubernetes_service" "sample_app_service" {
 }
 
 # run validator
-resource "null_resource" "validator" {
+resource "null_resource" "callable_sample_app_validator" {
+  count = var.sample_app_callable ? 1 : 0
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service.load_balancer_ingress.0.hostname}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname}'"
+    working_dir = "../../"
+  }
+}
+
+# run validator
+resource "null_resource" "validator" {
+  count = !var.sample_app_callable ? 1 : 0
+  provisioner "local-exec" {
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name}'"
     working_dir = "../../"
   }
 }

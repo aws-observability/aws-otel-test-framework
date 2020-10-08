@@ -1,7 +1,7 @@
 [
     {
       "name": "aoc-emitter",
-      "image": "alpine/socat:latest",
+      "image": "${data_emitter_image}",
       "cpu": 10,
       "memory": 256,
       "entryPoint": [
