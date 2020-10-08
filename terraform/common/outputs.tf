@@ -23,7 +23,7 @@ output "otel_service_name" {
 }
 
 output "ssh_key_name" {
-  value = "aoc-ssh-key-for-ec2"
+  value = "aoc-ssh-key-2020-07-22"
 }
 
 output "sshkey_s3_bucket" {
@@ -31,7 +31,7 @@ output "sshkey_s3_bucket" {
 }
 
 output "sshkey_s3_private_key" {
-  value = "aoc-ssh-private"
+  value = "aoc-ssh-key-2020-07-22.pem"
 }
 
 output "aoc_iam_role_name" {

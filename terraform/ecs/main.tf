@@ -8,11 +8,14 @@ module "common" {
 
 module "basic_components" {
   source = "../basic_components"
+
+  region = var.region
 }
 
 provider "aws" {
   region  = var.region
 }
+
 
 ## create a ecs cluster, and give this cluster a unique name in case concurrent creating.
 variable "ecs_cluster_name_prefix" {
@@ -89,6 +92,8 @@ resource "aws_ecs_task_definition" "aoc" {
 }
 
 ## create elb
+## quota for nlb: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-limits.html
+## 50 per region, looks enough
 resource "aws_lb" "aoc_lb" {
   # don't do lb if there's no sample app image
   count = var.data_emitter_image != "" ? 1 : 0

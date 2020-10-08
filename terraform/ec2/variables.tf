@@ -7,7 +7,7 @@ variable "package_s3_bucket" {
 }
 
 variable "aoc_version" {
-  default = "v0.1.11"
+  default = "v0.1.12-291936394"
 }
 
 variable "region" {
@@ -16,4 +16,24 @@ variable "region" {
 
 variable "testing_ami" {
   default = "amazonlinux2"
+}
+
+variable "validation_config" {
+  default = "default-validation.yml"
+}
+
+variable "data_emitter_image" {
+  default = "josephwy/integ-test-emitter:alpine"
+}
+
+variable "data_emitter_image_command" {
+  default = ""
+}
+
+variable "sshkey_s3_bucket" {
+  default = "aoc-ssh-key"
+}
+
+variable "sshkey_s3_private_key" {
+  default = "aoc-ssh-key-2020-07-22.txt"
 }
