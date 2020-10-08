@@ -8,11 +8,14 @@ module "common" {
 
 module "basic_components" {
   source = "../basic_components"
+
+  region = var.region
 }
 
 provider "aws" {
   region  = var.region
 }
+
 
 ## create a ecs cluster, and give this cluster a unique name in case concurrent creating.
 variable "ecs_cluster_name_prefix" {
@@ -58,7 +61,7 @@ data "template_file" "task_def" {
   vars = {
     region = var.region
     aoc_image = module.common.aoc_image
-    data_emitter_image = module.common.aoc_emitter_image
+    data_emitter_image = var.data_emitter_image
     testing_id = module.common.testing_id
     otel_service_namespace = module.common.otel_service_namespace
     otel_service_name = module.common.otel_service_name
@@ -89,9 +92,11 @@ resource "aws_ecs_task_definition" "aoc" {
 }
 
 ## create elb
+## quota for nlb: https://docs.aws.amazon.com/elasticloadbalancing/latest/network/load-balancer-limits.html
+## 50 per region, looks enough
 resource "aws_lb" "aoc_lb" {
-  # don't do lb if there's no sample app image
-  count = var.data_emitter_image != "" ? 1 : 0
+  # don't do lb if the sample app is not callable
+  count = var.sample_app_callable ? 1 : 0
 
   # use public subnet to make the lb accessible from public internet
   subnets = module.basic_components.aoc_public_subnet_ids
@@ -100,8 +105,8 @@ resource "aws_lb" "aoc_lb" {
 }
 
 resource "aws_lb_target_group" "aoc_lb_tg" {
-  # don't do lb if there's no sample app image
-  count = var.data_emitter_image != "" ? 1 : 0
+  # don't do lb if the sample app is not callable
+  count = var.sample_app_callable ? 1 : 0
 
   name = "aoc-lbtg-${module.common.testing_id}"
   port = module.common.sample_app_listen_address_port
@@ -119,8 +124,8 @@ resource "aws_lb_target_group" "aoc_lb_tg" {
 }
 
 resource "aws_lb_listener" "aoc_lb_listener" {
-  # don't do lb if there's no sample app image
-  count = var.data_emitter_image != "" ? 1 : 0
+  # don't do lb if the sample app is not callable
+  count = var.sample_app_callable ? 1 : 0
 
   load_balancer_arn = aws_lb.aoc_lb[0].arn
   port = 80
@@ -134,8 +139,8 @@ resource "aws_lb_listener" "aoc_lb_listener" {
 
 ## deploy
 resource "aws_ecs_service" "aoc" {
-  # don't do lb if there's no sample app image
-  count = var.data_emitter_image != "" ? 1 : 0
+  # don't do lb if the sample app is not callable
+  count = var.sample_app_callable ? 1 : 0
   name = "aoctaskdef-${module.common.testing_id}"
   cluster = module.ecs_cluster.cluster_id
   task_definition = aws_ecs_task_definition.aoc.arn
@@ -159,10 +164,9 @@ resource "aws_ecs_service" "aoc" {
   }
 }
 
-# remove lb since there's no sample app, some test cases will drop in here, for example, ecsmetadata receiver test
+# remove lb since there's no callable sample app, some test cases will drop in here, for example, ecsmetadata receiver test
 resource "aws_ecs_service" "aoc_without_sample_app" {
-  # don't do lb if there's no sample app image
-  count = var.data_emitter_image == "" ? 1 : 0
+  count = !var.sample_app_callable ? 1 : 0
   name = "aoc"
   cluster = module.ecs_cluster.cluster_id
   task_definition = aws_ecs_task_definition.aoc.arn

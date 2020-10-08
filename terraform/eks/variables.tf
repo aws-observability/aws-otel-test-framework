@@ -1,17 +1,13 @@
-variable "region" {
-  default = "us-west-2"
+variable "eks_cluster_name" {
+  default = "aoc-test-eks-ec2"
 }
 
 variable "otconfig_path" {
   default = "../template/otconfig/default_otconfig.tpl"
 }
 
-variable "ecs_taskdef_path" {
-  default = "../template/ecstaskdef/default_ecs_taskdef.tpl"
-}
-
-variable "ecs_launch_type" {
-  default = "EC2"
+variable "region" {
+  default = "us-west-2"
 }
 
 variable "data_emitter_image" {
@@ -35,4 +31,3 @@ variable "validation_config" {
 variable "sample_app_callable" {
   default = true
 }
-
