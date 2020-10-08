@@ -34,27 +34,17 @@ import static spark.Spark.*;
 
 public class App {
   static final String REQUEST_START_TIME = "requestStartTime";
-  static final String ENV_S3_REGION = "S3_REGION";
 
   private static MetricEmitter buildMetricEmitter(){
     return new MetricEmitter();
   }
 
-  private static S3Service buildS3Service(){
-    String s3Region = System.getenv(ENV_S3_REGION);
-    if(s3Region == null || s3Region.trim().equals("")){
-      throw new RuntimeException("s3region is empty");
-    }
 
-    return new S3Service(s3Region);
-  }
   public static void main(String[] args) {
     MetricEmitter metricEmitter = buildMetricEmitter();
-    S3Service s3Service = buildS3Service();
 
     get("/", (req, res) -> {
-      res.status(404);
-      return "404";
+      return "healthcheck";
     });
 
     get("/span0", (req, res) -> {
