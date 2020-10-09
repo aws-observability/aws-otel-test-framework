@@ -26,6 +26,10 @@ variable "validation_config" {
   default = "default-validation.yml"
 }
 
+variable "eks_pod_config_path" {
+  default = "../template/eks-pod-config/default-eks-config.tpl"
+}
+
 # set this option to false will disable validator to call the sample app
 # in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
 variable "sample_app_callable" {

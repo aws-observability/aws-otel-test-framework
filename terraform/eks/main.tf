@@ -61,8 +61,22 @@ resource "kubernetes_config_map" "aoc_config_map" {
   }
 }
 
+# load eks pod config
+data "template_file" "eksconfig" {
+  template = file(var.eks_pod_config_path)
+
+  vars = {
+    data_emitter_image = var.data_emitter_image
+    testing_id = module.common.testing_id
+  }
+}
+locals {
+  eks_pod_config = yamldecode(data.template_file.eksconfig.rendered)["sample_app"]
+}
+
 # deploy aoc and sample app
 resource "kubernetes_deployment" "aoc_deployment" {
+  count = var.sample_app_callable ? 1 : 0
   metadata {
     name = "aoc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
@@ -119,8 +133,10 @@ resource "kubernetes_deployment" "aoc_deployment" {
         # sample app
         container {
           name = "sample-app"
-          image = var.data_emitter_image
+          image= local.eks_pod_config["image"]
           image_pull_policy = "Always"
+          command = length(local.eks_pod_config["command"]) != 0 ? local.eks_pod_config["command"] : null
+          args = length(local.eks_pod_config["args"]) != 0 ? local.eks_pod_config["args"] : null
 
 
           env {
@@ -174,7 +190,7 @@ resource "kubernetes_service" "sample_app_service" {
   }
   spec {
     selector = {
-      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
+      app = kubernetes_deployment.aoc_deployment[0].metadata[0].labels.app
     }
 
     type = "LoadBalancer"
@@ -185,6 +201,82 @@ resource "kubernetes_service" "sample_app_service" {
     }
   }
 }
+
+resource "kubernetes_pod" "aoc_pod" {
+  count = !var.sample_app_callable ? 1 : 0
+
+  metadata {
+    name = "aoc"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+
+  spec {
+    volume {
+      name = "otel-config"
+      config_map {
+        name = kubernetes_config_map.aoc_config_map.metadata[0].name
+      }
+    }
+
+    container {
+      name = "aoc"
+      image = module.common.aoc_image
+      image_pull_policy = "Always"
+      args = ["--config=/aoc/aoc-config.yml"]
+
+      resources {
+        requests {
+          cpu = "0.2"
+          memory = "256Mi"
+        }
+      }
+
+      volume_mount {
+        mount_path = "/aoc"
+        name = "otel-config"
+      }
+    }
+
+    # sample app
+    container {
+      name = "sample-app"
+      image= local.eks_pod_config["image"]
+      image_pull_policy = "Always"
+      command = length(local.eks_pod_config["command"]) != 0 ? local.eks_pod_config["command"] : null
+      args = length(local.eks_pod_config["args"]) != 0 ? local.eks_pod_config["args"] : null
+
+      env {
+        name = "OTEL_EXPORTER_OTLP_ENDPOINT"
+        value = "127.0.0.1:55680"
+      }
+
+      env {
+        name = "INSTANCE_ID"
+        value = module.common.testing_id
+      }
+
+      env {
+        name = "OTEL_RESOURCE_ATTRIBUTES"
+        value = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
+      }
+
+      env {
+        name = "LISTEN_ADDRESS"
+        value = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
+      }
+
+      resources {
+        requests {
+          cpu = "0.2"
+          memory = "256Mi"
+        }
+
+      }
+    }
+  }
+}
+
+
 
 # run validator
 resource "null_resource" "callable_sample_app_validator" {

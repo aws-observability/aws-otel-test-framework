@@ -19,7 +19,7 @@ variable "data_emitter_image" {
 }
 
 variable "aoc_image_repo" {
-  default = "josephwy/ttt"
+  default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/aws/aws-observability-collector"
 }
 
 variable "aoc_version" {
