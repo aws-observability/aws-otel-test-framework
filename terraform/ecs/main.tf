@@ -16,18 +16,12 @@ provider "aws" {
   region  = var.region
 }
 
-
-## create a ecs cluster, and give this cluster a unique name in case concurrent creating.
-variable "ecs_cluster_name_prefix" {
-  default = "aoc-integ-test"
-}
-
 module "ecs_cluster" {
   source  = "infrablocks/ecs-cluster/aws"
   version = "3.0.0"
 
-  cluster_name = "${var.ecs_cluster_name_prefix}-${module.common.testing_id}"
-  component = "important-component"
+  cluster_name = "${module.common.testing_id}"
+  component = "aoc"
   deployment_identifier = "testing"
   vpc_id = module.basic_components.aoc_vpc_id
   subnet_ids = module.basic_components.aoc_private_subnet_ids
