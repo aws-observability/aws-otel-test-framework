@@ -71,7 +71,7 @@ output "rendered" {
 }
 
 resource "aws_ecs_task_definition" "aoc" {
-  family = "aoc-task-def"
+  family = "aoc-task-def-${module.common.testing_id}"
   container_definitions = data.template_file.task_def.rendered
   network_mode = "awsvpc"
   requires_compatibilities = ["EC2", "FARGATE"]
