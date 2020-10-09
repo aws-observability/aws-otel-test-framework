@@ -3,18 +3,22 @@ variable "amis" {
     ubuntu = {
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"
       login_user = "ubuntu"
+      install_package = "rpm"
     }
     amazonlinux2 = {
       ami_search_pattern = "amzn2-ami-hvm*"
       login_user = "ec2-user"
+      install_package = "rpm"
     }
     suse = {
       ami_search_pattern = "suse-sles-15*"
       login_user = "ec2-user"
+      install_package = "rpm"
     }
     windows2019 = {
       ami_search_pattern = "Windows_Server-2019-English-Full-Base*"
       login_user = "Administrator"
+      install_package = "msi"
     }
   }
 }

@@ -26,7 +26,7 @@ resource "aws_s3_bucket" "ssh_key" {
 }
 
 resource "aws_s3_bucket_object" "ssh_key" {
-  bucket = var.sshkey_s3_bucket
+  bucket = aws_s3_bucket.ssh_key.id
   key = module.common.sshkey_s3_private_key
   content = tls_private_key.ssh_key.private_key_pem
   content_type = "text/plain"
