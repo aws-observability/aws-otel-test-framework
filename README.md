@@ -40,10 +40,10 @@ cd terraform/ecs && terraform destory"
 ```
 ## 3. Run EC2
 
-### 3.1 run with the default config [only amazonlinux2 is supported at this moment]
+### 3.1 run with the testing suite [only amazonlinux2 is supported at this moment]
 
 ```shell
-cd terraform/ec2 && terraform init && terraform apply -var-file="../testing-suites/statsd-ec2.tfvars"
+cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars"
 ```
 
 ### 3.2 don't forget to clean the resources
@@ -51,19 +51,35 @@ cd terraform/ec2 && terraform init && terraform apply -var-file="../testing-suit
 cd terraform/ec2 && terraform destory"
 ```
 
-## 4. Add a testing suite
+## 4. Run EKS
+
+create a eks cluster in your account before run below command
+
+### 4.1 run with the testing suite
+
+```shell
+cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars"
+```
+
+### 4.3 don't forget to clean the resources
+
+```
+cd terraform/eks && terraform destroy
+```
+
+## 5. Add a testing suite
 
 please check [adding a testing suite](terraform/README.md)
 
-## 5. Contributing
+## 6. Contributing
 
 We have collected notes on how to contribute to this project in CONTRIBUTING.md.
 
-## 6. Security
+## 7. Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
-## 7. License
+## 8. License
 
 This project is licensed under the Apache-2.0 License.
 
