@@ -1,5 +1,5 @@
 output "testing_id" {
-  value = local.testing_id
+  value = random_id.testing_id.hex
 }
 
 output "aoc_emitter_image" {

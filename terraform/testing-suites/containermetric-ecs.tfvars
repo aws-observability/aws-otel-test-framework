@@ -11,6 +11,6 @@ data_emitter_image=""
 aoc_image_repo="rhossai2/aoc"
 
 # todo this version needs to be removed, instead version should be received from workflow
-aoc_version="v0.0.3"
+aoc_version="v0.0.7"
 
 sample_app_callable = false
