@@ -15,6 +15,19 @@ provider "aws" {
   region  = var.region
 }
 
+# get ami object
+locals {
+  selected_ami = var.amis[var.testing_ami]
+  ami_family = var.ami_family[local.selected_ami["family"]]
+  ami_id = data.aws_ami.selected.id
+  instance_type = local.ami_family["instance_type"]
+  otconfig_destination = local.ami_family["otconfig_destination"]
+  login_user = local.ami_family["login_user"]
+  connection_type = local.ami_family["connection_type"]
+  user_data = local.ami_family["user_data"]
+  download_command = format(local.ami_family["download_command_pattern"], "https://${var.package_s3_bucket}.s3.amazonaws.com/${local.selected_ami["family"]}/${local.selected_ami["arch"]}/${var.aoc_version}/${local.ami_family["install_package"]}")
+}
+
 ## get the ssh private key
 data "aws_s3_bucket_object" "ssh_private_key" {
   bucket = var.sshkey_s3_bucket
@@ -33,39 +46,43 @@ data "template_file" "otconfig" {
   }
 }
 
-# launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 is supported now]
+# launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
 resource "aws_instance" "aoc" {
-  ami                         = data.aws_ami.selected.id
-  instance_type               = "t2.micro"
+  ami                         = local.ami_id
+  instance_type               = local.instance_type
   subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = module.common.ssh_key_name
+  get_password_data = local.connection_type == "winrm" ? true : null
+  user_data = local.user_data
 
   provisioner "file" {
     content = data.template_file.otconfig.rendered
-    destination = "/tmp/ot-default.yml"
+    destination = local.otconfig_destination
 
     connection {
-      type = "ssh"
-      user = "ec2-user"
-      private_key = data.aws_s3_bucket_object.ssh_private_key.body
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? data.aws_s3_bucket_object.ssh_private_key.body : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, data.aws_s3_bucket_object.ssh_private_key.body) : null
       host = aws_instance.aoc.public_ip
     }
   }
 
   provisioner "remote-exec" {
     inline = [
-      "wget https://${var.package_s3_bucket}.s3.amazonaws.com/amazon_linux/amd64/${var.aoc_version}/aws-observability-collector.rpm",
-      "sudo rpm -Uvh aws-observability-collector.rpm",
-      "sudo /opt/aws/aws-observability-collector/bin/aws-observability-collector-ctl -c /tmp/ot-default.yml -a start"
+      local.download_command,
+      local.ami_family["install_command"],
+      local.ami_family["start_command"]
     ]
 
     connection {
-      type = "ssh"
-      user = "ec2-user"
-      private_key = data.aws_s3_bucket_object.ssh_private_key.body
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? data.aws_s3_bucket_object.ssh_private_key.body : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, data.aws_s3_bucket_object.ssh_private_key.body) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -74,8 +91,6 @@ resource "aws_instance" "aoc" {
 
 ## launch a ec2 instance to install data emitter
 resource "aws_instance" "emitter" {
-  # don't do emitter instance if the sample app is not callable
-  count = var.sample_app_callable ? 1 : 0
   ami                         = data.aws_ami.suse.id
   instance_type               = "t2.micro"
   subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
@@ -98,8 +113,6 @@ data "template_file" "docker_compose" {
   }
 }
 resource "null_resource" "sample-app-validator" {
-  count = var.sample_app_callable ? 1 : 0
-
   provisioner "file" {
     content = data.template_file.docker_compose.rendered
     destination = "/tmp/docker-compose.yml"
@@ -107,7 +120,7 @@ resource "null_resource" "sample-app-validator" {
       type = "ssh"
       user = "ec2-user"
       private_key = data.aws_s3_bucket_object.ssh_private_key.body
-      host = aws_instance.emitter[0].public_ip
+      host = aws_instance.emitter.public_ip
     }
   }
   provisioner "remote-exec" {
@@ -122,21 +135,12 @@ resource "null_resource" "sample-app-validator" {
       type = "ssh"
       user = "ec2-user"
       private_key = data.aws_s3_bucket_object.ssh_private_key.body
-      host = aws_instance.emitter[0].public_ip
+      host = aws_instance.emitter.public_ip
     }
   }
 
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter[0].public_ip}'"
-    working_dir = "../../"
-  }
-}
-
-# only run it when aoc collects metrics without any sample apps
-resource "null_resource" "validator" {
-  count = !var.sample_app_callable ? 1 : 0
-  provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}'"
     working_dir = "../../"
   }
 }
