@@ -41,6 +41,267 @@ specify below config in the tfvars file
 6. [optional] aoc_image_repo, if you have an aoc image you just built with the new component, then set its repo name here
 7. [optional] aoc_version, if you have an aoc image you just built with the new component, then set it as its tag name.
 
+### 1.4 you can use placeholders in your config files.
+
+#### 1.4.1 otconfig
+
+Below are the placeholders you can use in the otconfig
+
+* region
+* otel_service_namespace
+* otel_service_name
+* testing_id
+
+an example:
+
+```yaml
+receivers:
+  awsecscontainermetrics:
+exporters:
+  logging:
+    loglevel: debug
+  awsemf:
+    namespace: '${otel_service_namespace}/${otel_service_name}'
+    region: '${region}'
+
+service:
+  pipelines:
+    metrics:
+      receivers: [awsecscontainermetrics]
+      exporters: [logging, awsemf]
+```
+
+#### 1.4.2 ecs task definition 
+
+Below are the placeholders you can use in the ecs task def.
+
+* region
+* aoc_image
+* data_emitter_image
+* testing_id
+* otel_service_namespace
+* otel_service_name
+* ssm_parameter_arn
+* sample_app_container_name
+* sample_app_listen_address
+
+an example:
+
+```json
+[
+    {
+      "name": "${sample_app_container_name}",
+      "image": "${data_emitter_image}",
+      "cpu": 10,
+      "memory": 256,
+      "portMappings": [
+          {
+            "containerPort": 4567,
+            "hostPort": 4567,
+            "protocol": "tcp"
+          }
+      ],
+      "command": [],
+      "environment": [
+        {
+          "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+          "value": "127.0.0.1:55680"
+        },
+        {
+          "name": "INSTANCE_ID",
+          "value": "${testing_id}"
+        },
+        {
+        "name": "OTEL_RESOURCE_ATTRIBUTES",
+        "value": "service.namespace=${otel_service_namespace},service.name=${otel_service_name}"
+        },
+        {
+        "name": "S3_REGION",
+        "value": "${region}"
+        },
+        {
+        "name": "TRACE_DATA_BUCKET",
+        "value": "trace-expected-data"
+        },
+        {
+        "name": "TRACE_DATA_S3_KEY",
+        "value": "${testing_id}"
+        },
+        {
+            "name": "LISTEN_ADDRESS",
+            "value": "${sample_app_listen_address}"
+        }
+      ],
+      "dependsOn": [
+        {
+            "containerName": "aoc-collector",
+            "condition": "START"
+        }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ecs-cwagent-sidecar-emitter",
+          "awslogs-region": "${region}",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "True"
+        }
+      }
+    },
+    {
+      "name": "aoc-collector",
+      "image": "${aoc_image}",
+      "cpu": 10,
+      "memory": 256,
+      "portMappings": [
+        {
+          "containerPort": 55680,
+          "hostPort": 55680,
+          "protocol": "tcp"
+        }
+      ],
+      "secrets": [
+        {
+            "name": "AOT_CONFIG_CONTENT",
+            "valueFrom": "${ssm_parameter_arn}"
+        }
+      ],
+      "essential": true,
+      "entryPoint": [],
+      "command": [],
+      "environment": [],
+      "environmentFiles": [],
+      "dependsOn": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/ecs-cwagent-sidecar-collector",
+          "awslogs-region": "${region}",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "True"
+        }
+      }
+    }
+]
+```
+
+#### 1.4.3 Docker compose file
+
+Below are the placeholders you can use in the docker compose file
+
+* data_emitter_image
+* sample_app_listen_address_port
+* listen_address
+* testing_id
+* otel_resource_attributes
+* otel_endpoint
+
+an example:
+
+```yaml
+version: "3.8"
+services:
+  sample_app:
+    image: ${data_emitter_image}
+    ports:
+      - "80:${sample_app_listen_address_port}"
+    environment:
+      LISTEN_ADDRESS: ${listen_address}
+      OTEL_RESOURCE_ATTRIBUTES: ${otel_resource_attributes}
+      INSTANCE_ID: ${testing_id}
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${otel_endpoint}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:${sample_app_listen_address_port}/"]
+      interval: 5s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+```
+
+#### 1.4.4 Eks Config
+
+Below are the placeholders you can use in the EKS config.
+
+* data_emitter_image
+* testing_id
+
+an example:
+
+```yaml
+sample_app:
+  image: ${data_emitter_image}
+  command:
+    - "/bin/sh"
+    - "-c"
+    - "while true; do echo 'testCounter.metric_${testing_id}:1.7|c|@0.1|#key:val,key1:val1' | socat -v -t 0 - UDP:127.0.0.1:8125; sleep 1; echo 'testGauge.metric_${testing_id}:1.8|c|@0.1|#keyg:valg,keyg1:valg1' | socat -v -t 0 - UDP:127.0.0.1:8125; sleep 1; done"
+  args: []
+```
+
+#### 1.4.5 expected data pattern in the Validation config
+
+Below are the placeholders you can use in the expected data pattern.
+
+* metricNamespace
+* testingId
+
+an example: 
+
+```yaml
+-
+  metricName: latency_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTLib
+      value: cloudwatch-otel
+    -
+      name: apiName
+      value: /span0
+    -
+      name: statusCode
+      value: 200
+-
+  metricName: latency_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTLib
+      value: cloudwatch-otel
+    -
+      name: apiName
+      value: /span1
+    -
+      name: statusCode
+      value: 200
+-
+  metricName: latency_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTLib
+      value: cloudwatch-otel
+    -
+      name: apiName
+      value: /span2
+    -
+      name: statusCode
+      value: 200
+-
+  metricName: latency_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTLib
+      value: cloudwatch-otel
+    -
+      name: apiName
+      value: /
+    -
+      name: statusCode
+      value: 200
+```
+
+
 ## 2. Build Sample App
 
 For any testing suite related with sdk, you are required to build a sample app. 
