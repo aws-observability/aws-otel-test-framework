@@ -41,7 +41,7 @@ specify below config in the tfvars file
 6. [optional] aoc_image_repo, if you have an aoc image you just built with the new component, then set its repo name here
 7. [optional] aoc_version, if you have an aoc image you just built with the new component, then set it as its tag name.
 
-### 1.4 you can use placeholders in your config files.
+### 1.4 how to write the configurations?
 
 #### 1.4.1 otconfig
 
@@ -237,7 +237,33 @@ sample_app:
   args: []
 ```
 
-#### 1.4.5 expected data pattern in the Validation config
+#### 1.4.5 Validation config.
+
+An example for validation config.
+
+```yaml
+-
+  validationType: "trace"
+  httpPath: "/span0"
+  httpMethod: "get"
+  callingType: "http"
+  expectedTraceTemplate: "DEFAULT_EXPECTED_TRACE"
+-
+  validationType: "metric"
+  httpPath: "/span0"
+  httpMethod: "get"
+  callingType: "http"
+  expectedMetricTemplate: "DEFAULT_EXPECTED_METRIC"
+```
+
+the validation config is a list of validation, below are the explanation for each field.
+
+* validationType, possible value: `metric` which validates metric from Cloudwatch, `trace` which validates traces from Xray.
+* callingType, possible value: `http` which will ask validator to call the sample app with http protocol. `none`, which tell the validator the metric or trace will be automatically generated from the sample app/AOC. 
+* httpPath: the path to call, only apply when callingType is `http`
+* httpMethod: the http method to call, only apply when callingType is `http`
+* expectedTraceTemplate: the trace validation pattern, only apply when validationType is `trace`
+* expectedMetricTemplate: the metric validation pattern, only apply when validationType is `metric`
 
 Below are the placeholders you can use in the expected data pattern.
 
