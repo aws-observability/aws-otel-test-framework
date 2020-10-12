@@ -25,6 +25,21 @@ run
 cd terraform/setup && terraform init && terraform apply
 ``
 
+### 1.4 [Optional] Create a PR to [AOC Repo](https://github.com/aws-observability/aws-otel-collector) and record the version number
+
+This is optional item, only do it if your goal is to add a component or fix a bug into the AOC Repo. Everytime when you create a PR to AOC repo, there will be a workflow to be running in this PR to do regression test and also, build testing artifacts[rpm, image, etc] for your code. Every PR will have a separate version number which you will be able to use it in the testing framework to verify whether your new code can pass your new testing suite.
+
+1. create a branch in [AOC Repo](https://github.com/aws-observability/aws-otel-collector). [please don't fork at this moment, just create a branch directly in the AOC Repo]. [todo, after the repo becomes public, you can use fork instead of creating branch]
+
+2. create a PR to merge the new branch to the `main` branch.
+
+3. Waiting for the workflow checking in the PR to be finished.
+
+4. find out the version number, click into the workflow page, click `e2etest-preparation` step, and click `Versioning for testing`, record the version number. Ex(v0.1.12-299946851).
+
+5. provide your testing aws account id to Ying(wangmyin@), so that he will give permission to your aws account to fetch the testing image from a private ECR. [todo, once we migrate to dockerhub, you don't need this step] 
+
+
 ## 2. Run ECS Test
 
 ### 2.1 run with the testing-suite
@@ -33,7 +48,13 @@ cd terraform/setup && terraform init && terraform apply
 cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suites/statsd-ecs.tfvars"
 ```
 
-### 2.2 don't forget to clean the resources
+### 2.1 run with a specific aoc version
+
+```shell
+cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suites/statsd-ecs.tfvars" -var="aoc_version={the version you got from workflow}"
+```
+
+### 2.3 don't forget to clean the resources
 
 ```shell
 cd terraform/ecs && terraform destory"
@@ -46,7 +67,14 @@ cd terraform/ecs && terraform destory"
 cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars"
 ```
 
-### 3.2 don't forget to clean the resources
+### 3.2 run with a specfic aoc version
+
+
+```shell
+cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars" -var="aoc_version={the version you got from workflow}"
+```
+
+### 3.3 don't forget to clean the resources
 ```shell
 cd terraform/ec2 && terraform destory"
 ```
@@ -59,6 +87,12 @@ create a eks cluster in your account before run below command
 
 ```shell
 cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars"
+```
+
+### 4.2 run with a specfic aoc version
+
+```shell
+cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars" -var="aoc_version={the version you got from workflow}"
 ```
 
 ### 4.3 don't forget to clean the resources
