@@ -23,14 +23,14 @@ public enum GenericConstants {
   // stack related
   DEFAULT_STACK_FILE_PATH(".aoc-stack.yml"),
   DEFAULT_REGION("us-west-2"),
-  DEFAULT_S3_RELEASE_CANDIDATE_BUCKET("aoc-release-candidate"),
-  DEFAULT_S3_BUCKET("aws-observability-collector-test"),
+  DEFAULT_S3_RELEASE_CANDIDATE_BUCKET("aws-otel-collector-release-candidate"),
+  DEFAULT_S3_BUCKET("aws-otel-collector-test"),
   DEFAULT_SSH_KEY_S3_BUCKET_NAME("aoc-ssh-key"),
   DEFAULT_TRACE_S3_BUCKET_NAME("trace-expected-data"),
   DEFAULT_DOCKER_IMAGE_REPO_NAME("josephwy/aws-observability-collector"),
 
   // release related
-  PACKAGE_NAME_PREFIX("aws-observability-collector."),
+  PACKAGE_NAME_PREFIX("aws-otel-collector."),
   LOCAL_PACKAGES_DIR("build/packages"),
   GITHUB_SHA_FILE_NAME("GITHUB_SHA"),
 
@@ -93,8 +93,8 @@ public enum GenericConstants {
   EKS_INTEG_TEST("EKSIntegTest"),
 
   //Windows
-  WINDOWS_CTL_PATH("'C:\\Program Files\\Amazon\\AwsObservabilityCollector"
-          + "\\aws-observability-collector-ctl.ps1'"),
+  WINDOWS_CTL_PATH("'C:\\Program Files\\Amazon\\AwsOtelCollector"
+          + "\\aws-otel-collector-ctl.ps1'"),
 
   // common constants
   EC2("EC2"),
