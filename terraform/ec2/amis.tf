@@ -2,34 +2,34 @@ variable "ami_family" {
   default = {
     ubuntu = {
       login_user = "ubuntu"
-      install_package = "aws-observability-collector.deb"
+      install_package = "aws-otel-collector.deb"
       instance_type = "t2.micro"
       otconfig_destination = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
-      install_command = "sudo dpkg -i aws-observability-collector.deb"
-      start_command = "sudo /opt/aws/aws-observability-collector/bin/aws-observability-collector-ctl -c /tmp/ot-default.yml -a start"
+      install_command = "sudo dpkg -i aws-otel-collector.deb"
+      start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
     },
     amazon_linux = {
       login_user = "ec2-user"
-      install_package = "aws-observability-collector.rpm"
+      install_package = "aws-otel-collector.rpm"
       instance_type = "t2.micro"
       otconfig_destination = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
-      install_command = "sudo rpm -Uvh aws-observability-collector.rpm"
-      start_command = "sudo /opt/aws/aws-observability-collector/bin/aws-observability-collector-ctl -c /tmp/ot-default.yml -a start"
+      install_command = "sudo rpm -Uvh aws-otel-collector.rpm"
+      start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
     }
     windows = {
       login_user = "Administrator"
-      install_package = "aws-observability-collector.msi"
-      instance_type = "t2.micro"
+      install_package = "aws-otel-collector.msi"
+      instance_type = "t3.medium"
       otconfig_destination = "C:\\ot-default.yml"
-      download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-observability-collector.msi\""
-      install_command = "msiexec /i C:\\aws-observability-collector.msi"
-      start_command = "powershell \"& 'C:\\Program Files\\Amazon\\AwsObservabilityCollector\\aws-observability-collector-ctl.ps1' -ConfigLocation C:\\ot-default.yml -Action start\""
+      download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
+      install_command = "msiexec /i C:\\aws-otel-collector.msi"
+      start_command = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation C:\\ot-default.yml -Action start\""
       connection_type = "winrm"
       user_data = <<EOF
 <powershell>

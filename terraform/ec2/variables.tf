@@ -1,3 +1,6 @@
+## right now there's no good way to share variables across modules,
+## so we have to define some of the common vars like region, otconfig_path in each module
+
 variable "otconfig_path" {
   default = "../template/otconfig/default_otconfig.tpl"
 }
@@ -7,7 +10,7 @@ variable "docker_compose_path" {
 }
 
 variable "package_s3_bucket" {
-  default = "aws-observability-collector-test"
+  default = "aws-otel-collector-test"
 }
 
 variable "aoc_version" {
@@ -39,7 +42,7 @@ variable "sshkey_s3_bucket" {
 }
 
 variable "sshkey_s3_private_key" {
-  default = "aoc-ssh-key-2020-07-22.txt"
+  default = "aoc-ssh-key-2020-07-22.pem"
 }
 
 # set this option to false will disable validator to call the sample app
