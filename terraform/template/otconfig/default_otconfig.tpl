@@ -22,7 +22,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [awsxray]
+      exporters: [logging, awsxray]
     metrics:
       receivers: [otlp]
       exporters: [logging, awsemf]

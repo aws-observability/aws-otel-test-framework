@@ -62,6 +62,7 @@ data "template_file" "task_def" {
     ssm_parameter_arn = aws_ssm_parameter.otconfig.name
     sample_app_container_name = module.common.sample_app_container_name
     sample_app_listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
+    sample_app_listen_port = module.common.sample_app_listen_address_port
   }
 }
 
@@ -113,7 +114,7 @@ resource "aws_lb_target_group" "aoc_lb_tg" {
     unhealthy_threshold = 10
     healthy_threshold = 2
     interval = 10
-    matcher = "202,404"
+    matcher = "200,404"
   }
 }
 
