@@ -1,0 +1,40 @@
+{
+  "name": "sample-app",
+  "version": "0.11.0",
+  "description": "Sample Instrumentation of X-Ray",
+  "main": "index.js",
+  "scripts": {
+    "zipkin:server": "cross-env EXPORTER=zipkin node ./server.js",
+    "zipkin:client": "cross-env EXPORTER=zipkin node ./client.js",
+    "jaeger:server": "cross-env EXPORTER=jaeger node ./server.js",
+    "jaeger:client": "cross-env EXPORTER=jaeger node ./client.js"
+  },
+  "keywords": [
+    "opentelemetry",
+    "http",
+    "tracing"
+  ],
+  "engines": {
+    "node": ">=8"
+  },
+  "dependencies": {
+    "@lerna/link": "^3.21.0",
+    "@opentelemetry/api": "^0.11.0",
+    "@opentelemetry/context-base": "^0.11.0",
+    "@opentelemetry/core": "^0.11.0",
+    "@opentelemetry/exporter-collector": "^0.11.0",
+    "@opentelemetry/node": "^0.11.0",
+    "@opentelemetry/plugin-http": "^0.11.0",
+    "@opentelemetry/propagator-jaeger": "^0.9.0",
+    "@opentelemetry/resource-detector-aws": "^0.10.3-alpha.28",
+    "@opentelemetry/resource-detector-gcp": "^0.10.3-alpha.28",
+    "@opentelemetry/resources": "^0.11.0",
+    "@opentelemetry/sdk-node": "^0.11.0",
+    "@opentelemetry/tracing": "^0.11.0",
+    "kelvin-id-generator-aws-xray": "^0.1.0",
+    "kelvin-propagator-aws-xray": "^0.1.0"
+  },
+  "devDependencies": {
+    "cross-env": "^6.0.0"
+  }
+}
