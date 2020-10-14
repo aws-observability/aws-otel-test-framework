@@ -278,7 +278,7 @@ an example:
   namespace: {{metricNamespace}}
   dimensions:
     -
-      name: OTLib
+      name: OTelLib
       value: cloudwatch-otel
     -
       name: apiName
@@ -291,7 +291,7 @@ an example:
   namespace: {{metricNamespace}}
   dimensions:
     -
-      name: OTLib
+      name: OTelLib
       value: cloudwatch-otel
     -
       name: apiName
@@ -304,7 +304,7 @@ an example:
   namespace: {{metricNamespace}}
   dimensions:
     -
-      name: OTLib
+      name: OTelLib
       value: cloudwatch-otel
     -
       name: apiName
@@ -317,7 +317,7 @@ an example:
   namespace: {{metricNamespace}}
   dimensions:
     -
-      name: OTLib
+      name: OTelLib
       value: cloudwatch-otel
     -
       name: apiName

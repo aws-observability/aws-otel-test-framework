@@ -44,7 +44,7 @@ import java.util.TreeSet;
 @Log4j2
 public class MetricValidator implements IValidator {
   private static int MAX_RETRY_COUNT = 60;
-  private static final String DEFAULT_DIMENSION_NAME = "OTLib";
+  private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
 
   private MustacheHelper mustacheHelper = new MustacheHelper();
   private ICaller caller;
@@ -156,10 +156,10 @@ public class MetricValidator implements IValidator {
   private List<Metric> rollupMetric(List<Metric> metricList) {
     List<Metric> rollupMetricList = new ArrayList<>();
     for (Metric metric : metricList) {
-      // get otlib dimension out
-      // assuming the first dimension is otlib, if not the validation fails
-      Dimension otlibDimension = metric.getDimensions().remove(0);
-      assert otlibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+      // get otellib dimension out
+      // assuming the first dimension is otellib, if not the validation fails
+      Dimension otellibDimension = metric.getDimensions().remove(0);
+      assert otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
 
       // all dimension rollup
       Metric allDimensionsMetric = new Metric();
@@ -169,7 +169,7 @@ public class MetricValidator implements IValidator {
       allDimensionsMetric
           .getDimensions()
           .add(new Dimension()
-            .withName(otlibDimension.getName()).withValue(otlibDimension.getValue()));
+            .withName(otellibDimension.getName()).withValue(otellibDimension.getValue()));
       rollupMetricList.add(allDimensionsMetric);
 
       // zero dimension rollup
@@ -179,7 +179,7 @@ public class MetricValidator implements IValidator {
       zeroDimensionMetric.setDimensions(
           Arrays.asList(
               new Dimension()
-                .withName(otlibDimension.getName()).withValue(otlibDimension.getValue())));
+                .withName(otellibDimension.getName()).withValue(otellibDimension.getValue())));
       rollupMetricList.add(zeroDimensionMetric);
 
       // single dimension rollup
@@ -190,8 +190,8 @@ public class MetricValidator implements IValidator {
         singleDimensionMetric.setDimensions(
             Arrays.asList(
                 new Dimension()
-                    .withName(otlibDimension.getName())
-                    .withValue(otlibDimension.getValue())));
+                    .withName(otellibDimension.getName())
+                    .withValue(otellibDimension.getValue())));
         singleDimensionMetric.getDimensions().add(dimension);
         rollupMetricList.add(singleDimensionMetric);
       }
