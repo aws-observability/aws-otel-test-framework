@@ -3,9 +3,6 @@
   namespace: default
   dimensions:
     -
-      name: OTelLib
-      value: Undefined
-    -
       name: ecs.cluster
       value: "{{ecsContext.ecsClusterName}}"
     -
@@ -22,4 +19,4 @@
       value: "{{ecsContext.ecsTaskDefVersion}}"
     -
       name: ecs.task-id
-      value: ""
+      value: "SKIP"

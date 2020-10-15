@@ -98,8 +98,15 @@ public class MetricValidator implements IValidator {
               // sort and check dimensions
               List<Dimension> dimensionList1 = o1.getDimensions();
               List<Dimension> dimensionList2 = o2.getDimensions();
+
+              // remove the skipped dimension
+              dimensionList1.removeIf( dimension -> dimension.getValue().equals("SKIP"));
+              dimensionList2.removeIf( dimension -> dimension.getValue().equals("SKIP"));
+
+              // sort
               dimensionList1.sort(Comparator.comparing(Dimension::getName));
               dimensionList2.sort(Comparator.comparing(Dimension::getName));
+
               return dimensionList1.toString().compareTo(dimensionList2.toString());
             });
     for (Metric metric : baseMetricList) {
@@ -158,28 +165,40 @@ public class MetricValidator implements IValidator {
     for (Metric metric : metricList) {
       // get otellib dimension out
       // assuming the first dimension is otellib, if not the validation fails
-      Dimension otellibDimension = metric.getDimensions().remove(0);
-      assert otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+      Dimension otellibDimension = metric.getDimensions().get(0);
+      boolean otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+      if(otelLibDimensionExisted) {
+        metric.getDimensions().remove(0);
+      }
 
       // all dimension rollup
       Metric allDimensionsMetric = new Metric();
       allDimensionsMetric.setMetricName(metric.getMetricName());
       allDimensionsMetric.setNamespace(metric.getNamespace());
       allDimensionsMetric.setDimensions(metric.getDimensions());
-      allDimensionsMetric
-          .getDimensions()
-          .add(new Dimension()
-            .withName(otellibDimension.getName()).withValue(otellibDimension.getValue()));
+
+      if (otelLibDimensionExisted) {
+        allDimensionsMetric
+            .getDimensions()
+            .add(
+                new Dimension()
+                    .withName(otellibDimension.getName())
+                    .withValue(otellibDimension.getValue()));
+      }
       rollupMetricList.add(allDimensionsMetric);
 
       // zero dimension rollup
       Metric zeroDimensionMetric = new Metric();
       zeroDimensionMetric.setNamespace(metric.getNamespace());
       zeroDimensionMetric.setMetricName(metric.getMetricName());
-      zeroDimensionMetric.setDimensions(
-          Arrays.asList(
-              new Dimension()
-                .withName(otellibDimension.getName()).withValue(otellibDimension.getValue())));
+
+      if (otelLibDimensionExisted) {
+        zeroDimensionMetric.setDimensions(
+            Arrays.asList(
+                new Dimension()
+                    .withName(otellibDimension.getName())
+                    .withValue(otellibDimension.getValue())));
+      }
       rollupMetricList.add(zeroDimensionMetric);
 
       // single dimension rollup
@@ -187,11 +206,13 @@ public class MetricValidator implements IValidator {
         Metric singleDimensionMetric = new Metric();
         singleDimensionMetric.setNamespace(metric.getNamespace());
         singleDimensionMetric.setMetricName(metric.getMetricName());
-        singleDimensionMetric.setDimensions(
-            Arrays.asList(
-                new Dimension()
-                    .withName(otellibDimension.getName())
-                    .withValue(otellibDimension.getValue())));
+        if (otelLibDimensionExisted) {
+          singleDimensionMetric.setDimensions(
+              Arrays.asList(
+                  new Dimension()
+                      .withName(otellibDimension.getName())
+                      .withValue(otellibDimension.getValue())));
+        }
         singleDimensionMetric.getDimensions().add(dimension);
         rollupMetricList.add(singleDimensionMetric);
       }
