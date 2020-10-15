@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
 package com.amazon.aoc;
 
 import com.amazon.aoc.helpers.ConfigLoadHelper;
@@ -39,9 +54,8 @@ public class App implements Callable<Integer> {
   private String region;
 
   @CommandLine.Option(
-    names = {"--ecs-context"},
-    description = "eg, --ecs-context ecsCluster=xxx --ecs-context ecsTaskArn=xxxx"
-  )
+      names = {"--ecs-context"},
+      description = "eg, --ecs-context ecsCluster=xxx --ecs-context ecsTaskArn=xxxx")
   private Map<String, String> ecsContexts;
 
   public static void main(String[] args) throws Exception {
@@ -51,16 +65,16 @@ public class App implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    // load config
-    List<ValidationConfig> validationConfigList =
-        new ConfigLoadHelper().loadConfigFromFile(configPath);
-
     // build context
     Context context = new Context(this.testingId, this.metricNamespace, this.region);
     context.setEndpoint(this.endpoint);
     context.setEcsContext(buildECSContext(ecsContexts));
 
     log.info(context);
+
+    // load config
+    List<ValidationConfig> validationConfigList =
+        new ConfigLoadHelper().loadConfigFromFile(configPath);
 
     // run validation
     ValidatorFactory validatorFactory = new ValidatorFactory(context);
@@ -70,8 +84,8 @@ public class App implements Callable<Integer> {
     return null;
   }
 
-  private ECSContext buildECSContext(Map<String, String> ecsContextMap){
-    if(ecsContextMap == null) {
+  private ECSContext buildECSContext(Map<String, String> ecsContextMap) {
+    if (ecsContextMap == null) {
       return null;
     }
     return new ObjectMapper().convertValue(ecsContextMap, ECSContext.class);
