@@ -36,7 +36,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -100,8 +99,8 @@ public class MetricValidator implements IValidator {
               List<Dimension> dimensionList2 = o2.getDimensions();
 
               // remove the skipped dimension
-              dimensionList1.removeIf( dimension -> dimension.getValue().equals("SKIP"));
-              dimensionList2.removeIf( dimension -> dimension.getValue().equals("SKIP"));
+              dimensionList1.removeIf(dimension -> dimension.getValue().equals("SKIP"));
+              dimensionList2.removeIf(dimension -> dimension.getValue().equals("SKIP"));
 
               // sort
               dimensionList1.sort(Comparator.comparing(Dimension::getName));
@@ -167,7 +166,7 @@ public class MetricValidator implements IValidator {
       // assuming the first dimension is otellib, if not the validation fails
       Dimension otellibDimension = metric.getDimensions().get(0);
       boolean otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
-      if(otelLibDimensionExisted) {
+      if (otelLibDimensionExisted) {
         metric.getDimensions().remove(0);
       }
 
