@@ -1,6 +1,6 @@
 ## 1. Add a testing suite
 
-please add a new tfvars file under `terraform/testing-suites` folder, each tfvar file represent a testing suite.
+please add a new tfvars file under `terraform/testing-suites` folder, each tfvar file represent a testing suite. 
 
 ### 1.1 add an ecs testing suite
 
@@ -13,6 +13,20 @@ specify below config in the tfvars file
 6. [optional] aoc_image_repo, if you have an aoc image you just built with the new component, then set its repo name here
 7. [optional] aoc_version, if you have an aoc image you just built with the new component, then set it as its tag name.
 
+an example here:
+
+```shell
+sample_app_callable = false
+
+otconfig_path="../template/otconfig/statsd_otconfig.tpl"
+ecs_taskdef_path="../template/ecstaskdef/statsd_taskdef.tpl"
+
+# this file is defined in validator/src/main/resources/validations
+validation_config="statsd-metric-validation.yml"
+
+data_emitter_image="alpine/socat:latest"
+```
+
 ### 1.2 add an ec2 testing suite
 
 specify below config in the tfvars file
@@ -21,14 +35,23 @@ specify below config in the tfvars file
 3. validation_config, please put a new validation config file under `validator/src/main/resources/validations` folder and specify the filename in the tfvars file.
 4. [optional] sample_app_callable, by default it's true, only set it to false when you don't have a web application sample app image
 5. [optional] data_emitter_image, if you have a sample app then set its image name here
-6. [optional] package_s3_bucket, if you have an aoc rpm/deb/msi built with the new component, and uploaded it to s3, then set its s3 bucket name here.
 7. [optional] aoc_version, if you have an aoc rpm/dev/msi you just built with the new component, then set it as its tag name.
 
-please note the rpm/dev/msi s3 object path should be 
+an example here:
 
 ```shell
-/amazon_linux/amd64/${aoc_version}/aws-observability-collector.rpm/deb/msi
+sample_app_callable = false
+
+otconfig_path="../template/otconfig/statsd_otconfig.tpl"
+
+docker_compose_path="../template/ec2-docker-compose-config"
+
+# this file is defined in validator/src/main/resources/validations
+validation_config="statsd-metric-validation.yml"
+
+data_emitter_image="alpine/socat:latest"
 ```
+
 
 ### 1.3 add an eks testing suite
 
@@ -41,7 +64,21 @@ specify below config in the tfvars file
 6. [optional] aoc_image_repo, if you have an aoc image you just built with the new component, then set its repo name here
 7. [optional] aoc_version, if you have an aoc image you just built with the new component, then set it as its tag name.
 
+```shell
+sample_app_callable = false
+
+otconfig_path="../template/otconfig/statsd_otconfig.tpl"
+eks_pod_config_path="../template/eks-pod-config/statsd-eks-config.tpl"
+
+# this file is defined in validator/src/main/resources/validations
+validation_config="statsd-metric-validation.yml"
+
+data_emitter_image="alpine/socat:latest"
+```
+
 ### 1.4 how to write the configurations?
+
+You are able to use placeholders in your configuration files, the testing framework will replace the placeholders with its runtime value when you run the testing suite.
 
 #### 1.4.1 otconfig
 
@@ -269,6 +306,10 @@ Below are the placeholders you can use in the expected data pattern.
 
 * metricNamespace
 * testingId
+* ecsContext.ecsClusterName
+* ecsContext.ecsTaskArn
+* ecsContext.ecsTaskDefFamily
+* ecsContext.ecsTaskDefVersion
 
 an example: 
 
