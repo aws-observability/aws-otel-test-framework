@@ -27,4 +27,6 @@ public class Context {
   @NonNull private String region;
 
   private String endpoint;
+
+  private ECSContext ecsContext;
 }

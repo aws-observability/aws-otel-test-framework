@@ -72,7 +72,7 @@ output "rendered" {
 }
 
 resource "aws_ecs_task_definition" "aoc" {
-  family = "aoc-task-def-${module.common.testing_id}"
+  family = "taskdef-${module.common.testing_id}"
   container_definitions = data.template_file.task_def.rendered
   network_mode = "awsvpc"
   requires_compatibilities = ["EC2", "FARGATE"]
@@ -136,7 +136,7 @@ resource "aws_lb_listener" "aoc_lb_listener" {
 resource "aws_ecs_service" "aoc" {
   # don't do lb if the sample app is not callable
   count = var.sample_app_callable ? 1 : 0
-  name = "aoctaskdef-${module.common.testing_id}"
+  name = "aocservice-${module.common.testing_id}"
   cluster = module.ecs_cluster.cluster_id
   task_definition = aws_ecs_task_definition.aoc.arn
   desired_count = 1
@@ -162,7 +162,7 @@ resource "aws_ecs_service" "aoc" {
 # remove lb since there's no callable sample app, some test cases will drop in here, for example, ecsmetadata receiver test
 resource "aws_ecs_service" "aoc_without_sample_app" {
   count = !var.sample_app_callable ? 1 : 0
-  name = "aoc"
+  name = "aocservice-${module.common.testing_id}"
   cluster = module.ecs_cluster.cluster_id
   task_definition = aws_ecs_task_definition.aoc.arn
   desired_count = 1
@@ -175,7 +175,7 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
 
   provisioner "local-exec" {
     working_dir = "../../"
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --ecs-context ecsClusterName=${module.ecs_cluster.cluster_name} --ecs-context ecsTaskArn=${aws_ecs_task_definition.aoc.arn} --ecs-context ecsTaskDefFamily=${aws_ecs_task_definition.aoc.family} --ecs-context ecsTaskDefVersion=${aws_ecs_task_definition.aoc.revision}'"
   }
 }
 

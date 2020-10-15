@@ -2,12 +2,15 @@ package com.amazon.aoc;
 
 import com.amazon.aoc.helpers.ConfigLoadHelper;
 import com.amazon.aoc.models.Context;
+import com.amazon.aoc.models.ECSContext;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.validators.ValidatorFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "e2etest", mixinStandardHelpOptions = true, version = "1.0")
@@ -35,6 +38,12 @@ public class App implements Callable<Integer> {
       defaultValue = "us-west-2")
   private String region;
 
+  @CommandLine.Option(
+    names = {"--ecs-context"},
+    description = "eg, --ecs-context ecsCluster=xxx --ecs-context ecsTaskArn=xxxx"
+  )
+  private Map<String, String> ecsContexts;
+
   public static void main(String[] args) throws Exception {
     int exitCode = new CommandLine(new App()).execute(args);
     System.exit(exitCode);
@@ -49,6 +58,8 @@ public class App implements Callable<Integer> {
     // build context
     Context context = new Context(this.testingId, this.metricNamespace, this.region);
     context.setEndpoint(this.endpoint);
+    context.setEcsContext(buildECSContext(ecsContexts));
+
     log.info(context);
 
     // run validation
@@ -57,5 +68,12 @@ public class App implements Callable<Integer> {
       validatorFactory.launchValidator(validationConfigItem).validate();
     }
     return null;
+  }
+
+  private ECSContext buildECSContext(Map<String, String> ecsContextMap){
+    if(ecsContextMap == null) {
+      return null;
+    }
+    return new ObjectMapper().convertValue(ecsContextMap, ECSContext.class);
   }
 }
