@@ -33,17 +33,26 @@ function handleRequest(request, response) {
     const body = [];
     request.on('error', (err) => console.log(err));
     request.on('data', (chunk) => body.push(chunk));
+    // const traceIdJson = returnTraceIdJson(span);
     request.on('end', () => {
       // deliberately sleeping to mock some action.
       setTimeout(() => {
         span.end();
-        response.end('hello world!');
+        response.end(JSON.stringify(returnTraceIdJson(span)));
       }, 2000);
     });
   } catch (err) {
     console.error(err);
     span.end();
   }
+
+  function returnTraceIdJson(span) {
+    const traceId = span.context().traceId.toString();
+    const xrayTraceId = "1-" + traceId.substring(0, 8) + "-" + traceId.substring(8);
+    const traceIdJson = { "traceId" : xrayTraceId }
+    return traceIdJson;
+  }
+  
 }
 
-startServer(8080);
+startServer(process.env.LISTEN_ADDRESS);

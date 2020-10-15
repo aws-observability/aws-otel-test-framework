@@ -4,10 +4,7 @@
   "description": "Sample Instrumentation of X-Ray",
   "main": "index.js",
   "scripts": {
-    "zipkin:server": "cross-env EXPORTER=zipkin node ./server.js",
-    "zipkin:client": "cross-env EXPORTER=zipkin node ./client.js",
-    "jaeger:server": "cross-env EXPORTER=jaeger node ./server.js",
-    "jaeger:client": "cross-env EXPORTER=jaeger node ./client.js"
+    "install" : "npm install git+https://github.com/aws-observability/aws-otel-js/tree/master/packages/opentelemetry-id-generator-aws-xray.git"
   },
   "keywords": [
     "opentelemetry",
@@ -31,8 +28,6 @@
     "@opentelemetry/resources": "^0.11.0",
     "@opentelemetry/sdk-node": "^0.11.0",
     "@opentelemetry/tracing": "^0.11.0",
-    "kelvin-id-generator-aws-xray": "^0.1.0",
-    "kelvin-propagator-aws-xray": "^0.1.0"
   },
   "devDependencies": {
     "cross-env": "^6.0.0"

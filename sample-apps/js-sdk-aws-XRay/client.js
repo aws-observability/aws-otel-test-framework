@@ -24,19 +24,12 @@ function makeRequest() {
       });
     });
   });
-  returnTraceId(span);
 
   // The process must live for at least the interval past any traces that
   // must be exported, or some risk being lost if they are recorded after the
   // last export.
   console.log('Sleeping 5 seconds before shutdown to ensure all records are flushed.');
   setTimeout(() => { console.log('Completed.'); }, 5000);
-}
-
-function returnTraceId(span) {
-  const traceId = span.context().traceId.toString();
-  const xrayTraceId = "1-" + traceId.substring(0, 8) + "-" + traceId.substring(8);
-  return xrayTraceId;
 }
 
 makeRequest();
