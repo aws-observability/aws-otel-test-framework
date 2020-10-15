@@ -1,8 +1,36 @@
-## 1. Add a testing suite
+# How to add a testing suite to the framework
+
+## 1. Basic concepts
+
+There're some concepts you might want to learn before starting to add your testing suite. 
+
+### 1.1 the workflow of the testing framework
+
+the testing framework is built based on terraform, every time you run your testing suite, it will
+
+1. **Create resources** Create the related resources in your aws account, such as, ec2 instance/ecs cluster.
+2. **Install softwares** Install AWS Otel Collector/sample apps onto it and start it base on the configurations you provide. 
+3. **Validate data** Validate the data by fetching them from backend(CloudWatch, XRay) base on the validation config you provide. 
+
+
+### 1.2 Testing Suite
+
+each file with suffix ".tfvar" under folder `terraform/testing-suites` will be treated as a testing suite, each testing suite defines different otconfig, validation_config, and deployment config based on different platform.Ex(taskdef for ECS) 
+
+### 1.3 AOC Version
+
+`aoc_version` is a parameter you can use while running the testing-suite, which tells the testing framework to fetch the AWS Otel Collector with this version, this parameter is useful especially when you create a PR to AWS Otel Collector, which will build a version to you with your unmerged code, so that you can test your "new code" with your new testing suite.
+
+### 1.4 Testing Id
+ 
+`testing_id` is a placeholder that you can use in your configuration, which is a unique id representing each run of the testing suite. You can use this testing id as part of your metric name, or dimension name, to ensure the metric emitted from each run of the testing suite is different, so that the validation will always validate on your new metric.
+
+
+## 2. Add a testing suite
 
 please add a new tfvars file under `terraform/testing-suites` folder, each tfvar file represent a testing suite. 
 
-### 1.1 add an ecs testing suite
+### 2.1 add an ecs testing suite
 
 specify below config in the tfvars file
 1. otconfig_path, please put a new otconfig file under `terraform/templates/otconfig` folder and specify the path in the tfvars file.
@@ -27,7 +55,7 @@ validation_config="statsd-metric-validation.yml"
 data_emitter_image="alpine/socat:latest"
 ```
 
-### 1.2 add an ec2 testing suite
+### 2.2 add an ec2 testing suite
 
 specify below config in the tfvars file
 1. otconfig_path, please put a new otconfig file under `terraform/templates/otconfig` folder and specify the path in the tfvars file.
@@ -53,7 +81,7 @@ data_emitter_image="alpine/socat:latest"
 ```
 
 
-### 1.3 add an eks testing suite
+### 2.3 add an eks testing suite
 
 specify below config in the tfvars file
 1. otconfig_path, please put a new otconfig file under `terraform/templates/otconfig` folder and specify the path in the tfvars file.
@@ -76,11 +104,11 @@ validation_config="statsd-metric-validation.yml"
 data_emitter_image="alpine/socat:latest"
 ```
 
-### 1.4 how to write the configurations?
+### 3 how to write the configurations?
 
 You are able to use placeholders in your configuration files, the testing framework will replace the placeholders with its runtime value when you run the testing suite.
 
-#### 1.4.1 otconfig
+#### 3.1 otconfig
 
 Below are the placeholders you can use in the otconfig
 
@@ -108,7 +136,7 @@ service:
       exporters: [logging, awsemf]
 ```
 
-#### 1.4.2 ecs task definition 
+#### 3.2 ecs task definition 
 
 Below are the placeholders you can use in the ecs task def.
 
@@ -222,7 +250,7 @@ an example:
 ]
 ```
 
-#### 1.4.3 Docker compose file
+#### 3.3 Docker compose file
 
 Below are the placeholders you can use in the docker compose file
 
@@ -255,7 +283,7 @@ services:
       start_period: 10s
 ```
 
-#### 1.4.4 Eks Config
+#### 3.4 Eks Config
 
 Below are the placeholders you can use in the EKS config.
 
@@ -274,7 +302,7 @@ sample_app:
   args: []
 ```
 
-#### 1.4.5 Validation config.
+#### 3.5 Validation config.
 
 An example for validation config.
 
@@ -369,7 +397,7 @@ an example:
 ```
 
 
-## 2. Build Sample App
+## 4. Build Sample App
 
 For any testing suite related with sdk, you are required to build a sample app. 
 
@@ -396,7 +424,7 @@ Environment Variable: There will be some env vars which will be set while runnin
 
 * Keep “/” accessible with response code 200.: This “/” will be used for the load balancer health check.
 
-## 3. configure the testing suite in github workflow
+## 5. configure the testing suite in github workflow
 
 below is an example in the aoc repo workflow, you can also configure it in your sdk repos.
 
