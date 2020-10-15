@@ -74,7 +74,7 @@ cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={th
 
 ### 3.3 don't forget to clean the resources 
 ```shell
-cd terraform/ec2 && terraform destory"
+cd terraform/ec2 && terraform destory
 ```
 
 ## 4. Run EKS
