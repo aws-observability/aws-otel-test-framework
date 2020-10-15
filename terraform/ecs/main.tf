@@ -138,7 +138,7 @@ resource "aws_ecs_service" "aoc" {
   count = var.sample_app_callable ? 1 : 0
   name = "aocservice-${module.common.testing_id}"
   cluster = module.ecs_cluster.cluster_id
-  task_definition = aws_ecs_task_definition.aoc.arn
+  task_definition = "${aws_ecs_task_definition.aoc.family}:1"
   desired_count = 1
   launch_type = var.ecs_launch_type
 
@@ -164,7 +164,7 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
   count = !var.sample_app_callable ? 1 : 0
   name = "aocservice-${module.common.testing_id}"
   cluster = module.ecs_cluster.cluster_id
-  task_definition = aws_ecs_task_definition.aoc.arn
+  task_definition = "${aws_ecs_task_definition.aoc.family}:1"
   desired_count = 1
   launch_type = var.ecs_launch_type
 
