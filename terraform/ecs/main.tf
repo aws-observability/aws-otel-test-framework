@@ -175,7 +175,7 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
 
   provisioner "local-exec" {
     working_dir = "../../"
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --ecs-context ecsClusterName=${module.ecs_cluster.cluster_name} --ecs-context ecsTaskArn=${aws_ecs_task_definition.aoc.arn} --ecs-context ecsTaskDefFamily=${aws_ecs_task_definition.aoc.family} --ecs-context ecsTaskDefVersion=${aws_ecs_task_definition.aoc.revision}'"
   }
 }
 
