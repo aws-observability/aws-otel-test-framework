@@ -1,0 +1,12 @@
+-
+  validationType: "trace"
+  httpPath: "/outgoing-http-call"
+  httpMethod: "get"
+  callingType: "http"
+  expectedTraceTemplate: "HTTP_EXPECTED_TRACE"
+-
+  validationType: "trace"
+  httpPath: "/aws-sdk-call"
+  httpMethod: "get"
+  callingType: "http"
+  expectedTraceTemplate: "AWSSDK_EXPECTED_TRACE"

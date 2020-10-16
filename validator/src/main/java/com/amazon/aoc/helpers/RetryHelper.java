@@ -36,7 +36,7 @@ public class RetryHelper {
       throws Exception {
     while (retryCount-- > 0) {
       try {
-        log.info("still can retry for {} times", retryCount);
+        log.info("retry attempt left : {} ", retryCount);
         retryable.execute();
         return;
       } catch (Exception ex) {

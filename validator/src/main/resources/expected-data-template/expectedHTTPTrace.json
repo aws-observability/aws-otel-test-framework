@@ -1,0 +1,41 @@
+{
+  "name": "/outgoing-http-call",
+  "fault": false,
+  "error": false,
+  "throttle": false,
+  "http": {
+    "request": {
+      "url": "http://127.0.0.1:8080/outgoing-http-call",
+      "method": "GET"
+    },
+    "response": {
+      "status": 200
+    }
+  },
+  "subsegments": [
+    {
+      "name": "DemoController.httpCall",
+      "fault": false,
+      "error": false,
+      "throttle": false,
+      "subsegments": [
+        {
+          "name": "aws.amazon.com",
+          "fault": false,
+          "error": false,
+          "throttle": false,
+          "http": {
+            "request": {
+              "url": "https://aws.amazon.com/",
+              "method": "GET"
+            },
+            "response": {
+              "status": 200
+            }
+          },
+          "namespace": "remote"
+        }
+      ]
+    }
+  ]
+}

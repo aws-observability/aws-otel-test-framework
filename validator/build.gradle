@@ -41,6 +41,12 @@ dependencies {
     // yaml reader
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.11.1'
 
+    // json reader
+    compile group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1'
+
+    // json flattener
+    compile group: 'com.github.wnameless', name: 'json-flattener', version: '0.1.0'
+
     // command cli
     compile 'info.picocli:picocli:4.3.2'
 
