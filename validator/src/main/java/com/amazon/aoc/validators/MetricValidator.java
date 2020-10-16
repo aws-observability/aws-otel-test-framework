@@ -99,8 +99,21 @@ public class MetricValidator implements IValidator {
               List<Dimension> dimensionList2 = o2.getDimensions();
 
               // remove the skipped dimension
-              dimensionList1.removeIf(dimension -> dimension.getValue().equals("SKIP"));
-              dimensionList2.removeIf(dimension -> dimension.getValue().equals("SKIP"));
+              List<String> skippedDimensionNames = new ArrayList<>();
+              for (Dimension dimension : dimensionList1) {
+                if (dimension.getValue().equals("SKIP")) {
+                  skippedDimensionNames.add(dimension.getName());
+                }
+              }
+              for (Dimension dimension : dimensionList2) {
+                if (dimension.getValue().equals("SKIP")) {
+                  skippedDimensionNames.add(dimension.getName());
+                }
+              }
+              for (String dimensionName : skippedDimensionNames) {
+                dimensionList1.removeIf(dimension -> dimension.getName().equals(dimensionName));
+                dimensionList2.removeIf(dimension -> dimension.getName().equals(dimensionName));
+              }
 
               // sort
               dimensionList1.sort(Comparator.comparing(Dimension::getName));
