@@ -20,8 +20,8 @@ import lombok.Getter;
 @Getter
 public enum ExpectedTrace implements FileConfig {
   DEFAULT_EXPECTED_TRACE("/expected-data-template/defaultExpectedTrace.mustache"),
-  AWSSDK_EXPECTED_TRACE("/expected-data-template/expectedAWSSDKTrace.json"),
-  HTTP_EXPECTED_TRACE("/expected-data-template/expectedHTTPTrace.json")
+  AWSSDK_EXPECTED_TRACE("/expected-data-template/expectedAWSSDKTrace.mustache"),
+  HTTP_EXPECTED_TRACE("/expected-data-template/expectedHTTPTrace.mustache")
   ;
 
   private String path;

@@ -30,7 +30,7 @@ public class HttpCaller implements ICaller {
 
     AtomicReference<SampleAppResponse> sampleAppResponseAtomicReference = new AtomicReference<>();
     RetryHelper.retry(
-        3,
+        30,
         () -> {
           try (Response response = client.newCall(request).execute()) {
             String responseBody = response.body().string();
