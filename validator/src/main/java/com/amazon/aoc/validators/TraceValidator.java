@@ -23,6 +23,7 @@ import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
+import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.XRayService;
 import com.amazonaws.services.xray.model.Trace;
 import lombok.extern.log4j.Log4j2;
@@ -42,7 +43,9 @@ public class TraceValidator implements IValidator {
   private FileConfig expectedTrace;
 
   @Override
-  public void init(Context context, ICaller caller, FileConfig expectedTrace) throws Exception {
+  public void init(
+      Context context, ValidationConfig validationConfig, ICaller caller, FileConfig expectedTrace)
+      throws Exception {
     this.context = context;
     this.xrayService = new XRayService(context.getRegion());
     this.caller = caller;

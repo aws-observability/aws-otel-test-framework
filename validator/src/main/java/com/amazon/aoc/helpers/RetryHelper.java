@@ -32,7 +32,8 @@ public class RetryHelper {
    * @param retryable the lambda
    * @throws Exception when the retry count is reached
    */
-  public static void retry(int retryCount, int sleepInMilliSeconds, Retryable retryable)
+  public static void retry(
+      int retryCount, int sleepInMilliSeconds, boolean throwExceptionInTheEnd, Retryable retryable)
       throws Exception {
     while (retryCount-- > 0) {
       try {
@@ -45,7 +46,9 @@ public class RetryHelper {
       }
     }
 
-    throw new BaseException(ExceptionCode.FAILED_AFTER_RETRY);
+    if (throwExceptionInTheEnd) {
+      throw new BaseException(ExceptionCode.FAILED_AFTER_RETRY);
+    }
   }
 
   /**
@@ -58,6 +61,7 @@ public class RetryHelper {
     retry(
         Integer.valueOf(GenericConstants.MAX_RETRIES.getVal()),
         Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
+        true,
         retryable);
   }
 
@@ -69,6 +73,10 @@ public class RetryHelper {
    * @throws Exception when the retry count is reached
    */
   public static void retry(int retryCount, Retryable retryable) throws Exception {
-    retry(retryCount, Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()), retryable);
+    retry(
+        retryCount,
+        Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
+        true,
+        retryable);
   }
 }

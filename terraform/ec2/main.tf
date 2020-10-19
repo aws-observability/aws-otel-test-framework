@@ -127,7 +127,10 @@ data "template_file" "docker_compose" {
     otel_endpoint = "${aws_instance.aoc.private_ip}:55680"
   }
 }
+
 resource "null_resource" "sample-app-validator" {
+  # skip this validation if it's a soaking test
+  count = var.soaking ? 0 : 1
   provisioner "file" {
     content = data.template_file.docker_compose.rendered
     destination = "/tmp/docker-compose.yml"

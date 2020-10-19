@@ -22,6 +22,7 @@ import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
+import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
@@ -234,7 +235,11 @@ public class MetricValidator implements IValidator {
   }
 
   @Override
-  public void init(Context context, ICaller caller, FileConfig expectedMetricTemplate)
+  public void init(
+      Context context,
+      ValidationConfig validationConfig,
+      ICaller caller,
+      FileConfig expectedMetricTemplate)
       throws Exception {
     this.context = context;
     this.caller = caller;

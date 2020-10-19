@@ -21,7 +21,7 @@ variable "otconfig_path" {
 }
 
 variable "docker_compose_path" {
-  default = "../template/ec2-docker-compose-config/default_ec2_docker_compose.yml"
+  default = "../template/ec2-docker-compose-config/default_ec2_docker_compose.yml.tpl"
 }
 
 variable "package_s3_bucket" {
@@ -65,3 +65,13 @@ variable "sshkey_s3_private_key" {
 variable "sample_app_callable" {
   default = true
 }
+
+# create soaking alarm if this flag is on
+variable "soaking" {
+  default = false
+}
+
+variable "soaking_metric_namespace" {
+  default = "AWSOtelCollector/SoakTest"
+}
+

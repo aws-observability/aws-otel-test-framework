@@ -18,15 +18,22 @@ package com.amazon.aoc.models;
 import com.amazon.aoc.fileconfigs.ExpectedMetric;
 import com.amazon.aoc.fileconfigs.ExpectedTrace;
 import lombok.Data;
+import org.apache.logging.log4j.core.appender.rolling.action.IfNot;
 
 @Data
 public class ValidationConfig {
   String validationType;
-  String callingType;
+  String callingType = "none";
 
   String httpPath;
   String httpMethod;
 
   ExpectedMetric expectedMetricTemplate;
   ExpectedTrace expectedTraceTemplate;
+
+  /**
+   * alarm related.
+   */
+  Integer pullingDuration;
+  Integer pullingTimes;
 }
