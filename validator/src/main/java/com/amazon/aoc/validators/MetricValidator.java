@@ -56,12 +56,20 @@ public class MetricValidator implements IValidator {
     log.info("Start metric validating");
     final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
     CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
-
     RetryHelper.retry(
         MAX_RETRY_COUNT,
         () -> {
           List<Metric> metricList =
               this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
+
+          // remove the skip dimensions
+          for (Metric metric : expectedMetricList) {
+            metric.getDimensions().removeIf(dimension -> dimension.getValue().equals("SKIP"));
+          }
+          for (Metric metric : metricList) {
+            metric.getDimensions().removeIf(dimension -> dimension.getValue().equals("SKIP"));
+          }
+
           log.info("check if all the expected metrics are found");
           compareMetricLists(expectedMetricList, metricList);
 
@@ -98,23 +106,6 @@ public class MetricValidator implements IValidator {
               // sort and check dimensions
               List<Dimension> dimensionList1 = o1.getDimensions();
               List<Dimension> dimensionList2 = o2.getDimensions();
-
-              // remove the skipped dimension
-              List<String> skippedDimensionNames = new ArrayList<>();
-              for (Dimension dimension : dimensionList1) {
-                if (dimension.getValue().equals("SKIP")) {
-                  skippedDimensionNames.add(dimension.getName());
-                }
-              }
-              for (Dimension dimension : dimensionList2) {
-                if (dimension.getValue().equals("SKIP")) {
-                  skippedDimensionNames.add(dimension.getName());
-                }
-              }
-              for (String dimensionName : skippedDimensionNames) {
-                dimensionList1.removeIf(dimension -> dimension.getName().equals(dimensionName));
-                dimensionList2.removeIf(dimension -> dimension.getName().equals(dimensionName));
-              }
 
               // sort
               dimensionList1.sort(Comparator.comparing(Dimension::getName));

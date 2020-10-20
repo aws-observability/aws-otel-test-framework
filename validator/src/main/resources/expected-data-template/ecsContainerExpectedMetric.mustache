@@ -1,6 +1,6 @@
 -
   metricName: ecs.task.memory.utilized_{{testingId}}
-  namespace: default
+  namespace: {{metricNamespace}}
   dimensions:
     -
       name: ecs.cluster
@@ -10,7 +10,7 @@
       value: "undefined"
     -
       name: ecs.task-arn
-      value: "{{ecsContext.ecsTaskArn}}"
+      value: "SKIP"
     -
       name: ecs.task-definition-family
       value: "{{ecsContext.ecsTaskDefFamily}}"
