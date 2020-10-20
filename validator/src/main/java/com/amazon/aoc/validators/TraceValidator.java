@@ -41,7 +41,7 @@ public class TraceValidator implements IValidator {
     private FileConfig expectedTrace;
 
     @Override
-    public void init(Context context, ICaller caller, FileConfig expectedTrace) throws Exception {
+    public void init(Context context, ValidationConfig validationConfig, ICaller caller, FileConfig expectedTrace) throws Exception {
         this.xrayService = new XRayService(context.getRegion());
         this.caller = caller;
         this.context = context;
