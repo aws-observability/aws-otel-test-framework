@@ -22,6 +22,7 @@ import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
+import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
@@ -55,12 +56,20 @@ public class MetricValidator implements IValidator {
     log.info("Start metric validating");
     final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
     CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
-
     RetryHelper.retry(
         MAX_RETRY_COUNT,
         () -> {
           List<Metric> metricList =
               this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
+
+          // remove the skip dimensions
+          for (Metric metric : expectedMetricList) {
+            metric.getDimensions().removeIf(dimension -> dimension.getValue().equals("SKIP"));
+          }
+          for (Metric metric : metricList) {
+            metric.getDimensions().removeIf(dimension -> dimension.getValue().equals("SKIP"));
+          }
+
           log.info("check if all the expected metrics are found");
           compareMetricLists(expectedMetricList, metricList);
 
@@ -97,23 +106,6 @@ public class MetricValidator implements IValidator {
               // sort and check dimensions
               List<Dimension> dimensionList1 = o1.getDimensions();
               List<Dimension> dimensionList2 = o2.getDimensions();
-
-              // remove the skipped dimension
-              List<String> skippedDimensionNames = new ArrayList<>();
-              for (Dimension dimension : dimensionList1) {
-                if (dimension.getValue().equals("SKIP")) {
-                  skippedDimensionNames.add(dimension.getName());
-                }
-              }
-              for (Dimension dimension : dimensionList2) {
-                if (dimension.getValue().equals("SKIP")) {
-                  skippedDimensionNames.add(dimension.getName());
-                }
-              }
-              for (String dimensionName : skippedDimensionNames) {
-                dimensionList1.removeIf(dimension -> dimension.getName().equals(dimensionName));
-                dimensionList2.removeIf(dimension -> dimension.getName().equals(dimensionName));
-              }
 
               // sort
               dimensionList1.sort(Comparator.comparing(Dimension::getName));
@@ -234,7 +226,11 @@ public class MetricValidator implements IValidator {
   }
 
   @Override
-  public void init(Context context, ICaller caller, FileConfig expectedMetricTemplate)
+  public void init(
+      Context context,
+      ValidationConfig validationConfig,
+      ICaller caller,
+      FileConfig expectedMetricTemplate)
       throws Exception {
     this.context = context;
     this.caller = caller;

@@ -58,6 +58,11 @@ public class App implements Callable<Integer> {
       description = "eg, --ecs-context ecsCluster=xxx --ecs-context ecsTaskArn=xxxx")
   private Map<String, String> ecsContexts;
 
+  @CommandLine.Option(
+      names = {"--alarm-names"},
+      description = "the cloudwatch alarm names")
+  private List<String> alarmNameList;
+
   public static void main(String[] args) throws Exception {
     int exitCode = new CommandLine(new App()).execute(args);
     System.exit(exitCode);
@@ -66,9 +71,11 @@ public class App implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
     // build context
-    Context context = new Context(this.testingId, this.metricNamespace, this.region);
+    Context context = new Context(this.testingId, this.region);
+    context.setMetricNamespace(this.metricNamespace);
     context.setEndpoint(this.endpoint);
     context.setEcsContext(buildECSContext(ecsContexts));
+    context.setAlarmNameList(alarmNameList);
 
     log.info(context);
 

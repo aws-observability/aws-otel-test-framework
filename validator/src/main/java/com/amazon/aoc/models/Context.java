@@ -18,15 +18,24 @@ package com.amazon.aoc.models;
 import lombok.Data;
 import lombok.NonNull;
 
+import java.util.List;
+
 @Data
 public class Context {
   @NonNull private String testingId;
 
-  @NonNull private String metricNamespace;
-
   @NonNull private String region;
+
+  private String metricNamespace;
 
   private String endpoint;
 
   private ECSContext ecsContext;
+
+  /*
+  alarm related parameters
+   */
+  private List<String> alarmNameList;
+  private Integer alarmPullingDuration;
+  private Integer alarmPullingTimes;
 }

@@ -39,7 +39,7 @@ public class ValidatorFactory {
   public IValidator launchValidator(ValidationConfig validationConfig) throws Exception {
     // get validator
     IValidator validator;
-    FileConfig expectedData;
+    FileConfig expectedData = null;
     switch (validationConfig.getValidationType()) {
       case "trace":
         validator = new TraceValidator();
@@ -48,6 +48,9 @@ public class ValidatorFactory {
       case "metric":
         validator = new MetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
+        break;
+      case "alarm-pulling":
+        validator = new AlarmPullingValidator();
         break;
       default:
         throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED);
@@ -67,7 +70,7 @@ public class ValidatorFactory {
     }
 
     // init validator
-    validator.init(this.context, caller, expectedData);
+    validator.init(this.context, validationConfig, caller, expectedData);
     return validator;
   }
 }
