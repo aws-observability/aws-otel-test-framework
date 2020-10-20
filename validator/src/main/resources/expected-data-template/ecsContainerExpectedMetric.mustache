@@ -1,25 +1,22 @@
 -
   metricName: ecs.task.memory.utilized_{{testingId}}
-  namespace: default
+  namespace: {{metricNamespace}}
   dimensions:
     -
-      name: OTLib
-      value: Undefined
-    -
       name: ecs.cluster
-      value: "{{ecsClusterName}}"
+      value: "{{ecsContext.ecsClusterName}}"
     -
       name: ecs.service
       value: "undefined"
     -
       name: ecs.task-arn
-      value: "{{ecsTaskArn}}"
+      value: "SKIP"
     -
       name: ecs.task-definition-family
-      value: "{{ecsTaskDefFamily}}"
+      value: "{{ecsContext.ecsTaskDefFamily}}"
     -
       name: ecs.task-definition-version
-      value: "{{ecsTaskDefVersion}}"
+      value: "{{ecsContext.ecsTaskDefVersion}}"
     -
       name: ecs.task-id
-      value: "{{ecsTaskId}}"
+      value: "SKIP"

@@ -7,8 +7,8 @@ validation_config="xrayreceiver-trace-validation.yml"
 data_emitter_image="josephwy/integ-test-emitter:xrayreceiver"
 
 # todo this is config needs to be removed once we have statsd built in the aoc image
-aoc_image_repo="johnwu20/aocimage"
+aoc_image_repo="josephwy/awscollector"
 
 # todo this version needs to be removed, instead version should be received from workflow
-aoc_version="v0.1.0"
+aoc_version="xray"
 

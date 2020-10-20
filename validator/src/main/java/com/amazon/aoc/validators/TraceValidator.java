@@ -23,6 +23,7 @@ import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
+import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.XRayService;
 import com.amazonaws.services.xray.model.Trace;
 import com.github.wnameless.json.flattener.JsonFlattener;

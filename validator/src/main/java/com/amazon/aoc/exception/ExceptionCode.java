@@ -35,6 +35,9 @@ public enum ExceptionCode {
   // build validator
   VALIDATION_TYPE_NOT_EXISTED(60001, "validation type not existed"),
   CALLER_TYPE_NOT_EXISTED(60002, "caller type not existed"),
+
+  // alarm validation
+  ALARM_BAKING(70001, "alarms still need to be baked"),
   ;
   private int code;
   private String message;

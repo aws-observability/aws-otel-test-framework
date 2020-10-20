@@ -37,8 +37,6 @@ This is optional item, only do it if your goal is to add a component or fix a bu
 
 4. find out the version number, click into the workflow page, click `e2etest-preparation` step, and click `Versioning for testing`, record the version number. Ex(v0.1.12-299946851).
 
-5. provide your testing aws account id to Ying(wangmyin@), so that he will give permission to your aws account to fetch the testing image from a private ECR. [todo, once we migrate to dockerhub, you don't need this step] 
-
 
 ## 2. Run ECS Test
 
@@ -48,7 +46,7 @@ This is optional item, only do it if your goal is to add a component or fix a bu
 cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suites/statsd-ecs.tfvars"
 ```
 
-### 2.1 run with a specific aoc version
+### 2.2 run with a specific aoc version if you have done 1.4
 
 ```shell
 cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suites/statsd-ecs.tfvars" -var="aoc_version={the version you got from workflow}"
@@ -61,27 +59,27 @@ cd terraform/ecs && terraform destory"
 ```
 ## 3. Run EC2
 
-### 3.1 run with the testing suite [only amazonlinux2 is supported at this moment]
+### 3.1 run with the testing suite [support amazonlinux2, ubuntu16, windows2019]
 
 ```shell
-cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars"
+cd terraform/ec2 && terraform init && terraform apply -var="testing_ami=amazonlinux2" -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars"
 ```
 
-### 3.2 run with a specfic aoc version
+### 3.2 run with a specfic aoc version if you have done 1.4
 
 
 ```shell
 cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars" -var="aoc_version={the version you got from workflow}"
 ```
 
-### 3.3 don't forget to clean the resources
+### 3.3 don't forget to clean the resources 
 ```shell
-cd terraform/ec2 && terraform destory"
+cd terraform/ec2 && terraform destory
 ```
 
 ## 4. Run EKS
 
-create a eks cluster in your account before run below command
+please note you are required to create a eks cluster in your account before running below command
 
 ### 4.1 run with the testing suite
 
@@ -89,7 +87,7 @@ create a eks cluster in your account before run below command
 cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars"
 ```
 
-### 4.2 run with a specfic aoc version
+### 4.2 run with a specfic aoc version if you have done 1.4
 
 ```shell
 cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars" -var="aoc_version={the version you got from workflow}"

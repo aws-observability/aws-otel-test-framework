@@ -13,10 +13,15 @@
  * permissions and limitations under the License.
  */
 
-package com.amazon.aoc.callers;
+package com.amazon.aoc.models;
 
-import com.amazon.aoc.models.SampleAppResponse;
+import lombok.Data;
 
-public interface ICaller {
-  SampleAppResponse callSampleApp() throws Exception;
+@Data
+public class ECSContext {
+  // ecs related context
+  private String ecsClusterName;
+  private String ecsTaskArn;
+  private String ecsTaskDefFamily;
+  private String ecsTaskDefVersion;
 }
