@@ -37,6 +37,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
@@ -54,7 +55,21 @@ public class MetricValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("Start metric validating");
+    // get expected metrics and remove the to be skipped dimensions
     final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
+    Set<String> skippedDimensionNameList = new HashSet<>();
+    for(Metric metric: expectedMetricList){
+      for(Dimension dimension: metric.getDimensions()){
+        if(dimension.getValue().equals("SKIP")){
+          skippedDimensionNameList.add(dimension.getName());
+        }
+      }
+    }
+    for (Metric metric : expectedMetricList) {
+      metric.getDimensions().removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+    }
+
+    // get metric from cloudwatch
     CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
     RetryHelper.retry(
         MAX_RETRY_COUNT,
@@ -63,11 +78,9 @@ public class MetricValidator implements IValidator {
               this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
 
           // remove the skip dimensions
-          for (Metric metric : expectedMetricList) {
-            metric.getDimensions().removeIf(dimension -> dimension.getValue().equals("SKIP"));
-          }
+          log.info("dimensions to be skipped in validation: {}", skippedDimensionNameList);
           for (Metric metric : metricList) {
-            metric.getDimensions().removeIf(dimension -> dimension.getValue().equals("SKIP"));
+            metric.getDimensions().removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
           }
 
           log.info("check if all the expected metrics are found");
