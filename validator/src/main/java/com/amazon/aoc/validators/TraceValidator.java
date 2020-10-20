@@ -20,6 +20,7 @@ import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.MustacheHelper;
+import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.services.XRayService;
@@ -28,7 +29,7 @@ import com.github.wnameless.json.flattener.JsonFlattener;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Log4j2
 public class TraceValidator implements IValidator {
@@ -80,33 +81,23 @@ public class TraceValidator implements IValidator {
     // this method will hit get trace from x-ray service and get retrieved trace
     private Map<String, Object> getRetrievedTrace(List<String> traceIdList) throws Exception {
         Map<String, Object> flattenedJsonMapForRetrievedTrace = null;
-        List<Trace> retrieveTraceList = null;
+        AtomicReference<List<Trace>> retrieveTraceListAtomicReference = new AtomicReference<>();
         int MAX_RETRY_COUNT = 3;
-        int count = 1;
 
-        while (retrieveTraceList == null || retrieveTraceList.isEmpty()) {
-            // wait for sample app to send trace data to x-ray
-            log.info("sleeping for 15 seconds before retrieving data from x-ray service");
-            TimeUnit.SECONDS.sleep(15);
+        RetryHelper.retry(MAX_RETRY_COUNT, () -> {
+            List<Trace> retrieveTraceList = null;
+            retrieveTraceList = xrayService.listTraceByIds(traceIdList);
+            retrieveTraceListAtomicReference.set(retrieveTraceList);
 
-            try {
-                retrieveTraceList = xrayService.listTraceByIds(traceIdList);
-            } catch (Exception e) {
-                log.error("exception while retrieving trace data from x-ray service" + e.getMessage());
-                e.printStackTrace();
+            if (retrieveTraceList == null || retrieveTraceList.isEmpty()) {
+                throw new BaseException(ExceptionCode.EMPTY_LIST);
             }
-
-            if (count == MAX_RETRY_COUNT) {
-                break;
-            }
-
-            count++;
-        }
+        });
 
         // flattened JSON object to a map
-        if (retrieveTraceList != null && !retrieveTraceList.isEmpty()) {
-            try{
-                flattenedJsonMapForRetrievedTrace = JsonFlattener.flattenAsMap(retrieveTraceList.get(0).getSegments().get(0).getDocument());
+        if (retrieveTraceListAtomicReference.get() != null && !retrieveTraceListAtomicReference.get().isEmpty()) {
+            try {
+                flattenedJsonMapForRetrievedTrace = JsonFlattener.flattenAsMap(retrieveTraceListAtomicReference.get().get(0).getSegments().get(0).getDocument());
             } catch (Exception e) {
                 log.error("exception while flattening the retrieved trace: " + e.getMessage());
                 e.printStackTrace();

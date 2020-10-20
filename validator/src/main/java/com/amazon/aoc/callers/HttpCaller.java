@@ -20,7 +20,7 @@ public class HttpCaller implements ICaller {
 
   public HttpCaller(String endpoint, String path) {
     this.url = endpoint + path;
-    log.info("validator is testing {} path", this.url);
+    log.info("validator is trying to hit this {} endpoint", this.url);
   }
 
   @Override

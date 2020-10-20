@@ -40,7 +40,12 @@ public class RetryHelper {
         retryable.execute();
         return;
       } catch (Exception ex) {
-        log.error("exception during retry, you may ignore it", ex);
+        log.info("retrying after 10 seconds");
+
+        if (retryCount == 0) {
+          log.error("retries exhausted, possible exception: ", ex);
+          break;
+        }
         TimeUnit.MILLISECONDS.sleep(sleepInMilliSeconds);
       }
     }
