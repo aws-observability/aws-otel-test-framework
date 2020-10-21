@@ -55,7 +55,7 @@ cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suit
 ### 2.3 don't forget to clean the resources
 
 ```shell
-cd terraform/ecs && terraform destory"
+cd terraform/ecs && terraform destroy
 ```
 ## 3. Run EC2
 
@@ -74,7 +74,7 @@ cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={th
 
 ### 3.3 don't forget to clean the resources 
 ```shell
-cd terraform/ec2 && terraform destory
+cd terraform/ec2 && terraform destroy
 ```
 
 ## 4. Run EKS
