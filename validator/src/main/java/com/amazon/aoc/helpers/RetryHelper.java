@@ -41,7 +41,7 @@ public class RetryHelper {
         retryable.execute();
         return;
       } catch (Exception ex) {
-        log.info("retrying after 10 seconds");
+        log.info("retrying after {} seconds", TimeUnit.MILLISECONDS.toSeconds(sleepInMilliSeconds));
 
         if (retryCount == 0) {
           log.error("retries exhausted, possible exception: ", ex);

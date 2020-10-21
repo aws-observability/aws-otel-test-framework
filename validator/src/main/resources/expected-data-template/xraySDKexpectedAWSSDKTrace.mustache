@@ -1,0 +1,34 @@
+{
+  "name": "My Flask Web Application",
+  "in_progress": false,
+  "http": {
+    "request": {
+      "url": "{{endpoint}}/aws-sdk-call",
+      "method": "GET"
+    },
+    "response": {
+      "status": 200
+    }
+  },
+  "aws": {
+    "xray": {
+      "sampling_rule_name": "Default"
+    }
+  },
+  "subsegments": [
+    {
+      "name": "S3",
+      "in_progress": false,
+      "http": {
+        "response": {
+          "status": 200
+        }
+      },
+      "aws": {
+        "region": "{{region}}",
+        "operation": "ListBuckets"
+      },
+      "namespace": "aws"
+    }
+  ]
+}

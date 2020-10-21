@@ -1,0 +1,34 @@
+{
+  "name": "My Flask Web Application",
+  "in_progress": false,
+  "http": {
+    "request": {
+      "url": "{{endpoint}}/outgoing-http-call",
+      "method": "GET"
+    },
+    "response": {
+      "status": 200
+    }
+  },
+  "aws": {
+    "xray": {
+      "sampling_rule_name": "Default"
+    }
+  },
+  "subsegments": [
+    {
+      "name": "aws.amazon.com",
+      "in_progress": false,
+      "http": {
+        "request": {
+          "url": "https://aws.amazon.com",
+          "method": "get"
+        },
+        "response": {
+          "status": 200
+        }
+      },
+      "namespace": "remote"
+    }
+  ]
+}
