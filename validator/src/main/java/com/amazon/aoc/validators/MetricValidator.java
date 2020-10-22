@@ -58,15 +58,17 @@ public class MetricValidator implements IValidator {
     // get expected metrics and remove the to be skipped dimensions
     final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
     Set<String> skippedDimensionNameList = new HashSet<>();
-    for(Metric metric: expectedMetricList){
-      for(Dimension dimension: metric.getDimensions()){
-        if(dimension.getValue().equals("SKIP")){
+    for (Metric metric : expectedMetricList) {
+      for (Dimension dimension : metric.getDimensions()) {
+        if (dimension.getValue().equals("SKIP")) {
           skippedDimensionNameList.add(dimension.getName());
         }
       }
     }
     for (Metric metric : expectedMetricList) {
-      metric.getDimensions().removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+      metric
+          .getDimensions()
+          .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
     }
 
     // get metric from cloudwatch
@@ -80,7 +82,9 @@ public class MetricValidator implements IValidator {
           // remove the skip dimensions
           log.info("dimensions to be skipped in validation: {}", skippedDimensionNameList);
           for (Metric metric : metricList) {
-            metric.getDimensions().removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+            metric
+                .getDimensions()
+                .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
           }
 
           log.info("check if all the expected metrics are found");

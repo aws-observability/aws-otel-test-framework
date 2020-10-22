@@ -25,108 +25,137 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.XRayService;
+import com.amazonaws.services.xray.model.Segment;
 import com.amazonaws.services.xray.model.Trace;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wnameless.json.flattener.JsonFlattener;
 import lombok.extern.log4j.Log4j2;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Log4j2
 public class TraceValidator implements IValidator {
-    private MustacheHelper mustacheHelper = new MustacheHelper();
-    private XRayService xrayService;
-    private ICaller caller;
-    private Context context;
-    private FileConfig expectedTrace;
+  private MustacheHelper mustacheHelper = new MustacheHelper();
+  private XRayService xrayService;
+  private ICaller caller;
+  private Context context;
+  private FileConfig expectedTrace;
 
-    @Override
-    public void init(Context context, ValidationConfig validationConfig, ICaller caller, FileConfig expectedTrace) throws Exception {
-        this.xrayService = new XRayService(context.getRegion());
-        this.caller = caller;
-        this.context = context;
-        this.expectedTrace = expectedTrace;
+  @Override
+  public void init(
+      Context context, ValidationConfig validationConfig, ICaller caller, FileConfig expectedTrace)
+      throws Exception {
+    this.xrayService = new XRayService(context.getRegion());
+    this.caller = caller;
+    this.context = context;
+    this.expectedTrace = expectedTrace;
+  }
+
+  @Override
+  public void validate() throws Exception {
+    // get stored trace
+    Map<String, Object> storedTrace = this.getStoredTrace();
+
+    // create trace id list to retrieve trace from x-ray service
+    String traceId = (String) storedTrace.get("[0].trace_id");
+    List<String> traceIdList = Collections.singletonList(traceId);
+
+    // get retrieved trace from x-ray service
+    Map<String, Object> retrievedTrace = this.getRetrievedTrace(traceIdList);
+
+    // data model validation of other fields of segment document
+    for (Map.Entry<String, Object> entry : storedTrace.entrySet()) {
+      if (!entry.getValue().equals(retrievedTrace.get(entry.getKey()))) {
+        log.error("data model validation failed");
+        log.info("mis matched data model field list");
+        log.info("value of stored trace map: {}", entry.getValue());
+        log.info("value of retrieved map: {}", retrievedTrace.get(entry.getKey()));
+        log.info("==========================================");
+        throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
+      }
     }
 
-    @Override
-    public void validate() throws Exception {
-        // get stored trace
-        Map<String, Object> storedTrace = this.getStoredTrace();
+    log.info("validation is passed for path {}", caller.getCallingPath());
+  }
 
-        // create trace id list to retrieve trace from x-ray service
-        String traceId = (String) storedTrace.get("trace_id");
-        List<String> traceIdList = Collections.singletonList(traceId);
+  // this method will hit get trace from x-ray service and get retrieved trace
+  private Map<String, Object> getRetrievedTrace(List<String> traceIdList) throws Exception {
+    AtomicReference<List<Trace>> retrieveTraceListAtomicReference = new AtomicReference<>();
+    RetryHelper.retry(
+        3,
+        () -> {
+          List<Trace> retrieveTraceList = null;
+          retrieveTraceList = xrayService.listTraceByIds(traceIdList);
+          retrieveTraceListAtomicReference.set(retrieveTraceList);
 
-        // get retrieved trace from x-ray service
-        Map<String, Object> retrievedTrace = this.getRetrievedTrace(traceIdList);
-
-        // validation of trace id
-        if (!storedTrace.get("trace_id").equals(retrievedTrace.get("trace_id"))) {
-            log.error("trace id validation failed");
-            throw new BaseException(ExceptionCode.TRACE_ID_NOT_MATCHED);
-        }
-
-        // data model validation of other fields of segment document
-        for (Map.Entry<String, Object> entry : storedTrace.entrySet()) {
-            if (!entry.getValue().equals(retrievedTrace.get(entry.getKey()))) {
-                log.error("data model validation failed");
-                log.info("mis matched data model field list");
-                log.info("value of stored trace map: {}", entry.getValue());
-                log.info("value of retrieved map: {}",retrievedTrace.get(entry.getKey()));
-                log.info("==========================================");
-                throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
-            }
-        }
-    }
-
-    // this method will hit get trace from x-ray service and get retrieved trace
-    private Map<String, Object> getRetrievedTrace(List<String> traceIdList) throws Exception {
-        Map<String, Object> flattenedJsonMapForRetrievedTrace = null;
-        AtomicReference<List<Trace>> retrieveTraceListAtomicReference = new AtomicReference<>();
-        int MAX_RETRY_COUNT = 3;
-
-        RetryHelper.retry(MAX_RETRY_COUNT, () -> {
-            List<Trace> retrieveTraceList = null;
-            retrieveTraceList = xrayService.listTraceByIds(traceIdList);
-            retrieveTraceListAtomicReference.set(retrieveTraceList);
-
-            if (retrieveTraceList == null || retrieveTraceList.isEmpty()) {
-                throw new BaseException(ExceptionCode.EMPTY_LIST);
-            }
+          if (retrieveTraceList == null || retrieveTraceList.isEmpty()) {
+            throw new BaseException(ExceptionCode.EMPTY_LIST);
+          }
         });
 
-        // flattened JSON object to a map
-        if (retrieveTraceListAtomicReference.get() != null && !retrieveTraceListAtomicReference.get().isEmpty()) {
-            try {
-                flattenedJsonMapForRetrievedTrace = JsonFlattener.flattenAsMap(retrieveTraceListAtomicReference.get().get(0).getSegments().get(0).getDocument());
-            } catch (Exception e) {
-                log.error("exception while flattening the retrieved trace: " + e.getMessage());
-                e.printStackTrace();
-            }
-        } else {
-            log.error("retrieved trace list is empty or null");
-            throw new BaseException(ExceptionCode.EMPTY_LIST);
-        }
+    // flattened JSON object to a map
+    Map<String, Object> flattenedJsonMapForRetrievedTrace = null;
+    if (retrieveTraceListAtomicReference.get() != null
+        && !retrieveTraceListAtomicReference.get().isEmpty()) {
+      try {
+        List<Segment> segmentList = retrieveTraceListAtomicReference.get().get(0).getSegments();
+        // have to sort the segments by start_time because
+        // 1. we can not get span id from xraysdk today,
+        // 2. the segments come out with different order everytime
+        segmentList.sort(
+            (segment1, segment2) -> {
+              try {
+                Map<String, Object> map1 =
+                    new ObjectMapper().readValue(segment1.getDocument(), Map.class);
+                Map<String, Object> map2 =
+                    new ObjectMapper().readValue(segment2.getDocument(), Map.class);
+                return map1.get("start_time")
+                    .toString()
+                    .compareTo(map2.get("start_time").toString());
+              } catch (Exception ex) {
+                log.error(ex);
+                return 0;
+              }
+            });
 
-        return flattenedJsonMapForRetrievedTrace;
+        // build the segment's document as a jsonarray and flatten it for easy comparison
+        StringBuilder segmentsJson = new StringBuilder("[");
+        for (Segment segment : segmentList) {
+          segmentsJson.append(segment.getDocument());
+          segmentsJson.append(",");
+        }
+        segmentsJson.replace(segmentsJson.length() - 1, segmentsJson.length(), "]");
+        flattenedJsonMapForRetrievedTrace = JsonFlattener.flattenAsMap(segmentsJson.toString());
+      } catch (Exception e) {
+        log.error("exception while flattening the retrieved trace: " + e.getMessage());
+      }
+    } else {
+      log.error("retrieved trace list is empty or null");
+      throw new BaseException(ExceptionCode.EMPTY_LIST);
     }
 
-    // this method will hit a http endpoints of sample web apps and get stored trace
-    private Map<String, Object> getStoredTrace() throws Exception {
-        Map<String, Object> flattenedJsonMapForStoredTraces = null;
+    return flattenedJsonMapForRetrievedTrace;
+  }
 
-        SampleAppResponse sampleAppResponse = this.caller.callSampleApp();
+  // this method will hit a http endpoints of sample web apps and get stored trace
+  private Map<String, Object> getStoredTrace() throws Exception {
+    Map<String, Object> flattenedJsonMapForStoredTraces = null;
 
-        String jsonExpectedTrace = mustacheHelper.render(this.expectedTrace, context);
+    SampleAppResponse sampleAppResponse = this.caller.callSampleApp();
 
-        try {
-            // flattened JSON object to a map
-            flattenedJsonMapForStoredTraces = JsonFlattener.flattenAsMap(jsonExpectedTrace);
-            flattenedJsonMapForStoredTraces.put("trace_id", sampleAppResponse.getTraceId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    String jsonExpectedTrace = mustacheHelper.render(this.expectedTrace, context);
 
-        return flattenedJsonMapForStoredTraces;
+    try {
+      // flattened JSON object to a map
+      flattenedJsonMapForStoredTraces = JsonFlattener.flattenAsMap(jsonExpectedTrace);
+      flattenedJsonMapForStoredTraces.put("[0].trace_id", sampleAppResponse.getTraceId());
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+
+    return flattenedJsonMapForStoredTraces;
+  }
 }

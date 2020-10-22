@@ -158,7 +158,7 @@ resource "null_resource" "sample-app-validator" {
   }
 
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}:80'"
     working_dir = "../../"
   }
 }

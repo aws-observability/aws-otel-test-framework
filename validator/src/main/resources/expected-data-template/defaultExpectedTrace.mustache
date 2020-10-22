@@ -1,2 +1,36 @@
--
-  id: {{traceId}}
+[
+  {
+    "http": {
+      "request": {
+        "url": "{{endpoint}}/span0",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200
+      }
+    }
+  },
+  {
+    "http": {
+      "request": {
+        "url": "http://localhost:4567/span1",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200
+      }
+    }
+  },
+  {
+    "http": {
+      "request": {
+        "url": "http://localhost:4567/span2",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200
+      }
+    }
+  }
+]
+

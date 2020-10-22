@@ -32,8 +32,15 @@ import java.util.concurrent.atomic.AtomicReference;
 @Log4j2
 public class HttpCaller implements ICaller {
   private String url;
+  private String path;
 
+  /**
+   * construct httpCaller.
+   * @param endpoint the endpoint to call, for example "http://127.0.0.1:8080"
+   * @param path the path to call, for example "/test"
+   */
   public HttpCaller(String endpoint, String path) {
+    this.path = path;
     this.url = endpoint + path;
     log.info("validator is trying to hit this {} endpoint", this.url);
   }
@@ -72,5 +79,10 @@ public class HttpCaller implements ICaller {
         });
 
     return sampleAppResponseAtomicReference.get();
+  }
+
+  @Override
+  public String getCallingPath() {
+    return path;
   }
 }

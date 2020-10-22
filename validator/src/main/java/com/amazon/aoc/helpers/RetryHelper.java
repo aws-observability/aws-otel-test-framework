@@ -35,24 +35,22 @@ public class RetryHelper {
   public static void retry(
       int retryCount, int sleepInMilliSeconds, boolean throwExceptionInTheEnd, Retryable retryable)
       throws Exception {
+    Exception exceptionInTheEnd = null;
     while (retryCount-- > 0) {
       try {
         log.info("retry attempt left : {} ", retryCount);
         retryable.execute();
         return;
       } catch (Exception ex) {
+        exceptionInTheEnd = ex;
         log.info("retrying after {} seconds", TimeUnit.MILLISECONDS.toSeconds(sleepInMilliSeconds));
-
-        if (retryCount == 0) {
-          log.error("retries exhausted, possible exception: ", ex);
-          break;
-        }
         TimeUnit.MILLISECONDS.sleep(sleepInMilliSeconds);
       }
     }
 
     if (throwExceptionInTheEnd) {
-      throw new BaseException(ExceptionCode.FAILED_AFTER_RETRY);
+      log.error("retries exhausted, possible");
+      throw exceptionInTheEnd;
     }
   }
 
