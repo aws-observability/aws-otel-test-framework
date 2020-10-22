@@ -297,7 +297,7 @@ resource "kubernetes_pod" "aoc_pod" {
 resource "null_resource" "callable_sample_app_validator" {
   count = var.sample_app_callable ? 1 : 0
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname}:80'"
     working_dir = "../../"
   }
 }
