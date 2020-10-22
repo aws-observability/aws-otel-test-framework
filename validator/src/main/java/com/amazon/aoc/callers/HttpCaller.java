@@ -35,6 +35,7 @@ public class HttpCaller implements ICaller {
 
   public HttpCaller(String endpoint, String path) {
     this.url = endpoint + path;
+    log.info("validator is trying to hit this {} endpoint", this.url);
   }
 
   @Override
@@ -44,7 +45,7 @@ public class HttpCaller implements ICaller {
 
     AtomicReference<SampleAppResponse> sampleAppResponseAtomicReference = new AtomicReference<>();
     RetryHelper.retry(
-        60,
+        30,
         () -> {
           try (Response response = client.newCall(request).execute()) {
             String responseBody = response.body().string();

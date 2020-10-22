@@ -25,10 +25,12 @@ public enum ExceptionCode {
 
   // validating errors
   TRACE_ID_NOT_MATCHED(50001, "trace id not matched"),
+  DATA_MODEL_NOT_MATCHED(50006, "trace id not matched"),
   TRACE_SPAN_LIST_NOT_MATCHED(50002, "trace span list has different length"),
   TRACE_SPAN_NOT_MATCHED(50003, "trace span not matched"),
   TRACE_LIST_NOT_MATCHED(50004, "trace list has different length"),
   DATA_EMITTER_UNAVAILABLE(50005, "the data emitter is unavailable to ping"),
+  EMPTY_LIST(50007, "list is empty or null"),
 
   // build validator
   VALIDATION_TYPE_NOT_EXISTED(60001, "validation type not existed"),

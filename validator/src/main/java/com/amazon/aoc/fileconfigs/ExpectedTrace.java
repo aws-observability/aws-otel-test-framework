@@ -20,6 +20,10 @@ import lombok.Getter;
 @Getter
 public enum ExpectedTrace implements FileConfig {
   DEFAULT_EXPECTED_TRACE("/expected-data-template/defaultExpectedTrace.mustache"),
+  OTEL_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/otelSDKexpectedAWSSDKTrace.mustache"),
+  OTEL_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/otelSDKexpectedHTTPTrace.mustache"),
+  XRAY_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedAWSSDKTrace.mustache"),
+  XRAY_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedHTTPTrace.mustache"),
   ;
 
   private String path;

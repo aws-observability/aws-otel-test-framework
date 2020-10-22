@@ -1,0 +1,27 @@
+{
+  "in_progress": false,
+  "http": {
+    "request": {
+      "url": "{{endpoint}}/aws-sdk-call",
+      "method": "GET"
+    },
+    "response": {
+      "status": 200
+    }
+  },
+  "subsegments": [
+    {
+      "name": "S3",
+      "in_progress": false,
+      "http": {
+        "response": {
+          "status": 200
+        }
+      },
+      "aws": {
+        "operation": "ListBuckets"
+      },
+      "namespace": "aws"
+    }
+  ]
+}
