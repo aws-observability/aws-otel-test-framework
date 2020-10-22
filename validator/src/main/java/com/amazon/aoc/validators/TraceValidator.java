@@ -77,6 +77,8 @@ public class TraceValidator implements IValidator {
         throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
       }
     }
+
+    log.info("validation is passed for path {}", caller.getCallingPath());
   }
 
   // this method will hit get trace from x-ray service and get retrieved trace
