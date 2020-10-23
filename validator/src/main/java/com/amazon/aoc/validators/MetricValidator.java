@@ -184,10 +184,16 @@ public class MetricValidator implements IValidator {
   private List<Metric> rollupMetric(List<Metric> metricList) {
     List<Metric> rollupMetricList = new ArrayList<>();
     for (Metric metric : metricList) {
-      // get otellib dimension out
-      // assuming the first dimension is otellib, if not the validation fails
-      Dimension otellibDimension = metric.getDimensions().get(0);
-      boolean otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+      Dimension otellibDimension = new Dimension();
+      boolean otelLibDimensionExisted = false;
+
+      if (metric.getDimensions().size() > 0){
+        // get otellib dimension out
+        // assuming the first dimension is otellib, if not the validation fails
+        otellibDimension = metric.getDimensions().get(0);
+        otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+      }
+      
       if (otelLibDimensionExisted) {
         metric.getDimensions().remove(0);
       }
