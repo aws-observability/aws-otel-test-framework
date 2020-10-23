@@ -187,7 +187,7 @@ public class MetricValidator implements IValidator {
       Dimension otellibDimension = new Dimension();
       boolean otelLibDimensionExisted = false;
 
-      if (metric.getDimensions().size() > 0){
+      if (metric.getDimensions().size() > 0) {
         // get otellib dimension out
         // assuming the first dimension is otellib, if not the validation fails
         otellibDimension = metric.getDimensions().get(0);
