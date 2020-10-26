@@ -38,7 +38,7 @@ variable "aoc_image_repo" {
 }
 
 variable "aoc_version" {
-  default = "v0.1.12-296689894"
+  default = "v0.1.0-324996423"
 }
 
 variable "validation_config" {
