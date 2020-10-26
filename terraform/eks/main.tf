@@ -211,7 +211,7 @@ resource "kubernetes_service" "sample_app_service" {
     type = "LoadBalancer"
 
     port {
-      port = 80
+      port = module.common.sample_app_lb_port
       target_port = module.common.sample_app_listen_address_port
     }
   }
@@ -297,7 +297,7 @@ resource "kubernetes_pod" "aoc_pod" {
 resource "null_resource" "callable_sample_app_validator" {
   count = var.sample_app_callable ? 1 : 0
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname}:80'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}'"
     working_dir = "../../"
   }
 }

@@ -3,7 +3,7 @@ services:
   sample_app:
     image: ${data_emitter_image}
     ports:
-      - "80:${sample_app_listen_address_port}"
+      - "${sample_app_external_port}:${sample_app_listen_address_port}"
     environment:
       LISTEN_ADDRESS: ${listen_address}
       OTEL_RESOURCE_ATTRIBUTES: ${otel_resource_attributes}

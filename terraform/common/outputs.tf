@@ -72,3 +72,7 @@ output "sample_app_listen_address_ip" {
 output "sample_app_listen_address_port" {
   value = "4567"
 }
+
+output "sample_app_lb_port" {
+  value = "8080"
+}

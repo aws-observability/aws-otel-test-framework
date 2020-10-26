@@ -120,6 +120,7 @@ data "template_file" "docker_compose" {
 
   vars = {
     data_emitter_image = var.data_emitter_image
+    sample_app_external_port = module.common.sample_app_lb_port
     sample_app_listen_address_port = module.common.sample_app_listen_address_port
     listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
     otel_resource_attributes = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
@@ -158,7 +159,7 @@ resource "null_resource" "sample-app-validator" {
   }
 
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}:80'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}:${module.common.sample_app_lb_port}'"
     working_dir = "../../"
   }
 }
