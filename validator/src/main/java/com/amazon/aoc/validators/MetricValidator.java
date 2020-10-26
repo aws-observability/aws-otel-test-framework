@@ -44,7 +44,7 @@ import java.util.TreeSet;
 
 @Log4j2
 public class MetricValidator implements IValidator {
-  private static int MAX_RETRY_COUNT = 60;
+  private static int MAX_RETRY_COUNT = 30;
   private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
 
   private MustacheHelper mustacheHelper = new MustacheHelper();
@@ -74,7 +74,7 @@ public class MetricValidator implements IValidator {
     // get metric from cloudwatch
     CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
     RetryHelper.retry(
-        30,
+        MAX_RETRY_COUNT,
         () -> {
           List<Metric> metricList =
               this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
