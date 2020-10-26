@@ -74,7 +74,7 @@ public class MetricValidator implements IValidator {
     // get metric from cloudwatch
     CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
     RetryHelper.retry(
-        MAX_RETRY_COUNT,
+        30,
         () -> {
           List<Metric> metricList =
               this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
@@ -105,7 +105,7 @@ public class MetricValidator implements IValidator {
    */
   private void compareMetricLists(List<Metric> toBeCheckedMetricList, List<Metric> baseMetricList)
       throws BaseException {
-    log.info("compare two metric list {} {}", toBeCheckedMetricList, baseMetricList);
+
     // load metrics into a hash set
     Set<Metric> metricSet =
         new TreeSet<>(
