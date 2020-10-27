@@ -29,7 +29,7 @@ variable "package_s3_bucket" {
 }
 
 variable "aoc_version" {
-  default = "v0.1.12-291936394"
+  default = "v0.1.0-324996423"
 }
 
 variable "region" {
