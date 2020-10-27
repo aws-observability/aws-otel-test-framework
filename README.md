@@ -25,17 +25,9 @@ run
 cd terraform/setup && terraform init && terraform apply
 ``
 
-### 1.4 [Optional] Create a PR to [AOC Repo](https://github.com/aws-observability/aws-otel-collector) and record the version number
+### 1.4 Build Image
 
-This is optional item, only do it if your goal is to add a component or fix a bug into the AOC Repo. Everytime when you create a PR to AOC repo, there will be a workflow to be running in this PR to do regression test and also, build testing artifacts[rpm, image, etc] for your code. Every PR will have a separate version number which you will be able to use it in the testing framework to verify whether your new code can pass your new testing suite.
-
-1. create a branch in [AOC Repo](https://github.com/aws-observability/aws-otel-collector). [please don't fork at this moment, just create a branch directly in the AOC Repo]. [todo, after the repo becomes public, you can use fork instead of creating branch]
-
-2. create a PR to merge the new branch to the `main` branch.
-
-3. Waiting for the workflow checking in the PR to be finished.
-
-4. find out the version number, click into the workflow page, click `e2etest-preparation` step, and click `Versioning for testing`, record the version number. Ex(v0.1.12-299946851).
+please follow xx to build your image with the new component, and push this image to dockerhub, record the image link, which will be used in your testing.
 
 
 ## 2. Run ECS Test
