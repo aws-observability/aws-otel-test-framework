@@ -20,6 +20,10 @@
         {
             "name": "AWS_XRAY_DAEMON_ADDRESS",
             "value": "127.0.0.1:2000"
+        },
+        {
+            "name": "AWS_REGION",
+            "value": "${region}"
         }
       ],
       "dependsOn": [

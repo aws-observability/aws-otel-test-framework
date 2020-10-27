@@ -9,6 +9,8 @@ services:
       OTEL_RESOURCE_ATTRIBUTES: ${otel_resource_attributes}
       INSTANCE_ID: ${testing_id}
       OTEL_EXPORTER_OTLP_ENDPOINT: ${otel_endpoint}
+      AWS_REGION: ${region}
+
     healthcheck:
       test: ["CMD", "curl", "-f", "http://127.0.0.1:${sample_app_listen_address_port}/"]
       interval: 5s
