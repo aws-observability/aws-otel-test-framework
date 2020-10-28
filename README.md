@@ -92,15 +92,15 @@ Bascially, you will need to add a parameter files to orveride to default values 
 
 please check [the parameters to override](terraform/README.md)
 
-## 4. Contributing
+## 3. Contributing
 
 We have collected notes on how to contribute to this project in CONTRIBUTING.md.
 
-## 5. Security
+## 4. Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
-## 6. License
+## 5. License
 
 This project is licensed under the Apache-2.0 License.
 
