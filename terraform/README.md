@@ -1,8 +1,8 @@
-# How to add a testing suite to the framework
+# Testing Framework
 
 ## 1. Basic concepts
 
-There're some concepts you might want to learn before starting to add your testing suite. 
+There're some concepts you might want to learn. 
 
 ### 1.1 the workflow of the testing framework
 
@@ -13,33 +13,22 @@ the testing framework is built based on terraform, every time you run your testi
 3. **Validate data** Validate the data by fetching them from backend(CloudWatch, XRay) base on the validation config you provide. 
 
 
-### 1.2 Testing Suite
+### 1.2 Parameter override
 
-each file with suffix ".tfvar" under folder `terraform/testing-suites` will be treated as a testing suite, each testing suite defines different otconfig, validation_config, and deployment config based on different platform.Ex(taskdef for ECS) 
+All the parameters defined under `ec2/variables.tf`, `ecs/variables.tf`, `eks/variables.tf` could be overrided. When you run the terraform command, give it a `-var-file=xxx.tfvars`, so that all the parameters in xxx.tfvars will override their default value in variables.tf. 
 
-### 1.3 AOC Version
+## 2. Parameters to override
 
-`aoc_version` is a parameter you can use while running the testing-suite, which tells the testing framework to fetch the AWS Otel Collector with this version, this parameter is useful especially when you create a PR to AWS Otel Collector, which will build a version to you with your unmerged code, so that you can test your "new code" with your new testing suite.
-
-### 1.4 Testing Id
+* `aoc_version` is a parameter you can use while running the test, which tells the testing framework to fetch the AWS Otel Collector with this version. This parameter is used as the `tag` of the collector image. 
  
-`testing_id` is a placeholder that you can use in your configuration, which is a unique id representing each run of the testing suite. You can use this testing id as part of your metric name, or dimension name, to ensure the metric emitted from each run of the testing suite is different, so that the validation will always validate on your new metric.
-
-
-## 2. Add a testing suite
-
-please add a new tfvars file under `terraform/testing-suites` folder, each tfvar file represent a testing suite. 
-
-### 2.1 add an ecs testing suite
-
-specify below config in the tfvars file
-1. otconfig_path, please put a new otconfig file under `terraform/templates/otconfig` folder and specify the path in the tfvars file.
-2. ecs_taskdef_path, please put a new ecs taskdef file under `terraform/templates/ecstaskdef` folder and specify the path in the tfvars file.
-3. validation_config, please put a new validation config file under `validator/src/main/resources/validations` folder and specify the filename in the tfvars file.
-4. [optional] sample_app_callable, by default it's true, only set it to false when you don't have a web application sample app image
-5. [optional] data_emitter_image, if you have a sample app then set its image name here
-6. [optional] aoc_image_repo, if you have an aoc image you just built with the new component, then set its repo name here
-7. [optional] aoc_version, if you have an aoc image you just built with the new component, then set it as its tag name.
+* `otconfig_path`, the path to your ot config file. 
+* `ecs_taskdef_path`, the path to your ecs task definition file.
+* `validation_config`, the filename of the validation configuration, which is under `validator/src/main/resources/validations` folder.
+* `sample_app_callable`, by default it's true, only set it to false when you don't have a web application sample app image.
+* `data_emitter_image`, if you have a sample app then set its image name including tag here
+* `aoc_image_repo`, if you have an AWS Otel Collector image you just built with the new component, then set its repo name here
+* `docker_compose_path`, the path to your ec2 docker compose file.
+* `eks_pod_config_path`, the path to your eks pod configuration.
 
 an example here:
 
@@ -55,58 +44,10 @@ validation_config="statsd-metric-validation.yml"
 data_emitter_image="alpine/socat:latest"
 ```
 
-### 2.2 add an ec2 testing suite
+## 3. Placeholders
 
-specify below config in the tfvars file
-1. otconfig_path, please put a new otconfig file under `terraform/templates/otconfig` folder and specify the path in the tfvars file.
-2. docker_compose_path, please put a new docker compose file under `terraform/templates/ec2-docker-compose-config` folder and specify the path in the tfvars file.
-3. validation_config, please put a new validation config file under `validator/src/main/resources/validations` folder and specify the filename in the tfvars file.
-4. [optional] sample_app_callable, by default it's true, only set it to false when you don't have a web application sample app image
-5. [optional] data_emitter_image, if you have a sample app then set its image name here
-7. [optional] aoc_version, if you have an aoc rpm/dev/msi you just built with the new component, then set it as its tag name.
+When you define the configuration files[otconfig, ecs task definition, Docker compose file, Eks Config, validation config], you can use some placeholders so that the testing framework will automatically fill in the values during runtime.
 
-an example here:
-
-```shell
-sample_app_callable = false
-
-otconfig_path="../template/otconfig/statsd_otconfig.tpl"
-
-docker_compose_path="../template/ec2-docker-compose-config"
-
-# this file is defined in validator/src/main/resources/validations
-validation_config="statsd-metric-validation.yml"
-
-data_emitter_image="alpine/socat:latest"
-```
-
-
-### 2.3 add an eks testing suite
-
-specify below config in the tfvars file
-1. otconfig_path, please put a new otconfig file under `terraform/templates/otconfig` folder and specify the path in the tfvars file.
-2. eks_pod_config_path, please put a new eks config file under `terraform/templates/eks-pod-config` folder and specify the path in the tfvars file.
-3. validation_config, please put a new validation config file under `validator/src/main/resources/validations` folder and specify the filename in the tfvars file.
-4. [optional] sample_app_callable, by default it's true, only set it to false when you don't have a web application sample app image
-5. [optional] data_emitter_image, if you have a sample app then set its image name here
-6. [optional] aoc_image_repo, if you have an aoc image you just built with the new component, then set its repo name here
-7. [optional] aoc_version, if you have an aoc image you just built with the new component, then set it as its tag name.
-
-```shell
-sample_app_callable = false
-
-otconfig_path="../template/otconfig/statsd_otconfig.tpl"
-eks_pod_config_path="../template/eks-pod-config/statsd-eks-config.tpl"
-
-# this file is defined in validator/src/main/resources/validations
-validation_config="statsd-metric-validation.yml"
-
-data_emitter_image="alpine/socat:latest"
-```
-
-### 3 how to write the configurations?
-
-You are able to use placeholders in your configuration files, the testing framework will replace the placeholders with its runtime value when you run the testing suite.
 
 #### 3.1 otconfig
 
@@ -115,7 +56,7 @@ Below are the placeholders you can use in the otconfig
 * region
 * otel_service_namespace
 * otel_service_name
-* testing_id
+* testing_id, which is a placeholder that you can use in your configuration, which is a unique id representing each run of the testing suite. You can use this testing id as part of your metric name, or dimension name, to ensure the metric emitted from each run of the testing suite is different, so that the validation will always validate on your new metric.
 
 an example:
 
