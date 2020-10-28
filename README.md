@@ -25,85 +25,46 @@ run
 cd terraform/setup && terraform init && terraform apply
 ``
 
-### 1.4 [Optional] Create a PR to [AOC Repo](https://github.com/aws-observability/aws-otel-collector) and record the version number
+### 1.4 Build Image
 
-This is optional item, only do it if your goal is to add a component or fix a bug into the AOC Repo. Everytime when you create a PR to AOC repo, there will be a workflow to be running in this PR to do regression test and also, build testing artifacts[rpm, image, etc] for your code. Every PR will have a separate version number which you will be able to use it in the testing framework to verify whether your new code can pass your new testing suite.
-
-1. create a branch in [AOC Repo](https://github.com/aws-observability/aws-otel-collector). [please don't fork at this moment, just create a branch directly in the AOC Repo]. [todo, after the repo becomes public, you can use fork instead of creating branch]
-
-2. create a PR to merge the new branch to the `main` branch.
-
-3. Waiting for the workflow checking in the PR to be finished.
-
-4. find out the version number, click into the workflow page, click `e2etest-preparation` step, and click `Versioning for testing`, record the version number. Ex(v0.1.12-299946851).
+please follow https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md to build your image with the new component, and push this image to dockerhub, record the image link, which will be used in your testing.
 
 
-## 2. Run ECS Test
+## 2. Run ECS Regression Test
 
 ### 2.1 run with the testing-suite
 
 ```shell
-cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suites/statsd-ecs.tfvars"
+cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suites/statsd-ecs.tfvars" -var="aoc_image_repo={{the docker image you just pushed}}"
 ```
 
-### 2.2 run with a specific aoc version if you have done 1.4
-
-```shell
-cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suites/statsd-ecs.tfvars" -var="aoc_version={the version you got from workflow}"
-```
-
-### 2.3 don't forget to clean the resources
+### 2.2 don't forget to clean the resources
 
 ```shell
 cd terraform/ecs && terraform destroy
 ```
-## 3. Run EC2
 
-### 3.1 run with the testing suite [support amazonlinux2, ubuntu16, windows2019]
-
-```shell
-cd terraform/ec2 && terraform init && terraform apply -var="testing_ami=amazonlinux2" -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars"
-```
-
-### 3.2 run with a specfic aoc version if you have done 1.4
-
-
-```shell
-cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars" -var="aoc_version={the version you got from workflow}"
-```
-
-### 3.3 don't forget to clean the resources 
-```shell
-cd terraform/ec2 && terraform destroy
-```
-
-## 4. Run EKS
+## 3. Run EKS Regression Test
 
 please note you are required to create a eks cluster in your account before running below command
 
-### 4.1 run with the testing suite
+### 3.1 run with the testing suite
 
 ```shell
-cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars"
+cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars" -var="aoc_image_repo={{the docker image you just pushed}}"
 ```
 
-### 4.2 run with a specfic aoc version if you have done 1.4
-
-```shell
-cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars" -var="aoc_version={the version you got from workflow}"
-```
-
-### 4.3 don't forget to clean the resources
+### 3.2 don't forget to clean the resources
 
 ```
 cd terraform/eks && terraform destroy
 ```
 
-## 5. Add a testing suite
+## 4. Add a testing suite
 
 please check [adding a testing suite](terraform/README.md)
 
-## 6. Contributing
+## 5. Contributing
 
 We have collected notes on how to contribute to this project in CONTRIBUTING.md.
 
