@@ -24,8 +24,6 @@ public enum ExpectedTrace implements FileConfig {
   OTEL_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/otelSDKexpectedHTTPTrace.mustache"),
   XRAY_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedAWSSDKTrace.mustache"),
   XRAY_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedHTTPTrace.mustache"),
-  XRAY_RECEIVER_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/xrayReceiverSDKexpectedHttpSDKTrace.mustache"),
-  XRAY_RECEIVER_SDK_AWS_EXPECTED_TRACE("/expected-data-template/xrayReceiverSDKexpectedAWSSDKTrace.mustache"),
   ;
 
   private String path;
