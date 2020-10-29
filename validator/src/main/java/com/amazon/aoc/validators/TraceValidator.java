@@ -58,14 +58,14 @@ public class TraceValidator implements IValidator {
   public void validate() throws Exception {
     // get stored trace
     Map<String, Object> storedTrace = this.getStoredTrace();
-
+    log.info("value of stored trace map: {}", storedTrace);
     // create trace id list to retrieve trace from x-ray service
     String traceId = (String) storedTrace.get("[0].trace_id");
     List<String> traceIdList = Collections.singletonList(traceId);
 
     // get retrieved trace from x-ray service
     Map<String, Object> retrievedTrace = this.getRetrievedTrace(traceIdList);
-
+    log.info("value of retrieved trace map: {}", retrievedTrace);
     // data model validation of other fields of segment document
     for (Map.Entry<String, Object> entry : storedTrace.entrySet()) {
       if (!entry.getValue().equals(retrievedTrace.get(entry.getKey()))) {

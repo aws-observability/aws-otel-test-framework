@@ -74,7 +74,7 @@ output "sample_app_listen_address_port" {
 }
 
 output "sample_app_lb_port" {
-  value = "8080"
+  value = "80"
 }
 
 output "default_otconfig_path" {
