@@ -5,15 +5,9 @@ before adding a new component into AWS Otel Collector, we require contributors t
 
 ## 1. How do I add a new OT component[receiver, processor, exporter] into AWS Otel Collector? 
 
-You just need to create a PR in [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector), and get it approved and merged. Then we will schedule to release a new version of collector with the new component.
+There're two requirements:
 
-There're two requirements in this PR
-
-### 1.1 Make code changes in [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector) to build the new component.
-
-two files you need to focus on, [go module to add your component](https://github.com/aws-observability/aws-otel-collector/blob/main/go.mod) and [enable your component](https://github.com/aws-observability/aws-otel-collector/blob/main/pkg/defaultcomponents/defaults.go).
-
-### 1.2 Add a e2etest case in the testing framework repo and "link it" to your pr. 
+### 1.1 Submit a pr to [the testing framework] (https://github.com/aws-observability/aws-otel-test-framework) repo to add a testcase for your component.
 
 all the test cases are defined under [the testcase directory](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases), and each sub folder will be treated as a test case. 
 
@@ -28,15 +22,21 @@ You will need to create a sub folder under [the testcase directory](https://gith
 
 all the default files can be found [here] (https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/templates/defaults)
 
-### 1.3 Link your testcase into [AWS Otel Collector] (https://github.com/aws-observability/aws-otel-collector)
-
-
 If you find the current test case option can not fulfill your testing requirement, feel free to open an issue here so we can discuss together.
 
+### 1.2 Create a PR to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector) to build the new component
+
+You need to create a PR in [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector), "link" the testcase, and get it approved and merged. Then we will schedule to release a new version of collector with the new component.
+
+three files you need to focus on, 
+
+* [go module to add your component](https://github.com/aws-observability/aws-otel-collector/blob/main/go.mod)
+* [enable your component](https://github.com/aws-observability/aws-otel-collector/blob/main/pkg/defaultcomponents/defaults.go).
+* [link your testcase] (https://github.com/aws-observability/aws-otel-collector/e2etest/testcases.txt)
 
 ## 2. Run and debug your testcase
 
-Yes, you can definitely run the testcase on your local. Follow the below guide to set up testing framework on your local.
+You can run the testcase on your local. follow the below guide to set up testing framework on your local.
 
 ### 2.1 Prerequisite
 
