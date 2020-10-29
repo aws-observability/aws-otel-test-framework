@@ -4,3 +4,4 @@
   httpMethod: "get"
   callingType: "http"
   expectedMetricTemplate: "DEFAULT_EXPECTED_METRIC"
+
