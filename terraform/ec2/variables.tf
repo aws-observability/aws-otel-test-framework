@@ -16,14 +16,6 @@
 ## right now there's no good way to share variables across modules,
 ## so we have to define some of the common vars like region, otconfig_path in each module
 
-variable "otconfig_path" {
-  default = "../template/otconfig/default_otconfig.tpl"
-}
-
-variable "docker_compose_path" {
-  default = "../template/ec2-docker-compose-config/default_ec2_docker_compose.yml.tpl"
-}
-
 variable "package_s3_bucket" {
   default = "aws-otel-collector-test"
 }
@@ -73,5 +65,9 @@ variable "soaking" {
 
 variable "soaking_metric_namespace" {
   default = "AWSOtelCollector/SoakTest"
+}
+
+variable "testcase" {
+  default = "../testcases/otlp"
 }
 
