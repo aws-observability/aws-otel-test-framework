@@ -7,7 +7,7 @@ before adding a new component into AWS Otel Collector, we require contributors t
 
 There're two requirements:
 
-### 1.1 Open a pr to [the testing framework] (https://github.com/aws-observability/aws-otel-test-framework) repo to add a testcase for your component.
+### 1.1 Open a PR to [the testing framework] (https://github.com/aws-observability/aws-otel-test-framework) repo to add a testcase for your component.
 
 all the test cases are defined under [the testcase directory](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases), and each sub folder will be treated as a test case. 
 
