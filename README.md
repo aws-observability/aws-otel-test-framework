@@ -32,7 +32,7 @@ three files you need to focus on,
 
 * [go module to add your component](https://github.com/aws-observability/aws-otel-collector/blob/main/go.mod)
 * [enable your component](https://github.com/aws-observability/aws-otel-collector/blob/main/pkg/defaultcomponents/defaults.go).
-* [link your testcase](https://github.com/aws-observability/aws-otel-collector/e2etest/testcases.txt)
+* [link your testcase](https://github.com/aws-observability/aws-otel-collector/blob/main/e2etest/testcases.json)
 
 ## 2. Run and debug your testcase
 
