@@ -22,21 +22,15 @@ All the parameters defined under `ec2/variables.tf`, `ecs/variables.tf`, `eks/va
 * `aoc_version` is a parameter you can use while running the test, which tells the testing framework to fetch the AWS Otel Collector with this version. This parameter is used as the `tag` of the collector image. 
  
 * `otconfig_path`, the path to your ot config file. 
-* `ecs_taskdef_path`, the path to your ecs task definition file.
 * `validation_config`, the filename of the validation configuration, which is under `validator/src/main/resources/validations` folder.
 * `sample_app_callable`, by default it's true, only set it to false when you don't have a web application sample app image.
 * `data_emitter_image`, if you have a sample app then set its image name including tag here
 * `aoc_image_repo`, if you have an AWS Otel Collector image you just built with the new component, then set its repo name here
-* `docker_compose_path`, the path to your ec2 docker compose file.
-* `eks_pod_config_path`, the path to your eks pod configuration.
 
 an example here:
 
 ```shell
 sample_app_callable = false
-
-otconfig_path="../template/otconfig/statsd_otconfig.tpl"
-ecs_taskdef_path="../template/ecstaskdef/statsd_taskdef.tpl"
 
 # this file is defined in validator/src/main/resources/validations
 validation_config="statsd-metric-validation.yml"
