@@ -13,21 +13,28 @@ There're two requirements in this PR
 
 two files you need to focus on, [go module to add your component](https://github.com/aws-observability/aws-otel-collector/blob/main/go.mod) and [enable your component](https://github.com/aws-observability/aws-otel-collector/blob/main/pkg/defaultcomponents/defaults.go).
 
-### 1.2 Add a e2etest case for your new component. 
+### 1.2 Add a e2etest case in the testing framework repo and "link it" to your pr. 
 
-Everytime you submit a PR to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector), a workflow will be triggered to run e2etest. all the test cases are defined under [the testcase directory](https://github.com/aws-observability/aws-otel-collector/tree/main/e2etest/testcases), and each sub folder will be treated as a test case. 
+all the test cases are defined under [the testcase directory](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases), and each sub folder will be treated as a test case. 
 
-You will need to create a sub folder under [the testcase directory](https://github.com/aws-observability/aws-otel-collector/tree/main/e2etest/testcases), and place your configuration into it. Typically, you will need to place files as following(please use the same filename as below):
+You will need to create a sub folder under [the testcase directory](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases), and place your configuration into it. Typically, you will need to place files as following(please use the same filename as below):
 
-1. `otconfig.yaml`: which contain the new component, will be used as the config in the e2etest. 
-2. [optional] `testing-suite.tfvar`: by using this file, you can override the default configuration in the testing framework. [The parameters you can override](terraform/README.md). 
+1. `otconfig.tpl`: which contain the new component, will be used as the config in the e2etest. 
+2. [optional] `parameters.tfvars`: by using this file, you can override the default configuration in the testing framework. [The parameters you can override](terraform/README.md). 
 3. [optional] `supported_platforms`: if this file is NOT presented, it means this test case will be running in all the platforms (EC2, ECS, EKS). If this file is presented, only the platform defined inside will be applied to the test case. [For example](https://github.com/aws-observability/aws-otel-collector/blob/main/e2etest/testcases/ecsmetrics/supported_platforms). 
-4. more options will be added. 
+4. [optional] `docker_compose.tpl`, which is used to launch sample app container in ec2 test.
+5. [optional] `ecs_taskdef.tpl`, which is used to launch ecs task in ecs test.
+6. [optional] `eks_pod_config.tpl`, which is used to launch eks pod in eks test.
+
+all the default files can be found [here] (https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/templates/defaults)
+
+### 1.3 Link your testcase into [AWS Otel Collector] (https://github.com/aws-observability/aws-otel-collector)
+
 
 If you find the current test case option can not fulfill your testing requirement, feel free to open an issue here so we can discuss together.
 
 
-## 2. Oops, my test case is failed! can I reproduce it on my own?
+## 2. Run and debug your testcase
 
 Yes, you can definitely run the testcase on your local. Follow the below guide to set up testing framework on your local.
 
@@ -63,7 +70,7 @@ please follow https://github.com/aws-observability/aws-otel-collector/blob/main/
 #### 2.2.1 ECS
 
 ```shell
-cd terraform/ecs && terraform init && terraform apply -var="aoc_image_repo={{the docker image repo name you just pushed}}" -var="aoc_version={{ the docker image tag name}}"
+cd terraform/ecs && terraform init && terraform apply -var="aoc_image_repo={{the docker image repo name you just pushed}}" -var="aoc_version={{ the docker image tag name}} -var="testcase=../testcases/{{your test case folder name}}" -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
 ```
 
 don't forget to clean the resources
@@ -77,7 +84,7 @@ cd terraform/ecs && terraform destroy
 please note you are required to create a eks cluster in your account before running below command
 
 ```shell
-cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var="aoc_version={{ the docker image tag name}}" -var="aoc_image_repo={{the docker image you just pushed}}"
+cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var="aoc_version={{ the docker image tag name}}" -var="aoc_image_repo={{the docker image you just pushed}}" -var="testcase=../testcases/{{your test case folder name}}" -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
 ```
 
 don't forget to clean the resources
@@ -86,9 +93,9 @@ don't forget to clean the resources
 cd terraform/eks && terraform destroy
 ```
 
-### 2.3 The test i was running is the default one, how can i run my testcase?
+### 2.3 Parameters override
 
-Bascially, you will need to add a parameter files to orveride to default values with `-var-file=xxx.tfvars` 
+Bascially, you will need to add a parameter file to overide the default values with `-var-file=xxx.tfvars` 
 
 please check [the parameters to override](terraform/README.md)
 
