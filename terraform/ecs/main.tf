@@ -27,6 +27,12 @@ module "basic_components" {
   region = var.region
 }
 
+locals {
+  otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
+  ecs_taskdef_path = fileexists("${var.testcase}/ecs_taskdef.tpl") ? "${var.testcase}/ecs_taskdef.tpl" : module.common.default_ecs_taskdef_path
+
+}
+
 provider "aws" {
   region  = var.region
 }
@@ -48,7 +54,7 @@ module "ecs_cluster" {
 
 ## upload otconfig to ssm parameter store
 data "template_file" "otconfig" {
-  template = file(var.otconfig_path)
+  template = file(local.otconfig_path)
 
   vars = {
     region = var.region
@@ -65,7 +71,7 @@ resource "aws_ssm_parameter" "otconfig" {
 
 ## create task def
 data "template_file" "task_def" {
-  template = file(var.ecs_taskdef_path)
+  template = file(local.ecs_taskdef_path)
 
   vars = {
     region = var.region

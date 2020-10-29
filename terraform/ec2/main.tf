@@ -26,6 +26,11 @@ module "basic_components" {
   region = var.region
 }
 
+locals {
+  otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
+  docker_compose_path = fileexists("${var.testcase}/docker_compose.tpl") ? "${var.testcase}/docker_compose.tpl" : module.common.default_docker_compose_path
+}
+
 provider "aws" {
   region  = var.region
 }
@@ -51,7 +56,7 @@ data "aws_s3_bucket_object" "ssh_private_key" {
 
 # generate otconfig
 data "template_file" "otconfig" {
-  template = file(var.otconfig_path)
+  template = file(local.otconfig_path)
 
   vars = {
     region = var.region
@@ -116,7 +121,7 @@ resource "aws_instance" "emitter" {
 }
 
 data "template_file" "docker_compose" {
-  template = file(var.docker_compose_path)
+  template = file(local.docker_compose_path)
 
   vars = {
     data_emitter_image = var.data_emitter_image

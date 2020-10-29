@@ -76,3 +76,19 @@ output "sample_app_listen_address_port" {
 output "sample_app_lb_port" {
   value = "80"
 }
+
+output "default_otconfig_path" {
+  value = "../templates/defaults/otconfig.tpl"
+}
+
+output "default_eks_pod_config_path" {
+  value = "../templates/defaults/eks_pod_config.tpl"
+}
+
+output "default_ecs_taskdef_path" {
+  value = "../templates/defaults/ecs_taskdef.tpl"
+}
+
+output "default_docker_compose_path" {
+  value = "../templates/defaults/docker_compose.tpl"
+}

@@ -25,6 +25,11 @@ module "common" {
   aoc_version = var.aoc_version
 }
 
+locals {
+  otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
+  eks_pod_config_path = fileexists("${var.testcase}/eks_pod_config.tpl") ? "${var.testcase}/eks_pod_config.tpl" : module.common.default_eks_pod_config_path
+}
+
 # region
 provider "aws" {
   region  = var.region
@@ -56,7 +61,7 @@ resource "kubernetes_namespace" "aoc_ns" {
 
 # load config into config map
 data "template_file" "otconfig" {
-  template = file(var.otconfig_path)
+  template = file(local.otconfig_path)
 
   vars = {
     region = var.region
@@ -78,7 +83,7 @@ resource "kubernetes_config_map" "aoc_config_map" {
 
 # load eks pod config
 data "template_file" "eksconfig" {
-  template = file(var.eks_pod_config_path)
+  template = file(local.eks_pod_config_path)
 
   vars = {
     data_emitter_image = var.data_emitter_image
