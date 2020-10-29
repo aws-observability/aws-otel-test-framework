@@ -7,7 +7,7 @@ before adding a new component into AWS Otel Collector, we require contributors t
 
 There're two requirements:
 
-### 1.1 Submit a pr to [the testing framework] (https://github.com/aws-observability/aws-otel-test-framework) repo to add a testcase for your component.
+### 1.1 Open a pr to [the testing framework] (https://github.com/aws-observability/aws-otel-test-framework) repo to add a testcase for your component.
 
 all the test cases are defined under [the testcase directory](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases), and each sub folder will be treated as a test case. 
 
@@ -24,7 +24,7 @@ all the default files can be found [here] (https://github.com/aws-observability/
 
 If you find the current test case option can not fulfill your testing requirement, feel free to open an issue here so we can discuss together.
 
-### 1.2 Create a PR to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector) to build the new component
+### 1.2 Open a PR to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector) to build the new component
 
 You need to create a PR in [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector), "link" the testcase, and get it approved and merged. Then we will schedule to release a new version of collector with the new component.
 
