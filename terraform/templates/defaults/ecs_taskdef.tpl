@@ -15,7 +15,15 @@
       "environment": [
         {
           "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
-          "value": "127.0.0.1:55680"
+          "value": "127.0.0.1:${grpc_port}"
+        },
+        {
+           "name": "AWS_XRAY_DAEMON_ADDRESS",
+           "value": "127.0.0.1:${udp_port}"
+        },
+        {
+            "name": "AWS_REGION",
+            "value": "${region}"
         },
         {
           "name": "INSTANCE_ID",
