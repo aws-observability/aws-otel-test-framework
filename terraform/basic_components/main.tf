@@ -70,7 +70,7 @@ data "template_file" "otconfig" {
     region = var.region
     otel_service_namespace = module.common.otel_service_namespace
     otel_service_name = module.common.otel_service_name
-    testing_id = module.common.testing_id
+    testing_id = var.testing_id
     grpc_port = module.common.grpc_port
     udp_port = module.common.udp_port
   }

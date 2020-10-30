@@ -18,3 +18,5 @@ variable "region" {
 }
 
 variable "testcase" {}
+
+variable "testing_id" {}

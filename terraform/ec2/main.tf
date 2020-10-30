@@ -26,6 +26,8 @@ module "basic_components" {
   region = var.region
 
   testcase = var.testcase
+
+  testing_id = module.common.testing_id
 }
 
 provider "aws" {

@@ -28,6 +28,8 @@ module "basic_components" {
 
   testcase = var.testcase
 
+  testing_id = module.common.testing_id
+
 }
 
 locals {
