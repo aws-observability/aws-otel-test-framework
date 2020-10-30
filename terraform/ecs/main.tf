@@ -25,12 +25,13 @@ module "basic_components" {
   source = "../basic_components"
 
   region = var.region
+
+  testcase = var.testcase
+
 }
 
 locals {
-  otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
   ecs_taskdef_path = fileexists("${var.testcase}/ecs_taskdef.tpl") ? "${var.testcase}/ecs_taskdef.tpl" : module.common.default_ecs_taskdef_path
-
 }
 
 provider "aws" {
@@ -52,21 +53,10 @@ module "ecs_cluster" {
   cluster_desired_capacity = 1
 }
 
-## upload otconfig to ssm parameter store
-data "template_file" "otconfig" {
-  template = file(local.otconfig_path)
-
-  vars = {
-    region = var.region
-    otel_service_namespace = module.common.otel_service_namespace
-    otel_service_name = module.common.otel_service_name
-    testing_id = module.common.testing_id
-  }
-}
 resource "aws_ssm_parameter" "otconfig" {
   name = "otconfig-${module.common.testing_id}"
   type = "String"
-  value = data.template_file.otconfig.rendered
+  value = module.basic_components.otconfig_content
 }
 
 ## create task def
@@ -84,6 +74,8 @@ data "template_file" "task_def" {
     sample_app_container_name = module.common.sample_app_container_name
     sample_app_listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
     sample_app_listen_port = module.common.sample_app_listen_address_port
+    udp_port = module.common.udp_port
+    grpc_port = module.common.grpc_port
   }
 }
 

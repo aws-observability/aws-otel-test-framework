@@ -25,8 +25,15 @@ module "common" {
   aoc_version = var.aoc_version
 }
 
+module "basic_components" {
+  source = "../basic_components"
+
+  region = var.region
+
+  testcase = var.testcase
+}
+
 locals {
-  otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
   eks_pod_config_path = fileexists("${var.testcase}/eks_pod_config.tpl") ? "${var.testcase}/eks_pod_config.tpl" : module.common.default_eks_pod_config_path
 }
 
@@ -58,18 +65,6 @@ resource "kubernetes_namespace" "aoc_ns" {
     name = "aoc-ns-${module.common.testing_id}"
   }
 }
-
-# load config into config map
-data "template_file" "otconfig" {
-  template = file(local.otconfig_path)
-
-  vars = {
-    region = var.region
-    otel_service_namespace = module.common.otel_service_namespace
-    otel_service_name = module.common.otel_service_name
-    testing_id = module.common.testing_id
-  }
-}
 resource "kubernetes_config_map" "aoc_config_map" {
   metadata {
     name = "otel-config"
@@ -77,7 +72,7 @@ resource "kubernetes_config_map" "aoc_config_map" {
   }
 
   data = {
-    "aoc-config.yml" = data.template_file.otconfig.rendered
+    "aoc-config.yml" = module.basic_components.otconfig_content
   }
 }
 
@@ -162,6 +157,16 @@ resource "kubernetes_deployment" "aoc_deployment" {
           env {
             name = "OTEL_EXPORTER_OTLP_ENDPOINT"
             value = "127.0.0.1:55680"
+          }
+
+          env {
+            name = "AWS_XRAY_DAEMON_ADDRESS"
+            value = "127.0.0.1:${module.common.udp_port}"
+          }
+
+          env {
+            name = "AWS_REGION"
+            value = var.region
           }
 
           env {
@@ -267,7 +272,17 @@ resource "kubernetes_pod" "aoc_pod" {
 
       env {
         name = "OTEL_EXPORTER_OTLP_ENDPOINT"
-        value = "127.0.0.1:55680"
+        value = "127.0.0.1:${module.common.grpc_port}"
+      }
+
+      env {
+        name = "AWS_XRAY_DAEMON_ADDRESS"
+        value = "127.0.0.1:${module.common.udp_port}"
+      }
+
+      env {
+        name = "AWS_REGION"
+        value = var.region
       }
 
       env {

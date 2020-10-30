@@ -92,3 +92,11 @@ output "default_ecs_taskdef_path" {
 output "default_docker_compose_path" {
   value = "../templates/defaults/docker_compose.tpl"
 }
+
+output "grpc_port" {
+  value = "55680"
+}
+
+output "udp_port" {
+  value = "55690"
+}

@@ -1,6 +1,6 @@
 receivers:
   awsxray:
-    endpoint: 0.0.0.0:2000
+    endpoint: 0.0.0.0:${udp_port}
     transport: udp
 exporters:
   logging:

@@ -4,7 +4,7 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:55680
+        endpoint: 0.0.0.0:${grpc_port}
 
 
 processors:

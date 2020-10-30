@@ -68,7 +68,12 @@ public class TraceValidator implements IValidator {
     log.info("value of retrieved trace map: {}", retrievedTrace);
     // data model validation of other fields of segment document
     for (Map.Entry<String, Object> entry : storedTrace.entrySet()) {
-      if (!entry.getValue().equals(retrievedTrace.get(entry.getKey()))) {
+      String targetKey = entry.getKey();
+      if (retrievedTrace.get(targetKey) == null) {
+        log.error("mis target data: {}", targetKey);
+        throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
+      }
+      if (!entry.getValue().toString().equalsIgnoreCase(retrievedTrace.get(targetKey).toString())) {
         log.error("data model validation failed");
         log.info("mis matched data model field list");
         log.info("value of stored trace map: {}", entry.getValue());
