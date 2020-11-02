@@ -6,20 +6,36 @@
       "memory": 256,
       "portMappings": [
           {
-            "containerPort": ${sample_app_listen_port},
-            "hostPort": ${sample_app_listen_port},
+            "containerPort": 4567,
+            "hostPort": 4567,
             "protocol": "tcp"
           }
       ],
       "command": [],
       "environment": [
         {
-            "name": "LISTEN_ADDRESS",
-            "value": "${sample_app_listen_address}"
+          "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
+          "value": "127.0.0.1:${grpc_port}"
         },
         {
-            "name": "AWS_XRAY_DAEMON_ADDRESS",
-            "value": "127.0.0.1:2000"
+           "name": "AWS_XRAY_DAEMON_ADDRESS",
+           "value": "127.0.0.1:${udp_port}"
+        },
+        {
+            "name": "AWS_REGION",
+            "value": "${region}"
+        },
+        {
+          "name": "INSTANCE_ID",
+          "value": "${testing_id}"
+        },
+        {
+        "name": "OTEL_RESOURCE_ATTRIBUTES",
+        "value": "service.namespace=${otel_service_namespace},service.name=${otel_service_name}"
+        },
+        {
+            "name": "LISTEN_ADDRESS",
+            "value": "${sample_app_listen_address}"
         }
       ],
       "dependsOn": [
@@ -45,9 +61,13 @@
       "memory": 256,
       "portMappings": [
         {
-          "containerPort": 2000,
-          "hostPort": 2000,
-          "protocol": "udp"
+          "containerPort": 55680,
+          "hostPort": 55680,
+          "protocol": "tcp"
+        },
+        {
+           "containerPort": 2000,
+           "hostPort": 2000
         }
       ],
       "secrets": [

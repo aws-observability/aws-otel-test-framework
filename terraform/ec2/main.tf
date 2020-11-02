@@ -24,6 +24,10 @@ module "basic_components" {
   source = "../basic_components"
 
   region = var.region
+
+  testcase = var.testcase
+
+  testing_id = module.common.testing_id
 }
 
 provider "aws" {
@@ -32,6 +36,7 @@ provider "aws" {
 
 # get ami object
 locals {
+  docker_compose_path = fileexists("${var.testcase}/docker_compose.tpl") ? "${var.testcase}/docker_compose.tpl" : module.common.default_docker_compose_path
   selected_ami = var.amis[var.testing_ami]
   ami_family = var.ami_family[local.selected_ami["family"]]
   ami_id = data.aws_ami.selected.id
@@ -49,18 +54,6 @@ data "aws_s3_bucket_object" "ssh_private_key" {
   key = var.sshkey_s3_private_key
 }
 
-# generate otconfig
-data "template_file" "otconfig" {
-  template = file(var.otconfig_path)
-
-  vars = {
-    region = var.region
-    otel_service_namespace = module.common.otel_service_namespace
-    otel_service_name = module.common.otel_service_name
-    testing_id = module.common.testing_id
-  }
-}
-
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
 resource "aws_instance" "aoc" {
   ami                         = local.ami_id
@@ -74,7 +67,7 @@ resource "aws_instance" "aoc" {
   user_data = local.user_data
 
   provisioner "file" {
-    content = data.template_file.otconfig.rendered
+    content = module.basic_components.otconfig_content
     destination = local.otconfig_destination
 
     connection {
@@ -116,15 +109,18 @@ resource "aws_instance" "emitter" {
 }
 
 data "template_file" "docker_compose" {
-  template = file(var.docker_compose_path)
+  template = file(local.docker_compose_path)
 
   vars = {
+    region = var.region
     data_emitter_image = var.data_emitter_image
+    sample_app_external_port = module.common.sample_app_lb_port
     sample_app_listen_address_port = module.common.sample_app_listen_address_port
     listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
     otel_resource_attributes = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
     testing_id = module.common.testing_id
-    otel_endpoint = "${aws_instance.aoc.private_ip}:55680"
+    grpc_endpoint = "${aws_instance.aoc.private_ip}:${module.common.grpc_port}"
+    udp_endpoint = "${aws_instance.aoc.private_ip}:${module.common.udp_port}"
   }
 }
 
@@ -158,7 +154,7 @@ resource "null_resource" "sample-app-validator" {
   }
 
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}:80'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}:${module.common.sample_app_lb_port}'"
     working_dir = "../../"
   }
 }

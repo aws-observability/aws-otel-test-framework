@@ -141,6 +141,13 @@ resource "aws_security_group" "aoc_sg" {
   }
 
   ingress {
+    from_port = 55690
+    to_port = 55690
+    protocol = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port = 4567
     to_port = 4567
     protocol = "tcp"

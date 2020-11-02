@@ -17,14 +17,6 @@ variable "region" {
   default = "us-west-2"
 }
 
-variable "otconfig_path" {
-  default = "../template/otconfig/default_otconfig.tpl"
-}
-
-variable "ecs_taskdef_path" {
-  default = "../template/ecstaskdef/default_ecs_taskdef.tpl"
-}
-
 variable "ecs_launch_type" {
   default = "EC2"
 }
@@ -38,7 +30,7 @@ variable "aoc_image_repo" {
 }
 
 variable "aoc_version" {
-  default = "v0.1.12-296689894"
+  default = "v0.1.0-324996423"
 }
 
 variable "validation_config" {
@@ -49,5 +41,9 @@ variable "validation_config" {
 # in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
 variable "sample_app_callable" {
   default = true
+}
+
+variable "testcase" {
+  default = "../testcases/otlp"
 }
 

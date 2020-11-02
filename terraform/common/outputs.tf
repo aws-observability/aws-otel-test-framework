@@ -72,3 +72,31 @@ output "sample_app_listen_address_ip" {
 output "sample_app_listen_address_port" {
   value = "4567"
 }
+
+output "sample_app_lb_port" {
+  value = "8080"
+}
+
+output "default_otconfig_path" {
+  value = "../templates/defaults/otconfig.tpl"
+}
+
+output "default_eks_pod_config_path" {
+  value = "../templates/defaults/eks_pod_config.tpl"
+}
+
+output "default_ecs_taskdef_path" {
+  value = "../templates/defaults/ecs_taskdef.tpl"
+}
+
+output "default_docker_compose_path" {
+  value = "../templates/defaults/docker_compose.tpl"
+}
+
+output "grpc_port" {
+  value = "55680"
+}
+
+output "udp_port" {
+  value = "55690"
+}
