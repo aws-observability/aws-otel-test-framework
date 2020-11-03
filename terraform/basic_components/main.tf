@@ -1,3 +1,18 @@
+# ------------------------------------------------------------------------
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
+# -------------------------------------------------------------------------
+
 module "common" {
   source = "../common"
 }
@@ -43,6 +58,23 @@ data "aws_subnet_ids" "aoc_public_subnet_ids" {
   }
 }
 
+locals {
+  otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
+}
+
+# generate otconfig
+data "template_file" "otconfig" {
+  template = file(local.otconfig_path)
+
+  vars = {
+    region = var.region
+    otel_service_namespace = module.common.otel_service_namespace
+    otel_service_name = module.common.otel_service_name
+    testing_id = var.testing_id
+    grpc_port = module.common.grpc_port
+    udp_port = module.common.udp_port
+  }
+}
 
 
 

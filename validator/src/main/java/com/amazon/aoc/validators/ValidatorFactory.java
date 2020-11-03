@@ -1,3 +1,18 @@
+/*
+ * Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
 package com.amazon.aoc.validators;
 
 import com.amazon.aoc.callers.HttpCaller;
@@ -24,7 +39,7 @@ public class ValidatorFactory {
   public IValidator launchValidator(ValidationConfig validationConfig) throws Exception {
     // get validator
     IValidator validator;
-    FileConfig expectedData;
+    FileConfig expectedData = null;
     switch (validationConfig.getValidationType()) {
       case "trace":
         validator = new TraceValidator();
@@ -33,6 +48,9 @@ public class ValidatorFactory {
       case "metric":
         validator = new MetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
+        break;
+      case "alarm-pulling":
+        validator = new AlarmPullingValidator();
         break;
       default:
         throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED);
@@ -52,7 +70,7 @@ public class ValidatorFactory {
     }
 
     // init validator
-    validator.init(this.context, caller, expectedData);
+    validator.init(this.context, validationConfig, caller, expectedData);
     return validator;
   }
 }

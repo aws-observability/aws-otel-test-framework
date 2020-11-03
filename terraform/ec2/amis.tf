@@ -1,3 +1,18 @@
+# ------------------------------------------------------------------------
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
+# -------------------------------------------------------------------------
+
 variable "ami_family" {
   default = {
     ubuntu = {
@@ -21,6 +36,12 @@ variable "ami_family" {
       start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
+      soaking_cwagent_config = "../templates/cwagent-config/soaking-linux.json.tpl"
+      soaking_cwagent_config_destination = "/tmp/cwagent-config.json"
+      cwagent_download_command = "sudo rpm -Uvh https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm"
+      cwagent_start_command = "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -c file:/tmp/cwagent-config.json -s"
+
+      soaking_cpu_metric_name = "procstat_cpu_usage"
     }
     windows = {
       login_user = "Administrator"

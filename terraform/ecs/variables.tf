@@ -1,13 +1,20 @@
+# ------------------------------------------------------------------------
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
+# -------------------------------------------------------------------------
+
 variable "region" {
   default = "us-west-2"
-}
-
-variable "otconfig_path" {
-  default = "../template/otconfig/default_otconfig.tpl"
-}
-
-variable "ecs_taskdef_path" {
-  default = "../template/ecstaskdef/default_ecs_taskdef.tpl"
 }
 
 variable "ecs_launch_type" {
@@ -23,7 +30,7 @@ variable "aoc_image_repo" {
 }
 
 variable "aoc_version" {
-  default = "v0.1.12-296689894"
+  default = "v0.1.0-324996423"
 }
 
 variable "validation_config" {
@@ -34,5 +41,9 @@ variable "validation_config" {
 # in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
 variable "sample_app_callable" {
   default = true
+}
+
+variable "testcase" {
+  default = "../testcases/otlp"
 }
 

@@ -1,19 +1,54 @@
 # AOT Testing Framework
 This project is a testing framework which could be used in both SDK repo and AOC repo, it covers multiple aws platforms as well as multiple language sdk sample apps. 
 
-before adding a new component into AOC, we require contributor to add a new testing suite in this framework.
+before adding a new component into AWS Otel Collector, we require contributors to add related e2etest cases. 
 
-## 1. Prerequisite
+## 1. How do I add a new OT component[receiver, processor, exporter] into AWS Otel Collector? 
 
-### 1.1 Setup your aws credentials
+There're two requirements:
+
+### 1.1 Open a PR to [the testing framework] (https://github.com/aws-observability/aws-otel-test-framework) repo to add a testcase for your component.
+
+all the test cases are defined under [the testcase directory](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases), and each sub folder will be treated as a test case. 
+
+You will need to create a sub folder under [the testcase directory](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases), and place your configuration into it. Typically, you will need to place files as following(please use the same filename as below):
+
+1. `otconfig.tpl`: which contain the new component, will be used as the config in the e2etest. 
+2. [optional] `parameters.tfvars`: by using this file, you can override the default configuration in the testing framework. [The parameters you can override](terraform/README.md). 
+3. [optional] `supported_platforms`: if this file is NOT presented, it means this test case will be running in all the platforms (EC2, ECS, EKS). If this file is presented, only the platform defined inside will be applied to the test case. [For example](https://github.com/aws-observability/aws-otel-collector/blob/main/e2etest/testcases/ecsmetrics/supported_platforms). 
+4. [optional] `docker_compose.tpl`, which is used to launch sample app container in ec2 test.
+5. [optional] `ecs_taskdef.tpl`, which is used to launch ecs task in ecs test.
+6. [optional] `eks_pod_config.tpl`, which is used to launch eks pod in eks test.
+
+all the default files can be found [here] (https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/templates/defaults)
+
+If you find the current test case option can not fulfill your testing requirement, feel free to open an issue here so we can discuss together.
+
+### 1.2 Open a PR to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector) to build the new component
+
+You need to create a PR in [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector), "link" the testcase, and get it approved and merged. Then we will schedule to release a new version of collector with the new component.
+
+three files you need to focus on, 
+
+* [go module to add your component](https://github.com/aws-observability/aws-otel-collector/blob/main/go.mod)
+* [enable your component](https://github.com/aws-observability/aws-otel-collector/blob/main/pkg/defaultcomponents/defaults.go).
+* [link your testcase](https://github.com/aws-observability/aws-otel-collector/blob/main/e2etest/testcases.json)
+
+## 2. Run and debug your testcase
+
+You can run the testcase on your local. follow the below guide to set up testing framework on your local.
+
+### 2.1 Prerequisite
+
+#### 2.1.1 Setup your aws credentials
 
 please check https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
-### 1.2 install terraform
+#### 2.1.2 install terraform
 
 please check https://learn.hashicorp.com/tutorials/terraform/install-cli
 
-### 1.3 Run Setup
+#### 2.1.3 Run Setup
 Setup only needs to be run once, it creates 
 1. one iam role
 2. one vpc
@@ -25,95 +60,54 @@ run
 cd terraform/setup && terraform init && terraform apply
 ``
 
-### 1.4 [Optional] Create a PR to [AOC Repo](https://github.com/aws-observability/aws-otel-collector) and record the version number
+#### 2.1.4 Build Image
 
-This is optional item, only do it if your goal is to add a component or fix a bug into the AOC Repo. Everytime when you create a PR to AOC repo, there will be a workflow to be running in this PR to do regression test and also, build testing artifacts[rpm, image, etc] for your code. Every PR will have a separate version number which you will be able to use it in the testing framework to verify whether your new code can pass your new testing suite.
-
-1. create a branch in [AOC Repo](https://github.com/aws-observability/aws-otel-collector). [please don't fork at this moment, just create a branch directly in the AOC Repo]. [todo, after the repo becomes public, you can use fork instead of creating branch]
-
-2. create a PR to merge the new branch to the `main` branch.
-
-3. Waiting for the workflow checking in the PR to be finished.
-
-4. find out the version number, click into the workflow page, click `e2etest-preparation` step, and click `Versioning for testing`, record the version number. Ex(v0.1.12-299946851).
-
-5. provide your testing aws account id to Ying(wangmyin@), so that he will give permission to your aws account to fetch the testing image from a private ECR. [todo, once we migrate to dockerhub, you don't need this step] 
+please follow https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md to build your image with the new component, and push this image to dockerhub, record the image link, which will be used in your testing.
 
 
-## 2. Run ECS Test
+### 2.2 Run Test locally
 
-### 2.1 run with the testing-suite
+#### 2.2.1 ECS
 
 ```shell
-cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suites/statsd-ecs.tfvars"
+cd terraform/ecs && terraform init && terraform apply -var="aoc_image_repo={{the docker image repo name you just pushed}}" -var="aoc_version={{ the docker image tag name}} -var="testcase=../testcases/{{your test case folder name}}" -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
 ```
 
-### 2.1 run with a specific aoc version
+don't forget to clean the resources
 
 ```shell
-cd terraform/ecs && terraform init && terraform apply -var-file="../testing-suites/statsd-ecs.tfvars" -var="aoc_version={the version you got from workflow}"
+cd terraform/ecs && terraform destroy
 ```
 
-### 2.3 don't forget to clean the resources
+#### 2.2.2 EKS
+
+please note you are required to create a eks cluster in your account before running below command
 
 ```shell
-cd terraform/ecs && terraform destory"
-```
-## 3. Run EC2
-
-### 3.1 run with the testing suite [only amazonlinux2 is supported at this moment]
-
-```shell
-cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars"
+cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var="aoc_version={{ the docker image tag name}}" -var="aoc_image_repo={{the docker image you just pushed}}" -var="testcase=../testcases/{{your test case folder name}}" -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
 ```
 
-### 3.2 run with a specfic aoc version
-
-
-```shell
-cd terraform/ec2 && terraform init && terraform apply -var="sshkey_s3_bucket={the bucket name you set in setup}" -var-file="../testing-suites/statsd-ec2.tfvars" -var="aoc_version={the version you got from workflow}"
-```
-
-### 3.3 don't forget to clean the resources
-```shell
-cd terraform/ec2 && terraform destory"
-```
-
-## 4. Run EKS
-
-create a eks cluster in your account before run below command
-
-### 4.1 run with the testing suite
-
-```shell
-cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars"
-```
-
-### 4.2 run with a specfic aoc version
-
-```shell
-cd terraform/eks && terraform init && terraform apply -var="eks_cluster_name={the eks cluster name in your account}" -var-file="../testing-suites/statsd-eks.tfvars" -var="aoc_version={the version you got from workflow}"
-```
-
-### 4.3 don't forget to clean the resources
+don't forget to clean the resources
 
 ```
 cd terraform/eks && terraform destroy
 ```
 
-## 5. Add a testing suite
+### 2.3 Parameters override
 
-please check [adding a testing suite](terraform/README.md)
+Bascially, you will need to add a parameter file to overide the default values with `-var-file=xxx.tfvars` 
 
-## 6. Contributing
+please check [the parameters to override](terraform/README.md)
+
+## 3. Contributing
 
 We have collected notes on how to contribute to this project in CONTRIBUTING.md.
 
-## 7. Security
+## 4. Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
-## 8. License
+## 5. License
 
 This project is licensed under the Apache-2.0 License.
 

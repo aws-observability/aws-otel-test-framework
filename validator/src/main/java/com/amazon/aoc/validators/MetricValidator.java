@@ -22,6 +22,7 @@ import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
+import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
@@ -43,7 +44,7 @@ import java.util.TreeSet;
 
 @Log4j2
 public class MetricValidator implements IValidator {
-  private static int MAX_RETRY_COUNT = 60;
+  private static int MAX_RETRY_COUNT = 30;
   private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
 
   private MustacheHelper mustacheHelper = new MustacheHelper();
@@ -54,14 +55,38 @@ public class MetricValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("Start metric validating");
+    // get expected metrics and remove the to be skipped dimensions
     final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
-    CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
+    Set<String> skippedDimensionNameList = new HashSet<>();
+    for (Metric metric : expectedMetricList) {
+      for (Dimension dimension : metric.getDimensions()) {
+        if (dimension.getValue().equals("SKIP")) {
+          skippedDimensionNameList.add(dimension.getName());
+        }
+      }
+    }
+    for (Metric metric : expectedMetricList) {
+      metric
+          .getDimensions()
+          .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+    }
 
+    // get metric from cloudwatch
+    CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
     RetryHelper.retry(
         MAX_RETRY_COUNT,
         () -> {
           List<Metric> metricList =
               this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
+
+          // remove the skip dimensions
+          log.info("dimensions to be skipped in validation: {}", skippedDimensionNameList);
+          for (Metric metric : metricList) {
+            metric
+                .getDimensions()
+                .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+          }
+
           log.info("check if all the expected metrics are found");
           compareMetricLists(expectedMetricList, metricList);
 
@@ -80,7 +105,7 @@ public class MetricValidator implements IValidator {
    */
   private void compareMetricLists(List<Metric> toBeCheckedMetricList, List<Metric> baseMetricList)
       throws BaseException {
-    log.info("compare two metric list {} {}", toBeCheckedMetricList, baseMetricList);
+
     // load metrics into a hash set
     Set<Metric> metricSet =
         new TreeSet<>(
@@ -98,8 +123,11 @@ public class MetricValidator implements IValidator {
               // sort and check dimensions
               List<Dimension> dimensionList1 = o1.getDimensions();
               List<Dimension> dimensionList2 = o2.getDimensions();
+
+              // sort
               dimensionList1.sort(Comparator.comparing(Dimension::getName));
               dimensionList2.sort(Comparator.comparing(Dimension::getName));
+
               return dimensionList1.toString().compareTo(dimensionList2.toString());
             });
     for (Metric metric : baseMetricList) {
@@ -156,30 +184,48 @@ public class MetricValidator implements IValidator {
   private List<Metric> rollupMetric(List<Metric> metricList) {
     List<Metric> rollupMetricList = new ArrayList<>();
     for (Metric metric : metricList) {
-      // get otellib dimension out
-      // assuming the first dimension is otellib, if not the validation fails
-      Dimension otellibDimension = metric.getDimensions().remove(0);
-      assert otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+      Dimension otellibDimension = new Dimension();
+      boolean otelLibDimensionExisted = false;
+
+      if (metric.getDimensions().size() > 0) {
+        // get otellib dimension out
+        // assuming the first dimension is otellib, if not the validation fails
+        otellibDimension = metric.getDimensions().get(0);
+        otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+      }
+      
+      if (otelLibDimensionExisted) {
+        metric.getDimensions().remove(0);
+      }
 
       // all dimension rollup
       Metric allDimensionsMetric = new Metric();
       allDimensionsMetric.setMetricName(metric.getMetricName());
       allDimensionsMetric.setNamespace(metric.getNamespace());
       allDimensionsMetric.setDimensions(metric.getDimensions());
-      allDimensionsMetric
-          .getDimensions()
-          .add(new Dimension()
-            .withName(otellibDimension.getName()).withValue(otellibDimension.getValue()));
+
+      if (otelLibDimensionExisted) {
+        allDimensionsMetric
+            .getDimensions()
+            .add(
+                new Dimension()
+                    .withName(otellibDimension.getName())
+                    .withValue(otellibDimension.getValue()));
+      }
       rollupMetricList.add(allDimensionsMetric);
 
       // zero dimension rollup
       Metric zeroDimensionMetric = new Metric();
       zeroDimensionMetric.setNamespace(metric.getNamespace());
       zeroDimensionMetric.setMetricName(metric.getMetricName());
-      zeroDimensionMetric.setDimensions(
-          Arrays.asList(
-              new Dimension()
-                .withName(otellibDimension.getName()).withValue(otellibDimension.getValue())));
+
+      if (otelLibDimensionExisted) {
+        zeroDimensionMetric.setDimensions(
+            Arrays.asList(
+                new Dimension()
+                    .withName(otellibDimension.getName())
+                    .withValue(otellibDimension.getValue())));
+      }
       rollupMetricList.add(zeroDimensionMetric);
 
       // single dimension rollup
@@ -187,11 +233,13 @@ public class MetricValidator implements IValidator {
         Metric singleDimensionMetric = new Metric();
         singleDimensionMetric.setNamespace(metric.getNamespace());
         singleDimensionMetric.setMetricName(metric.getMetricName());
-        singleDimensionMetric.setDimensions(
-            Arrays.asList(
-                new Dimension()
-                    .withName(otellibDimension.getName())
-                    .withValue(otellibDimension.getValue())));
+        if (otelLibDimensionExisted) {
+          singleDimensionMetric.setDimensions(
+              Arrays.asList(
+                  new Dimension()
+                      .withName(otellibDimension.getName())
+                      .withValue(otellibDimension.getValue())));
+        }
         singleDimensionMetric.getDimensions().add(dimension);
         rollupMetricList.add(singleDimensionMetric);
       }
@@ -201,7 +249,11 @@ public class MetricValidator implements IValidator {
   }
 
   @Override
-  public void init(Context context, ICaller caller, FileConfig expectedMetricTemplate)
+  public void init(
+      Context context,
+      ValidationConfig validationConfig,
+      ICaller caller,
+      FileConfig expectedMetricTemplate)
       throws Exception {
     this.context = context;
     this.caller = caller;

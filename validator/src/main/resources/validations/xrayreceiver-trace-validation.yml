@@ -1,6 +1,0 @@
--
-  validationType: "trace"
-  httpPath: "/"
-  httpMethod: "get"
-  callingType: "http"
-  expectedTraceTemplate: "DEFAULT_EXPECTED_TRACE"
