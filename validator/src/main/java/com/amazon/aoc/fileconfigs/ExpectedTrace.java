@@ -24,6 +24,9 @@ public enum ExpectedTrace implements FileConfig {
   OTEL_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/otelSDKexpectedHTTPTrace.mustache"),
   XRAY_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedAWSSDKTrace.mustache"),
   XRAY_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedHTTPTrace.mustache"),
+  SPARK_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedHTTPTrace.mustache"),
+  SPARK_SDK_AWSSDK_EXPECTED_TRACE(
+          "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache")
   ;
 
   private String path;
