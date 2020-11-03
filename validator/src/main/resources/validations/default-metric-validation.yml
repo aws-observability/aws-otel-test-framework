@@ -1,6 +1,0 @@
--
-  validationType: "metric"
-  httpPath: "/span0"
-  httpMethod: "get"
-  callingType: "http"
-  expectedMetricTemplate: "DEFAULT_EXPECTED_METRIC"

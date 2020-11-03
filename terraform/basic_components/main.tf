@@ -58,6 +58,23 @@ data "aws_subnet_ids" "aoc_public_subnet_ids" {
   }
 }
 
+locals {
+  otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
+}
+
+# generate otconfig
+data "template_file" "otconfig" {
+  template = file(local.otconfig_path)
+
+  vars = {
+    region = var.region
+    otel_service_namespace = module.common.otel_service_namespace
+    otel_service_name = module.common.otel_service_name
+    testing_id = var.testing_id
+    grpc_port = module.common.grpc_port
+    udp_port = module.common.udp_port
+  }
+}
 
 
 

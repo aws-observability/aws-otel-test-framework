@@ -32,3 +32,7 @@ output "aoc_security_group_id" {
 output "aoc_iam_role_arn" {
   value = data.aws_iam_role.aoc_iam_role.arn
 }
+
+output "otconfig_content" {
+  value = data.template_file.otconfig.rendered
+}
