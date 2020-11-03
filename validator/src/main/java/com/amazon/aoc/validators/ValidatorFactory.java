@@ -52,6 +52,9 @@ public class ValidatorFactory {
       case "alarm-pulling":
         validator = new AlarmPullingValidator();
         break;
+      case "mocked-server":
+        validator = new MockedServerValidator();
+        break;
       default:
         throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED);
     }

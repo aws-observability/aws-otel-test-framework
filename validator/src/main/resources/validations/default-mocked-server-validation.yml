@@ -1,0 +1,5 @@
+-
+  validationType: "mocked-server"
+  httpPath: "/span0"
+  httpMethod: "get"
+  callingType: "http"

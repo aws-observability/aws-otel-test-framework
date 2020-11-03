@@ -63,6 +63,12 @@ public class App implements Callable<Integer> {
       description = "the cloudwatch alarm names")
   private List<String> alarmNameList;
 
+  @CommandLine.Option(
+      names = {"--mocked-server-validating-url"},
+      description = "mocked server validating url"
+  )
+  private String mockedServerValidatingUrl;
+
   public static void main(String[] args) throws Exception {
     int exitCode = new CommandLine(new App()).execute(args);
     System.exit(exitCode);
@@ -76,6 +82,7 @@ public class App implements Callable<Integer> {
     context.setEndpoint(this.endpoint);
     context.setEcsContext(buildECSContext(ecsContexts));
     context.setAlarmNameList(alarmNameList);
+    context.setMockedServerValidatingUrl(mockedServerValidatingUrl);
 
     log.info(context);
 
