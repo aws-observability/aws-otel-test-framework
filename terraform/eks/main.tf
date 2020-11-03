@@ -1,3 +1,18 @@
+# ------------------------------------------------------------------------
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
+# -------------------------------------------------------------------------
+
 # creating a eks cluster takes around 10 minutes typically.
 # so in the eks/k8s test, we need tester to provide the cluster instead of creating it in terraform
 # so that we can shorten the execution time
@@ -8,6 +23,20 @@ module "common" {
   data_emitter_image = var.data_emitter_image
   aoc_image_repo = var.aoc_image_repo
   aoc_version = var.aoc_version
+}
+
+module "basic_components" {
+  source = "../basic_components"
+
+  region = var.region
+
+  testcase = var.testcase
+
+  testing_id = module.common.testing_id
+}
+
+locals {
+  eks_pod_config_path = fileexists("${var.testcase}/eks_pod_config.tpl") ? "${var.testcase}/eks_pod_config.tpl" : module.common.default_eks_pod_config_path
 }
 
 # region
@@ -38,18 +67,6 @@ resource "kubernetes_namespace" "aoc_ns" {
     name = "aoc-ns-${module.common.testing_id}"
   }
 }
-
-# load config into config map
-data "template_file" "otconfig" {
-  template = file(var.otconfig_path)
-
-  vars = {
-    region = var.region
-    otel_service_namespace = module.common.otel_service_namespace
-    otel_service_name = module.common.otel_service_name
-    testing_id = module.common.testing_id
-  }
-}
 resource "kubernetes_config_map" "aoc_config_map" {
   metadata {
     name = "otel-config"
@@ -57,13 +74,13 @@ resource "kubernetes_config_map" "aoc_config_map" {
   }
 
   data = {
-    "aoc-config.yml" = data.template_file.otconfig.rendered
+    "aoc-config.yml" = module.basic_components.otconfig_content
   }
 }
 
 # load eks pod config
 data "template_file" "eksconfig" {
-  template = file(var.eks_pod_config_path)
+  template = file(local.eks_pod_config_path)
 
   vars = {
     data_emitter_image = var.data_emitter_image
@@ -145,6 +162,16 @@ resource "kubernetes_deployment" "aoc_deployment" {
           }
 
           env {
+            name = "AWS_XRAY_DAEMON_ADDRESS"
+            value = "127.0.0.1:${module.common.udp_port}"
+          }
+
+          env {
+            name = "AWS_REGION"
+            value = var.region
+          }
+
+          env {
             name = "INSTANCE_ID"
             value = module.common.testing_id
           }
@@ -196,7 +223,7 @@ resource "kubernetes_service" "sample_app_service" {
     type = "LoadBalancer"
 
     port {
-      port = 80
+      port = module.common.sample_app_lb_port
       target_port = module.common.sample_app_listen_address_port
     }
   }
@@ -247,7 +274,17 @@ resource "kubernetes_pod" "aoc_pod" {
 
       env {
         name = "OTEL_EXPORTER_OTLP_ENDPOINT"
-        value = "127.0.0.1:55680"
+        value = "127.0.0.1:${module.common.grpc_port}"
+      }
+
+      env {
+        name = "AWS_XRAY_DAEMON_ADDRESS"
+        value = "127.0.0.1:${module.common.udp_port}"
+      }
+
+      env {
+        name = "AWS_REGION"
+        value = var.region
       }
 
       env {
@@ -282,7 +319,7 @@ resource "kubernetes_pod" "aoc_pod" {
 resource "null_resource" "callable_sample_app_validator" {
   count = var.sample_app_callable ? 1 : 0
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}'"
     working_dir = "../../"
   }
 }

@@ -32,20 +32,26 @@ public class RetryHelper {
    * @param retryable the lambda
    * @throws Exception when the retry count is reached
    */
-  public static void retry(int retryCount, int sleepInMilliSeconds, Retryable retryable)
+  public static void retry(
+      int retryCount, int sleepInMilliSeconds, boolean throwExceptionInTheEnd, Retryable retryable)
       throws Exception {
+    Exception exceptionInTheEnd = null;
     while (retryCount-- > 0) {
       try {
-        log.info("still can retry for {} times", retryCount);
+        log.info("retry attempt left : {} ", retryCount);
         retryable.execute();
         return;
       } catch (Exception ex) {
-        log.error("exception during retry, you may ignore it", ex);
+        exceptionInTheEnd = ex;
+        log.info("retrying after {} seconds", TimeUnit.MILLISECONDS.toSeconds(sleepInMilliSeconds));
         TimeUnit.MILLISECONDS.sleep(sleepInMilliSeconds);
       }
     }
 
-    throw new BaseException(ExceptionCode.FAILED_AFTER_RETRY);
+    if (throwExceptionInTheEnd) {
+      log.error("retries exhausted, possible");
+      throw exceptionInTheEnd;
+    }
   }
 
   /**
@@ -58,6 +64,7 @@ public class RetryHelper {
     retry(
         Integer.valueOf(GenericConstants.MAX_RETRIES.getVal()),
         Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
+        true,
         retryable);
   }
 
@@ -69,6 +76,10 @@ public class RetryHelper {
    * @throws Exception when the retry count is reached
    */
   public static void retry(int retryCount, Retryable retryable) throws Exception {
-    retry(retryCount, Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()), retryable);
+    retry(
+        retryCount,
+        Integer.valueOf(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
+        true,
+        retryable);
   }
 }

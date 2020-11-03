@@ -1,25 +1,32 @@
 -
-  metricName: ecs.task.memory.utilized_{{testingId}}
-  namespace: default
+  metricName: ecs.task.memory.reserved_{{testingId}}
+  namespace: {{metricNamespace}}
   dimensions:
-    -
-      name: OTelLib
-      value: Undefined
-    -
-      name: ecs.cluster
-      value: "{{ecsClusterName}}"
-    -
-      name: ecs.service
-      value: "undefined"
-    -
-      name: ecs.task-arn
-      value: "{{ecsTaskArn}}"
-    -
-      name: ecs.task-definition-family
-      value: "{{ecsTaskDefFamily}}"
-    -
-      name: ecs.task-definition-version
-      value: "{{ecsTaskDefVersion}}"
-    -
-      name: ecs.task-id
-      value: "{{ecsTaskId}}"
+-
+  metricName: ecs.task.memory.utilized_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+-
+  metricName: ecs.task.cpu.reserved_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+-
+  metricName: ecs.task.cpu.utilized_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+-
+  metricName: ecs.task.network.rate.rx_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+-
+  metricName: ecs.task.network.rate.tx_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+-
+  metricName: ecs.task.storage.read_bytes_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+-
+  metricName: ecs.task.storage.write_bytes_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
