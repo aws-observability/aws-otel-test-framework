@@ -15,10 +15,20 @@
 
 package com.amazon.opentelemetry.load.generator.emitter;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+
 public interface Emitter {
+
+  int NUM_THREADS = 5;
+  ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(NUM_THREADS);
 
   void emitDataLoad() throws Exception;
 
   void setupProvider() throws Exception;
+
+  void nextDataPoint();
+
+  void start(Runnable runnable);
 
 }

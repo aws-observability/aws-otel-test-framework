@@ -15,6 +15,16 @@
 
 package com.amazon.opentelemetry.load.generator.emitter;
 
+import com.amazon.opentelemetry.load.generator.model.Parameter;
+import java.util.concurrent.TimeUnit;
+
 public abstract class TraceEmitter implements Emitter {
 
+  protected Parameter param;
+
+  @Override
+  public void start(Runnable emitter) {
+    scheduler.scheduleAtFixedRate(emitter, TimeUnit.SECONDS.toMillis(5000),
+        TimeUnit.SECONDS.toNanos(1) / this.param.getRate(), TimeUnit.NANOSECONDS);
+  };
 }

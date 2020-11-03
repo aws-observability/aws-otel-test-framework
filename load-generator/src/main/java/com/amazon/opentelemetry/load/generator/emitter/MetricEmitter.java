@@ -16,20 +16,21 @@
 package com.amazon.opentelemetry.load.generator.emitter;
 
 import com.amazon.opentelemetry.load.generator.model.Parameter;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public abstract class MetricEmitter implements Emitter {
 
   protected static final String DIMENSION_API_NAME = "apiName";
   protected static final String DIMENSION_STATUS_CODE = "statusCode";
-  private static final int NUM_THREADS = 5;
   protected static String API_COUNTER_METRIC = "apiBytesSent";
   protected static String API_LATENCY_METRIC = "latency";
-  protected final ScheduledExecutorService scheduler = Executors
-      .newScheduledThreadPool(NUM_THREADS);
+
   protected Parameter param;
 
-  abstract void nextDataPoint();
+  @Override
+  public void start(Runnable emitter) {
+    scheduler.scheduleAtFixedRate(emitter, TimeUnit.SECONDS.toMillis(5000),
+        TimeUnit.SECONDS.toNanos(1) / this.param.getRate(), TimeUnit.NANOSECONDS);
+  };
 
 }

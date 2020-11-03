@@ -15,26 +15,50 @@
 
 package com.amazon.opentelemetry.load.generator.emitter;
 
+import com.amazon.opentelemetry.load.generator.factory.AwsTracerProviderFactory;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
+import io.grpc.ManagedChannelBuilder;
+import io.opentelemetry.exporters.otlp.OtlpGrpcSpanExporter;
+import io.opentelemetry.sdk.trace.TracerSdkProvider;
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import io.opentelemetry.trace.Span;
+import io.opentelemetry.trace.Tracer;
+import java.util.UUID;
 
-public class OtlpTraceEmitter extends MetricEmitter {
+public class OtlpTraceEmitter extends TraceEmitter {
+
+  Tracer tracer;
 
   public OtlpTraceEmitter(Parameter param) {
     super();
+    this.param = param;
   }
 
   @Override
   public void emitDataLoad() throws Exception {
-
+    this.setupProvider();
+    this.start(() -> nextDataPoint());
   }
 
   @Override
   public void setupProvider() throws Exception {
-
+    TracerSdkProvider tracerProvider = (TracerSdkProvider) new AwsTracerProviderFactory().create();
+    tracer =
+        tracerProvider.get("aws-otel-load-generator-trace", "semver:0.1.0");
+    OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.newBuilder()
+        .setChannel(
+            ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
+        .build();
+    tracerProvider.addSpanProcessor(
+        SimpleSpanProcessor.newBuilder(spanExporter).build());
   }
 
   @Override
-  void nextDataPoint() {
+  public void nextDataPoint() {
+    Span exampleSpan = tracer.spanBuilder("Example Span").setSpanKind(Span.Kind.SERVER).startSpan();
 
+    exampleSpan.setAttribute("good", "true");
+    exampleSpan.setAttribute("exampleNumber", UUID.randomUUID().toString());
+    exampleSpan.end();
   }
 }

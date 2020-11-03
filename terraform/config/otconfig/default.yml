@@ -5,6 +5,9 @@ receivers:
     protocols:
       grpc:
         endpoint: 0.0.0.0:55680
+  awsxray:
+    endpoint: 0.0.0.0:${udp_port}
+    transport: udp
 
 processors:
 
