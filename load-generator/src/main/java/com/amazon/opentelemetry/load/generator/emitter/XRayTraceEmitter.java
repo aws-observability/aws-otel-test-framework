@@ -40,16 +40,11 @@ public class XRayTraceEmitter extends TraceEmitter {
 
   @Override
   public void nextDataPoint() {
-    System.out.println("segment started");
     Segment segment = AWSXRay.beginSegment("service");
-    System.out.println("subsegment started");
     Subsegment subsegment = AWSXRay.beginSubsegment("## SessionModel.saveSession");
-    System.out.println("subsegment created");
     subsegment.addException(new Exception("test"));
     segment.addSubsegment(subsegment);
     AWSXRay.endSubsegment();
     AWSXRay.endSegment();
-    System.out.println("segment created");
-
   }
 }
