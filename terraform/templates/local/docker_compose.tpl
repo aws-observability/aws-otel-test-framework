@@ -19,10 +19,9 @@ services:
       - 80:80
 
   aws-ot-collector:
-    image: 611364707713.dkr.ecr.us-west-2.amazonaws.com/aws/aws-otel-collector:v0.2.0-343917618
-    #build:
-    #  context: ../../../aws-otel-collector
-    #  dockerfile: cmd/awscollector/Dockerfile
+    build:
+      context: ../../../aws-otel-collector
+      dockerfile: cmd/awscollector/Dockerfile
 
     command: ["--config=/tmp/otconfig.yaml", "--log-level=DEBUG"]
     volumes:
