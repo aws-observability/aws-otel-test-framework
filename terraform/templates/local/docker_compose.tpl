@@ -35,6 +35,7 @@ services:
     environment:
       - AWS_ACCESS_KEY_ID=AKIAY6WBBCFAKEOX7IQR
       - AWS_SECRET_ACCESS_KEY=QY5DfUyosEa0efakejlteLvHxabKaeQ5zuppF9v7
+      - AWS_REGION=${region}
       - GODEBUG=x509ignoreCN=0
 
   sample_app:
