@@ -46,7 +46,7 @@ You will need to create a sub folder under [the testcase directory](https://gith
 you will need to place files as following(please use the same filename as below):
 
 1. `otconfig.tpl`: which contain the new component, will be used as the config in all types of the e2etest. 
-2. [optional] `parameters.tfvars`: you can run your test case locally with adding `-var-file=../testcases/yourtestcase/parameters.tfvars` to the terraform command. By using this file, you can override the default configuration in the testing framework. [The parameters you can override](terraform/README.md).
+2. [optional] `parameters.tfvars`: you can override the default parameters in the framework with adding `-var-file=../testcases/yourtestcase/parameters.tfvars` to the terraform command. [The parameters you can override](terraform/README.md).
 4. [optional] `docker_compose.tpl`: which is used to launch sample app container in ec2 test.
 5. [optional] `ecs_taskdef.tpl`: which is used to launch ecs task in ecs test.
 6. [optional] `eks_pod_config.tpl`: which is used to launch eks pod in eks test.
@@ -65,9 +65,7 @@ When you link your testcase, there are five types of testing platforms you can c
 * EKS, which will run the test in the main branch workflow under an eks/k8s cluster.
 * SOAKING, which will run every night, and perform high throughput to your test case and monitor the resource usages.
 
-Typically, we required all the types for every test case, if you have a special usage of your component which might not need a certain platform,
-please put the reason in the pr.
-If you find the current test case option can't fulfill your testing requirement, feel free to open an issue, so we can discuss together.
+Typically, we require the new components to be tested on all platforms for all the test cases. If you find the current test case option can't fulfill your testing requirement, feel free to open an issue, so we can discuss together.
 
 ## 3. Run test cases in AWS platform
 
@@ -98,7 +96,7 @@ please follow https://github.com/aws-observability/aws-otel-collector/blob/main/
 ### 3.2 Run in ECS
 
 ````
-cd terraform/ecs && terraform init && terraform apply -var="aoc_image_repo={{the docker image repo name you just pushed}}" -var="aoc_version={{ the docker image tag name}} -var="testcase=../testcases/{{your test case folder name}}" -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
+cd terraform/ecs && terraform init && terraform apply -var="aoc_image_repo={{the docker image repo name you just pushed}}" -var="aoc_version={{ the docker image tag name}}" -var="testcase=../testcases/{{your test case folder name}}" -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
 ````
 
 don't forget to clean the resources

@@ -49,7 +49,7 @@ public class MockedServerValidator implements IValidator {
           }
 
           String responseBody = response.body().string();
-          if (!responseBody.equalsIgnoreCase("true")) {
+          if (!responseBody.equalsIgnoreCase("success")) {
             throw new BaseException(ExceptionCode.MOCKED_SERVER_NOT_RECEIVE_DATA);
           }
 

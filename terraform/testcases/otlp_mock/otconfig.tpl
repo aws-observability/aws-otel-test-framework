@@ -1,4 +1,7 @@
 extensions:
+  health_check:
+  pprof:
+    endpoint: 0.0.0.0:1777
 
 receivers:
   otlp:
@@ -6,8 +9,9 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:55680
 
-
 processors:
+  batch:
+  queued_retry:
 
 exporters:
   logging:

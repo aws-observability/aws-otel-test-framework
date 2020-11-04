@@ -2,18 +2,18 @@ from flask import Flask
 import os
 
 app = Flask(__name__)
-get_data = False
+get_data = ""
 
 @app.route("/check-data")
 def check_data():
     global get_data
-    return str(get_data)
+    return get_data
 
 @app.route('/', defaults={'path': ''}, methods = ['POST', 'GET', 'PUT', 'DELETE'])
 @app.route('/<path:path>', methods = ['POST', 'GET', 'PUT', 'DELETE'])
 def catch_all(path):
     global get_data
-    get_data = True
+    get_data = "success"
     return "{}"
 
 if __name__ == "__main__":
