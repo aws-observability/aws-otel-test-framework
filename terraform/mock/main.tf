@@ -81,6 +81,7 @@ resource "local_file" "write_docker_compose_file" {
 resource "null_resource" "run_docker_compose" {
   provisioner "local-exec" {
     command = <<-EOT
+      docker-compose -f ${local.docker_compose_path} down
       docker-compose -f ${local.docker_compose_path} build
       docker-compose -f ${local.docker_compose_path} up -d
     EOT

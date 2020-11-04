@@ -16,7 +16,7 @@ git clone git@github.com:aws-observability/aws-otel-test-framework.git
 git clone git@github.com:aws-observability/aws-otel-collector.git
 ````
 
-### install terraform
+#### install terraform
 
 please check https://learn.hashicorp.com/tutorials/terraform/install-cli
 
@@ -25,6 +25,7 @@ please check https://learn.hashicorp.com/tutorials/terraform/install-cli
 cd aws-otel-test-framework/terraform/mock
 terraform init
 terraform apply -var="testcase=../testcases/otlp_mock" 
+terraform destroy
 ````
 
 #### What does the test do?
