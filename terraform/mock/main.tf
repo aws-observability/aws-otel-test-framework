@@ -78,15 +78,17 @@ resource "local_file" "write_docker_compose_file" {
 }
 
 # launch docker compose
-resource "null_resource" "launch_docker_compose" {
+resource "null_resource" "run_docker_compose" {
   provisioner "local-exec" {
-    command = "docker-compose -f ${local.docker_compose_path} up -d"
+    command = <<-EOT
+      docker-compose -f ${local.docker_compose_path} build
+      docker-compose -f ${local.docker_compose_path} up -d
+    EOT
   }
 }
 
-
-
 resource "null_resource" "validate" {
+  depends_on = [null_resource.run_docker_compose]
   provisioner "local-exec" {
     command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --endpoint http://127.0.0.1:${module.common.sample_app_listen_address_port} --mocked-server-validating-url http://127.0.0.1/check-data'"
     working_dir = "../../"
