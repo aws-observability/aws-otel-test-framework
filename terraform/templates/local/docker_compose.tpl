@@ -42,10 +42,9 @@ services:
     ports:
       - "${sample_app_external_port}:${sample_app_listen_address_port}"
     environment:
-      LISTEN_ADDRESS: ${sample_app_listen_address}
-      AWS_REGION: us-west-2
-      OTEL_RESOURCE_ATTRIBUTES: ${otel_resource_attributes}
-      INSTANCE_ID: ${testing_id}
-      OTEL_EXPORTER_OTLP_ENDPOINT: aws-ot-collector:${grpc_port}
-      AWS_XRAY_DAEMON_ADDRESS: aws-ot-collector:${udp_port}
-      AWS_REGION: ${region}
+      - LISTEN_ADDRESS=${sample_app_listen_address}
+      - AWS_REGION=${region}
+      - OTEL_RESOURCE_ATTRIBUTES=${otel_resource_attributes}
+      - INSTANCE_ID=${testing_id}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=aws-ot-collector:${grpc_port}
+      - AWS_XRAY_DAEMON_ADDRESS=aws-ot-collector:${udp_port}
