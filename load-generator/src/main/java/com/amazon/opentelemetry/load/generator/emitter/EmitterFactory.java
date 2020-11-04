@@ -29,8 +29,6 @@ public class EmitterFactory {
         return getMetricEmitter(param);
       case Trace:
         return getTraceEmitter(param);
-//      case Log:
-//        return getLogEmitter(param);
       default:
         throw new RuntimeException("invalid data type specified");
     }
@@ -53,9 +51,5 @@ public class EmitterFactory {
       throw new RuntimeException("unknown trace data format specified");
     }
   }
-
-//  private static Emitter getLogEmitter(Parameter param) {
-//    return new
-//  }
 
 }
