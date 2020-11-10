@@ -47,3 +47,6 @@ override.tf.json
 terraform.rc
 
 !gradle/wrapper/gradle-wrapper.jar
+
+# Ignore nodejs builds
+node_modules 
