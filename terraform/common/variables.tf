@@ -26,7 +26,7 @@ variable "aoc_iam_role" {
 }
 
 variable "otel_service_namespace" {
-  default = "YingOtel"
+  default = "MinSoaking"
 }
 
 variable "otel_service_name" {

@@ -30,7 +30,7 @@ output "validator_path" {
 }
 
 output "otel_service_namespace" {
-  value = "YingOtel"
+  value = "MinSoaking"
 }
 
 output "otel_service_name" {

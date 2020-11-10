@@ -71,3 +71,18 @@ variable "testcase" {
   default = "../testcases/otlp"
 }
 
+# data type will be emitted. Possible values: metric or trace
+variable "date_mode" {
+  default = "metric"
+}
+
+# data points were emitted per second
+variable "rate" {
+  default = 100
+}
+
+# data model type. possible values: otlp, xray, etc
+variable "data_type" {
+  default = "otlp"
+}
+

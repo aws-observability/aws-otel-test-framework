@@ -8,7 +8,9 @@ receivers:
     protocols:
       grpc:
         endpoint: 0.0.0.0:${grpc_port}
-
+  awsxray:
+    endpoint: localhost:2000
+    transport: udp
 
 processors:
   batch/traces:
@@ -29,10 +31,11 @@ exporters:
 service:
   pipelines:
     traces:
-      receivers: [otlp]
+      receivers: [otlp, awsxray]
       processors: [batch/traces]
       exporters: [logging, awsxray]
     metrics:
       receivers: [otlp]
       processors: [batch/metrics]
       exporters: [logging, awsemf]
+  extensions: [health_check, pprof]

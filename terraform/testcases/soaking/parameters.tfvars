@@ -9,3 +9,8 @@ validation_config = "alarm-pulling-validation.yml"
 
 # use amazonlinux2 by default to soak
 testing_ami = "amazonlinux2"
+
+data_emitter_image = "mxiamxia/aws-otel-load-generator:v0.1.7"
+
+
+

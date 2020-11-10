@@ -57,7 +57,7 @@ data "aws_s3_bucket_object" "ssh_private_key" {
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
 resource "aws_instance" "aoc" {
   ami                         = local.ami_id
-  instance_type               = local.instance_type
+  instance_type               = "m5.2xlarge"
   subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
@@ -100,7 +100,7 @@ resource "aws_instance" "aoc" {
 ## launch a ec2 instance to install data emitter
 resource "aws_instance" "emitter" {
   ami                         = data.aws_ami.suse.id
-  instance_type               = "t2.micro"
+  instance_type               = "m5.2xlarge"
   subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
@@ -121,12 +121,13 @@ data "template_file" "docker_compose" {
     testing_id = module.common.testing_id
     grpc_endpoint = "${aws_instance.aoc.private_ip}:${module.common.grpc_port}"
     udp_endpoint = "${aws_instance.aoc.private_ip}:${module.common.udp_port}"
+    date_mode = var.date_mode
+    rate = var.rate
+    data_type = var.data_type
   }
 }
 
-resource "null_resource" "sample-app-validator" {
-  # skip this validation if it's a soaking test
-  count = var.soaking ? 0 : 1
+resource "null_resource" "sample-app" {
   provisioner "file" {
     content = data.template_file.docker_compose.rendered
     destination = "/tmp/docker-compose.yml"
@@ -152,7 +153,11 @@ resource "null_resource" "sample-app-validator" {
       host = aws_instance.emitter.public_ip
     }
   }
+}
 
+resource "null_resource" "sample-app-validator" {
+  # skip this validation if it's a soaking test
+  count = var.soaking ? 0 : 1
   provisioner "local-exec" {
     command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}:${module.common.sample_app_lb_port}'"
     working_dir = "../../"
@@ -161,4 +166,12 @@ resource "null_resource" "sample-app-validator" {
 
 output "public_ip" {
   value = aws_instance.aoc.public_ip
+}
+
+output "emiter_public_ip" {
+  value = aws_instance.emitter.public_ip
+}
+
+output "docker_compose" {
+  value = data.template_file.docker_compose.rendered
 }
