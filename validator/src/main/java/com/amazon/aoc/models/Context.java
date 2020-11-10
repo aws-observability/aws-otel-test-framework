@@ -38,4 +38,9 @@ public class Context {
   private List<String> alarmNameList;
   private Integer alarmPullingDuration;
   private Integer alarmPullingTimes;
+
+  /*
+  mocked server parameters
+   */
+  private String mockedServerValidatingUrl;
 }

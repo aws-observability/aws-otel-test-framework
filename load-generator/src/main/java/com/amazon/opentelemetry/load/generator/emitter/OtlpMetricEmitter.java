@@ -27,7 +27,6 @@ import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.metrics.export.IntervalMetricReader;
 import io.opentelemetry.sdk.metrics.export.MetricExporter;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 public class OtlpMetricEmitter extends MetricEmitter {
 
@@ -43,9 +42,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
   @Override
   public void emitDataLoad() throws Exception {
     this.setupProvider();
-
-    scheduler.scheduleAtFixedRate(() -> nextDataPoint(), TimeUnit.SECONDS.toMillis(5000),
-        TimeUnit.SECONDS.toNanos(1) / this.param.getRate(), TimeUnit.NANOSECONDS);
+    this.start(() -> nextDataPoint());
   }
 
   @Override
@@ -72,7 +69,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
         .setMetricExporter(metricExporter)
         .build();
 
-    Meter meter = OpenTelemetry.getMeter("aws-otel-load-generator", "1.0");
+    Meter meter = OpenTelemetry.getMeter("aws-otel-load-generator-metric", "0.1.0");
 
     apiBytesSentCounter = meter
         .longCounterBuilder(API_COUNTER_METRIC)

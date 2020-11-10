@@ -18,3 +18,8 @@
 ```
 ./gradlew :load-generator:run --args="metric -r=10000 -u=localhost:55680 -d=otlp -f=10000"
 ```
+
+### Trace Load Test Sample Command,
+```
+./gradlew :load-generator:run --args="trace -r=100 -u=localhost:55680 -d=otlp"
+```

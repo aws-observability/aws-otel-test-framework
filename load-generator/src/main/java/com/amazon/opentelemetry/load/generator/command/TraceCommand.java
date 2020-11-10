@@ -15,6 +15,12 @@
 
 package com.amazon.opentelemetry.load.generator.command;
 
+import com.amazon.opentelemetry.load.generator.emitter.Emitter;
+import com.amazon.opentelemetry.load.generator.emitter.EmitterFactory;
+import com.amazon.opentelemetry.load.generator.model.DataType;
+import com.amazon.opentelemetry.load.generator.model.Parameter;
+import lombok.SneakyThrows;
+import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
@@ -22,9 +28,22 @@ import picocli.CommandLine.Mixin;
     name = "trace",
     mixinStandardHelpOptions = true,
     description = "enable metric data generator")
-public class TraceCommand {
+@Log4j2
+public class TraceCommand implements Runnable {
 
   @Mixin
   CommonOption commonOption = new CommonOption();
+
+  @SneakyThrows
+  @Override
+  public void run() {
+    Parameter param = commonOption.buildParameter();
+    log.info("param: {} " + param);
+
+    Emitter emitter = EmitterFactory.getEmitter(param, DataType.Trace);
+
+    emitter.emitDataLoad();
+
+  }
 
 }
