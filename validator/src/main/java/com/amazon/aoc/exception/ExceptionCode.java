@@ -38,6 +38,11 @@ public enum ExceptionCode {
 
   // alarm validation
   ALARM_BAKING(70001, "alarms still need to be baked"),
+
+  // mocked server
+  MOCKED_SERVER_NOT_AVAILABLE(80001, "mocked server is not available"),
+  MOCKED_SERVER_NOT_RECEIVE_DATA(80002, "mocked server not receive data"),
+
   ;
   private int code;
   private String message;
