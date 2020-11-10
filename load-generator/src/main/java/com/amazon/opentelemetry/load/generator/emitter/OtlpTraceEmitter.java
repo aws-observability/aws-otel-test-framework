@@ -57,8 +57,6 @@ public class OtlpTraceEmitter extends TraceEmitter {
         BatchSpanProcessor.newBuilder(spanExporter).setScheduleDelayMillis(100).build();
     tracerProvider.addSpanProcessor(spanProcessor);
 
-//    tracerProvider.addSpanProcessor(
-//        SimpleSpanProcessor.newBuilder(spanExporter).build());
   }
 
   @Override

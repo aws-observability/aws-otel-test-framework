@@ -38,7 +38,7 @@ public class App {
   }
 
   public static void main(String[] args) {
-//    MetricEmitter metricEmitter = buildMetricEmitter();
+    MetricEmitter metricEmitter = buildMetricEmitter();
     final Call.Factory httpClient = new OkHttpClient();
     final S3Client s3 = S3Client.builder().build();
     String port;
@@ -96,8 +96,6 @@ public class App {
 
     after(
         (req, res) -> {
-          System.out.println("http request finished");
-          MetricEmitter metricEmitter = buildMetricEmitter();
           // for below paths we don't emit metric data
           if (req.pathInfo().equals("/outgoing-http-call")) {
             String statusCode = String.valueOf(res.status());
