@@ -33,10 +33,10 @@ services:
       - "../../mockserver/cert.pem:/etc/pki/tls/cacert.pem"
       - "../../mockserver/cert.pem:/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
     environment:
-      - AWS_ACCESS_KEY_ID=AKIAY6WBBCFAKEOX7IQR
-      - AWS_SECRET_ACCESS_KEY=QY5DfUyosEa0efakejlteLvHxabKaeQ5zuppF9v7
       - AWS_REGION=${region}
       - GODEBUG=x509ignoreCN=0
+    volumes:
+      - ~/.aws:/root/.aws
 
   sample_app:
     image: ${data_emitter_image}
