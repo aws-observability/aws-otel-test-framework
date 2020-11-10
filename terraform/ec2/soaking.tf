@@ -67,10 +67,10 @@ resource "time_sleep" "wait_2_minutes" {
 resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
   count = var.soaking ? 1 : 0
   depends_on = [time_sleep.wait_2_minutes]
-  alarm_name = "otel-soaking-cpu-alarm-${module.common.testing_id}"
+  alarm_name = "otel-soaking-cpu-alarm-${aws_instance.aoc.id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 2
-  threshold = "50"
+  threshold = "20"
 
   metric_query {
     id = "cpu"
@@ -86,6 +86,8 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
       # use this dimension to identify each test
       dimensions = {
         InstanceId = aws_instance.aoc.id
+        exe = "aws-otel-collector"
+        process_name = "aws-otel-collector"
       }
     }
   }

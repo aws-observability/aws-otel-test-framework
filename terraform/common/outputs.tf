@@ -30,11 +30,11 @@ output "validator_path" {
 }
 
 output "otel_service_namespace" {
-  value = "MinSoaking"
+  value = "aws-otel"
 }
 
 output "otel_service_name" {
-  value = "Terraform"
+  value = "aws-otel-soaking"
 }
 
 output "ssh_key_name" {

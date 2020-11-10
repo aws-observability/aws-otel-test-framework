@@ -64,7 +64,7 @@ variable "soaking" {
 }
 
 variable "soaking_metric_namespace" {
-  default = "AWSOtelCollector/SoakTest"
+  default = "AWSOtelCollector/SoakingTest"
 }
 
 variable "testcase" {
@@ -85,4 +85,6 @@ variable "rate" {
 variable "data_type" {
   default = "otlp"
 }
+
+
 

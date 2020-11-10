@@ -123,4 +123,13 @@ data "aws_ami" "suse" {
   owners = ["amazon"] # Canonical
 }
 
+#  c2 host instance type for running aws-otel-collector
+variable "instance_type_for_collector" {
+  default = "t2.micro"
+}
+
+# ec2 host instance type for running load generator
+variable "instance_type_for_emitter" {
+  default = "t2.micro"
+}
 

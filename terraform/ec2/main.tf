@@ -57,7 +57,7 @@ data "aws_s3_bucket_object" "ssh_private_key" {
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
 resource "aws_instance" "aoc" {
   ami                         = local.ami_id
-  instance_type               = "m5.2xlarge"
+  instance_type               = var.instance_type_for_collector
   subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
@@ -100,7 +100,7 @@ resource "aws_instance" "aoc" {
 ## launch a ec2 instance to install data emitter
 resource "aws_instance" "emitter" {
   ami                         = data.aws_ami.suse.id
-  instance_type               = "m5.2xlarge"
+  instance_type               = var.instance_type_for_emitter
   subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
