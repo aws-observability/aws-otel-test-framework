@@ -22,7 +22,7 @@ variable "region" {
 }
 
 variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
+  default = "josephwy/integ-test-emitter:new"
 }
 
 variable "aoc_image_repo" {
@@ -30,19 +30,18 @@ variable "aoc_image_repo" {
 }
 
 variable "aoc_version" {
-  default = "v0.1.0-320983060"
+  default = "v0.3.0-346703560"
 }
 
 variable "validation_config" {
-  default = "default-validation.yml"
-}
-
-# set this option to false will disable validator to call the sample app
-# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
-variable "sample_app_callable" {
-  default = true
+  default = "default-mocked-server-validation.yml"
 }
 
 variable "testcase" {
-  default = "../testcases/otlp"
+  default = "../testcases/otlp_mock"
+}
+
+## mocked server related
+variable "mocked_server_image" {
+  default = "josephwy/mocked-server:v0.1.3"
 }

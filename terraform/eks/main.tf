@@ -33,6 +33,8 @@ module "basic_components" {
   testcase = var.testcase
 
   testing_id = module.common.testing_id
+
+  mocked_endpoint = "localhost/put-data"
 }
 
 locals {
@@ -87,13 +89,28 @@ data "template_file" "eksconfig" {
     testing_id = module.common.testing_id
   }
 }
+
+# load the faked cert for mocked server
+data "template_file" "faked_cert" {
+  template = file("../../mocked_server/certificates/ssl/certificate.crt")
+}
+resource "kubernetes_config_map" "mocked_server_cert" {
+  metadata {
+    name = "mocked-server-cert"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+
+  data = {
+    "ca-bundle.crt" = data.template_file.faked_cert.rendered
+  }
+}
+
 locals {
   eks_pod_config = yamldecode(data.template_file.eksconfig.rendered)["sample_app"]
 }
 
 # deploy aoc and sample app
 resource "kubernetes_deployment" "aoc_deployment" {
-  count = var.sample_app_callable ? 1 : 0
   metadata {
     name = "aoc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
@@ -127,6 +144,27 @@ resource "kubernetes_deployment" "aoc_deployment" {
           }
         }
 
+        volume {
+          name = "mocked-server-cert"
+          config_map {
+            name = kubernetes_config_map.mocked_server_cert.metadata[0].name
+          }
+        }
+
+        container {
+          name = "mocked-server"
+          image = var.mocked_server_image
+
+          readiness_probe {
+            http_get {
+              path = "/"
+              port = 8080
+            }
+            initial_delay_seconds = 10
+            period_seconds = 5
+          }
+        }
+
         # aoc
         container {
           name = "aoc"
@@ -144,6 +182,11 @@ resource "kubernetes_deployment" "aoc_deployment" {
           volume_mount {
             mount_path = "/aoc"
             name = "otel-config"
+          }
+
+          volume_mount {
+            mount_path = "/etc/pki/tls/certs"
+            name = "mocked-server-cert"
           }
         }
 
@@ -210,14 +253,13 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
 # create service upon the sample app
 resource "kubernetes_service" "sample_app_service" {
-  count = var.sample_app_callable ? 1 : 0
   metadata {
     name = "aoc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
-      app = kubernetes_deployment.aoc_deployment[0].metadata[0].labels.app
+      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
     }
 
     type = "LoadBalancer"
@@ -229,111 +271,30 @@ resource "kubernetes_service" "sample_app_service" {
   }
 }
 
-resource "kubernetes_pod" "aoc_pod" {
-  count = !var.sample_app_callable ? 1 : 0
-
+# create service upon the mocked server
+resource "kubernetes_service" "mocked_server_service" {
   metadata {
-    name = "aoc"
+    name = "mocked-server"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
-
   spec {
-    volume {
-      name = "otel-config"
-      config_map {
-        name = kubernetes_config_map.aoc_config_map.metadata[0].name
-      }
+    selector = {
+      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
     }
 
-    container {
-      name = "aoc"
-      image = module.common.aoc_image
-      image_pull_policy = "Always"
-      args = ["--config=/aoc/aoc-config.yml"]
+    type = "LoadBalancer"
 
-      resources {
-        requests {
-          cpu = "0.2"
-          memory = "256Mi"
-        }
-      }
-
-      volume_mount {
-        mount_path = "/aoc"
-        name = "otel-config"
-      }
-    }
-
-    # sample app
-    container {
-      name = "sample-app"
-      image= local.eks_pod_config["image"]
-      image_pull_policy = "Always"
-      command = length(local.eks_pod_config["command"]) != 0 ? local.eks_pod_config["command"] : null
-      args = length(local.eks_pod_config["args"]) != 0 ? local.eks_pod_config["args"] : null
-
-      env {
-        name = "OTEL_EXPORTER_OTLP_ENDPOINT"
-        value = "127.0.0.1:${module.common.grpc_port}"
-      }
-
-      env {
-        name = "AWS_XRAY_DAEMON_ADDRESS"
-        value = "127.0.0.1:${module.common.udp_port}"
-      }
-
-      env {
-        name = "AWS_REGION"
-        value = var.region
-      }
-
-      env {
-        name = "INSTANCE_ID"
-        value = module.common.testing_id
-      }
-
-      env {
-        name = "OTEL_RESOURCE_ATTRIBUTES"
-        value = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
-      }
-
-      env {
-        name = "LISTEN_ADDRESS"
-        value = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
-      }
-
-      resources {
-        requests {
-          cpu = "0.2"
-          memory = "256Mi"
-        }
-
-      }
+    port {
+      port = 80
+      target_port = 8080
     }
   }
 }
-
-
 
 # run validator
 resource "null_resource" "callable_sample_app_validator" {
-  count = var.sample_app_callable ? 1 : 0
   provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service.load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port} --mocked-server-validating-url http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data'"
     working_dir = "../../"
   }
 }
-
-# run validator
-resource "null_resource" "validator" {
-  count = !var.sample_app_callable ? 1 : 0
-  provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name}'"
-    working_dir = "../../"
-  }
-}
-
-
-
-
-
