@@ -93,6 +93,19 @@ output "default_docker_compose_path" {
   value = "../templates/defaults/docker_compose.tpl"
 }
 
+## mocked server related
+output "default_mocked_server_ecs_taskdef_path" {
+  value = "../templates/defaults/mocked_server_ecs_taskdef.tpl"
+}
+
+output "mocked_server_http_port" {
+  value = "8080"
+}
+
+output "mocked_server_lb_port" {
+  value = "80"
+}
+
 output "grpc_port" {
   value = "55680"
 }

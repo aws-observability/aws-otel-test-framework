@@ -1,0 +1,28 @@
+extensions:
+  health_check:
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:55680
+
+processors:
+  batch:
+  queued_retry:
+
+exporters:
+  logging:
+    loglevel: debug
+  awsemf:
+    region: 'us-west-2'
+    no_verify_ssl: false
+    endpoint: "mocked-server/put-data"
+
+service:
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      exporters: [logging, awsemf]

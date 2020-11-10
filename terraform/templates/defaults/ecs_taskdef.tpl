@@ -76,6 +76,12 @@
             "valueFrom": "${ssm_parameter_arn}"
         }
       ],
+      "mountPoints": [
+          {
+              "sourceVolume": "efs",
+              "containerPath": "/etc/pki/tls/certs"
+          }
+      ],
       "essential": true,
       "entryPoint": [],
       "command": [],
@@ -86,6 +92,28 @@
         "logDriver": "awslogs",
         "options": {
           "awslogs-group": "/ecs/ecs-cwagent-sidecar-collector",
+          "awslogs-region": "${region}",
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "True"
+        }
+      }
+    },
+    {
+      "name": "mocked-server",
+      "image": "${mocked_server_image}",
+      "cpu": 10,
+      "memory": 256,
+      "portMappings": [
+           {
+             "containerPort": 8080,
+             "hostPort": 8080,
+             "protocol": "tcp"
+           }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/collector-mocked-server",
           "awslogs-region": "${region}",
           "awslogs-stream-prefix": "ecs",
           "awslogs-create-group": "True"

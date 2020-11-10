@@ -31,7 +31,7 @@ resource "tls_private_key" "ssh_key" {
 }
 
 resource "aws_key_pair" "generated_key" {
-  key_name = var.sshkey_s3_bucket
+  key_name = module.common.ssh_key_name
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
@@ -101,6 +101,9 @@ module "vpc" {
   enable_nat_gateway = true
   enable_vpn_gateway = true
 
+  enable_dns_hostnames = true
+  enable_dns_support = true
+
   tags = {
     Terraform = "true"
     Environment = "dev"
@@ -164,6 +167,14 @@ resource "aws_security_group" "aoc_sg" {
   ingress {
     from_port = 3389
     to_port = 3389
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # efs
+  ingress {
+    from_port = 2049
+    to_port = 2049
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

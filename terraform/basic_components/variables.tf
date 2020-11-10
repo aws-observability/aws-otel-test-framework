@@ -21,3 +21,5 @@ variable "testcase" {}
 
 variable "testing_id" {}
 
+variable "mocked_endpoint" {}
+

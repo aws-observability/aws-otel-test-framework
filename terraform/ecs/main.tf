@@ -30,6 +30,7 @@ module "basic_components" {
 
   testing_id = module.common.testing_id
 
+  mocked_endpoint = "localhost/put-data"
 }
 
 locals {
@@ -39,6 +40,8 @@ locals {
 provider "aws" {
   region  = var.region
 }
+
+
 
 module "ecs_cluster" {
   source  = "infrablocks/ecs-cluster/aws"
@@ -78,8 +81,12 @@ data "template_file" "task_def" {
     sample_app_listen_port = module.common.sample_app_listen_address_port
     udp_port = module.common.udp_port
     grpc_port = module.common.grpc_port
+
+    mocked_server_image = var.mocked_server_image
   }
 }
+
+
 
 # debug
 output "rendered" {
@@ -99,6 +106,18 @@ resource "aws_ecs_task_definition" "aoc" {
   # we want to limit the permissions of the roles
   task_role_arn = module.basic_components.aoc_iam_role_arn
   execution_role_arn = module.basic_components.aoc_iam_role_arn
+
+  # mount efs
+  volume {
+    name = "efs"
+
+    efs_volume_configuration {
+      file_system_id          = aws_efs_file_system.collector_efs.id
+      root_directory          = "/"
+    }
+  }
+
+  depends_on = [aws_instance.collector_efs_ec2]
 }
 
 ## create elb
@@ -156,6 +175,7 @@ resource "aws_ecs_service" "aoc" {
   task_definition = "${aws_ecs_task_definition.aoc.family}:1"
   desired_count = 1
   launch_type = var.ecs_launch_type
+  platform_version = var.ecs_launch_type == "FARGATE" ? "1.4.0" : null
 
   load_balancer {
     target_group_arn = aws_lb_target_group.aoc_lb_tg[0].arn
@@ -163,14 +183,22 @@ resource "aws_ecs_service" "aoc" {
     container_port = module.common.sample_app_listen_address_port
   }
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.mocked_server_lb_tg.arn
+    container_name = "mocked-server"
+    container_port = module.common.mocked_server_http_port
+  }
+
   network_configuration {
     subnets = module.basic_components.aoc_private_subnet_ids
     security_groups = [module.basic_components.aoc_security_group_id]
   }
 
+
+
   provisioner "local-exec" {
     working_dir = "../../"
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_lb.aoc_lb[0].dns_name}:${module.common.sample_app_lb_port}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_lb.aoc_lb[0].dns_name}:${module.common.sample_app_lb_port} --mocked-server-validating-url http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data'"
   }
 }
 
@@ -188,9 +216,15 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
     security_groups = [module.basic_components.aoc_security_group_id]
   }
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.mocked_server_lb_tg.arn
+    container_name = "mocked-server"
+    container_port = module.common.mocked_server_http_port
+  }
+
   provisioner "local-exec" {
     working_dir = "../../"
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --ecs-context ecsClusterName=${module.ecs_cluster.cluster_name} --ecs-context ecsTaskArn=${aws_ecs_task_definition.aoc.arn} --ecs-context ecsTaskDefFamily=${aws_ecs_task_definition.aoc.family} --ecs-context ecsTaskDefVersion=${aws_ecs_task_definition.aoc.revision}'"
+    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --ecs-context ecsClusterName=${module.ecs_cluster.cluster_name} --ecs-context ecsTaskArn=${aws_ecs_task_definition.aoc.arn} --ecs-context ecsTaskDefFamily=${aws_ecs_task_definition.aoc.family} --ecs-context ecsTaskDefVersion=${aws_ecs_task_definition.aoc.revision} --mocked-server-validating-url http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data'"
   }
 }
 

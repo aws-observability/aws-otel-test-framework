@@ -30,11 +30,11 @@ variable "aoc_image_repo" {
 }
 
 variable "aoc_version" {
-  default = "v0.1.0-324996423"
+  default = "v0.3.0-346703560"
 }
 
 variable "validation_config" {
-  default = "default-validation.yml"
+  default = "default-mocked-server-validation.yml"
 }
 
 # set this option to false will disable validator to call the sample app
@@ -44,6 +44,11 @@ variable "sample_app_callable" {
 }
 
 variable "testcase" {
-  default = "../testcases/otlp"
+  default = "../testcases/otlp_mock"
+}
+
+## mocked server related
+variable "mocked_server_image" {
+  default = "josephwy/mocked-server:v0.1.2"
 }
 
