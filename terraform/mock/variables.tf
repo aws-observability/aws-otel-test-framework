@@ -24,7 +24,7 @@ variable "validation_config" {
 }
 
 variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
+  default = "josephwy/integ-test-emitter:new"
 }
 
 # set this option to false will disable validator to call the sample app
