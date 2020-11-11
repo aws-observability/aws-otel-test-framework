@@ -25,10 +25,8 @@ exporters:
   awsxray:
     local_mode: true
     region: '${region}'
-    ${endpoint}
   awsemf:
     region: '${region}'
-    ${endpoint}
 
 service:
   pipelines:

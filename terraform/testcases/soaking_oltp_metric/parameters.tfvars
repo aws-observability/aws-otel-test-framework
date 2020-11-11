@@ -19,5 +19,14 @@ instance_type_for_collector = "m5.2xlarge"
 # EC2 instance type for running load generator
 instance_type_for_emitter = "t2.micro"
 
+# data type will be emitted. Possible values: metric or trace
+date_mode = "metric"
+
+# data points were emitted per second
+rate = "10000"
+
+# data model type. possible values: otlp, xray, etc
+data_type = "otlp"
+
 
 

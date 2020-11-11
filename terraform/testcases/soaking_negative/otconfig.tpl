@@ -25,10 +25,10 @@ exporters:
   awsxray:
     local_mode: true
     region: '${region}'
-    ${endpoint}
+    endpoint: 'https://www.dummy.com'
   awsemf:
     region: '${region}'
-    ${endpoint}
+    endpoint: 'https://www.dummy.com'
 
 service:
   pipelines:
