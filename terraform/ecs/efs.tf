@@ -62,7 +62,7 @@ data "template_file" "user_data" {
   template = file("./efs_userdata.sh.tpl")
 
   vars = {
-    cert_content = file("../../mocked_server/certificates/ssl/certificate.crt")
+    cert_content = module.basic_components.mocked_server_cert_content
     efs_id = aws_efs_file_system.collector_efs.id
   }
 }

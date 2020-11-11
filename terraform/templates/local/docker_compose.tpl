@@ -29,7 +29,8 @@ services:
       - mocked-server
 
   sample_app:
-    image: ${data_emitter_image}
+    build:
+      context: ../../sample-apps/spark
     ports:
       - "${sample_app_external_port}:${sample_app_listen_address_port}"
     environment:

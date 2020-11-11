@@ -91,9 +91,6 @@ data "template_file" "eksconfig" {
 }
 
 # load the faked cert for mocked server
-data "template_file" "faked_cert" {
-  template = file("../../mocked_server/certificates/ssl/certificate.crt")
-}
 resource "kubernetes_config_map" "mocked_server_cert" {
   metadata {
     name = "mocked-server-cert"
@@ -101,7 +98,7 @@ resource "kubernetes_config_map" "mocked_server_cert" {
   }
 
   data = {
-    "ca-bundle.crt" = data.template_file.faked_cert.rendered
+    "ca-bundle.crt" = module.basic_components.mocked_server_cert_content
   }
 }
 

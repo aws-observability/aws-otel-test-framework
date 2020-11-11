@@ -14,6 +14,7 @@ app.get("/check-data", function(req, res){
 
 app.all('/put-data', function (req, res) {
     get_data = "success";
+    console.log("received data");
     res.send('{}');
 });
 

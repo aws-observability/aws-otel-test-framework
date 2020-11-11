@@ -22,7 +22,7 @@ variable "ecs_launch_type" {
 }
 
 variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
+  default = "josephwy/integ-test-emitter:new"
 }
 
 variable "aoc_image_repo" {
