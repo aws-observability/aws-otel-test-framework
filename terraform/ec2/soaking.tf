@@ -67,7 +67,7 @@ resource "time_sleep" "wait_2_minutes" {
 resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
   count = var.soaking ? 1 : 0
   depends_on = [time_sleep.wait_2_minutes]
-  alarm_name = "otel-soaking-cpu-alarm-${aws_instance.aoc.id}"
+  alarm_name = "otel-soaking-cpu-alarm-${module.common.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 2
   threshold = "20"
