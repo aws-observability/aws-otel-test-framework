@@ -17,7 +17,7 @@ data_emitter_image = "aottestbed/aws-otel-load-generator:v0.1.0"
 instance_type_for_collector = "m5.2xlarge"
 
 # EC2 instance type for running load generator
-instance_type_for_emitter = "m5.2xlarge"
+instance_type_for_emitter = "t2.micro"
 
 
 

@@ -9,7 +9,7 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:${grpc_port}
   awsxray:
-    endpoint: localhost:2000
+    endpoint: 0.0.0.0:55690
     transport: udp
 
 processors:
