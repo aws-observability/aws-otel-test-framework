@@ -21,7 +21,7 @@ variable "package_s3_bucket" {
 }
 
 variable "aoc_version" {
-  default = "v0.1.0-324996423"
+  default = "v0.3.0-346703560"
 }
 
 variable "region" {
@@ -33,11 +33,11 @@ variable "testing_ami" {
 }
 
 variable "validation_config" {
-  default = "default-validation.yml"
+  default = "default-mocked-server-validation.yml"
 }
 
 variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
+  default = "josephwy/integ-test-emitter:new"
 }
 
 variable "data_emitter_image_command" {
@@ -52,12 +52,6 @@ variable "sshkey_s3_private_key" {
   default = "aoc-ssh-key-2020-07-22.pem"
 }
 
-# set this option to false will disable validator to call the sample app
-# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
-variable "sample_app_callable" {
-  default = true
-}
-
 # create soaking alarm if this flag is on
 variable "soaking" {
   default = false
@@ -68,6 +62,10 @@ variable "soaking_metric_namespace" {
 }
 
 variable "testcase" {
-  default = "../testcases/otlp"
+  default = "../testcases/otlp_mock"
 }
 
+## mocked server related
+variable "mocked_server_image" {
+  default = "josephwy/mocked-server:v0.1.3"
+}
