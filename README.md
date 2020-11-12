@@ -66,11 +66,6 @@ To add a new receiver, there are two requirements:
 
 We require every test case only cover one pipeline [one receiver to one exporter], so that the test case could be used to run soaking test.
 
-
-[An example to add a test case for an receiver] ()
-
-All the default files can be found [here](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/templates/defaults).
-
 ### 2.2 Link test case
 
 In the PR you create in [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector) to build the new component,
