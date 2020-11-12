@@ -36,7 +36,7 @@ public class MetricEmitter {
   LongValueRecorder apiLatencyRecorder;
 
   public MetricEmitter() {
-    Meter meter = OpenTelemetry.getMeter("cloudwatch-otel", "1.0");
+    Meter meter = OpenTelemetry.getMeter("aws-otel", "1.0");
 
     // give a instanceId appending to the metricname so that we can check the metric for each round
     // of integ-test

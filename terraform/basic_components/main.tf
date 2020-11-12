@@ -79,4 +79,3 @@ data "template_file" "otconfig" {
 
 
 
-
