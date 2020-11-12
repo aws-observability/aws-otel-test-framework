@@ -31,7 +31,7 @@ services:
 
   sample_app:
     build:
-      context: ../../sample-apps/spark
+      context: ../../sample-apps/${sample_app}
     ports:
       - "${sample_app_external_port}:${sample_app_listen_address_port}"
     environment:
