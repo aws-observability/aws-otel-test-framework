@@ -15,7 +15,8 @@ WORKDIR /app
 COPY --from=build /app/spark-sample-app-1.0 .
 COPY --from=build /app/aws-opentelemetry-agent.jar ./aws-opentelemetry-agent.jar
 
-ENV JAVA_OPTS "-javaagent:/app/aws-opentelemetry-agent.jar -Dotel.imr.export.interval=1000" 
+ENV JAVA_OPTS "-javaagent:/app/aws-opentelemetry-agent.jar -Dotel.imr.export.interval=1000"
+ENV HOME=/root
 
 CMD ["/app/bin/spark-sample-app"]
 

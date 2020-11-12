@@ -81,3 +81,5 @@ data "template_file" "otconfig" {
 data "template_file" "mocked_server_cert" {
   template = file("../../mocked_server/certificates/ssl/ca-bundle.crt")
 }
+
+

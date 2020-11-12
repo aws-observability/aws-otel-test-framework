@@ -16,14 +16,6 @@
 ## right now there's no good way to share variables across modules,
 ## so we have to define some of the common vars like region, otconfig_path in each module
 
-variable "package_s3_bucket" {
-  default = "aws-otel-collector-test"
-}
-
-variable "aoc_version" {
-  default = "v0.3.0-346703560"
-}
-
 variable "region" {
   default = "us-west-2"
 }
@@ -32,35 +24,24 @@ variable "testing_ami" {
   default = "amazonlinux2"
 }
 
-variable "validation_config" {
-  default = "default-mocked-server-validation.yml"
+variable "soaking_data_emitter_image" {
+  default = "aottestbed/aws-otel-load-generator:v0.1.0"
 }
 
-variable "data_emitter_image_command" {
-  default = ""
-}
-
-# check if cwagent need to be installed on EC2
-variable "enable_alarming" {
+# set this option to false will disable validator to call the sample app
+# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
+variable "sample_app_callable" {
   default = false
 }
 
 variable "soaking_metric_namespace" {
-  default = "AWSOtelCollector/IntegTest"
+  default = "AWSOtelCollector/SoakingTest"
 }
 
 variable "testcase" {
-  default = "../testcases/otlp_mock"
+  default = "../testcases/otlp"
 }
 
-## mocked server related
-variable "mocked_server_image" {
-  default = "josephwy/mocked-server:v0.1.3"
-}
-
-variable "sample_app_image" {
-  default = "aottestbed/aws-otel-collector-java-sample-app:0.2.5"
-}
 # data type will be emitted. Possible values: metric or trace
 variable "date_mode" {
   default = "metric"
@@ -68,7 +49,7 @@ variable "date_mode" {
 
 # data points were emitted per second
 variable "rate" {
-  default = 100
+  default = 1000
 }
 
 # data model type. possible values: otlp, xray, etc
@@ -76,16 +57,20 @@ variable "data_type" {
   default = "otlp"
 }
 
-variable "soaking_compose_file" {
-  default = ""
+variable "validation_config" {
+  default = "default-validation.yml"
 }
 
 # ec2 host instance type for running aws-otel-collector
 variable "instance_type_for_collector" {
-  default = ""
+  default = "m5.2xlarge"
 }
 
 # ec2 host instance type for running load generator
 variable "instance_type_for_emitter" {
-  default = ""
+  default = "t2.micro"
 }
+
+
+
+

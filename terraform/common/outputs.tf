@@ -26,11 +26,11 @@ output "validator_path" {
 }
 
 output "otel_service_namespace" {
-  value = "YingOtel"
+  value = "aws-otel"
 }
 
 output "otel_service_name" {
-  value = "Terraform"
+  value = "aws-otel-integ-test"
 }
 
 output "aoc_iam_role_name" {

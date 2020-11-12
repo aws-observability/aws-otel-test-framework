@@ -10,3 +10,4 @@
 rootProject.name = 'aws-otel-collector-test-framework'
 include 'validator'
 include 'load-generator'
+include 'sample-apps'

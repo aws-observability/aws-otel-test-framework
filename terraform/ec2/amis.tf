@@ -123,8 +123,4 @@ data "aws_ami" "suse" {
   owners = ["amazon"] # Canonical
 }
 
-output "suse_ami_id" {
-  value = data.aws_ami.suse.id
-}
-
 

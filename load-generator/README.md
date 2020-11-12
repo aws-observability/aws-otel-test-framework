@@ -1,4 +1,4 @@
-## AWS OTel Collector Load Test Generator
+### AWS OTel Collector Load Test Generator
 
 ### Parameters
 
@@ -14,12 +14,17 @@
 4. Data Format
     1. --dataFormat -d (eg, otlp, prometheus, xray)
 
-### Metrics Load Test Sample Command,
+### OTLP Metrics Load Test Sample Command,
 ```
 ./gradlew :load-generator:run --args="metric -r=10000 -u=localhost:55680 -d=otlp -f=10000"
 ```
 
-### Trace Load Test Sample Command,
+### OTLP Trace Load Test Sample Command,
 ```
 ./gradlew :load-generator:run --args="trace -r=100 -u=localhost:55680 -d=otlp"
+```
+
+### X-Ray Trace Load Test Sample Command,
+```
+./gradlew :load-generator:run --args="trace -r=100 -u=localhost:55680 -d=xray"
 ```

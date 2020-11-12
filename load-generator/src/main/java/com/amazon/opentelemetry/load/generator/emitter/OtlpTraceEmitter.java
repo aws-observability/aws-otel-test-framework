@@ -20,10 +20,12 @@ import com.amazon.opentelemetry.load.generator.model.Parameter;
 import io.grpc.ManagedChannelBuilder;
 import io.opentelemetry.exporters.otlp.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.trace.TracerSdkProvider;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import io.opentelemetry.trace.Span;
 import io.opentelemetry.trace.Tracer;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class OtlpTraceEmitter extends TraceEmitter {
 
@@ -48,9 +50,13 @@ public class OtlpTraceEmitter extends TraceEmitter {
     OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.newBuilder()
         .setChannel(
             ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
+        .setDeadlineMs(TimeUnit.SECONDS.toMillis(10))
         .build();
-    tracerProvider.addSpanProcessor(
-        SimpleSpanProcessor.newBuilder(spanExporter).build());
+
+    BatchSpanProcessor spanProcessor =
+        BatchSpanProcessor.newBuilder(spanExporter).setScheduleDelayMillis(100).build();
+    tracerProvider.addSpanProcessor(spanProcessor);
+
   }
 
   @Override

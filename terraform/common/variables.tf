@@ -26,11 +26,11 @@ variable "aoc_iam_role" {
 }
 
 variable "otel_service_namespace" {
-  default = "YingOtel"
+  default = "aws-otel"
 }
 
 variable "otel_service_name" {
-  default = "Terraform"
+  default = "aws-otel-integ-test"
 }
 
 variable "aoc_vpc_name" {

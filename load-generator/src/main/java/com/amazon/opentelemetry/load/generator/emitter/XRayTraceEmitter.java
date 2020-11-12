@@ -19,7 +19,6 @@ import com.amazon.opentelemetry.load.generator.model.Parameter;
 import com.amazonaws.xray.AWSXRay;
 import com.amazonaws.xray.entities.Segment;
 import com.amazonaws.xray.entities.Subsegment;
-import java.util.UUID;
 
 public class XRayTraceEmitter extends TraceEmitter {
 

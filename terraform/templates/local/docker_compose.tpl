@@ -21,9 +21,10 @@ services:
       - "../../mocked_server/certificates/ssl/certificate.crt:/etc/pki/tls/cacert.pem"
       - "../../mocked_server/certificates/ssl/certificate.crt:/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
     environment:
-      - AWS_ACCESS_KEY_ID=AKIAY6WBBCFAKEOX7IQR
-      - AWS_SECRET_ACCESS_KEY=QY5DfUyosEa0efakejlteLvHxabKaeQ5zuppF9v7
       - AWS_REGION=${region}
+      # faked credentials
+      - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
+      - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
       - GODEBUG=x509ignoreCN=0
     depends_on:
       - mocked-server

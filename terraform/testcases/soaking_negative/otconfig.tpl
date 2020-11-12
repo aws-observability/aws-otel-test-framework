@@ -25,16 +25,19 @@ exporters:
   awsxray:
     local_mode: true
     region: '${region}'
+    endpoint: 'https://www.dummy.com'
   awsemf:
     region: '${region}'
+    endpoint: 'https://www.dummy.com'
 
 service:
   pipelines:
     traces:
       receivers: [otlp, awsxray]
       processors: [batch/traces]
-      exporters: [logging, awsxray]
+      exporters: [awsxray]
     metrics:
       receivers: [otlp]
       processors: [batch/metrics]
-      exporters: [logging, awsemf]
+      exporters: [awsemf]
+  extensions: [health_check, pprof]
