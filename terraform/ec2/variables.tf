@@ -36,20 +36,8 @@ variable "validation_config" {
   default = "default-mocked-server-validation.yml"
 }
 
-variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:new"
-}
-
 variable "data_emitter_image_command" {
   default = ""
-}
-
-variable "sshkey_s3_bucket" {
-  default = "aoc-ssh-key"
-}
-
-variable "sshkey_s3_private_key" {
-  default = "aoc-ssh-key-2020-07-22.pem"
 }
 
 # create soaking alarm if this flag is on
@@ -68,4 +56,8 @@ variable "testcase" {
 ## mocked server related
 variable "mocked_server_image" {
   default = "josephwy/mocked-server:v0.1.3"
+}
+
+variable "sample_app_image" {
+  default = "aottestbed/aws-otel-collector-java-sample-app:0.2.5"
 }

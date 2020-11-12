@@ -35,7 +35,7 @@ resource "aws_efs_mount_target" "collector_efs_mount" {
   count = 3
 
   file_system_id  = aws_efs_file_system.collector_efs.id
-  subnet_id       = element(tolist(module.basic_components.aoc_private_subnet_ids), count.index)
+  subnet_id       = element(tolist(module.basic_components.aoc_public_subnet_ids), count.index)
   security_groups = [module.basic_components.aoc_security_group_id]
 
   depends_on = [aws_efs_file_system.collector_efs]
@@ -58,33 +58,82 @@ data "aws_ami" "amazonlinux2" {
   owners = ["amazon"] # Canonical
 }
 
-data "template_file" "user_data" {
-  template = file("./efs_userdata.sh.tpl")
+resource "tls_private_key" "ssh_key" {
+  algorithm   = "RSA"
+  rsa_bits    = 4096
+}
 
-  vars = {
-    cert_content = module.basic_components.mocked_server_cert_content
-    efs_id = aws_efs_file_system.collector_efs.id
-  }
+resource "aws_key_pair" "aws_ssh_key" {
+  key_name = "testing-${module.common.testing_id}"
+  public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
 resource "aws_instance" "collector_efs_ec2" {
   ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = "t2.micro"
-  subnet_id                   = tolist(module.basic_components.aoc_private_subnet_ids)[0]
+  subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
-  key_name                    = module.common.ssh_key_name
-  user_data                   = data.template_file.user_data.rendered
+  key_name                    = aws_key_pair.aws_ssh_key.key_name
 
   volume_tags = {
     Name = local.efs_name
   }
 
-  depends_on = [aws_efs_mount_target.collector_efs_mount]
+  depends_on = [aws_efs_mount_target.collector_efs_mount, aws_key_pair.aws_ssh_key]
 }
 
-output "userdata" {
-  value = data.template_file.user_data.rendered
+resource "null_resource" "mount_efs" {
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mkdir -p /efs",
+      "sudo yum install amazon-efs-utils -y",
+      "sudo mount -t efs ${aws_efs_file_system.collector_efs.id}:/ /efs"
+    ]
+
+    connection {
+      type = "ssh"
+      user = "ec2-user"
+      private_key = tls_private_key.ssh_key.private_key_pem
+      host = aws_instance.collector_efs_ec2.public_ip
+    }
+  }
+
+  depends_on = [aws_instance.collector_efs_ec2]
+}
+resource "null_resource" "scp_cert" {
+  provisioner "file" {
+    content = module.basic_components.mocked_server_cert_content
+    destination = "/tmp/ca-bundle.crt"
+    connection {
+      type = "ssh"
+      user = "ec2-user"
+      private_key = tls_private_key.ssh_key.private_key_pem
+      host = aws_instance.collector_efs_ec2.public_ip
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo cp /tmp/ca-bundle.crt /efs/ca-bundle.crt"
+    ]
+    connection {
+      type = "ssh"
+      user = "ec2-user"
+      private_key = tls_private_key.ssh_key.private_key_pem
+      host = aws_instance.collector_efs_ec2.public_ip
+    }
+  }
+
+  depends_on = [null_resource.mount_efs]
+}
+
+output "private_key" {
+  value = tls_private_key.ssh_key.private_key_pem
+}
+
+output "efs_ip" {
+  value = aws_instance.collector_efs_ec2.public_ip
 }
 

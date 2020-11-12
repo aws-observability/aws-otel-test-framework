@@ -30,23 +30,6 @@ resource "tls_private_key" "ssh_key" {
   rsa_bits = 4096
 }
 
-resource "aws_key_pair" "generated_key" {
-  key_name = module.common.ssh_key_name
-  public_key = tls_private_key.ssh_key.public_key_openssh
-}
-
-resource "aws_s3_bucket" "ssh_key" {
-  bucket = var.sshkey_s3_bucket
-  acl = "private"
-}
-
-resource "aws_s3_bucket_object" "ssh_key" {
-  bucket = aws_s3_bucket.ssh_key.id
-  key = module.common.sshkey_s3_private_key
-  content = tls_private_key.ssh_key.private_key_pem
-  content_type = "text/plain"
-}
-
 ## create one iam role for all the tests
 resource "aws_iam_instance_profile" "aoc_test_profile" {
   name = module.common.aoc_iam_role_name
@@ -191,7 +174,6 @@ resource "aws_security_group" "aoc_sg" {
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
 
 }
 

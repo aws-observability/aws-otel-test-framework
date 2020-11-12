@@ -117,10 +117,14 @@ data "aws_ami" "suse" {
 
   filter {
     name   = "name"
-    values = ["suse-sles-15*"]
+    values = ["suse-sles-15-sp1-v20200501-hvm-ssd-x86_64"]
   }
 
   owners = ["amazon"] # Canonical
+}
+
+output "suse_ami_id" {
+  value = data.aws_ami.suse.id
 }
 
 

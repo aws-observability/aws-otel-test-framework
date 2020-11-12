@@ -16,8 +16,6 @@
 # this test assumes it's running on a ubuntu host
 module "common" {
   source = "../common"
-
-  data_emitter_image = var.data_emitter_image
 }
 
 # render otconfig
@@ -88,10 +86,14 @@ resource "null_resource" "run_docker_compose" {
   }
 }
 
-resource "null_resource" "validate" {
+module "validator" {
+  source = "../validation"
+
+  region = var.region
+  testing_id = module.common.testing_id
+  sample_app_endpoint = "http://172.17.0.1:${module.common.sample_app_listen_address_port}"
+  mocked_server_validating_url = "http://172.17.0.1/check-data"
+
   depends_on = [null_resource.run_docker_compose]
-  provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --endpoint http://127.0.0.1:${module.common.sample_app_listen_address_port} --mocked-server-validating-url http://127.0.0.1/check-data'"
-    working_dir = "../../"
-  }
 }
+

@@ -20,7 +20,6 @@
 module "common" {
   source = "../common"
 
-  data_emitter_image = var.data_emitter_image
   aoc_image_repo = var.aoc_image_repo
   aoc_version = var.aoc_version
 }
@@ -85,7 +84,7 @@ data "template_file" "eksconfig" {
   template = file(local.eks_pod_config_path)
 
   vars = {
-    data_emitter_image = var.data_emitter_image
+    data_emitter_image = var.sample_app_image
     testing_id = module.common.testing_id
   }
 }
@@ -288,10 +287,18 @@ resource "kubernetes_service" "mocked_server_service" {
   }
 }
 
-# run validator
-resource "null_resource" "callable_sample_app_validator" {
-  provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service.load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port} --mocked-server-validating-url http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data'"
-    working_dir = "../../"
-  }
+##########################################
+# Validation
+##########################################
+module "validator" {
+  source = "../validation"
+
+  validation_config = var.validation_config
+  region = var.region
+  testing_id = module.common.testing_id
+  metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+  sample_app_endpoint = "http://${kubernetes_service.sample_app_service.load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}"
+  mocked_server_validating_url = "http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data"
+
+  depends_on = [kubernetes_service.mocked_server_service]
 }

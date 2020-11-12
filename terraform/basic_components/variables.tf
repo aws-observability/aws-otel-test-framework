@@ -17,9 +17,12 @@ variable "region" {
   default = "us-west-2"
 }
 
-variable "testcase" {}
+variable "testcase" {
+}
 
-variable "testing_id" {}
+variable "testing_id" {
+}
 
-variable "mocked_endpoint" {}
+variable "mocked_endpoint" {
+}
 

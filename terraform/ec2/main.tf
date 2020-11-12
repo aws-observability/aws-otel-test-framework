@@ -16,7 +16,6 @@
 module "common" {
   source = "../common"
 
-  data_emitter_image = var.data_emitter_image
   aoc_version = var.aoc_version
 }
 
@@ -51,9 +50,14 @@ locals {
 }
 
 ## get the ssh private key
-data "aws_s3_bucket_object" "ssh_private_key" {
-  bucket = var.sshkey_s3_bucket
-  key = var.sshkey_s3_private_key
+resource "tls_private_key" "ssh_key" {
+  algorithm   = "RSA"
+  rsa_bits    = 4096
+}
+
+resource "aws_key_pair" "aws_ssh_key" {
+  key_name = "testing-${module.common.testing_id}"
+  public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
 ## launch a sidecar instance to install data emitter and the mocked server
@@ -64,7 +68,9 @@ resource "aws_instance" "sidecar" {
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
-  key_name                    = module.common.ssh_key_name
+  key_name                    = aws_key_pair.aws_ssh_key.key_name
+
+  depends_on = [module.basic_components]
 }
 
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
@@ -75,7 +81,7 @@ resource "aws_instance" "aoc" {
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
-  key_name                    = module.common.ssh_key_name
+  key_name                    = aws_key_pair.aws_ssh_key.key_name
   get_password_data = local.connection_type == "winrm" ? true : null
   user_data = local.user_data
 
@@ -97,7 +103,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
     connection {
       type = local.connection_type
       user = local.login_user
-      password = rsadecrypt(aws_instance.aoc.password_data, data.aws_s3_bucket_object.ssh_private_key.body)
+      password = rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem)
       host = aws_instance.aoc.public_ip
     }
   }
@@ -111,7 +117,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
     connection {
       type = local.connection_type
       user = local.login_user
-      password = rsadecrypt(aws_instance.aoc.password_data, data.aws_s3_bucket_object.ssh_private_key.body)
+      password = rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem)
       host = aws_instance.aoc.public_ip
     }
   }
@@ -126,8 +132,8 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? data.aws_s3_bucket_object.ssh_private_key.body : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, data.aws_s3_bucket_object.ssh_private_key.body) : null
+      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -144,7 +150,7 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = data.aws_s3_bucket_object.ssh_private_key.body
+      private_key = tls_private_key.ssh_key.private_key_pem
       host = aws_instance.aoc.public_ip
     }
   }
@@ -162,8 +168,8 @@ resource "null_resource" "start_collector" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? data.aws_s3_bucket_object.ssh_private_key.body : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, data.aws_s3_bucket_object.ssh_private_key.body) : null
+      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -178,8 +184,8 @@ resource "null_resource" "start_collector" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? data.aws_s3_bucket_object.ssh_private_key.body : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, data.aws_s3_bucket_object.ssh_private_key.body) : null
+      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -193,7 +199,7 @@ data "template_file" "docker_compose" {
 
   vars = {
     region = var.region
-    data_emitter_image = var.data_emitter_image
+    data_emitter_image = var.sample_app_image
     sample_app_external_port = module.common.sample_app_lb_port
     sample_app_listen_address_port = module.common.sample_app_listen_address_port
     listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
@@ -215,7 +221,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
     connection {
       type = "ssh"
       user = "ec2-user"
-      private_key = data.aws_s3_bucket_object.ssh_private_key.body
+      private_key = tls_private_key.ssh_key.private_key_pem
       host = aws_instance.sidecar.public_ip
     }
   }
@@ -230,7 +236,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
     connection {
       type = "ssh"
       user = "ec2-user"
-      private_key = data.aws_s3_bucket_object.ssh_private_key.body
+      private_key = tls_private_key.ssh_key.private_key_pem
       host = aws_instance.sidecar.public_ip
     }
   }
@@ -240,11 +246,15 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
 ##########################################
 # Validation
 ##########################################
-resource "null_resource" "validation" {
-  provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.sidecar.public_ip}:${module.common.sample_app_lb_port} --mocked-server-validating-url http://${aws_instance.sidecar.public_ip}/check-data'"
-    working_dir = "../../"
-  }
+module "validator" {
+  source = "../validation"
+
+  validation_config = var.validation_config
+  region = var.region
+  testing_id = module.common.testing_id
+  metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+  sample_app_endpoint = "http://${aws_instance.sidecar.public_ip}:${module.common.sample_app_lb_port}"
+  mocked_server_validating_url = "http://${aws_instance.sidecar.public_ip}/check-data"
 
   depends_on = [null_resource.setup_sample_app_and_mock_server]
 }

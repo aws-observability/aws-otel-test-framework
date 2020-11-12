@@ -13,3 +13,39 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
+variable "validation_config" {
+  default = "default-mocked-server-validation.yml"
+}
+
+variable "testing_id" {}
+
+variable "region" {
+}
+
+variable "sample_app_endpoint" {
+  default = ""
+}
+
+variable "mocked_server_validating_url" {
+  default = ""
+}
+
+variable "metric_namespace" {
+  default = ""
+}
+
+variable "ecs_cluster_name" {
+  default = ""
+}
+
+variable "ecs_task_arn" {
+  default = ""
+}
+
+variable "ecs_taskdef_family" {
+  default = ""
+}
+
+variable "ecs_taskdef_version" {
+  default = ""
+}
