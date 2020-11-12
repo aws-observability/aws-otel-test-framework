@@ -16,14 +16,6 @@
 ## right now there's no good way to share variables across modules,
 ## so we have to define some of the common vars like region, otconfig_path in each module
 
-variable "package_s3_bucket" {
-  default = "aws-otel-collector-test"
-}
-
-variable "aoc_version" {
-  default = "v0.1.0-324996423"
-}
-
 variable "region" {
   default = "us-west-2"
 }
@@ -34,14 +26,6 @@ variable "testing_ami" {
 
 variable "soaking_data_emitter_image" {
   default = "aottestbed/aws-otel-load-generator:v0.1.0"
-}
-
-variable "sshkey_s3_bucket" {
-  default = "aoc-ssh-key"
-}
-
-variable "sshkey_s3_private_key" {
-  default = "aoc-ssh-key-2020-07-22.pem"
 }
 
 # set this option to false will disable validator to call the sample app
@@ -65,7 +49,7 @@ variable "date_mode" {
 
 # data points were emitted per second
 variable "rate" {
-  default = 100
+  default = 1000
 }
 
 # data model type. possible values: otlp, xray, etc

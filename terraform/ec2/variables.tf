@@ -64,7 +64,7 @@ variable "enable_alarming" {
 }
 
 variable "soaking_metric_namespace" {
-  default = "AWSOtelCollector/SoakingTest"
+  default = "AWSOtelCollector/IntegTest"
 }
 
 variable "testcase" {

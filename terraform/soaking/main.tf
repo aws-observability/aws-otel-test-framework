@@ -16,7 +16,7 @@
 module "common" {
   source = "../common"
 
-  data_emitter_image = var.data_emitter_image
+  data_emitter_image = var.soaking_data_emitter_image
   aoc_version = var.aoc_version
 }
 

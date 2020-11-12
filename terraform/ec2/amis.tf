@@ -130,6 +130,6 @@ variable "instance_type_for_collector" {
 
 # ec2 host instance type for running load generator
 variable "instance_type_for_emitter" {
-  default = "t4g.nano"
+  default = "t2.micro"
 }
 

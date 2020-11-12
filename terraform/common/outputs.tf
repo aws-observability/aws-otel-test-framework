@@ -34,7 +34,7 @@ output "otel_service_namespace" {
 }
 
 output "otel_service_name" {
-  value = "aws-otel-soaking"
+  value = "aws-otel-integ-test"
 }
 
 output "ssh_key_name" {
