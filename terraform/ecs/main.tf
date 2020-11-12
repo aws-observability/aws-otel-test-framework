@@ -210,11 +210,6 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
     security_groups = [module.basic_components.aoc_security_group_id]
   }
 
-  load_balancer {
-    target_group_arn = aws_lb_target_group.mocked_server_lb_tg.arn
-    container_name = "mocked-server"
-    container_port = module.common.mocked_server_http_port
-  }
 }
 
 ##########################################
