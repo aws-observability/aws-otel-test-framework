@@ -2,18 +2,17 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:55680
+        endpoint: 0.0.0.0:${grpc_port}
 
 exporters:
   logging:
     loglevel: debug
-  awsemf:
+  awsxray:
+    local_mode: true
     region: '${region}'
-    no_verify_ssl: false
-    endpoint: "${mock_endpoint}"
 
 service:
   pipelines:
-    metrics:
+    traces:
       receivers: [otlp]
-      exporters: [logging, awsemf]
+      exporters: [logging, awsxray]

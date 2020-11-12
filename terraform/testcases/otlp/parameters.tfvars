@@ -1,1 +1,0 @@
-validation_config="spark-otel-trace-metric-validation.yml"

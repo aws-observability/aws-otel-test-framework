@@ -59,7 +59,7 @@ resource "null_resource" "install_cwagent" {
 ## create cloudwatch alarm base on the metrics emitted by cwagent
 # wait 2 minute for the metrics to be available on cloudwatch
 resource "time_sleep" "wait_2_minutes" {
-  count = var.soaking ? 1 : 0
+  count = var.enable_alarming ? 1 : 0
   depends_on = [null_resource.install_cwagent[0]]
 
   create_duration = "120s"

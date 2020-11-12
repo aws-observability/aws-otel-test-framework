@@ -26,3 +26,6 @@ variable "testing_id" {
 variable "mocked_endpoint" {
 }
 
+variable "sample_app" {
+}
+

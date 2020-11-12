@@ -38,10 +38,17 @@ variable "testcase" {
 }
 
 ## mocked server related
+# we use mocked_server_image if it's not empty, if it's empty, the image will come from the basic component, which is built by imagebuild module
 variable "mocked_server_image" {
-  default = "josephwy/mocked-server:v0.1.3"
+  default = ""
 }
 
+# we use sample_app_image if it's not empty, if it's empty, the sample_app_image will come from the basic component, which is built by imagebuild module
+# instead "sample_app" will be used to choose the image
 variable "sample_app_image" {
-  default = "aottestbed/aws-otel-collector-java-sample-app:0.2.5"
+  default = ""
+}
+
+variable "sample_app" {
+  default = "spark"
 }

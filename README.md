@@ -45,7 +45,7 @@ you will need to place files as following (please use the same filenames as belo
 1. `otconfig.tpl`: which contains the new component, will be used as the config in all types of e2etests. 
 2. [optional] `parameters.tfvars`: you can override the default parameters in the framework with adding `-var-file=../testcases/yourtestcase/parameters.tfvars` to the terraform command. [The parameters you can override](terraform/README.md).
 
-#### 2.1.1 I want to add a test case for a new exporter
+#### 2.1.1 Add a test case for a new exporter/processor
 
 [An example for emfexporter](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_mock)
 
@@ -53,7 +53,7 @@ you will need to place files as following (please use the same filenames as belo
 
 If you want to do real backend data validation that having validator to fetch data from backend to validate, the testing framework is also capable to do it. please discuss with us. 
 
-#### 2.1.2 I want to add a test case for a new receiver
+#### 2.1.2 Add a test case for a new receiver
 
 [An example for xrayreceiver](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases/xrayreceiver_mock)
 
@@ -96,12 +96,21 @@ Setup only needs to be run once, it creates:
 1. one iam role
 2. one vpc
 3. one security group
-4. one s3 bucket which used to store the ssh key for ec2 login
+4. two ecr repos, one for sample apps, one for mocked server
 
 Run 
 ````
 cd terraform/setup && terraform init && terraform apply
 ````
+
+And Run
+````
+cd terraform/imagebuild && terraform init && terraform apply
+````
+this task will build and push the sample apps and mocked server images to the ecr repos,
+ so that the following test could use them.
+ 
+ Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
 
 #### 3.1.3 Build Image
 Please follow https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md to build your image with the new component, and push this image to dockerhub, record the image link, which will be used in your testing.

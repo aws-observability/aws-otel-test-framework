@@ -45,10 +45,14 @@ variable "testcase" {
 
 ## mocked server related
 variable "mocked_server_image" {
-  default = "josephwy/mocked-server:v0.1.2"
+  default = ""
 }
 
 variable "sample_app_image" {
-  default = "aottestbed/aws-otel-collector-java-sample-app:0.2.5"
+  default = ""
+}
+
+variable "sample_app" {
+  default = "spark"
 }
 

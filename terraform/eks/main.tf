@@ -34,10 +34,14 @@ module "basic_components" {
   testing_id = module.common.testing_id
 
   mocked_endpoint = "localhost/put-data"
+
+  sample_app = var.sample_app
 }
 
 locals {
   eks_pod_config_path = fileexists("${var.testcase}/eks_pod_config.tpl") ? "${var.testcase}/eks_pod_config.tpl" : module.common.default_eks_pod_config_path
+  sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
 }
 
 # region
@@ -84,7 +88,7 @@ data "template_file" "eksconfig" {
   template = file(local.eks_pod_config_path)
 
   vars = {
-    data_emitter_image = var.sample_app_image
+    data_emitter_image = local.sample_app_image
     testing_id = module.common.testing_id
   }
 }
@@ -149,7 +153,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
         container {
           name = "mocked-server"
-          image = var.mocked_server_image
+          image = local.mocked_server_image
 
           readiness_probe {
             http_get {

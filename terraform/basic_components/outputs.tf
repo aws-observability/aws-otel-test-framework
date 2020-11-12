@@ -40,3 +40,11 @@ output "otconfig_content" {
 output "mocked_server_cert_content" {
   value = data.template_file.mocked_server_cert.rendered
 }
+
+output "sample_app_image" {
+  value = "${data.aws_ecr_repository.sample_apps.repository_url}:${var.sample_app}-latest"
+}
+
+output "mocked_server_image" {
+  value = "${data.aws_ecr_repository.mocked_server.repository_url}:latest"
+}

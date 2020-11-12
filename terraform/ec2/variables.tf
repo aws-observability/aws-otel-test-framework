@@ -53,28 +53,7 @@ variable "testcase" {
   default = "../testcases/otlp_mock"
 }
 
-## mocked server related
-variable "mocked_server_image" {
-  default = "josephwy/mocked-server:v0.1.3"
-}
 
-variable "sample_app_image" {
-  default = "aottestbed/aws-otel-collector-java-sample-app:0.2.5"
-}
-# data type will be emitted. Possible values: metric or trace
-variable "date_mode" {
-  default = "metric"
-}
-
-# data points were emitted per second
-variable "rate" {
-  default = 100
-}
-
-# data model type. possible values: otlp, xray, etc
-variable "data_type" {
-  default = "otlp"
-}
 
 variable "soaking_compose_file" {
   default = ""
@@ -88,4 +67,35 @@ variable "instance_type_for_collector" {
 # ec2 host instance type for running load generator
 variable "instance_type_for_emitter" {
   default = ""
+}
+
+## mocked server related
+variable "mocked_server_image" {
+  default = ""
+}
+
+variable "sample_app_image" {
+  default = ""
+}
+
+variable "sample_app" {
+  default = "spark"
+}
+
+######################
+# Soaking related
+######################
+# data type will be emitted. Possible values: metric or trace
+variable "soaking_data_mode" {
+  default = "metric"
+}
+
+# data points were emitted per second
+variable "soaking_data_rate" {
+  default = 100
+}
+
+# data model type. possible values: otlp, xray, etc
+variable "soaking_data_type" {
+  default = "otlp"
 }

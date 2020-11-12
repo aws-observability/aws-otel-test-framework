@@ -30,17 +30,19 @@ module "basic_components" {
   testing_id = module.common.testing_id
 
   mocked_endpoint = "localhost/put-data"
+
+  sample_app = var.sample_app
 }
 
 locals {
   ecs_taskdef_path = fileexists("${var.testcase}/ecs_taskdef.tpl") ? "${var.testcase}/ecs_taskdef.tpl" : module.common.default_ecs_taskdef_path
+  sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
 }
 
 provider "aws" {
   region  = var.region
 }
-
-
 
 module "ecs_cluster" {
   source  = "infrablocks/ecs-cluster/aws"
@@ -70,7 +72,7 @@ data "template_file" "task_def" {
   vars = {
     region = var.region
     aoc_image = module.common.aoc_image
-    data_emitter_image = var.sample_app_image
+    data_emitter_image = local.sample_app_image
     testing_id = module.common.testing_id
     otel_service_namespace = module.common.otel_service_namespace
     otel_service_name = module.common.otel_service_name
@@ -81,7 +83,7 @@ data "template_file" "task_def" {
     udp_port = module.common.udp_port
     grpc_port = module.common.grpc_port
 
-    mocked_server_image = var.mocked_server_image
+    mocked_server_image = local.mocked_server_image
   }
 }
 

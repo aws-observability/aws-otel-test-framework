@@ -29,6 +29,8 @@ module "basic_components" {
   testing_id = module.common.testing_id
 
   mocked_endpoint = "mocked-server/put-data"
+
+  sample_app = var.sample_app
 }
 
 provider "aws" {
@@ -47,6 +49,9 @@ locals {
   connection_type = local.ami_family["connection_type"]
   user_data = local.ami_family["user_data"]
   download_command = format(local.ami_family["download_command_pattern"], "https://${var.package_s3_bucket}.s3.amazonaws.com/${local.selected_ami["family"]}/${local.selected_ami["arch"]}/${var.aoc_version}/${local.ami_family["install_package"]}")
+
+  sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
 }
 
 ## get the ssh private key
@@ -70,7 +75,6 @@ resource "aws_instance" "sidecar" {
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = aws_key_pair.aws_ssh_key.key_name
 
-  depends_on = [module.basic_components]
 }
 
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
@@ -199,7 +203,7 @@ data "template_file" "docker_compose" {
 
   vars = {
     region = var.region
-    data_emitter_image = var.sample_app_image
+    data_emitter_image = local.sample_app_image
     sample_app_external_port = module.common.sample_app_lb_port
     sample_app_listen_address_port = module.common.sample_app_listen_address_port
     listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
@@ -208,10 +212,10 @@ data "template_file" "docker_compose" {
     grpc_endpoint = "${aws_instance.aoc.private_ip}:${module.common.grpc_port}"
     udp_endpoint = "${aws_instance.aoc.private_ip}:${module.common.udp_port}"
 
-    mocked_server_image = var.mocked_server_image
-    date_mode = var.date_mode
-    rate = var.rate
-    data_type = var.data_type
+    mocked_server_image = local.mocked_server_image
+    date_mode = var.soaking_data_mode
+    rate = var.soaking_data_rate
+    data_type = var.soaking_data_type
   }
 }
 
