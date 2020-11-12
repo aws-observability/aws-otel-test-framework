@@ -37,7 +37,7 @@ provider "aws" {
 
 # get ami object
 locals {
-  docker_compose_path = fileexists("${var.testcase}/docker_compose.tpl") ? "${var.testcase}/docker_compose.tpl" : module.common.default_docker_compose_path
+  docker_compose_path = var.soaking_compose_file != "" ? var.soaking_compose_file : fileexists("${var.testcase}/docker_compose.tpl") ? "${var.testcase}/docker_compose.tpl" : module.common.default_docker_compose_path
   selected_ami = var.amis[var.testing_ami]
   ami_family = var.ami_family[local.selected_ami["family"]]
   ami_id = data.aws_ami.selected.id
@@ -158,7 +158,7 @@ resource "null_resource" "sample-app" {
 
 resource "null_resource" "sample-app-validator" {
   # skip this validation if it's a soaking test
-  count = var.soaking ? 0 : 1
+  count = var.enable_alarming ? 0 : 1
   provisioner "local-exec" {
     command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_instance.emitter.public_ip}:${module.common.sample_app_lb_port}'"
     working_dir = "../../"

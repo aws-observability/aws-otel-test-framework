@@ -15,7 +15,7 @@
 
 ## install cwagent on the instance to collect metric from otel-collector
 data "template_file" "cwagent_config" {
-  count = var.soaking ? 1 : 0
+  count = var.enable_alarming ? 1 : 0
   template = file(local.ami_family["soaking_cwagent_config"])
 
   vars = {
@@ -24,7 +24,7 @@ data "template_file" "cwagent_config" {
 }
 
 resource "null_resource" "install_cwagent" {
-  count = var.soaking ? 1 : 0
+  count = var.enable_alarming ? 1 : 0
 
   // copy cwagent config to the instance
   provisioner "file" {
@@ -65,12 +65,12 @@ resource "time_sleep" "wait_2_minutes" {
 }
 # cpu alarm
 resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
-  count = var.soaking ? 1 : 0
+  count = var.enable_alarming ? 1 : 0
   depends_on = [time_sleep.wait_2_minutes]
   alarm_name = "otel-soaking-cpu-alarm-${module.common.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 2
-  threshold = "20"
+  threshold = "50"
 
   metric_query {
     id = "cpu"
@@ -96,7 +96,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
 # soaking alarm pulling
 resource "null_resource" "bake_alarms" {
   depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm]
-  count = var.soaking ? 1 : 0
+  count = var.enable_alarming ? 1 : 0
   provisioner "local-exec" {
     command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --alarm-names ${aws_cloudwatch_metric_alarm.cpu_alarm[0].alarm_name}'"
     working_dir = "../../"

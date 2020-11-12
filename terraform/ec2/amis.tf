@@ -117,19 +117,19 @@ data "aws_ami" "suse" {
 
   filter {
     name   = "name"
-    values = ["suse-sles-15*"]
+    values = ["suse-sles-15-sp1-v20200501-hvm-ssd-x86_64"]
   }
 
   owners = ["amazon"] # Canonical
 }
 
-#  c2 host instance type for running aws-otel-collector
+# ec2 host instance type for running aws-otel-collector
 variable "instance_type_for_collector" {
-  default = "t2.micro"
+  default = "m5.2xlarge"
 }
 
 # ec2 host instance type for running load generator
 variable "instance_type_for_emitter" {
-  default = "t2.micro"
+  default = "t4g.nano"
 }
 

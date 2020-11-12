@@ -32,16 +32,8 @@ variable "testing_ami" {
   default = "amazonlinux2"
 }
 
-variable "validation_config" {
-  default = "default-validation.yml"
-}
-
-variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
-}
-
-variable "data_emitter_image_command" {
-  default = ""
+variable "soaking_data_emitter_image" {
+  default = "aottestbed/aws-otel-load-generator:v0.1.0"
 }
 
 variable "sshkey_s3_bucket" {
@@ -55,11 +47,6 @@ variable "sshkey_s3_private_key" {
 # set this option to false will disable validator to call the sample app
 # in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
 variable "sample_app_callable" {
-  default = true
-}
-
-# check if cwagent need to be installed on EC2
-variable "enable_alarming" {
   default = false
 }
 
@@ -86,9 +73,20 @@ variable "data_type" {
   default = "otlp"
 }
 
-variable "soaking_compose_file" {
-  default = ""
+variable "validation_config" {
+  default = "default-validation.yml"
 }
+
+# ec2 host instance type for running aws-otel-collector
+variable "instance_type_for_collector" {
+  default = "m5.2xlarge"
+}
+
+# ec2 host instance type for running load generator
+variable "instance_type_for_emitter" {
+  default = "t2.micro"
+}
+
 
 
 

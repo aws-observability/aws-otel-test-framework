@@ -8,7 +8,9 @@ receivers:
     protocols:
       grpc:
         endpoint: 0.0.0.0:${grpc_port}
-
+  awsxray:
+    endpoint: 0.0.0.0:55690
+    transport: udp
 
 processors:
   batch/traces:
@@ -29,7 +31,7 @@ exporters:
 service:
   pipelines:
     traces:
-      receivers: [otlp]
+      receivers: [otlp, awsxray]
       processors: [batch/traces]
       exporters: [logging, awsxray]
     metrics:

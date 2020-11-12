@@ -30,7 +30,7 @@ variable "otel_service_namespace" {
 }
 
 variable "otel_service_name" {
-  default = "aws-otel-soaking"
+  default = "aws-otel-integ-test"
 }
 
 variable "aoc_vpc_name" {
