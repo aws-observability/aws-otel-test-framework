@@ -21,7 +21,7 @@ variable "package_s3_bucket" {
 }
 
 variable "aoc_version" {
-  default = "v0.1.0-324996423"
+  default = "v0.3.0-346703560"
 }
 
 variable "region" {
@@ -33,29 +33,11 @@ variable "testing_ami" {
 }
 
 variable "validation_config" {
-  default = "default-validation.yml"
-}
-
-variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
+  default = "default-mocked-server-validation.yml"
 }
 
 variable "data_emitter_image_command" {
   default = ""
-}
-
-variable "sshkey_s3_bucket" {
-  default = "aoc-ssh-key"
-}
-
-variable "sshkey_s3_private_key" {
-  default = "aoc-ssh-key-2020-07-22.pem"
-}
-
-# set this option to false will disable validator to call the sample app
-# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
-variable "sample_app_callable" {
-  default = true
 }
 
 # check if cwagent need to be installed on EC2
@@ -68,27 +50,52 @@ variable "soaking_metric_namespace" {
 }
 
 variable "testcase" {
-  default = "../testcases/otlp"
+  default = "../testcases/otlp_mock"
 }
 
-# data type will be emitted. Possible values: metric or trace
-variable "date_mode" {
-  default = "metric"
-}
 
-# data points were emitted per second
-variable "rate" {
-  default = 100
-}
-
-# data model type. possible values: otlp, xray, etc
-variable "data_type" {
-  default = "otlp"
-}
 
 variable "soaking_compose_file" {
   default = ""
 }
 
+# ec2 host instance type for running aws-otel-collector
+variable "instance_type_for_collector" {
+  default = ""
+}
 
+# ec2 host instance type for running load generator
+variable "instance_type_for_emitter" {
+  default = ""
+}
 
+## mocked server related
+variable "mocked_server_image" {
+  default = ""
+}
+
+variable "sample_app_image" {
+  default = ""
+}
+
+variable "sample_app" {
+  default = "spark"
+}
+
+######################
+# Soaking related
+######################
+# data type will be emitted. Possible values: metric or trace
+variable "soaking_data_mode" {
+  default = "metric"
+}
+
+# data points were emitted per second
+variable "soaking_data_rate" {
+  default = 100
+}
+
+# data model type. possible values: otlp, xray, etc
+variable "soaking_data_type" {
+  default = "otlp"
+}

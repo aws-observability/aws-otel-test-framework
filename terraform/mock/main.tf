@@ -16,8 +16,6 @@
 # this test assumes it's running on a ubuntu host
 module "common" {
   source = "../common"
-
-  data_emitter_image = var.data_emitter_image
 }
 
 # render otconfig
@@ -28,7 +26,7 @@ locals {
   otconfig_file_path = "./otconfig.yml"
   docker_compose_path = "./docker_compose.yml"
 
-  mock_endpoint = "mocked-server"
+  mock_endpoint = "mocked-server/put-data"
   sample_app_listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
 }
 
@@ -62,13 +60,13 @@ data "template_file" "docker_compose" {
     otconfig_path = local.otconfig_file_path
     grpc_port = module.common.grpc_port
     udp_port = module.common.udp_port
-    data_emitter_image = var.data_emitter_image
     sample_app_external_port = module.common.sample_app_listen_address_port
     sample_app_listen_address_port = module.common.sample_app_listen_address_port
     sample_app_listen_address = local.sample_app_listen_address
     otel_resource_attributes = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
     testing_id = module.common.testing_id
     region = var.region
+    sample_app = var.sample_app
   }
 }
 
@@ -88,10 +86,14 @@ resource "null_resource" "run_docker_compose" {
   }
 }
 
-resource "null_resource" "validate" {
+module "validator" {
+  source = "../validation"
+
+  region = var.region
+  testing_id = module.common.testing_id
+  sample_app_endpoint = "http://172.17.0.1:${module.common.sample_app_listen_address_port}"
+  mocked_server_validating_url = "http://172.17.0.1/check-data"
+
   depends_on = [null_resource.run_docker_compose]
-  provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --endpoint http://127.0.0.1:${module.common.sample_app_listen_address_port} --mocked-server-validating-url http://127.0.0.1/check-data'"
-    working_dir = "../../"
-  }
 }
+

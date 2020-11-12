@@ -34,8 +34,8 @@ resource "null_resource" "install_cwagent" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? data.aws_s3_bucket_object.ssh_private_key.body : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, data.aws_s3_bucket_object.ssh_private_key.body) : null
+      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -49,8 +49,8 @@ resource "null_resource" "install_cwagent" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? data.aws_s3_bucket_object.ssh_private_key.body : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, data.aws_s3_bucket_object.ssh_private_key.body) : null
+      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -59,6 +59,7 @@ resource "null_resource" "install_cwagent" {
 ## create cloudwatch alarm base on the metrics emitted by cwagent
 # wait 2 minute for the metrics to be available on cloudwatch
 resource "time_sleep" "wait_2_minutes" {
+  count = var.enable_alarming ? 1 : 0
   depends_on = [null_resource.install_cwagent[0]]
 
   create_duration = "120s"

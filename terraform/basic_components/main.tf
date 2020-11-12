@@ -73,9 +73,21 @@ data "template_file" "otconfig" {
     testing_id = var.testing_id
     grpc_port = module.common.grpc_port
     udp_port = module.common.udp_port
+
+    mock_endpoint = var.mocked_endpoint
   }
 }
 
+data "template_file" "mocked_server_cert" {
+  template = file("../../mocked_server/certificates/ssl/ca-bundle.crt")
+}
 
+data "aws_ecr_repository" "sample_apps" {
+  name = module.common.sample_app_ecr_repo_name
+}
+
+data "aws_ecr_repository" "mocked_server" {
+  name = module.common.mocked_server_ecr_repo_name
+}
 
 

@@ -17,10 +17,6 @@ output "testing_id" {
   value = random_id.testing_id.hex
 }
 
-output "aoc_emitter_image" {
-  value = var.data_emitter_image
-}
-
 output "aoc_image" {
   value = "${var.aoc_image_repo}:${var.aoc_version}"
 }
@@ -35,18 +31,6 @@ output "otel_service_namespace" {
 
 output "otel_service_name" {
   value = "aws-otel-integ-test"
-}
-
-output "ssh_key_name" {
-  value = "aoc-ssh-key-2020-07-22"
-}
-
-output "sshkey_s3_bucket" {
-  value = "aoc-ssh-key"
-}
-
-output "sshkey_s3_private_key" {
-  value = "aoc-ssh-key-2020-07-22.pem"
 }
 
 output "aoc_iam_role_name" {
@@ -93,10 +77,31 @@ output "default_docker_compose_path" {
   value = "../templates/defaults/docker_compose.tpl"
 }
 
+## mocked server related
+output "default_mocked_server_ecs_taskdef_path" {
+  value = "../templates/defaults/mocked_server_ecs_taskdef.tpl"
+}
+
+output "mocked_server_http_port" {
+  value = "8080"
+}
+
+output "mocked_server_lb_port" {
+  value = "80"
+}
+
 output "grpc_port" {
   value = "55680"
 }
 
 output "udp_port" {
   value = "55690"
+}
+
+output "sample_app_ecr_repo_name" {
+  value = "otel-test/sample-apps"
+}
+
+output "mocked_server_ecr_repo_name" {
+  value = "otel-test/mocked-server"
 }

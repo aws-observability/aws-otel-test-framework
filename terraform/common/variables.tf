@@ -37,10 +37,6 @@ variable "aoc_vpc_name" {
   default = "aoc-vpc"
 }
 
-variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:ying"
-}
-
 variable "aoc_image_repo" {
   default = "josephwy/ttt"
 }

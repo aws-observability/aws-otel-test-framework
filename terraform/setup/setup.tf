@@ -30,23 +30,6 @@ resource "tls_private_key" "ssh_key" {
   rsa_bits = 4096
 }
 
-resource "aws_key_pair" "generated_key" {
-  key_name = module.common.ssh_key_name
-  public_key = tls_private_key.ssh_key.public_key_openssh
-}
-
-resource "aws_s3_bucket" "ssh_key" {
-  bucket = var.sshkey_s3_bucket
-  acl = "private"
-}
-
-resource "aws_s3_bucket_object" "ssh_key" {
-  bucket = aws_s3_bucket.ssh_key.id
-  key = module.common.sshkey_s3_private_key
-  content = tls_private_key.ssh_key.private_key_pem
-  content_type = "text/plain"
-}
-
 ## create one iam role for all the tests
 resource "aws_iam_instance_profile" "aoc_test_profile" {
   name = module.common.aoc_iam_role_name
@@ -101,6 +84,9 @@ module "vpc" {
   enable_nat_gateway = true
   enable_vpn_gateway = true
 
+  enable_dns_hostnames = true
+  enable_dns_support = true
+
   tags = {
     Terraform = "true"
     Environment = "dev"
@@ -125,6 +111,12 @@ resource "aws_security_group" "aoc_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
   ingress {
     from_port   = 8080
@@ -168,6 +160,14 @@ resource "aws_security_group" "aoc_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # efs
+  ingress {
+    from_port = 2049
+    to_port = 2049
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -175,6 +175,11 @@ resource "aws_security_group" "aoc_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-
 }
 
+resource "aws_ecr_repository" "sample_app_ecr_repo" {
+  name = module.common.sample_app_ecr_repo_name
+}
+resource "aws_ecr_repository" "mocked_server_ecr_repo" {
+  name = module.common.mocked_server_ecr_repo_name
+}

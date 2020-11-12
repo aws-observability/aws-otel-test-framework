@@ -1,27 +1,22 @@
-extensions:
-
 receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:55680
+        endpoint: 0.0.0.0:${grpc_port}
 
 processors:
+  batch/metrics:
+    timeout: 60s
 
 exporters:
   logging:
     loglevel: debug
-  awsxray:
-    local_mode: true
-    region: 'us-west-2'
   awsemf:
-    region: 'us-west-2'
+    region: '${region}'
 
 service:
   pipelines:
-    traces:
-      receivers: [otlp]
-      exporters: [awsxray]
     metrics:
       receivers: [otlp]
+      processors: [batch/metrics]
       exporters: [logging, awsemf]

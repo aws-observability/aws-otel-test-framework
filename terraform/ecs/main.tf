@@ -16,7 +16,6 @@
 module "common" {
   source = "../common"
 
-  data_emitter_image = var.data_emitter_image
   aoc_image_repo = var.aoc_image_repo
   aoc_version = var.aoc_version
 }
@@ -30,10 +29,15 @@ module "basic_components" {
 
   testing_id = module.common.testing_id
 
+  mocked_endpoint = "localhost/put-data"
+
+  sample_app = var.sample_app
 }
 
 locals {
   ecs_taskdef_path = fileexists("${var.testcase}/ecs_taskdef.tpl") ? "${var.testcase}/ecs_taskdef.tpl" : module.common.default_ecs_taskdef_path
+  sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
 }
 
 provider "aws" {
@@ -68,7 +72,7 @@ data "template_file" "task_def" {
   vars = {
     region = var.region
     aoc_image = module.common.aoc_image
-    data_emitter_image = var.data_emitter_image
+    data_emitter_image = local.sample_app_image
     testing_id = module.common.testing_id
     otel_service_namespace = module.common.otel_service_namespace
     otel_service_name = module.common.otel_service_name
@@ -78,8 +82,12 @@ data "template_file" "task_def" {
     sample_app_listen_port = module.common.sample_app_listen_address_port
     udp_port = module.common.udp_port
     grpc_port = module.common.grpc_port
+
+    mocked_server_image = local.mocked_server_image
   }
 }
+
+
 
 # debug
 output "rendered" {
@@ -99,6 +107,18 @@ resource "aws_ecs_task_definition" "aoc" {
   # we want to limit the permissions of the roles
   task_role_arn = module.basic_components.aoc_iam_role_arn
   execution_role_arn = module.basic_components.aoc_iam_role_arn
+
+  # mount efs
+  volume {
+    name = "efs"
+
+    efs_volume_configuration {
+      file_system_id          = aws_efs_file_system.collector_efs.id
+      root_directory          = "/"
+    }
+  }
+
+  depends_on = [null_resource.mount_efs]
 }
 
 ## create elb
@@ -156,6 +176,7 @@ resource "aws_ecs_service" "aoc" {
   task_definition = "${aws_ecs_task_definition.aoc.family}:1"
   desired_count = 1
   launch_type = var.ecs_launch_type
+  platform_version = var.ecs_launch_type == "FARGATE" ? "1.4.0" : null
 
   load_balancer {
     target_group_arn = aws_lb_target_group.aoc_lb_tg[0].arn
@@ -163,14 +184,15 @@ resource "aws_ecs_service" "aoc" {
     container_port = module.common.sample_app_listen_address_port
   }
 
+  load_balancer {
+    target_group_arn = aws_lb_target_group.mocked_server_lb_tg.arn
+    container_name = "mocked-server"
+    container_port = module.common.mocked_server_http_port
+  }
+
   network_configuration {
     subnets = module.basic_components.aoc_private_subnet_ids
     security_groups = [module.basic_components.aoc_security_group_id]
-  }
-
-  provisioner "local-exec" {
-    working_dir = "../../"
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${aws_lb.aoc_lb[0].dns_name}:${module.common.sample_app_lb_port}'"
   }
 }
 
@@ -188,10 +210,46 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
     security_groups = [module.basic_components.aoc_security_group_id]
   }
 
-  provisioner "local-exec" {
-    working_dir = "../../"
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --ecs-context ecsClusterName=${module.ecs_cluster.cluster_name} --ecs-context ecsTaskArn=${aws_ecs_task_definition.aoc.arn} --ecs-context ecsTaskDefFamily=${aws_ecs_task_definition.aoc.family} --ecs-context ecsTaskDefVersion=${aws_ecs_task_definition.aoc.revision}'"
+  load_balancer {
+    target_group_arn = aws_lb_target_group.mocked_server_lb_tg.arn
+    container_name = "mocked-server"
+    container_port = module.common.mocked_server_http_port
   }
+}
+
+##########################################
+# Validation
+##########################################
+module "validator" {
+  count = var.sample_app_callable ? 1 : 0
+  source = "../validation"
+
+  validation_config = var.validation_config
+  region = var.region
+  testing_id = module.common.testing_id
+  metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+  sample_app_endpoint = "http://${aws_lb.aoc_lb[0].dns_name}:${module.common.sample_app_lb_port}"
+  mocked_server_validating_url = "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
+
+  depends_on = [aws_ecs_service.aoc]
+}
+
+module "validator_without_sample_app" {
+  count = !var.sample_app_callable ? 1 : 0
+  source = "../validation"
+
+  validation_config = var.validation_config
+  region = var.region
+  testing_id = module.common.testing_id
+  metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+  mocked_server_validating_url = "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
+
+  ecs_cluster_name = module.ecs_cluster.cluster_name
+  ecs_task_arn = aws_ecs_task_definition.aoc.arn
+  ecs_taskdef_family = aws_ecs_task_definition.aoc.family
+  ecs_taskdef_version = aws_ecs_task_definition.aoc.revision
+
+  depends_on = [aws_ecs_service.aoc_without_sample_app]
 }
 
 

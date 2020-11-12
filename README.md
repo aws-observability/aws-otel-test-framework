@@ -16,7 +16,10 @@ git clone git@github.com:aws-observability/aws-otel-test-framework.git
 git clone git@github.com:aws-observability/aws-otel-collector.git
 ````
 3. Install Terraform: https://learn.hashicorp.com/tutorials/terraform/install-cli
-4. Run one of the test cases:
+
+4. Install Docker compose: https://docs.docker.com/compose/install/
+
+5. Run one of the test cases:
 ````shell script
 cd aws-otel-test-framework/terraform/mock
 terraform init
@@ -41,11 +44,27 @@ you will need to place files as following (please use the same filenames as belo
 
 1. `otconfig.tpl`: which contains the new component, will be used as the config in all types of e2etests. 
 2. [optional] `parameters.tfvars`: you can override the default parameters in the framework with adding `-var-file=../testcases/yourtestcase/parameters.tfvars` to the terraform command. [The parameters you can override](terraform/README.md).
-4. [optional] `docker_compose.tpl`: which is used to launch sample app container in ec2 test.
-5. [optional] `ecs_taskdef.tpl`: which is used to launch ecs task in ecs test.
-6. [optional] `eks_pod_config.tpl`: which is used to launch eks pod in eks test.
 
-All the default files can be found [here](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/templates/defaults).
+#### 2.1.1 Add a test case for a new exporter/processor
+
+[An example for emfexporter](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_mock)
+
+`otconfig.tpl` is the only thing you need, using the placeholder `${mock_endpoint}` will let collector to send data to a mock server in the testing framework.
+
+If you want to do real backend data validation that having validator to fetch data from backend to validate, the testing framework is also capable to do it. please discuss with us. 
+
+#### 2.1.2 Add a test case for a new receiver
+
+[An example for xrayreceiver](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases/xrayreceiver_mock)
+
+To add a new receiver, there are two requirements:
+
+1. you will need to develop a new sample app which could send data to the new receiver. [check here for how to write a sample app](sample-apps/README.md)
+2. add a `otconfig.tpl` under the testcase folder.
+
+#### 2.1.3 Single Pipeline
+
+We require every test case only cover one pipeline [one receiver to one exporter], so that the test case could be used to run soaking test.
 
 ### 2.2 Link test case
 
@@ -77,12 +96,21 @@ Setup only needs to be run once, it creates:
 1. one iam role
 2. one vpc
 3. one security group
-4. one s3 bucket which used to store the ssh key for ec2 login
+4. two ecr repos, one for sample apps, one for mocked server
 
 Run 
 ````
 cd terraform/setup && terraform init && terraform apply
 ````
+
+And Run
+````
+cd terraform/imagebuild && terraform init && terraform apply
+````
+this task will build and push the sample apps and mocked server images to the ecr repos,
+ so that the following test could use them.
+ 
+ Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
 
 #### 3.1.3 Build Image
 Please follow https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md to build your image with the new component, and push this image to dockerhub, record the image link, which will be used in your testing.

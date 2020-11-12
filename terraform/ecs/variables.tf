@@ -21,20 +21,16 @@ variable "ecs_launch_type" {
   default = "EC2"
 }
 
-variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
-}
-
 variable "aoc_image_repo" {
   default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/aws/aws-otel-collector"
 }
 
 variable "aoc_version" {
-  default = "v0.1.0-324996423"
+  default = "v0.3.0-346703560"
 }
 
 variable "validation_config" {
-  default = "default-validation.yml"
+  default = "default-mocked-server-validation.yml"
 }
 
 # set this option to false will disable validator to call the sample app
@@ -44,6 +40,19 @@ variable "sample_app_callable" {
 }
 
 variable "testcase" {
-  default = "../testcases/otlp"
+  default = "../testcases/otlp_mock"
+}
+
+## mocked server related
+variable "mocked_server_image" {
+  default = ""
+}
+
+variable "sample_app_image" {
+  default = ""
+}
+
+variable "sample_app" {
+  default = "spark"
 }
 

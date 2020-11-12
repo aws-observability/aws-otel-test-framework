@@ -21,28 +21,34 @@ variable "region" {
   default = "us-west-2"
 }
 
-variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
-}
-
 variable "aoc_image_repo" {
   default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/aws/aws-otel-collector"
 }
 
 variable "aoc_version" {
-  default = "v0.1.0-320983060"
+  default = "v0.3.0-346703560"
 }
 
 variable "validation_config" {
-  default = "default-validation.yml"
-}
-
-# set this option to false will disable validator to call the sample app
-# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
-variable "sample_app_callable" {
-  default = true
+  default = "default-mocked-server-validation.yml"
 }
 
 variable "testcase" {
-  default = "../testcases/otlp"
+  default = "../testcases/otlp_mock"
+}
+
+## mocked server related
+# we use mocked_server_image if it's not empty, if it's empty, the image will come from the basic component, which is built by imagebuild module
+variable "mocked_server_image" {
+  default = ""
+}
+
+# we use sample_app_image if it's not empty, if it's empty, the sample_app_image will come from the basic component, which is built by imagebuild module
+# instead "sample_app" will be used to choose the image
+variable "sample_app_image" {
+  default = ""
+}
+
+variable "sample_app" {
+  default = "spark"
 }

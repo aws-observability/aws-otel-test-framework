@@ -23,10 +23,6 @@ variable "validation_config" {
   default = "default-mocked-server-validation.yml"
 }
 
-variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
-}
-
 # set this option to false will disable validator to call the sample app
 # in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
 variable "sample_app_callable" {
@@ -39,6 +35,10 @@ variable "testcase" {
 
 variable "collector_repo_path" {
   default = "../../../aws-otel-collector"
+}
+
+variable "sample_app" {
+  default = "spark"
 }
 
 
