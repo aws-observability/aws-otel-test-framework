@@ -30,7 +30,8 @@ services:
       - mocked-server
 
   sample_app:
-    image: ${sample_app_image}
+    build:
+      context: ../../sample-apps/${sample_app}
     ports:
       - "${sample_app_external_port}:${sample_app_listen_address_port}"
     environment:

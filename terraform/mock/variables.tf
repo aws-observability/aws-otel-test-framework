@@ -37,6 +37,9 @@ variable "collector_repo_path" {
   default = "../../../aws-otel-collector"
 }
 
+variable "sample_app_image" {
+  default = ""
+}
 variable "sample_app" {
   default = "spark"
 }

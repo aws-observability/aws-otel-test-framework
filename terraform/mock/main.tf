@@ -21,8 +21,6 @@ module "common" {
 # render otconfig
 locals {
   otconfig_template_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
-  docker_compose_template_path = "../templates/local/docker_compose.tpl"
-
   otconfig_file_path = "./otconfig.yml"
   docker_compose_path = "./docker_compose.yml"
 
@@ -53,7 +51,7 @@ resource "local_file" "write_otconfig_file" {
 
 # generate docker compose file
 data "template_file" "docker_compose" {
-  template = file(local.docker_compose_template_path)
+  template = var.sample_app_image != "" ? file("../templates/local/docker_compose.tpl") : file("../templates/local/docker_compose_from_source.tpl")
 
   vars = {
     collector_repo_path = var.collector_repo_path
@@ -67,6 +65,7 @@ data "template_file" "docker_compose" {
     testing_id = module.common.testing_id
     region = var.region
     sample_app = var.sample_app
+    sample_app_image = var.sample_app_image
   }
 }
 
