@@ -22,7 +22,6 @@ app.all('/', function (req, res) {
     res.send('healthcheck');
 });
 
-
 // listen on http and https at the same time
 http.createServer(app).listen(8080, "0.0.0.0");
 https.createServer({
