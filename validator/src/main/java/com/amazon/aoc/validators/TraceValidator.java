@@ -88,61 +88,56 @@ public class TraceValidator implements IValidator {
 
   // this method will hit get trace from x-ray service and get retrieved trace
   private Map<String, Object> getRetrievedTrace(List<String> traceIdList) throws Exception {
-    AtomicReference<List<Trace>> retrieveTraceListAtomicReference = new AtomicReference<>();
+
+    AtomicReference<Map<String, Object>> flattenedJsonMapForRetrievedTrace = null;
     RetryHelper.retry(
-        3,
+        5,
         () -> {
           List<Trace> retrieveTraceList = null;
           retrieveTraceList = xrayService.listTraceByIds(traceIdList);
-          retrieveTraceListAtomicReference.set(retrieveTraceList);
-
           if (retrieveTraceList == null || retrieveTraceList.isEmpty()) {
+            throw new BaseException(ExceptionCode.EMPTY_LIST);
+          }
+
+          // in case the json format is wrong, retry it.
+          if (!retrieveTraceList.isEmpty()) {
+            flattenedJsonMapForRetrievedTrace.set(
+                this.flattenDocument(retrieveTraceList.get(0).getSegments()));
+          } else {
+            log.error("retrieved trace list is empty or null");
             throw new BaseException(ExceptionCode.EMPTY_LIST);
           }
         });
 
-    // flattened JSON object to a map
-    Map<String, Object> flattenedJsonMapForRetrievedTrace = null;
-    if (retrieveTraceListAtomicReference.get() != null
-        && !retrieveTraceListAtomicReference.get().isEmpty()) {
-      try {
-        List<Segment> segmentList = retrieveTraceListAtomicReference.get().get(0).getSegments();
-        // have to sort the segments by start_time because
-        // 1. we can not get span id from xraysdk today,
-        // 2. the segments come out with different order everytime
-        segmentList.sort(
-            (segment1, segment2) -> {
-              try {
-                Map<String, Object> map1 =
-                    new ObjectMapper().readValue(segment1.getDocument(), Map.class);
-                Map<String, Object> map2 =
-                    new ObjectMapper().readValue(segment2.getDocument(), Map.class);
-                return map1.get("start_time")
-                    .toString()
-                    .compareTo(map2.get("start_time").toString());
-              } catch (Exception ex) {
-                log.error(ex);
-                return 0;
-              }
-            });
+    return flattenedJsonMapForRetrievedTrace.get();
+  }
 
-        // build the segment's document as a jsonarray and flatten it for easy comparison
-        StringBuilder segmentsJson = new StringBuilder("[");
-        for (Segment segment : segmentList) {
-          segmentsJson.append(segment.getDocument());
-          segmentsJson.append(",");
-        }
-        segmentsJson.replace(segmentsJson.length() - 1, segmentsJson.length(), "]");
-        flattenedJsonMapForRetrievedTrace = JsonFlattener.flattenAsMap(segmentsJson.toString());
-      } catch (Exception e) {
-        log.error("exception while flattening the retrieved trace: " + e.getMessage());
-      }
-    } else {
-      log.error("retrieved trace list is empty or null");
-      throw new BaseException(ExceptionCode.EMPTY_LIST);
+  private Map<String, Object> flattenDocument(List<Segment> segmentList) {
+    // have to sort the segments by start_time because
+    // 1. we can not get span id from xraysdk today,
+    // 2. the segments come out with different order everytime
+    segmentList.sort(
+        (segment1, segment2) -> {
+          try {
+            Map<String, Object> map1 =
+                new ObjectMapper().readValue(segment1.getDocument(), Map.class);
+            Map<String, Object> map2 =
+                new ObjectMapper().readValue(segment2.getDocument(), Map.class);
+            return map1.get("start_time").toString().compareTo(map2.get("start_time").toString());
+          } catch (Exception ex) {
+            log.error(ex);
+            return 0;
+          }
+        });
+
+    // build the segment's document as a jsonarray and flatten it for easy comparison
+    StringBuilder segmentsJson = new StringBuilder("[");
+    for (Segment segment : segmentList) {
+      segmentsJson.append(segment.getDocument());
+      segmentsJson.append(",");
     }
-
-    return flattenedJsonMapForRetrievedTrace;
+    segmentsJson.replace(segmentsJson.length() - 1, segmentsJson.length(), "]");
+    return JsonFlattener.flattenAsMap(segmentsJson.toString());
   }
 
   // this method will hit a http endpoints of sample web apps and get stored trace
