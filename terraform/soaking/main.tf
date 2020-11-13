@@ -39,6 +39,9 @@ module "ec2_setup" {
   soaking_data_mode = var.soaking_data_mode
   soaking_data_rate = var.soaking_data_rate
   soaking_data_type = var.soaking_data_type
+
+  # negative soaking
+  mock_endpoint = var.negative_soaking ? "http://127.0.0.2" : "mocked-server/put-data"
 }
 
 locals {
@@ -139,4 +142,18 @@ module "validator" {
 
   depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm]
 }
+
+# for debug
+output "private_key" {
+  value = module.ec2_setup.private_key
+}
+
+output "collector_instance" {
+  value = module.ec2_setup.collector_instance_public_ip
+}
+
+output "sample_app_instance" {
+  value = module.ec2_setup.sample_app_instance_public_ip
+}
+
 

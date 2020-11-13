@@ -82,3 +82,7 @@ variable "soaking_data_type" {
 variable "skip_validation" {
   default = false
 }
+
+variable "mock_endpoint" {
+  default = "mocked-server/put-data"
+}

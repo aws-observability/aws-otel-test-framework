@@ -59,6 +59,10 @@ variable "aoc_version" {
   default = "v0.3.0-346703560"
 }
 
+variable "negative_soaking" {
+  default = false
+}
+
 
 
 
