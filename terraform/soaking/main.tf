@@ -156,3 +156,4 @@ output "sample_app_instance" {
   value = module.ec2_setup.sample_app_instance_public_ip
 }
 
+
