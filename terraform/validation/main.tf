@@ -40,6 +40,10 @@ data "template_file" "docker_compose" {
     # alarm related
     cpu_alarm = var.cpu_alarm
     mem_alarm = var.mem_alarm
+
+    # aws credentials
+    aws_access_key_id = var.aws_access_key_id
+    aws_secret_access_key = var.aws_secret_access_key
   }
 
 }
