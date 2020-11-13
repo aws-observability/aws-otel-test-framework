@@ -43,7 +43,6 @@ public class RetryHelper {
         return;
       } catch (Exception ex) {
         exceptionInTheEnd = ex;
-        ex.printStackTrace();
         log.info("retrying after {} seconds", TimeUnit.MILLISECONDS.toSeconds(sleepInMilliSeconds));
         TimeUnit.MILLISECONDS.sleep(sleepInMilliSeconds);
       }
