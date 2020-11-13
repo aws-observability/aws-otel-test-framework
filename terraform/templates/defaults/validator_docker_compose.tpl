@@ -19,4 +19,5 @@ services:
       - "ecsTaskDefFamily=${ecs_taskdef_family}"
       - "--ecs-context"
       - "ecsTaskDefVersion=${ecs_taskdef_version}"
+      - "--alarm-names=${alarm_names}"
 

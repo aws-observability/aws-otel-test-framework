@@ -36,15 +36,6 @@ variable "validation_config" {
   default = "default-mocked-server-validation.yml"
 }
 
-variable "data_emitter_image_command" {
-  default = ""
-}
-
-# check if cwagent need to be installed on EC2
-variable "enable_alarming" {
-  default = false
-}
-
 variable "soaking_metric_namespace" {
   default = "AWSOtelCollector/IntegTest"
 }
@@ -53,19 +44,7 @@ variable "testcase" {
   default = "../testcases/otlp_mock"
 }
 
-
-
 variable "soaking_compose_file" {
-  default = ""
-}
-
-# ec2 host instance type for running aws-otel-collector
-variable "instance_type_for_collector" {
-  default = ""
-}
-
-# ec2 host instance type for running load generator
-variable "instance_type_for_emitter" {
   default = ""
 }
 
@@ -98,4 +77,8 @@ variable "soaking_data_rate" {
 # data model type. possible values: otlp, xray, etc
 variable "soaking_data_type" {
   default = "otlp"
+}
+
+variable "skip_validation" {
+  default = false
 }

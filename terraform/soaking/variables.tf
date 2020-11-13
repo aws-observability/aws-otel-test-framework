@@ -20,18 +20,8 @@ variable "region" {
   default = "us-west-2"
 }
 
-variable "testing_ami" {
-  default = "amazonlinux2"
-}
-
 variable "soaking_data_emitter_image" {
   default = "aottestbed/aws-otel-load-generator:v0.1.0"
-}
-
-# set this option to false will disable validator to call the sample app
-# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
-variable "sample_app_callable" {
-  default = false
 }
 
 variable "soaking_metric_namespace" {
@@ -39,36 +29,34 @@ variable "soaking_metric_namespace" {
 }
 
 variable "testcase" {
-  default = "../testcases/otlp"
+  default = "../testcases/otlp_mock"
 }
 
 # data type will be emitted. Possible values: metric or trace
-variable "date_mode" {
+variable "soaking_data_mode" {
   default = "metric"
 }
 
 # data points were emitted per second
-variable "rate" {
+variable "soaking_data_rate" {
   default = 1000
 }
 
 # data model type. possible values: otlp, xray, etc
-variable "data_type" {
+variable "soaking_data_type" {
   default = "otlp"
 }
 
 variable "validation_config" {
-  default = "default-validation.yml"
+  default = "alarm-pulling-validation.yml"
 }
 
-# ec2 host instance type for running aws-otel-collector
-variable "instance_type_for_collector" {
-  default = "m5.2xlarge"
+variable "testing_ami" {
+  default = "soaking_linux"
 }
 
-# ec2 host instance type for running load generator
-variable "instance_type_for_emitter" {
-  default = "t2.micro"
+variable "aoc_version" {
+  default = "v0.3.0-346703560"
 }
 
 
