@@ -50,6 +50,10 @@ variable "ecs_taskdef_version" {
   default = ""
 }
 
-variable "alarm_names" {
+variable "cpu_alarm" {
+  default = ""
+}
+
+variable "mem_alarm" {
   default = ""
 }

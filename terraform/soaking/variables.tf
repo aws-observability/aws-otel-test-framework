@@ -47,10 +47,6 @@ variable "soaking_data_type" {
   default = "otlp"
 }
 
-variable "validation_config" {
-  default = "alarm-pulling-validation.yml"
-}
-
 variable "testing_ami" {
   default = "soaking_linux"
 }

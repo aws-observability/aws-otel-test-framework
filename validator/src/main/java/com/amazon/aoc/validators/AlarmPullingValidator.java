@@ -11,6 +11,7 @@ import com.amazon.aoc.services.CloudWatchAlarmService;
 import com.amazonaws.services.cloudwatch.model.MetricAlarm;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -36,6 +37,7 @@ public class AlarmPullingValidator implements IValidator {
 
   @Override
   public void validate() throws Exception {
+    Collections.sort(context.getAlarmNameList());
     RetryHelper.retry(
         this.pullTimes,
         this.pullDuration * 1000,
@@ -45,8 +47,7 @@ public class AlarmPullingValidator implements IValidator {
               this.cloudWatchAlarmService.listAlarms(context.getAlarmNameList());
 
           // compare the alarm name
-          context.getAlarmNameList().sort(String::compareTo);
-          alarmList.sort(Comparator.comparing(MetricAlarm::getMetricName));
+          alarmList.sort(Comparator.comparing(MetricAlarm::getAlarmName));
           for (int i = 0; i != context.getAlarmNameList().size(); ++i) {
             if (!context.getAlarmNameList().get(i).equals(alarmList.get(i).getAlarmName())) {
               log.error("alarm {} can not be found", context.getAlarmNameList().get(i));
@@ -56,11 +57,12 @@ public class AlarmPullingValidator implements IValidator {
 
           // check the status of the alarms, exit if one of them is alarming
           for (MetricAlarm metricAlarm : alarmList) {
+            log.info(metricAlarm.getStateValue());
             if (metricAlarm.getStateValue().equals("ALARM")) {
               log.error(
                   "alarm {} is alarming, metric is {}, failing to bake",
                   metricAlarm.getAlarmName(),
-                  metricAlarm.getMetricName());
+                  metricAlarm.getMetrics());
               System.exit(1);
             }
           }
