@@ -13,9 +13,11 @@ variable "ami_family" {
       soaking_cwagent_config = "../templates/cwagent-config/soaking-linux.json.tpl"
       soaking_cwagent_config_destination = "/tmp/cwagent-config.json"
       cwagent_download_command = "sudo rpm -Uvh https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm"
+      cwagent_install_command = "echo 'donothing'"
       cwagent_start_command = "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -c file:/tmp/cwagent-config.json -s"
       soaking_cpu_metric_name = "procstat_cpu_usage"
       soaking_mem_metric_name = "procstat_memory_rss"
+      soaking_process_name = "aws-otel-collector"
     }
     windows = {
       login_user = "Administrator"
@@ -26,6 +28,14 @@ variable "ami_family" {
       install_command = "msiexec /i C:\\aws-otel-collector.msi"
       start_command = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation C:\\ot-default.yml -Action start\""
       connection_type = "winrm"
+      soaking_cwagent_config = "../templates/cwagent-config/soaking-linux.json.tpl"
+      soaking_cwagent_config_destination = "C:\\cwagent-config.json"
+      cwagent_download_command = "powershell -command \"Invoke-WebRequest -Uri https://s3.amazonaws.com/amazoncloudwatch-agent/windows/amd64/latest/amazon-cloudwatch-agent.msi -OutFile C:\\amazon-cloudwatch-agent.msi\""
+      cwagent_install_command = "msiexec /i C:\\amazon-cloudwatch-agent.msi"
+      cwagent_start_command = "powershell \"& 'C:\\Program Files\\Amazon\\AmazonCloudWatchAgent\\amazon-cloudwatch-agent-ctl.ps1' -a fetch-config -c file:C:\\cwagent-config.json -s\""
+      soaking_cpu_metric_name = "procstat cpu_usage"
+      soaking_mem_metric_name = "procstat memory_rss"
+      soaking_process_name = ".aws-otel-collector.exe"
       user_data = <<EOF
 <powershell>
 winrm quickconfig -q
@@ -47,7 +57,7 @@ EOF
 
 variable "amis" {
   default = {
-    windows2019 = {
+    soaking_windows = {
       ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
       ami_owner = "amazon"
       family = "windows"

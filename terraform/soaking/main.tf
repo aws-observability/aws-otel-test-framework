@@ -61,6 +61,9 @@ data "template_file" "cwagent_config" {
 }
 
 resource "null_resource" "install_cwagent" {
+  # Use the depends_on meta-argument to handle hidden resource dependencies that Terraform can't automatically infer.
+  # Explicitly specifying a dependency is only necessary when a resource relies on some other resource's behavior but doesn't access any of that resource's data in its arguments.
+  depends_on = [module.ec2_setup]
   // copy cwagent config to the instance
   provisioner "file" {
     content = data.template_file.cwagent_config.rendered
@@ -78,6 +81,7 @@ resource "null_resource" "install_cwagent" {
   provisioner "remote-exec" {
     inline = [
       local.ami_family["cwagent_download_command"],
+      local.ami_family["cwagent_install_command"],
       local.ami_family["cwagent_start_command"]
     ]
 
@@ -134,7 +138,7 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
   alarm_name = "otel-soaking-mem-alarm-${module.common.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 2
-  threshold = "300"
+  threshold = "100000000"
 
   metric_query {
     id = "mem"
@@ -150,7 +154,7 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
       dimensions = {
         InstanceId = module.ec2_setup.collector_instance_id
         exe = "aws-otel-collector"
-        process_name = "aws-otel-collector"
+        process_name = local.ami_family["soaking_process_name"]
       }
     }
   }
