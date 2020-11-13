@@ -204,6 +204,7 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
   task_definition = "${aws_ecs_task_definition.aoc.family}:1"
   desired_count = 1
   launch_type = var.ecs_launch_type
+  platform_version = var.ecs_launch_type == "FARGATE" ? "1.4.0" : null
 
   network_configuration {
     subnets = module.basic_components.aoc_private_subnet_ids
