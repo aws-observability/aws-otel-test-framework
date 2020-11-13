@@ -88,8 +88,8 @@ public class TraceValidator implements IValidator {
 
   // this method will hit get trace from x-ray service and get retrieved trace
   private Map<String, Object> getRetrievedTrace(List<String> traceIdList) throws Exception {
-
-    AtomicReference<Map<String, Object>> flattenedJsonMapForRetrievedTrace = new AtomicReference<>();
+    AtomicReference<Map<String, Object>> flattenedJsonMapForRetrievedTrace =
+        new AtomicReference<>();
     RetryHelper.retry(
         5,
         () -> {
