@@ -28,13 +28,17 @@ module "basic_components" {
 
   testing_id = module.common.testing_id
 
-  mocked_endpoint = "mocked-server/put-data"
+  mocked_endpoint = var.mock_endpoint
 
   sample_app = var.sample_app
 }
 
 provider "aws" {
   region  = var.region
+}
+
+data "aws_ecr_repository" "sample_app" {
+  name = module.common.sample_app_ecr_repo_name
 }
 
 # get ami object
@@ -52,6 +56,9 @@ locals {
 
   sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
   mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
+
+  # get ecr login domain
+  ecr_login_domain = split("/", data.aws_ecr_repository.sample_app.repository_url)[0]
 }
 
 ## get the ssh private key
@@ -203,7 +210,7 @@ data "template_file" "docker_compose" {
 
   vars = {
     region = var.region
-    data_emitter_image = local.sample_app_image
+    sample_app_image = local.sample_app_image
     sample_app_external_port = module.common.sample_app_lb_port
     sample_app_listen_address_port = module.common.sample_app_listen_address_port
     listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
@@ -235,6 +242,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       "sudo curl -L 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' -o /usr/local/bin/docker-compose",
       "sudo chmod +x /usr/local/bin/docker-compose",
       "sudo systemctl start docker",
+      "sudo docker run --rm -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password --region ${var.region} | sudo docker login --username AWS --password-stdin ${local.ecr_login_domain}",
       "sudo /usr/local/bin/docker-compose -f /tmp/docker-compose.yml up -d"
     ]
 
