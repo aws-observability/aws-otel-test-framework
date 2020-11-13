@@ -25,7 +25,7 @@ variable "ami_family" {
       start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
-    },
+    }
     amazon_linux = {
       login_user = "ec2-user"
       install_package = "aws-otel-collector.rpm"
@@ -36,12 +36,6 @@ variable "ami_family" {
       start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
-      soaking_cwagent_config = "../templates/cwagent-config/soaking-linux.json.tpl"
-      soaking_cwagent_config_destination = "/tmp/cwagent-config.json"
-      cwagent_download_command = "sudo rpm -Uvh https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm"
-      cwagent_start_command = "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -c file:/tmp/cwagent-config.json -s"
-
-      soaking_cpu_metric_name = "procstat_cpu_usage"
     }
     windows = {
       login_user = "Administrator"

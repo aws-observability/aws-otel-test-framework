@@ -36,6 +36,9 @@ data "template_file" "docker_compose" {
     ecs_task_arn = var.ecs_task_arn
     ecs_taskdef_family = var.ecs_taskdef_family
     ecs_taskdef_version = var.ecs_taskdef_version
+
+    # alarm related
+    alarm_names = var.alarm_names
   }
 
 }

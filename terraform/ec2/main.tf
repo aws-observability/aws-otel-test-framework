@@ -80,7 +80,7 @@ resource "aws_instance" "sidecar" {
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
 resource "aws_instance" "aoc" {
   ami                         = local.ami_id
-  instance_type               = var.instance_type_for_collector != "" ? var.instance_type_for_collector : local.instance_type
+  instance_type               = local.instance_type
   subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
@@ -251,6 +251,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
 # Validation
 ##########################################
 module "validator" {
+  count = !var.skip_validation ? 1 : 0
   source = "../validation"
 
   validation_config = var.validation_config
