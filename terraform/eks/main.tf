@@ -304,5 +304,8 @@ module "validator" {
   sample_app_endpoint = "http://${kubernetes_service.sample_app_service.load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}"
   mocked_server_validating_url = "http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data"
 
+  aws_access_key_id = var.aws_access_key_id
+  aws_secret_access_key = var.aws_secret_access_key
+
   depends_on = [kubernetes_service.mocked_server_service]
 }

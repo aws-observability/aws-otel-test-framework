@@ -269,6 +269,9 @@ module "validator" {
   sample_app_endpoint = "http://${aws_instance.sidecar.public_ip}:${module.common.sample_app_lb_port}"
   mocked_server_validating_url = "http://${aws_instance.sidecar.public_ip}/check-data"
 
+  aws_access_key_id = var.aws_access_key_id
+  aws_secret_access_key = var.aws_secret_access_key
+
   depends_on = [null_resource.setup_sample_app_and_mock_server]
 }
 
