@@ -178,11 +178,6 @@ module "validator" {
   depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm, aws_cloudwatch_metric_alarm.mem_alarm]
 }
 
-# for debug
-output "private_key" {
-  value = module.ec2_setup.private_key
-}
-
 output "collector_instance" {
   value = module.ec2_setup.collector_instance_public_ip
 }
