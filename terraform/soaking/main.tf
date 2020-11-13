@@ -31,7 +31,6 @@ module "ec2_setup" {
   region = var.region
   testcase = var.testcase
   sample_app_image = var.soaking_data_emitter_image
-  validation_config = var.validation_config
   skip_validation = true
 
   # soaking test config
@@ -129,18 +128,47 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
   }
 }
 
+# mem alarm
+resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
+  depends_on = [time_sleep.wait_2_minutes]
+  alarm_name = "otel-soaking-mem-alarm-${module.common.testing_id}"
+  comparison_operator = "GreaterThanOrEqualToThreshold"
+  evaluation_periods = 2
+  threshold = "300"
+
+  metric_query {
+    id = "mem"
+    return_data = true
+
+    metric {
+      metric_name = local.ami_family["soaking_mem_metric_name"]
+      namespace = var.soaking_metric_namespace
+      period = 60
+      stat = "Average"
+
+      # use this dimension to identify each test
+      dimensions = {
+        InstanceId = module.ec2_setup.collector_instance_id
+        exe = "aws-otel-collector"
+        process_name = "aws-otel-collector"
+      }
+    }
+  }
+}
+
 ##########################################
 # Validation
 ##########################################
 module "validator" {
   source = "../validation"
 
-  validation_config = var.validation_config
+  validation_config = "alarm-pulling-validation.yml"
   region = var.region
   testing_id = module.common.testing_id
-  alarm_names = aws_cloudwatch_metric_alarm.cpu_alarm.alarm_name
+  cpu_alarm = aws_cloudwatch_metric_alarm.cpu_alarm.alarm_name
+  mem_alarm = aws_cloudwatch_metric_alarm.mem_alarm.alarm_name
 
-  depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm]
+  depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm, aws_cloudwatch_metric_alarm.mem_alarm]
 }
 
 # for debug

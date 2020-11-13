@@ -15,6 +15,7 @@ variable "ami_family" {
       cwagent_download_command = "sudo rpm -Uvh https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm"
       cwagent_start_command = "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -c file:/tmp/cwagent-config.json -s"
       soaking_cpu_metric_name = "procstat_cpu_usage"
+      soaking_mem_metric_name = "procstat_memory_rss"
     }
     windows = {
       login_user = "Administrator"

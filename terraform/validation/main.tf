@@ -38,7 +38,8 @@ data "template_file" "docker_compose" {
     ecs_taskdef_version = var.ecs_taskdef_version
 
     # alarm related
-    alarm_names = var.alarm_names
+    cpu_alarm = var.cpu_alarm
+    mem_alarm = var.mem_alarm
   }
 
 }

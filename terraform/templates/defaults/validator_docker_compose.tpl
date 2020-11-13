@@ -4,6 +4,8 @@ services:
   validator:
     build:
       ../../validator
+    volumes:
+      - ~/.aws:/root/.aws
     command:
       - "-c=${validation_config}"
       - "-t=${testing_id}"
@@ -19,5 +21,6 @@ services:
       - "ecsTaskDefFamily=${ecs_taskdef_family}"
       - "--ecs-context"
       - "ecsTaskDefVersion=${ecs_taskdef_version}"
-      - "--alarm-names=${alarm_names}"
+      - "--alarm-names=${cpu_alarm}"
+      - "--alarm-names=${mem_alarm}"
 
