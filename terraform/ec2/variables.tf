@@ -24,10 +24,6 @@ variable "testing_ami" {
   default = "amazonlinux2"
 }
 
-variable "soaking_metric_namespace" {
-  default = "AWSOtelCollector/IntegTest"
-}
-
 variable "soaking_compose_file" {
   default = ""
 }
