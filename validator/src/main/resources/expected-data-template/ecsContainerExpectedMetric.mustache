@@ -2,31 +2,175 @@
   metricName: ecs.task.memory.reserved_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: ecs.cluster
+      value: {{ecsContext.ecsClusterName}}
+    -
+      name: ecs.service
+      value: undefined
+    -
+      name: ecs.task-arn
+      value: SKIP
+    -
+      name: ecs.task-definition-family
+      value: {{ecsContext.ecsTaskDefFamily}}
+    -
+      name: ecs.task-definition-version
+      value: {{ecsContext.ecsTaskDefVersion}}
+    -
+      name: ecs.task-id
+      value: SKIP
 -
   metricName: ecs.task.memory.utilized_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: ecs.cluster
+      value: {{ecsContext.ecsClusterName}}
+    -
+      name: ecs.service
+      value: undefined
+    -
+      name: ecs.task-arn
+      value: SKIP
+    -
+      name: ecs.task-definition-family
+      value: {{ecsContext.ecsTaskDefFamily}}
+    -
+      name: ecs.task-definition-version
+      value: {{ecsContext.ecsTaskDefVersion}}
+    -
+      name: ecs.task-id
+      value: SKIP
 -
   metricName: ecs.task.cpu.reserved_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: ecs.cluster
+      value: {{ecsContext.ecsClusterName}}
+    -
+      name: ecs.service
+      value: undefined
+    -
+      name: ecs.task-arn
+      value: SKIP
+    -
+      name: ecs.task-definition-family
+      value: {{ecsContext.ecsTaskDefFamily}}
+    -
+      name: ecs.task-definition-version
+      value: {{ecsContext.ecsTaskDefVersion}}
+    -
+      name: ecs.task-id
+      value: SKIP
 -
   metricName: ecs.task.cpu.utilized_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: ecs.cluster
+      value: {{ecsContext.ecsClusterName}}
+    -
+      name: ecs.service
+      value: undefined
+    -
+      name: ecs.task-arn
+      value: SKIP
+    -
+      name: ecs.task-definition-family
+      value: {{ecsContext.ecsTaskDefFamily}}
+    -
+      name: ecs.task-definition-version
+      value: {{ecsContext.ecsTaskDefVersion}}
+    -
+      name: ecs.task-id
+      value: SKIP
 -
   metricName: ecs.task.network.rate.rx_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: ecs.cluster
+      value: {{ecsContext.ecsClusterName}}
+    -
+      name: ecs.service
+      value: undefined
+    -
+      name: ecs.task-arn
+      value: SKIP
+    -
+      name: ecs.task-definition-family
+      value: {{ecsContext.ecsTaskDefFamily}}
+    -
+      name: ecs.task-definition-version
+      value: {{ecsContext.ecsTaskDefVersion}}
+    -
+      name: ecs.task-id
+      value: SKIP
 -
   metricName: ecs.task.network.rate.tx_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: ecs.cluster
+      value: {{ecsContext.ecsClusterName}}
+    -
+      name: ecs.service
+      value: undefined
+    -
+      name: ecs.task-arn
+      value: SKIP
+    -
+      name: ecs.task-definition-family
+      value: {{ecsContext.ecsTaskDefFamily}}
+    -
+      name: ecs.task-definition-version
+      value: {{ecsContext.ecsTaskDefVersion}}
+    -
+      name: ecs.task-id
+      value: SKIP
 -
   metricName: ecs.task.storage.read_bytes_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: ecs.cluster
+      value: {{ecsContext.ecsClusterName}}
+    -
+      name: ecs.service
+      value: undefined
+    -
+      name: ecs.task-arn
+      value: SKIP
+    -
+      name: ecs.task-definition-family
+      value: {{ecsContext.ecsTaskDefFamily}}
+    -
+      name: ecs.task-definition-version
+      value: {{ecsContext.ecsTaskDefVersion}}
+    -
+      name: ecs.task-id
+      value: SKIP
 -
   metricName: ecs.task.storage.write_bytes_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
+    -
+      name: ecs.cluster
+      value: {{ecsContext.ecsClusterName}}
+    -
+      name: ecs.service
+      value: undefined
+    -
+      name: ecs.task-arn
+      value: SKIP
+    -
+      name: ecs.task-definition-family
+      value: {{ecsContext.ecsTaskDefFamily}}
+    -
+      name: ecs.task-definition-version
+      value: {{ecsContext.ecsTaskDefVersion}}
+    -
+      name: ecs.task-id
+      value: SKIP
