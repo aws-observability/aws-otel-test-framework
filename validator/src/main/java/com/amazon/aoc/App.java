@@ -75,6 +75,11 @@ public class App implements Callable<Integer> {
   private List<String> alarmNameList;
 
   @CommandLine.Option(
+      names = {"--mocked-server-validating-url"},
+      description = "mocked server validating url")
+  private String mockedServerValidatingUrl;
+
+  @CommandLine.Option(
           names = {"--canary"},
           defaultValue = "false")
   private boolean isCanary;
@@ -93,6 +98,7 @@ public class App implements Callable<Integer> {
     context.setEndpoint(this.endpoint);
     context.setEcsContext(buildECSContext(ecsContexts));
     context.setAlarmNameList(alarmNameList);
+    context.setMockedServerValidatingUrl(mockedServerValidatingUrl);
 
     log.info(context);
 

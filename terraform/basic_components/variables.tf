@@ -16,3 +16,16 @@
 variable "region" {
   default = "us-west-2"
 }
+
+variable "testcase" {
+}
+
+variable "testing_id" {
+}
+
+variable "mocked_endpoint" {
+}
+
+variable "sample_app" {
+}
+

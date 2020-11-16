@@ -17,10 +17,6 @@ output "testing_id" {
   value = random_id.testing_id.hex
 }
 
-output "aoc_emitter_image" {
-  value = var.data_emitter_image
-}
-
 output "aoc_image" {
   value = "${var.aoc_image_repo}:${var.aoc_version}"
 }
@@ -30,23 +26,11 @@ output "validator_path" {
 }
 
 output "otel_service_namespace" {
-  value = "YingOtel"
+  value = "aws-otel"
 }
 
 output "otel_service_name" {
-  value = "Terraform"
-}
-
-output "ssh_key_name" {
-  value = "aoc-ssh-key-2020-07-22"
-}
-
-output "sshkey_s3_bucket" {
-  value = "aoc-ssh-key"
-}
-
-output "sshkey_s3_private_key" {
-  value = "aoc-ssh-key-2020-07-22.pem"
+  value = "aws-otel-integ-test"
 }
 
 output "aoc_iam_role_name" {
@@ -71,4 +55,53 @@ output "sample_app_listen_address_ip" {
 
 output "sample_app_listen_address_port" {
   value = "4567"
+}
+
+output "sample_app_lb_port" {
+  value = "8080"
+}
+
+output "default_otconfig_path" {
+  value = "../templates/defaults/otconfig.tpl"
+}
+
+output "default_eks_pod_config_path" {
+  value = "../templates/defaults/eks_pod_config.tpl"
+}
+
+output "default_ecs_taskdef_path" {
+  value = "../templates/defaults/ecs_taskdef.tpl"
+}
+
+output "default_docker_compose_path" {
+  value = "../templates/defaults/docker_compose.tpl"
+}
+
+## mocked server related
+output "default_mocked_server_ecs_taskdef_path" {
+  value = "../templates/defaults/mocked_server_ecs_taskdef.tpl"
+}
+
+output "mocked_server_http_port" {
+  value = "8080"
+}
+
+output "mocked_server_lb_port" {
+  value = "80"
+}
+
+output "grpc_port" {
+  value = "55680"
+}
+
+output "udp_port" {
+  value = "55690"
+}
+
+output "sample_app_ecr_repo_name" {
+  value = "otel-test/sample-apps"
+}
+
+output "mocked_server_ecr_repo_name" {
+  value = "otel-test/mocked-server"
 }

@@ -20,9 +20,28 @@
 module "common" {
   source = "../common"
 
-  data_emitter_image = var.data_emitter_image
   aoc_image_repo = var.aoc_image_repo
   aoc_version = var.aoc_version
+}
+
+module "basic_components" {
+  source = "../basic_components"
+
+  region = var.region
+
+  testcase = var.testcase
+
+  testing_id = module.common.testing_id
+
+  mocked_endpoint = "localhost/put-data"
+
+  sample_app = var.sample_app
+}
+
+locals {
+  eks_pod_config_path = fileexists("${var.testcase}/eks_pod_config.tpl") ? "${var.testcase}/eks_pod_config.tpl" : module.common.default_eks_pod_config_path
+  sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
 }
 
 # region
@@ -53,18 +72,6 @@ resource "kubernetes_namespace" "aoc_ns" {
     name = "aoc-ns-${module.common.testing_id}"
   }
 }
-
-# load config into config map
-data "template_file" "otconfig" {
-  template = file(var.otconfig_path)
-
-  vars = {
-    region = var.region
-    otel_service_namespace = module.common.otel_service_namespace
-    otel_service_name = module.common.otel_service_name
-    testing_id = module.common.testing_id
-  }
-}
 resource "kubernetes_config_map" "aoc_config_map" {
   metadata {
     name = "otel-config"
@@ -72,26 +79,38 @@ resource "kubernetes_config_map" "aoc_config_map" {
   }
 
   data = {
-    "aoc-config.yml" = data.template_file.otconfig.rendered
+    "aoc-config.yml" = module.basic_components.otconfig_content
   }
 }
 
 # load eks pod config
 data "template_file" "eksconfig" {
-  template = file(var.eks_pod_config_path)
+  template = file(local.eks_pod_config_path)
 
   vars = {
-    data_emitter_image = var.data_emitter_image
+    data_emitter_image = local.sample_app_image
     testing_id = module.common.testing_id
   }
 }
+
+# load the faked cert for mocked server
+resource "kubernetes_config_map" "mocked_server_cert" {
+  metadata {
+    name = "mocked-server-cert"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+
+  data = {
+    "ca-bundle.crt" = module.basic_components.mocked_server_cert_content
+  }
+}
+
 locals {
   eks_pod_config = yamldecode(data.template_file.eksconfig.rendered)["sample_app"]
 }
 
 # deploy aoc and sample app
 resource "kubernetes_deployment" "aoc_deployment" {
-  count = var.sample_app_callable ? 1 : 0
   metadata {
     name = "aoc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
@@ -125,6 +144,27 @@ resource "kubernetes_deployment" "aoc_deployment" {
           }
         }
 
+        volume {
+          name = "mocked-server-cert"
+          config_map {
+            name = kubernetes_config_map.mocked_server_cert.metadata[0].name
+          }
+        }
+
+        container {
+          name = "mocked-server"
+          image = local.mocked_server_image
+
+          readiness_probe {
+            http_get {
+              path = "/"
+              port = 8080
+            }
+            initial_delay_seconds = 10
+            period_seconds = 5
+          }
+        }
+
         # aoc
         container {
           name = "aoc"
@@ -143,6 +183,11 @@ resource "kubernetes_deployment" "aoc_deployment" {
             mount_path = "/aoc"
             name = "otel-config"
           }
+
+          volume_mount {
+            mount_path = "/etc/pki/tls/certs"
+            name = "mocked-server-cert"
+          }
         }
 
         # sample app
@@ -157,6 +202,16 @@ resource "kubernetes_deployment" "aoc_deployment" {
           env {
             name = "OTEL_EXPORTER_OTLP_ENDPOINT"
             value = "127.0.0.1:55680"
+          }
+
+          env {
+            name = "AWS_XRAY_DAEMON_ADDRESS"
+            value = "127.0.0.1:${module.common.udp_port}"
+          }
+
+          env {
+            name = "AWS_REGION"
+            value = var.region
           }
 
           env {
@@ -198,120 +253,59 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
 # create service upon the sample app
 resource "kubernetes_service" "sample_app_service" {
-  count = var.sample_app_callable ? 1 : 0
   metadata {
     name = "aoc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
-      app = kubernetes_deployment.aoc_deployment[0].metadata[0].labels.app
+      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
+    }
+
+    type = "LoadBalancer"
+
+    port {
+      port = module.common.sample_app_lb_port
+      target_port = module.common.sample_app_listen_address_port
+    }
+  }
+}
+
+# create service upon the mocked server
+resource "kubernetes_service" "mocked_server_service" {
+  metadata {
+    name = "mocked-server"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+  spec {
+    selector = {
+      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
     }
 
     type = "LoadBalancer"
 
     port {
       port = 80
-      target_port = module.common.sample_app_listen_address_port
+      target_port = 8080
     }
   }
 }
 
-resource "kubernetes_pod" "aoc_pod" {
-  count = !var.sample_app_callable ? 1 : 0
+##########################################
+# Validation
+##########################################
+module "validator" {
+  source = "../validation"
 
-  metadata {
-    name = "aoc"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
-  }
+  validation_config = var.validation_config
+  region = var.region
+  testing_id = module.common.testing_id
+  metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+  sample_app_endpoint = "http://${kubernetes_service.sample_app_service.load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}"
+  mocked_server_validating_url = "http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data"
 
-  spec {
-    volume {
-      name = "otel-config"
-      config_map {
-        name = kubernetes_config_map.aoc_config_map.metadata[0].name
-      }
-    }
+  aws_access_key_id = var.aws_access_key_id
+  aws_secret_access_key = var.aws_secret_access_key
 
-    container {
-      name = "aoc"
-      image = module.common.aoc_image
-      image_pull_policy = "Always"
-      args = ["--config=/aoc/aoc-config.yml"]
-
-      resources {
-        requests {
-          cpu = "0.2"
-          memory = "256Mi"
-        }
-      }
-
-      volume_mount {
-        mount_path = "/aoc"
-        name = "otel-config"
-      }
-    }
-
-    # sample app
-    container {
-      name = "sample-app"
-      image= local.eks_pod_config["image"]
-      image_pull_policy = "Always"
-      command = length(local.eks_pod_config["command"]) != 0 ? local.eks_pod_config["command"] : null
-      args = length(local.eks_pod_config["args"]) != 0 ? local.eks_pod_config["args"] : null
-
-      env {
-        name = "OTEL_EXPORTER_OTLP_ENDPOINT"
-        value = "127.0.0.1:55680"
-      }
-
-      env {
-        name = "INSTANCE_ID"
-        value = module.common.testing_id
-      }
-
-      env {
-        name = "OTEL_RESOURCE_ATTRIBUTES"
-        value = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
-      }
-
-      env {
-        name = "LISTEN_ADDRESS"
-        value = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
-      }
-
-      resources {
-        requests {
-          cpu = "0.2"
-          memory = "256Mi"
-        }
-
-      }
-    }
-  }
+  depends_on = [kubernetes_service.mocked_server_service]
 }
-
-
-
-# run validator
-resource "null_resource" "callable_sample_app_validator" {
-  count = var.sample_app_callable ? 1 : 0
-  provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name} --endpoint http://${kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname}'"
-    working_dir = "../../"
-  }
-}
-
-# run validator
-resource "null_resource" "validator" {
-  count = !var.sample_app_callable ? 1 : 0
-  provisioner "local-exec" {
-    command = "${module.common.validator_path} --args='-c ${var.validation_config} -t ${module.common.testing_id} --region ${var.region} --metric-namespace ${module.common.otel_service_namespace}/${module.common.otel_service_name}'"
-    working_dir = "../../"
-  }
-}
-
-
-
-
-

@@ -44,7 +44,7 @@ import java.util.TreeSet;
 
 @Log4j2
 public class MetricValidator implements IValidator {
-  private static int MAX_RETRY_COUNT = 60;
+  private static int MAX_RETRY_COUNT = 30;
   private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
 
   private MustacheHelper mustacheHelper = new MustacheHelper();
@@ -58,15 +58,17 @@ public class MetricValidator implements IValidator {
     // get expected metrics and remove the to be skipped dimensions
     final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
     Set<String> skippedDimensionNameList = new HashSet<>();
-    for(Metric metric: expectedMetricList){
-      for(Dimension dimension: metric.getDimensions()){
-        if(dimension.getValue().equals("SKIP")){
+    for (Metric metric : expectedMetricList) {
+      for (Dimension dimension : metric.getDimensions()) {
+        if (dimension.getValue().equals("SKIP")) {
           skippedDimensionNameList.add(dimension.getName());
         }
       }
     }
     for (Metric metric : expectedMetricList) {
-      metric.getDimensions().removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+      metric
+          .getDimensions()
+          .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
     }
 
     // get metric from cloudwatch
@@ -80,7 +82,9 @@ public class MetricValidator implements IValidator {
           // remove the skip dimensions
           log.info("dimensions to be skipped in validation: {}", skippedDimensionNameList);
           for (Metric metric : metricList) {
-            metric.getDimensions().removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+            metric
+                .getDimensions()
+                .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
           }
 
           log.info("check if all the expected metrics are found");
@@ -103,7 +107,7 @@ public class MetricValidator implements IValidator {
    */
   private void compareMetricLists(List<Metric> toBeCheckedMetricList, List<Metric> baseMetricList)
       throws BaseException {
-    log.info("compare two metric list {} {}", toBeCheckedMetricList, baseMetricList);
+
     // load metrics into a hash set
     Set<Metric> metricSet =
         new TreeSet<>(
@@ -182,10 +186,16 @@ public class MetricValidator implements IValidator {
   private List<Metric> rollupMetric(List<Metric> metricList) {
     List<Metric> rollupMetricList = new ArrayList<>();
     for (Metric metric : metricList) {
-      // get otellib dimension out
-      // assuming the first dimension is otellib, if not the validation fails
-      Dimension otellibDimension = metric.getDimensions().get(0);
-      boolean otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+      Dimension otellibDimension = new Dimension();
+      boolean otelLibDimensionExisted = false;
+
+      if (metric.getDimensions().size() > 0) {
+        // get otellib dimension out
+        // assuming the first dimension is otellib, if not the validation fails
+        otellibDimension = metric.getDimensions().get(0);
+        otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+      }
+      
       if (otelLibDimensionExisted) {
         metric.getDimensions().remove(0);
       }

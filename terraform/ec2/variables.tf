@@ -16,62 +16,44 @@
 ## right now there's no good way to share variables across modules,
 ## so we have to define some of the common vars like region, otconfig_path in each module
 
-variable "otconfig_path" {
-  default = "../template/otconfig/default_otconfig.tpl"
-}
-
-variable "docker_compose_path" {
-  default = "../template/ec2-docker-compose-config/default_ec2_docker_compose.yml.tpl"
-}
-
 variable "package_s3_bucket" {
   default = "aws-otel-collector-test"
-}
-
-variable "aoc_version" {
-  default = "v0.1.12-291936394"
-}
-
-variable "region" {
-  default = "us-west-2"
 }
 
 variable "testing_ami" {
   default = "amazonlinux2"
 }
 
-variable "validation_config" {
-  default = "default-validation.yml"
-}
-
-variable "data_emitter_image" {
-  default = "josephwy/integ-test-emitter:alpine"
-}
-
-variable "data_emitter_image_command" {
+variable "soaking_compose_file" {
   default = ""
 }
 
-variable "sshkey_s3_bucket" {
-  default = "aoc-ssh-key"
+######################
+# Soaking related
+######################
+# data type will be emitted. Possible values: metric or trace
+variable "soaking_data_mode" {
+  default = "metric"
 }
 
-variable "sshkey_s3_private_key" {
-  default = "aoc-ssh-key-2020-07-22.pem"
+# data points were emitted per second
+variable "soaking_data_rate" {
+  default = 100
 }
 
-# set this option to false will disable validator to call the sample app
-# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
-variable "sample_app_callable" {
-  default = true
+# data model type. possible values: otlp, xray, etc
+variable "soaking_data_type" {
+  default = "otlp"
 }
 
-# create soaking alarm if this flag is on
-variable "soaking" {
+variable "skip_validation" {
   default = false
 }
 
-variable "soaking_metric_namespace" {
-  default = "AWSOtelCollector/SoakTest"
+variable "mock_endpoint" {
+  default = "mocked-server/put-data"
 }
 
+variable "install_cwagent" {
+  default = false
+}

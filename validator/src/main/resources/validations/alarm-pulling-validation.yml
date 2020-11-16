@@ -1,4 +1,4 @@
 -
   validationType: "alarm-pulling"
   pullingDuration: 10 #seconds
-  pullingTimes: 60
+  pullingTimes: 1800

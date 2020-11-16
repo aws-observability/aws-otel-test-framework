@@ -4,49 +4,10 @@
   dimensions:
     -
       name: OTelLib
-      value: cloudwatch-otel
+      value: aws-otel
     -
       name: apiName
-      value: /span0
-    -
-      name: statusCode
-      value: 200
--
-  metricName: latency_{{testingId}}
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: OTelLib
-      value: cloudwatch-otel
-    -
-      name: apiName
-      value: /span1
-    -
-      name: statusCode
-      value: 200
--
-  metricName: latency_{{testingId}}
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: OTelLib
-      value: cloudwatch-otel
-    -
-      name: apiName
-      value: /span2
-    -
-      name: statusCode
-      value: 200
--
-  metricName: latency_{{testingId}}
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: OTelLib
-      value: cloudwatch-otel
-    -
-      name: apiName
-      value: /
+      value: /outgoing-http-call
     -
       name: statusCode
       value: 200
