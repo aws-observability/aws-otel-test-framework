@@ -12,24 +12,8 @@
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
-
-## right now there's no good way to share variables across modules,
-## so we have to define some of the common vars like region, otconfig_path in each module
-
-variable "region" {
-  default = "us-west-2"
-}
-
 variable "soaking_data_emitter_image" {
   default = "aottestbed/aws-otel-load-generator:v0.1.0"
-}
-
-variable "soaking_metric_namespace" {
-  default = "AWSOtelCollector/SoakingTest"
-}
-
-variable "testcase" {
-  default = "../testcases/otlp_mock"
 }
 
 # data type will be emitted. Possible values: metric or trace
@@ -51,22 +35,6 @@ variable "testing_ami" {
   default = "soaking_linux"
 }
 
-variable "aoc_version" {
-  default = "v0.3.0-346703560"
-}
-
 variable "negative_soaking" {
   default = false
 }
-
-variable "aws_access_key_id" {
-  default = ""
-}
-
-variable "aws_secret_access_key" {
-  default = ""
-}
-
-
-
-

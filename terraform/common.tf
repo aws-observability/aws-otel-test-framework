@@ -42,3 +42,7 @@ variable "aws_secret_access_key" {
   default = ""
 }
 
+variable "soaking_metric_namespace" {
+  default = "AWSOtelCollector/SoakingTest"
+}
+
