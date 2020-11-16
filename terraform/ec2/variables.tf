@@ -57,3 +57,7 @@ variable "skip_validation" {
 variable "mock_endpoint" {
   default = "mocked-server/put-data"
 }
+
+variable "install_cwagent" {
+  default = false
+}

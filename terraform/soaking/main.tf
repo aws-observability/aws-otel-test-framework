@@ -51,58 +51,16 @@ locals {
   connection_type = local.ami_family["connection_type"]
 }
 
-## install cwagent on the instance to collect metric from otel-collector
-data "template_file" "cwagent_config" {
-  template = file(local.ami_family["soaking_cwagent_config"])
 
-  vars = {
-    soaking_metric_namespace = var.soaking_metric_namespace
-  }
-}
 
-resource "null_resource" "install_cwagent" {
-  # Use the depends_on meta-argument to handle hidden resource dependencies that Terraform can't automatically infer.
-  # Explicitly specifying a dependency is only necessary when a resource relies on some other resource's behavior but doesn't access any of that resource's data in its arguments.
-  depends_on = [module.ec2_setup]
-  // copy cwagent config to the instance
-  provisioner "file" {
-    content = data.template_file.cwagent_config.rendered
-    destination = local.ami_family["soaking_cwagent_config_destination"]
-
-    connection {
-      type = local.connection_type
-      user = local.login_user
-      private_key = local.connection_type == "ssh" ? module.ec2_setup.private_key: null
-      password = local.connection_type == "winrm" ? rsadecrypt(module.ec2_setup.instance_password_data, module.ec2_setup.private_key) : null
-      host = module.ec2_setup.collector_instance_public_ip
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      local.ami_family["cwagent_download_command"],
-      local.ami_family["cwagent_install_command"],
-      local.ami_family["cwagent_start_command"]
-    ]
-
-    connection {
-      type = local.connection_type
-      user = local.login_user
-      private_key = local.connection_type == "ssh" ? module.ec2_setup.private_key : null
-      password = local.connection_type == "winrm" ? rsadecrypt(module.ec2_setup.instance_password_data, module.ec2_setup.private_key) : null
-      host = module.ec2_setup.collector_instance_public_ip
-    }
-  }
-}
 
 # create alarm
 ## create cloudwatch alarm base on the metrics emitted by cwagent
 # wait 2 minute for the metrics to be available on cloudwatch
 resource "time_sleep" "wait_2_minutes" {
-  depends_on = [null_resource.install_cwagent]
-
   create_duration = "120s"
 }
+
 # cpu alarm
 resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
   depends_on = [time_sleep.wait_2_minutes]
