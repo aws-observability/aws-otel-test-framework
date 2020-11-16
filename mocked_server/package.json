@@ -9,7 +9,6 @@
   "author": "Ying",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1",
-    "grpc-express": "^1.0.0-beta"
+    "express": "^4.17.1"
   }
 }
