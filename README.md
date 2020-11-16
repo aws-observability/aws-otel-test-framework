@@ -5,6 +5,8 @@ The integration test workflow will generate traffic and send it through the coll
 
 Before adding a new component into AWS Otel Collector, we require contributors to add related end-to-end test cases. 
 
+feel free to ask questions in [gitter](https://gitter.im/aws-observability-aws-otel-test-framework/community)
+
 ## 1. Quick Start
 
 1. Clone this repo:
