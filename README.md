@@ -43,7 +43,7 @@ You will need to create a sub folder under [the testcase directory](https://gith
 you will need to place files as following (please use the same filenames as below):
 
 1. `otconfig.tpl`: which contains the new component, will be used as the config in all types of e2etests. 
-2. [optional] `parameters.tfvars`: you can override the default parameters in the framework with adding `-var-file=../testcases/yourtestcase/parameters.tfvars` to the terraform command. [The parameters you can override](terraform/README.md).
+2. [optional] `parameters.tfvars`: you can override the default parameters in the framework with adding `-var-file=../testcases/yourtestcase/parameters.tfvars` to the terraform command. [The parameters you can override](terraform/common.tf).
 
 #### 2.1.1 Add a test case for a new exporter/processor
 
@@ -71,14 +71,15 @@ We require every test case only cover one pipeline [one receiver to one exporter
 In the PR you create in [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector) to build the new component,
 [link your testcase](https://github.com/aws-observability/aws-otel-collector/blob/main/e2etest/testcases.json).
 
-When you link your testcase, there are five types of testing platforms you can choose from:
+When you link your testcase, there are six types of testing platforms you can choose from:
 * LOCAL, which will run the test in the pr workflow. 
 * EC2, which will run the test in the main branch workflow under an ec2 instance.
 * ECS, which will run the test in the main branch workflow under an ecs cluster.
 * EKS, which will run the test in the main branch workflow under an eks/k8s cluster.
 * SOAKING, which will run every night, and perform high throughput to your test case and monitor the resource usages.
+* NEG-SOAKING, which will run every night, and perform high throughput to your test case with false endpoint and monitor the resource usages.
 
-Typically, we require the new components to be tested on all platforms for all the test cases. If you find that the current test case options can't fulfill your testing requirement, feel free to open an issue for further discussion.
+Typically, we require the new components to be tested on types. If you find that the current test case options can't fulfill your testing requirement, feel free to open an issue for further discussion.
 
 ## 3. Run test cases in AWS platform
 
