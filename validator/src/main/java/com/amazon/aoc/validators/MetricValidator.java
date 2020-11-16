@@ -86,8 +86,10 @@ public class MetricValidator implements IValidator {
           log.info("check if all the expected metrics are found");
           compareMetricLists(expectedMetricList, metricList);
 
-          log.info("check if there're unexpected additional metric getting fetched");
-          compareMetricLists(metricList, expectedMetricList);
+          if (!context.isCanary()) {
+            log.info("check if there're unexpected additional metric getting fetched");
+            compareMetricLists(metricList, expectedMetricList);
+          }
         });
 
     log.info("finish metric validation");

@@ -20,13 +20,24 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ECSContext;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.validators.ValidatorFactory;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
+import com.amazonaws.services.cloudwatch.model.Dimension;
+import com.amazonaws.services.cloudwatch.model.MetricDatum;
+import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
+import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
+import com.amazonaws.services.cloudwatch.model.StandardUnit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
 
+import java.awt.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 @CommandLine.Command(name = "e2etest", mixinStandardHelpOptions = true, version = "1.0")
 @Log4j2
@@ -63,6 +74,11 @@ public class App implements Callable<Integer> {
       description = "the cloudwatch alarm names")
   private List<String> alarmNameList;
 
+  @CommandLine.Option(
+          names = {"--canary"},
+          defaultValue = "false")
+  private boolean isCanary;
+
   public static void main(String[] args) throws Exception {
     int exitCode = new CommandLine(new App()).execute(args);
     System.exit(exitCode);
@@ -70,8 +86,9 @@ public class App implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
+    Instant startTime = Instant.now();
     // build context
-    Context context = new Context(this.testingId, this.region);
+    Context context = new Context(this.testingId, this.region, this.isCanary);
     context.setMetricNamespace(this.metricNamespace);
     context.setEndpoint(this.endpoint);
     context.setEcsContext(buildECSContext(ecsContexts));
@@ -79,15 +96,45 @@ public class App implements Callable<Integer> {
 
     log.info(context);
 
+    final AmazonCloudWatch cw = AmazonCloudWatchClientBuilder.defaultClient();
+    Dimension dimension = new Dimension().withName("TestingID").withValue(this.testingId);
+
     // load config
     List<ValidationConfig> validationConfigList =
         new ConfigLoadHelper().loadConfigFromFile(configPath);
 
     // run validation
+    int maxValidationCycles = 1;
     ValidatorFactory validatorFactory = new ValidatorFactory(context);
-    for (ValidationConfig validationConfigItem : validationConfigList) {
-      validatorFactory.launchValidator(validationConfigItem).validate();
+    if (this.isCanary) {
+      maxValidationCycles = 30;
     }
+    for (int cycle = 0; cycle < maxValidationCycles; cycle++) {
+      for (ValidationConfig validationConfigItem : validationConfigList) {
+        try {
+          validatorFactory.launchValidator(validationConfigItem).validate();
+        } catch (Exception e) {
+          //output metric
+          MetricDatum datum = new MetricDatum().withMetricName("Success").withUnit(StandardUnit.None).withValue(0.0).withDimensions(dimension);
+          PutMetricDataRequest request = new PutMetricDataRequest()
+                  .withNamespace("Otel/Canary")
+                  .withMetricData(datum);
+          cw.putMetricData(request);
+          throw e;
+        }
+      }
+      log.info("Completed one validation cycle {} for current canary test. Still need to validate {} cycles. Sleep 1 minute then proceed.", cycle + 1, maxValidationCycles - cycle - 1);
+      TimeUnit.MINUTES.sleep(1);
+    }
+    Instant endTime = Instant.now();
+    Duration duration = Duration.between(startTime, endTime);
+    log.info("Validation has completed in {} minutes.", duration.toMinutes());
+    //output metric
+    MetricDatum datum = new MetricDatum().withMetricName("Success").withUnit(StandardUnit.None).withValue(1.0).withDimensions(dimension);
+    PutMetricDataRequest request = new PutMetricDataRequest()
+            .withNamespace("Otel/Canary")
+            .withMetricData(datum);
+    cw.putMetricData(request);
     return null;
   }
 
