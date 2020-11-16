@@ -37,7 +37,12 @@ terraform destroy
 
 ## 2. How to add a new test case?
 
-### 2.1 Define test case
+You will need to submit two PRs, one to add test case in testing framework, another one to link test case in collector repo.
+
+* [Example PR to add test case](https://github.com/aws-observability/aws-otel-test-framework/pull/90)
+* [Example PR to link test case](https://github.com/aws-observability/aws-otel-collector/pull/124)
+
+### 2.1 Define test case 
 
 We define all the test cases under [the testcase directory](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases), and each sub folder will be treated as a test case. 
 
