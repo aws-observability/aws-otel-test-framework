@@ -41,6 +41,9 @@ module "ec2_setup" {
 
   # negative soaking
   mock_endpoint = var.negative_soaking ? "http://127.0.0.2" : "mocked-server/put-data"
+
+  # install cwagent
+  install_cwagent = true
 }
 
 locals {
