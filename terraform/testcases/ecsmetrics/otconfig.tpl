@@ -46,6 +46,8 @@ exporters:
   awsemf:
     namespace: '${otel_service_namespace}/${otel_service_name}'
     region: '${region}'
+    resource_to_telemetry_conversion:
+      enabled: true
 
 service:
   pipelines:
