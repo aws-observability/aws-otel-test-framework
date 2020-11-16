@@ -257,6 +257,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
 
 ## install cwagent on the instance to collect metric from otel-collector
 data "template_file" "cwagent_config" {
+  count = var.install_cwagent ? 1 : 0
   template = file(local.ami_family["soaking_cwagent_config"])
 
   vars = {
@@ -272,7 +273,7 @@ resource "null_resource" "install_cwagent" {
   depends_on = [null_resource.start_collector]
   // copy cwagent config to the instance
   provisioner "file" {
-    content = data.template_file.cwagent_config.rendered
+    content = data.template_file.cwagent_config[0].rendered
     destination = local.ami_family["soaking_cwagent_config_destination"]
 
     connection {
