@@ -13,35 +13,9 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-## right now there's no good way to share variables across modules,
-## so we have to define some of the common vars like region, otconfig_path in each module
-variable "region" {
-  default = "us-west-2"
-}
-
-variable "validation_config" {
-  default = "default-mocked-server-validation.yml"
-}
-
-# set this option to false will disable validator to call the sample app
-# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
-variable "sample_app_callable" {
-  default = true
-}
-
-variable "testcase" {
-  default = "../testcases/otlp_mock"
-}
-
 variable "collector_repo_path" {
   default = "../../../aws-otel-collector"
 }
 
-variable "sample_app_image" {
-  default = ""
-}
-variable "sample_app" {
-  default = "spark"
-}
 
 

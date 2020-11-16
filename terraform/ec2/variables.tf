@@ -20,45 +20,16 @@ variable "package_s3_bucket" {
   default = "aws-otel-collector-test"
 }
 
-variable "aoc_version" {
-  default = "v0.3.0-346703560"
-}
-
-variable "region" {
-  default = "us-west-2"
-}
-
 variable "testing_ami" {
   default = "amazonlinux2"
-}
-
-variable "validation_config" {
-  default = "default-mocked-server-validation.yml"
 }
 
 variable "soaking_metric_namespace" {
   default = "AWSOtelCollector/IntegTest"
 }
 
-variable "testcase" {
-  default = "../testcases/otlp_mock"
-}
-
 variable "soaking_compose_file" {
   default = ""
-}
-
-## mocked server related
-variable "mocked_server_image" {
-  default = ""
-}
-
-variable "sample_app_image" {
-  default = ""
-}
-
-variable "sample_app" {
-  default = "spark"
 }
 
 ######################
@@ -85,12 +56,4 @@ variable "skip_validation" {
 
 variable "mock_endpoint" {
   default = "mocked-server/put-data"
-}
-
-variable "aws_access_key_id" {
-  default = ""
-}
-
-variable "aws_secret_access_key" {
-  default = ""
 }
