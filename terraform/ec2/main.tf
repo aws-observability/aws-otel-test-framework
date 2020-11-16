@@ -255,6 +255,52 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
   }
 }
 
+## install cwagent on the instance to collect metric from otel-collector
+data "template_file" "cwagent_config" {
+  template = file(local.ami_family["soaking_cwagent_config"])
+
+  vars = {
+    soaking_metric_namespace = var.soaking_metric_namespace
+  }
+}
+
+# install cwagent
+resource "null_resource" "install_cwagent" {
+  count = var.install_cwagent ? 1 : 0
+  # Use the depends_on meta-argument to handle hidden resource dependencies that Terraform can't automatically infer.
+  # Explicitly specifying a dependency is only necessary when a resource relies on some other resource's behavior but doesn't access any of that resource's data in its arguments.
+  depends_on = [null_resource.start_collector]
+  // copy cwagent config to the instance
+  provisioner "file" {
+    content = data.template_file.cwagent_config.rendered
+    destination = local.ami_family["soaking_cwagent_config_destination"]
+
+    connection {
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem: null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      host = aws_instance.aoc.public_ip
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      local.ami_family["cwagent_download_command"],
+      local.ami_family["cwagent_install_command"],
+      local.ami_family["cwagent_start_command"]
+    ]
+
+    connection {
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem: null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      host = aws_instance.aoc.public_ip
+    }
+  }
+}
+
 ##########################################
 # Validation
 ##########################################

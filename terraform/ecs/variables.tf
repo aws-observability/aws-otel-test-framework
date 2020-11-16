@@ -13,54 +13,11 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-variable "region" {
-  default = "us-west-2"
-}
-
 variable "ecs_launch_type" {
   default = "EC2"
 }
 
-variable "aoc_image_repo" {
-  default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/aws/aws-otel-collector"
-}
-
-variable "aoc_version" {
-  default = "v0.3.0-346703560"
-}
-
-variable "validation_config" {
-  default = "default-mocked-server-validation.yml"
-}
-
-# set this option to false will disable validator to call the sample app
-# in some cases, it's needed, for example, ecsmetric receiver collect metric automatically even without data emitter
 variable "sample_app_callable" {
   default = true
-}
-
-variable "testcase" {
-  default = "../testcases/otlp_mock"
-}
-
-## mocked server related
-variable "mocked_server_image" {
-  default = ""
-}
-
-variable "sample_app_image" {
-  default = ""
-}
-
-variable "sample_app" {
-  default = "spark"
-}
-
-variable "aws_access_key_id" {
-  default = ""
-}
-
-variable "aws_secret_access_key" {
-  default = ""
 }
 
