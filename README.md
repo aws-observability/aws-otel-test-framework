@@ -1,21 +1,18 @@
 # AOT Testing Framework
-This project is a testing framework which could be used in both Otel SDK and AWS Otel Collector repo. 
 
-Before adding a new component into AWS Otel Collector, we require contributors to add related end-to-end test cases. 
+Before adding a new component into AWS Otel Collector, we require contributors to add related end-to-end test cases, this project is a testing framework which helps contributors to easily add testing into AWS Otel Collector. 
 
-feel free to ask questions on [gitter](https://gitter.im/aws-observability-aws-otel-test-framework/community)
+* Contributors won't need to run the test locally to provide the testing result, instead, just define it. The test case will be automatically picked by the github workflow in AWS Otel Collector repo to run integration test and soaking test on different platforms. We will notify contributors if a certain test case is failed.
 
-## 1. Two PRs to contribute your component to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector)
-
-Contributors are required to define related test cases in order to building the component into AWS Otel Collector. 
-
-* Contributors won't need to run the test case locally to provide the testing result, instead, just define it. The test case will be automatically picked by the github workflow in AWS Otel Collector repo to run integration test and soaking test on different platforms. We will notify contributors if a certain test case is failed.
-
-* Contributors won't need to build the validation logic for their own backends. We use our own version of [mocked back end](terraform/mocked_server) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy. 
+* Contributors won't need to build the validation logic for their own backends. We use our own version of [mocked back end](terraform/mocked_server) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy. [The mechanism of testing framework](docs/mechanism-of-testing-framework.md)
 
 * Contributors won't need to define different test cases for different platforms. The point is, one test case for multiple types of tests including integration test and soaking test. 
 
-Below are the steps. 
+Any questions could be asked on [gitter](https://gitter.im/aws-observability-aws-otel-test-framework/community)
+
+## 1. Two PRs to contribute your component to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector)
+
+Below are the steps to add a new component to AWS Otel Collector. 
 
 ### 1.1 Create a PR to Define test case in testing framework Repo
 
