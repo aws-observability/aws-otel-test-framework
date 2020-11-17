@@ -12,7 +12,7 @@ Any questions could be asked on [gitter](https://gitter.im/aws-observability-aws
 
 ## 1. Two PRs to contribute your component to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector)
 
-Below are the steps to add a new component to AWS Otel Collector. 
+Below are the steps to add a new component to AWS Otel Collector. Before doing this, please ensure your component is already merged into [opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib)
 
 ### 1.1 Create a PR to Define test case in testing framework Repo
 
