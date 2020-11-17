@@ -2,7 +2,6 @@
   "name": "aws-otel-integ-test",
   "fault": false,
   "error": false,
-  "throttle": false,
   "http": {
     "request": {
       "url": "{{endpoint}}/aws-sdk-call",
@@ -14,8 +13,7 @@
   },
   "subsegments": [
     {
-      "error": false,
-      "throttle": false
+      "error": false
     }
   ]
 }]
