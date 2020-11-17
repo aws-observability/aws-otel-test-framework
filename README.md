@@ -11,7 +11,7 @@ Contributors are required to define related test cases in order to building the 
 
 * Contributors won't need to run the test case locally, instead, just define it. The test case will be automatically picked by the github workflow in AWS Otel Collector repo to run integration test and soaking test on different platforms.
 
-* Contributors won't need to build the validation logic for their own backends. We use our own version of mocked back end (http://%20https//github.com/aws-observability/aws-otel-test-framework/tree/terraform/mocked_server) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy.  
+* Contributors won't need to build the validation logic for their own backends. We use our own version of [mocked back end](terraform/mocked_server) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy.  
 
 Below are the steps. 
 
