@@ -17,7 +17,7 @@ Below are the steps.
 
 ### 1.1 Create a PR to Define test case in testing framework Repo
 
-[Example PR for http exporter]((https://github.com/aws-observability/aws-otel-test-framework/pull/90))
+[Example PR for http exporter](https://github.com/aws-observability/aws-otel-test-framework/pull/90)
 
 #### 1.1.1 create test case folder
 You will need to create a sub folder under [the testcase directory](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases).
