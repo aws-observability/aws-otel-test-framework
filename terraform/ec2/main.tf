@@ -242,7 +242,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       "sudo curl -L 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' -o /usr/local/bin/docker-compose",
       "sudo chmod +x /usr/local/bin/docker-compose",
       "sudo systemctl start docker",
-      "sudo docker run --rm -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password --region ${var.region} | sudo docker login --username AWS --password-stdin ${local.ecr_login_domain}",
+      "sudo docker run --rm amazon/aws-cli ecr get-login-password --region ${var.region} | sudo docker login --username AWS --password-stdin ${local.ecr_login_domain}",
       "sudo /usr/local/bin/docker-compose -f /tmp/docker-compose.yml up -d"
     ]
 
