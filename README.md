@@ -3,15 +3,17 @@ This project is a testing framework which could be used in both Otel SDK and AWS
 
 Before adding a new component into AWS Otel Collector, we require contributors to add related end-to-end test cases. 
 
-feel free to ask questions in [gitter](https://gitter.im/aws-observability-aws-otel-test-framework/community)
+feel free to ask questions on [gitter](https://gitter.im/aws-observability-aws-otel-test-framework/community)
 
 ## 1. Two PRs to contribute your component to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector)
 
 Contributors are required to define related test cases in order to building the component into AWS Otel Collector. 
 
-* Contributors won't need to run the test case locally, instead, just define it. The test case will be automatically picked by the github workflow in AWS Otel Collector repo to run integration test and soaking test on different platforms.
+* Contributors won't need to run the test case locally to provide the testing result, instead, just define it. The test case will be automatically picked by the github workflow in AWS Otel Collector repo to run integration test and soaking test on different platforms. We will notify contributors if a certain test case is failed.
 
-* Contributors won't need to build the validation logic for their own backends. We use our own version of [mocked back end](terraform/mocked_server) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy.  
+* Contributors won't need to build the validation logic for their own backends. We use our own version of [mocked back end](terraform/mocked_server) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy. 
+
+* Contributors won't need to define different test cases for different platforms. The point is, one test case for multiple types of tests including integration test and soaking test. 
 
 Below are the steps. 
 
@@ -74,7 +76,7 @@ You will need to add a block in the [testcases.json](https://github.com/aws-obse
 
 ## 2. Run testing framework
 
-If a certain test case is failed in the github workflow of AWS Otel Collector, you might need to debug the test case locally.
+If a certain test case is failed in the github workflow of AWS Otel Collector, you might need to debug the test case locally. 
 
 * [run the local test](docs/run-testing-framework.md#1-run-testing-framework-locally)
 * [run the ec2 test](docs/run-testing-framework.md#24-run-in-ec2-tbd)
