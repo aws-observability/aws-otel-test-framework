@@ -76,10 +76,10 @@ You will need to add a block in the [testcases.json](https://github.com/aws-obse
 
 If a certain test case is failed in the github workflow of AWS Otel Collector, you might need to debug the test case locally.
 
-* [run the local test](docs/run-testing-framework.md)
-* [run the ec2 test](docs/run-testing-framework.md)
-* [run the ecs test](docs/run-testing-framework.md)
-* [run the eks test](docs/run-testing-framework.md)
+* [run the local test](docs/run-testing-framework.md#1-run-testing-framework-locally)
+* [run the ec2 test](docs/run-testing-framework.md#24-run-in-ec2-tbd)
+* [run the ecs test](docs/run-testing-framework.md#22-run-in-ecs)
+* [run the eks test](docs/run-testing-framework.md#23-run-in-eks)
 * [run the soaking test](docs/run-testing-framework.md)
 * [run the negative soaking test](docs/run-testing-framework.md)
 
