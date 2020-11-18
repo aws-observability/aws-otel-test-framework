@@ -61,16 +61,7 @@ locals {
   ecr_login_domain = split("/", data.aws_ecr_repository.sample_app.repository_url)[0]
 }
 
-## get the ssh private key
-resource "tls_private_key" "ssh_key" {
-  algorithm   = "RSA"
-  rsa_bits    = 4096
-}
 
-resource "aws_key_pair" "aws_ssh_key" {
-  key_name = "testing-${module.common.testing_id}"
-  public_key = tls_private_key.ssh_key.public_key_openssh
-}
 
 ## launch a sidecar instance to install data emitter and the mocked server
 resource "aws_instance" "sidecar" {
@@ -80,7 +71,7 @@ resource "aws_instance" "sidecar" {
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
-  key_name                    = aws_key_pair.aws_ssh_key.key_name
+  key_name                    = local.ssh_key_name
 
 }
 
@@ -92,7 +83,7 @@ resource "aws_instance" "aoc" {
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
-  key_name                    = aws_key_pair.aws_ssh_key.key_name
+  key_name                    = local.ssh_key_name
   get_password_data = local.connection_type == "winrm" ? true : null
   user_data = local.user_data
 
@@ -114,7 +105,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
     connection {
       type = local.connection_type
       user = local.login_user
-      password = rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem)
+      password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
       host = aws_instance.aoc.public_ip
     }
   }
@@ -128,7 +119,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
     connection {
       type = local.connection_type
       user = local.login_user
-      password = rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem)
+      password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
       host = aws_instance.aoc.public_ip
     }
   }
@@ -143,8 +134,8 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -161,7 +152,7 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = tls_private_key.ssh_key.private_key_pem
+      private_key = local.private_key_content
       host = aws_instance.aoc.public_ip
     }
   }
@@ -179,8 +170,8 @@ resource "null_resource" "start_collector" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -195,8 +186,8 @@ resource "null_resource" "start_collector" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -233,7 +224,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
     connection {
       type = "ssh"
       user = "ec2-user"
-      private_key = tls_private_key.ssh_key.private_key_pem
+      private_key = local.private_key_content
       host = aws_instance.sidecar.public_ip
     }
   }
@@ -249,7 +240,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
     connection {
       type = "ssh"
       user = "ec2-user"
-      private_key = tls_private_key.ssh_key.private_key_pem
+      private_key = local.private_key_content
       host = aws_instance.sidecar.public_ip
     }
   }
@@ -279,8 +270,8 @@ resource "null_resource" "install_cwagent" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem: null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content: null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -295,8 +286,8 @@ resource "null_resource" "install_cwagent" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem: null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content: null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }

@@ -44,6 +44,11 @@ module "ec2_setup" {
 
   # install cwagent
   install_cwagent = true
+
+  # use our own ssh key name
+  ssh_key_name = "aoc-ssh-key-2020-07-22"
+  sshkey_s3_bucket = "aoc-ssh-key"
+  sshkey_s3_private_key = "aoc-ssh-key-2020-07-22.pem"
 }
 
 locals {
@@ -60,13 +65,14 @@ locals {
 # create alarm
 ## create cloudwatch alarm base on the metrics emitted by cwagent
 # wait 2 minute for the metrics to be available on cloudwatch
-resource "time_sleep" "wait_2_minutes" {
+resource "time_sleep" "wait_until_metric_appear" {
   create_duration = "120s"
+  depends_on = [module.ec2_setup]
 }
 
 # cpu alarm
 resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
-  depends_on = [time_sleep.wait_2_minutes]
+  depends_on = [time_sleep.wait_until_metric_appear]
   alarm_name = "otel-soaking-cpu-alarm-${module.common.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 2
@@ -87,7 +93,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
       dimensions = {
         InstanceId = module.ec2_setup.collector_instance_id
         exe = "aws-otel-collector"
-        process_name = "aws-otel-collector"
+        process_name = local.ami_family["soaking_process_name"]
       }
     }
   }
@@ -95,7 +101,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
 
 # mem alarm
 resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
-  depends_on = [time_sleep.wait_2_minutes]
+  depends_on = [time_sleep.wait_until_metric_appear]
   alarm_name = "otel-soaking-mem-alarm-${module.common.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 2
@@ -124,6 +130,11 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
 ##########################################
 # Validation
 ##########################################
+resource "time_sleep" "wait_until_metric_is_sufficient" {
+  create_duration = "600s"
+  depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm, aws_cloudwatch_metric_alarm.mem_alarm]
+}
+
 module "validator" {
   source = "../validation"
 
@@ -136,7 +147,7 @@ module "validator" {
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
-  depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm, aws_cloudwatch_metric_alarm.mem_alarm]
+  depends_on = [time_sleep.wait_until_metric_is_sufficient]
 }
 
 output "collector_instance" {

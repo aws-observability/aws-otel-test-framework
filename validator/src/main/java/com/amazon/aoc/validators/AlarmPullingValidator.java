@@ -58,10 +58,11 @@ public class AlarmPullingValidator implements IValidator {
           // check the status of the alarms, exit if one of them is alarming
           for (MetricAlarm metricAlarm : alarmList) {
             log.info(metricAlarm.getStateValue());
-            if (metricAlarm.getStateValue().equals("ALARM")) {
+            if (!metricAlarm.getStateValue().equals("OK")) {
               log.error(
-                  "alarm {} is alarming, metric is {}, failing to bake",
+                  "alarm {} is alarming, status is {}, metric is {}, failing to bake",
                   metricAlarm.getAlarmName(),
+                  metricAlarm.getStateValue(),
                   metricAlarm.getMetrics());
               System.exit(1);
             }
