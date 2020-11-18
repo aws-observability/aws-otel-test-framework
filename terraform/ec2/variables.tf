@@ -57,3 +57,17 @@ variable "mock_endpoint" {
 variable "install_cwagent" {
   default = false
 }
+
+# if ssh_key_name is empty, we create private key every time we create instance.
+# if not, we pull the private key from s3.
+variable "ssh_key_name" {
+  default = ""
+}
+
+variable "sshkey_s3_bucket" {
+  default = ""
+}
+
+variable "sshkey_s3_private_key" {
+  default = ""
+}

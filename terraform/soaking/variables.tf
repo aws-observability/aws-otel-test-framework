@@ -38,3 +38,7 @@ variable "testing_ami" {
 variable "negative_soaking" {
   default = false
 }
+
+variable "ssh_key_name" {
+  default = "aoc-ssh-key-2020-07-22"
+}
