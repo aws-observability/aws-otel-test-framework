@@ -109,7 +109,7 @@ locals {
   eks_pod_config = yamldecode(data.template_file.eksconfig.rendered)["sample_app"]
 }
 
-# deploy aoc and sample app
+# deploy aoc
 resource "kubernetes_deployment" "aoc_deployment" {
   metadata {
     name = "aoc"
@@ -151,20 +151,6 @@ resource "kubernetes_deployment" "aoc_deployment" {
           }
         }
 
-        container {
-          name = "mocked-server"
-          image = local.mocked_server_image
-
-          readiness_probe {
-            http_get {
-              path = "/"
-              port = 8080
-            }
-            initial_delay_seconds = 10
-            period_seconds = 5
-          }
-        }
-
         # aoc
         container {
           name = "aoc"
@@ -189,6 +175,91 @@ resource "kubernetes_deployment" "aoc_deployment" {
             name = "mocked-server-cert"
           }
         }
+      }
+    }
+  }
+}
+
+# create service upon AOC (GRPC port)
+# NOTE: we have to create a service for each port protocol type because
+# Kubernetes does not support mixed protocols: https://github.com/kubernetes/kubernetes/pull/64471.
+resource "kubernetes_service" "aoc_grpc_service" {
+  metadata {
+    name = "aoc-grpc"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+  spec {
+    selector = {
+      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
+    }
+
+    port {
+      port = module.common.grpc_port
+      target_port = module.common.grpc_port
+      protocol = "TCP"
+    }
+  }
+}
+
+# create service upon AOC (UDP port)
+resource "kubernetes_service" "aoc_udp_service" {
+  metadata {
+    name = "aoc-udp"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+  spec {
+    selector = {
+      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
+    }
+
+    port {
+      port = module.common.udp_port
+      target_port = module.common.udp_port
+      protocol = "UDP"
+    }
+  }
+}
+
+# deploy sample app
+resource "kubernetes_deployment" "sample_app_deployment" {
+  metadata {
+    name = "sample-app"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    labels = {
+      app = "sample-app"
+    }
+  }
+
+  spec {
+    replicas = 1
+
+    selector {
+      match_labels = {
+        app = "sample-app"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "sample-app"
+        }
+      }
+
+      spec {
+        container {
+          name = "mocked-server"
+          image = local.mocked_server_image
+
+          readiness_probe {
+            http_get {
+              path = "/"
+              port = 8080
+            }
+            initial_delay_seconds = 10
+            period_seconds = 5
+          }
+        }
 
         # sample app
         container {
@@ -201,12 +272,12 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
           env {
             name = "OTEL_EXPORTER_OTLP_ENDPOINT"
-            value = "127.0.0.1:55680"
+            value = "${kubernetes_service.aoc_grpc_service.metadata[0].name}:${module.common.grpc_port}"
           }
 
           env {
             name = "AWS_XRAY_DAEMON_ADDRESS"
-            value = "127.0.0.1:${module.common.udp_port}"
+            value = "${kubernetes_service.aoc_udp_service.metadata[0].name}:${module.common.udp_port}"
           }
 
           env {
@@ -254,12 +325,12 @@ resource "kubernetes_deployment" "aoc_deployment" {
 # create service upon the sample app
 resource "kubernetes_service" "sample_app_service" {
   metadata {
-    name = "aoc"
+    name = "sample-app"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
-      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
+      app = kubernetes_deployment.sample_app_deployment.metadata[0].labels.app
     }
 
     type = "LoadBalancer"
@@ -279,7 +350,7 @@ resource "kubernetes_service" "mocked_server_service" {
   }
   spec {
     selector = {
-      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
+      app = kubernetes_deployment.sample_app_deployment.metadata[0].labels.app
     }
 
     type = "LoadBalancer"
