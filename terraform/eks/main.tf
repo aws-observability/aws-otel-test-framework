@@ -109,7 +109,7 @@ locals {
   eks_pod_config = yamldecode(data.template_file.eksconfig.rendered)["sample_app"]
 }
 
-# deploy aoc
+# deploy aoc and mocked server
 resource "kubernetes_deployment" "aoc_deployment" {
   metadata {
     name = "aoc"
@@ -151,6 +151,20 @@ resource "kubernetes_deployment" "aoc_deployment" {
           }
         }
 
+        container {
+          name = "mocked-server"
+          image = local.mocked_server_image
+
+          readiness_probe {
+            http_get {
+              path = "/"
+              port = 8080
+            }
+            initial_delay_seconds = 10
+            period_seconds = 5
+          }
+        }
+
         # aoc
         container {
           name = "aoc"
@@ -176,6 +190,26 @@ resource "kubernetes_deployment" "aoc_deployment" {
           }
         }
       }
+    }
+  }
+}
+
+# create service upon the mocked server
+resource "kubernetes_service" "mocked_server_service" {
+  metadata {
+    name = "mocked-server"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+  spec {
+    selector = {
+      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
+    }
+
+    type = "LoadBalancer"
+
+    port {
+      port = 80
+      target_port = 8080
     }
   }
 }
@@ -247,20 +281,6 @@ resource "kubernetes_deployment" "sample_app_deployment" {
       }
 
       spec {
-        container {
-          name = "mocked-server"
-          image = local.mocked_server_image
-
-          readiness_probe {
-            http_get {
-              path = "/"
-              port = 8080
-            }
-            initial_delay_seconds = 10
-            period_seconds = 5
-          }
-        }
-
         # sample app
         container {
           name = "sample-app"
@@ -338,26 +358,6 @@ resource "kubernetes_service" "sample_app_service" {
     port {
       port = module.common.sample_app_lb_port
       target_port = module.common.sample_app_listen_address_port
-    }
-  }
-}
-
-# create service upon the mocked server
-resource "kubernetes_service" "mocked_server_service" {
-  metadata {
-    name = "mocked-server"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
-  }
-  spec {
-    selector = {
-      app = kubernetes_deployment.sample_app_deployment.metadata[0].labels.app
-    }
-
-    type = "LoadBalancer"
-
-    port {
-      port = 80
-      target_port = 8080
     }
   }
 }
