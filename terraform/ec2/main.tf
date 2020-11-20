@@ -72,6 +72,9 @@ resource "aws_instance" "sidecar" {
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
+  tags = {
+    Name = "Integ-test-Sample-App"
+  }
 
 }
 
@@ -86,6 +89,10 @@ resource "aws_instance" "aoc" {
   key_name                    = local.ssh_key_name
   get_password_data = local.connection_type == "winrm" ? true : null
   user_data = local.user_data
+
+  tags = {
+    Name = "Integ-test-aoc"
+  }
 
 }
 
