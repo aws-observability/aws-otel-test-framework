@@ -105,7 +105,7 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
   alarm_name = "otel-soaking-mem-alarm-${module.common.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 5
-  threshold = "300000000"
+  threshold = "4000000000"
 
   metric_query {
     id = "mem"
