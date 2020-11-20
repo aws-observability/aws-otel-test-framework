@@ -75,8 +75,8 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
   depends_on = [time_sleep.wait_until_metric_appear]
   alarm_name = "otel-soaking-cpu-alarm-${module.common.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods = 2
-  threshold = "50"
+  evaluation_periods = 5
+  threshold = "200"
 
   metric_query {
     id = "cpu"
@@ -104,8 +104,8 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
   depends_on = [time_sleep.wait_until_metric_appear]
   alarm_name = "otel-soaking-mem-alarm-${module.common.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods = 2
-  threshold = "300000000"
+  evaluation_periods = 5
+  threshold = "4000000000"
 
   metric_query {
     id = "mem"
