@@ -90,6 +90,9 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
         InstanceId = module.ec2_setup.collector_instance_id
         exe = "aws-otel-collector"
         process_name = local.ami_family["soaking_process_name"]
+        testing_id = module.ec2_setup.testing_id
+        testcase = split("/", var.testcase)[2]
+        testing_ami = var.testing_ami
       }
     }
   }
@@ -118,6 +121,35 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
         InstanceId = module.ec2_setup.collector_instance_id
         exe = "aws-otel-collector"
         process_name = local.ami_family["soaking_process_name"]
+        testing_id = module.ec2_setup.testing_id
+        testcase = split("/", var.testcase)[2]
+        testing_ami = var.testing_ami
+      }
+    }
+  }
+}
+
+# incoming packets alarm on the sidecar instance where the mock server is receiving data
+resource "aws_cloudwatch_metric_alarm" "incoming_packets" {
+  depends_on = [time_sleep.wait_until_metric_appear]
+  alarm_name = "otel-soaking-incoming-bytes-alarm-${module.ec2_setup.testing_id}"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods = 2
+  threshold = "100"
+
+  metric_query {
+    id = "incoming_bytes"
+    return_data = true
+
+    metric {
+      metric_name = "NetworkPacketsIn"
+      namespace = "AWS/EC2"
+      period = 60
+      stat = "Average"
+
+      # use this dimension to identify each test
+      dimensions = {
+        InstanceId = module.ec2_setup.sample_app_instance_id
       }
     }
   }
@@ -128,7 +160,7 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
 ##########################################
 resource "time_sleep" "wait_until_metric_is_sufficient" {
   create_duration = "600s"
-  depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm, aws_cloudwatch_metric_alarm.mem_alarm]
+  depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm, aws_cloudwatch_metric_alarm.mem_alarm, aws_cloudwatch_metric_alarm.incoming_packets]
 }
 
 module "validator" {
@@ -139,6 +171,7 @@ module "validator" {
   testing_id = module.ec2_setup.testing_id
   cpu_alarm = aws_cloudwatch_metric_alarm.cpu_alarm.alarm_name
   mem_alarm = aws_cloudwatch_metric_alarm.mem_alarm.alarm_name
+  incoming_packets_alarm = aws_cloudwatch_metric_alarm.incoming_packets.alarm_name
 
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
