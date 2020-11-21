@@ -16,10 +16,6 @@ provider "aws" {
   region  = var.region
 }
 
-module "common" {
-  source = "../common"
-}
-
 # launch ec2
 module "ec2_setup" {
   source = "../ec2"
@@ -73,7 +69,7 @@ resource "time_sleep" "wait_until_metric_appear" {
 # cpu alarm
 resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
   depends_on = [time_sleep.wait_until_metric_appear]
-  alarm_name = "otel-soaking-cpu-alarm-${module.common.testing_id}"
+  alarm_name = "otel-soaking-cpu-alarm-${module.ec2_setup.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 5
   threshold = "200"
@@ -102,7 +98,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
 # mem alarm
 resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
   depends_on = [time_sleep.wait_until_metric_appear]
-  alarm_name = "otel-soaking-mem-alarm-${module.common.testing_id}"
+  alarm_name = "otel-soaking-mem-alarm-${module.ec2_setup.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 5
   threshold = "4000000000"
@@ -140,7 +136,7 @@ module "validator" {
 
   validation_config = "alarm-pulling-validation.yml"
   region = var.region
-  testing_id = module.common.testing_id
+  testing_id = module.ec2_setup.testing_id
   cpu_alarm = aws_cloudwatch_metric_alarm.cpu_alarm.alarm_name
   mem_alarm = aws_cloudwatch_metric_alarm.mem_alarm.alarm_name
 

@@ -66,7 +66,7 @@ locals {
 ## launch a sidecar instance to install data emitter and the mocked server
 resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.suse.id
-  instance_type               = "t2.micro"
+  instance_type               = "m5.2xlarge"
   subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
@@ -260,6 +260,7 @@ data "template_file" "cwagent_config" {
 
   vars = {
     soaking_metric_namespace = var.soaking_metric_namespace
+    testing_id = module.common.testing_id
   }
 }
 
