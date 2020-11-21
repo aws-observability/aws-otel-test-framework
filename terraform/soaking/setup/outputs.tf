@@ -13,37 +13,34 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-variable "testing_ami" {
+output "ami_family" {
+  value = var.ami_family[var.amis[var.testing_ami]["family"]]
 }
 
-variable "soaking_data_emitter_image" {
-  default = "aottestbed/aws-otel-load-generator:v0.1.0"
+output "collector_instance_public_ip" {
+  value = module.ec2_setup.collector_instance_public_ip
 }
 
-# data type will be emitted. Possible values: metric or trace
-variable "soaking_data_mode" {
-  default = "metric"
+output "collector_instance_id" {
+  value = module.ec2_setup.collector_instance_id
 }
 
-# data points emitted per second
-variable "soaking_data_rate" {
-  default = 1000
+output "sample_app_instance_public_ip" {
+  value = module.ec2_setup.sample_app_instance_public_ip
 }
 
-# data model type. possible values: otlp, xray, etc
-variable "soaking_data_type" {
-  default = "otlp"
+output "testing_id" {
+  value = module.ec2_setup.testing_id
 }
 
-variable "negative_soaking" {
-  default = false
+output "negative_soaking" {
+  value = var.negative_soaking
 }
 
-variable "ssh_key_name" {
-  default = "aoc-ssh-key-2020-07-22"
+output "commit_id" {
+  value = var.commit_id
 }
 
-# this commit id will be used as a dimension so that we can track metrics
-variable "commit_id" {
-  default = "dummy_commit"
+output "launch_date" {
+  value = local.launch_date
 }

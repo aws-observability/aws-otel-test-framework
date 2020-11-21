@@ -52,31 +52,3 @@ module "ec2_setup" {
   launch_date = local.launch_date
   negative_soaking = var.negative_soaking
 }
-
-output "collector_instance_public_ip" {
-  value = module.ec2_setup.collector_instance_public_ip
-}
-
-output "collector_instance_id" {
-  value = module.ec2_setup.collector_instance_id
-}
-
-output "sample_app_instance_public_ip" {
-  value = module.ec2_setup.sample_app_instance_public_ip
-}
-
-output "testing_id" {
-  value = module.ec2_setup.testing_id
-}
-
-output "negative_soaking" {
-  value = var.negative_soaking
-}
-
-output "commit_id" {
-  value = var.commit_id
-}
-
-output "launch_date" {
-  value = local.launch_date
-}
