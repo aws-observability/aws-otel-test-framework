@@ -42,6 +42,7 @@ data "template_file" "docker_compose" {
     # alarm related
     cpu_alarm = var.cpu_alarm
     mem_alarm = var.mem_alarm
+    incoming_packets_alarm = var.incoming_packets_alarm
 
 
   }

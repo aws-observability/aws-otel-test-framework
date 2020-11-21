@@ -7,13 +7,6 @@
       "InstanceId": "$${aws:InstanceId}"
     },
     "metrics_collected": {
-      "netstat": {
-        "measurement": [
-            "tcp_time_wait",
-            "tcp_established",
-            "tcp_close_wait"
-        ]
-      },
       "procstat": [
         {
           "measurement": [
@@ -22,7 +15,9 @@
           ],
           "exe": "aws-otel-collector",
           "append_dimensions": {
-            "TestingId": "${testing_id}"
+            "testing_id": "${testing_id}",
+            "testcase": "${testcase}",
+            "testing_ami": "${testing_ami}"
           }
         }
       ]

@@ -58,6 +58,10 @@ variable "mem_alarm" {
   default = ""
 }
 
+variable "incoming_packets_alarm" {
+  default = ""
+}
+
 variable "aws_access_key_id" {
   default = ""
 }
