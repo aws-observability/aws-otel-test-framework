@@ -142,19 +142,19 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
 }
 
 # incoming packets alarm on the aoc instance to ensure the pressure
-resource "aws_cloudwatch_metric_alarm" "incoming_packets" {
+resource "aws_cloudwatch_metric_alarm" "incoming_bytes" {
   depends_on = [time_sleep.wait_until_metric_appear]
-  alarm_name = "otel-soaking-incoming-packets-alarm-${module.ec2_setup.testing_id}"
+  alarm_name = "otel-soaking-incoming-bytes-alarm-${module.ec2_setup.testing_id}"
   comparison_operator = "LessThanThreshold"
   evaluation_periods = 5
-  threshold = "130"
+  threshold = "10000" # bytes
 
   metric_query {
     id = "incoming_bytes"
     return_data = true
 
     metric {
-      metric_name = "NetworkPacketsIn"
+      metric_name = "NetworkIn"
       namespace = "AWS/EC2"
       period = 60
       stat = "Average"
@@ -172,7 +172,7 @@ resource "aws_cloudwatch_metric_alarm" "incoming_packets" {
 ##########################################
 resource "time_sleep" "wait_until_metric_is_sufficient" {
   create_duration = "600s"
-  depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm, aws_cloudwatch_metric_alarm.mem_alarm, aws_cloudwatch_metric_alarm.incoming_packets]
+  depends_on = [aws_cloudwatch_metric_alarm.cpu_alarm, aws_cloudwatch_metric_alarm.mem_alarm, aws_cloudwatch_metric_alarm.incoming_bytes]
 }
 
 module "validator" {
@@ -183,7 +183,7 @@ module "validator" {
   testing_id = module.ec2_setup.testing_id
   cpu_alarm = aws_cloudwatch_metric_alarm.cpu_alarm.alarm_name
   mem_alarm = aws_cloudwatch_metric_alarm.mem_alarm.alarm_name
-  incoming_packets_alarm = aws_cloudwatch_metric_alarm.incoming_packets.alarm_name
+  incoming_packets_alarm = aws_cloudwatch_metric_alarm.incoming_bytes.alarm_name
 
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
