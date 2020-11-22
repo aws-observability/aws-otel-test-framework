@@ -16,6 +16,9 @@ provider "aws" {
   region  = var.region
 }
 
+locals {
+  launch_date = formatdate("YYYY-MM-DD", timestamp())
+}
 # launch ec2
 module "ec2_setup" {
   source = "../ec2"
@@ -45,6 +48,11 @@ module "ec2_setup" {
   ssh_key_name = "aoc-ssh-key-2020-07-22"
   sshkey_s3_bucket = "aoc-ssh-key"
   sshkey_s3_private_key = "aoc-ssh-key-2020-07-22.pem"
+
+  # additional dimension
+  commit_id = var.commit_id
+  launch_date = local.launch_date
+  negative_soaking = var.negative_soaking
 }
 
 locals {
@@ -71,7 +79,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
   depends_on = [time_sleep.wait_until_metric_appear]
   alarm_name = "otel-soaking-cpu-alarm-${module.ec2_setup.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods = 2
+  evaluation_periods = 5
   threshold = "200"
 
   metric_query {
@@ -90,9 +98,11 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
         InstanceId = module.ec2_setup.collector_instance_id
         exe = "aws-otel-collector"
         process_name = local.ami_family["soaking_process_name"]
-        testing_id = module.ec2_setup.testing_id
         testcase = split("/", var.testcase)[2]
         testing_ami = var.testing_ami
+        launch_date = local.launch_date
+        commit_id = var.commit_id
+        negative_soaking = var.negative_soaking
       }
     }
   }
@@ -103,7 +113,7 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
   depends_on = [time_sleep.wait_until_metric_appear]
   alarm_name = "otel-soaking-mem-alarm-${module.ec2_setup.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods = 2
+  evaluation_periods = 5
   threshold = "4000000000"
 
   metric_query {
@@ -121,21 +131,23 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
         InstanceId = module.ec2_setup.collector_instance_id
         exe = "aws-otel-collector"
         process_name = local.ami_family["soaking_process_name"]
-        testing_id = module.ec2_setup.testing_id
         testcase = split("/", var.testcase)[2]
         testing_ami = var.testing_ami
+        launch_date = local.launch_date
+        commit_id = var.commit_id
+        negative_soaking = var.negative_soaking
       }
     }
   }
 }
 
-# incoming packets alarm on the sidecar instance where the mock server is receiving data
+# incoming packets alarm on the aoc instance to ensure the pressure
 resource "aws_cloudwatch_metric_alarm" "incoming_packets" {
   depends_on = [time_sleep.wait_until_metric_appear]
-  alarm_name = "otel-soaking-incoming-bytes-alarm-${module.ec2_setup.testing_id}"
+  alarm_name = "otel-soaking-incoming-packets-alarm-${module.ec2_setup.testing_id}"
   comparison_operator = "LessThanThreshold"
-  evaluation_periods = 2
-  threshold = "100"
+  evaluation_periods = 5
+  threshold = "130"
 
   metric_query {
     id = "incoming_bytes"
@@ -186,5 +198,4 @@ output "collector_instance" {
 output "sample_app_instance" {
   value = module.ec2_setup.sample_app_instance_public_ip
 }
-
 

@@ -42,3 +42,8 @@ variable "negative_soaking" {
 variable "ssh_key_name" {
   default = "aoc-ssh-key-2020-07-22"
 }
+
+# this commit id will be used as a dimension so that we can track metrics
+variable "commit_id" {
+  default = "dummy_commit"
+}

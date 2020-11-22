@@ -260,9 +260,11 @@ data "template_file" "cwagent_config" {
 
   vars = {
     soaking_metric_namespace = var.soaking_metric_namespace
-    testing_id = module.common.testing_id
     testcase = split("/", var.testcase)[2]
     testing_ami = var.testing_ami
+    commit_id = var.commit_id
+    launch_date = var.launch_date
+    negative_soaking = var.negative_soaking
   }
 }
 
