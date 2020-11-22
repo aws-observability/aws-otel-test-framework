@@ -15,9 +15,11 @@
           ],
           "exe": "aws-otel-collector",
           "append_dimensions": {
-            "testing_id": "${testing_id}",
+            "commit_id": "${commit_id}",
             "testcase": "${testcase}",
-            "testing_ami": "${testing_ami}"
+            "testing_ami": "${testing_ami}",
+            "launch_date": "${launch_date}",
+            "negative_soaking": "${negative_soaking}"
           }
         }
       ]
