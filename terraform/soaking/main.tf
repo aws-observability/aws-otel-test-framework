@@ -161,7 +161,7 @@ resource "aws_cloudwatch_metric_alarm" "incoming_bytes" {
 
       # use this dimension to identify each test
       dimensions = {
-        InstanceId = module.ec2_setup.sample_app_instance_id
+        InstanceId = module.ec2_setup.collector_instance_id
       }
     }
   }
