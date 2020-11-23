@@ -13,6 +13,17 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-variable "testing_ami" {
-  default = "soaking_linux"
+provider "aws" {
+  region  = var.region
+}
+
+module "common" {
+  source = "../common"
+}
+
+module "ec2_setup" {
+  source = "../ec2_setup"
+
+  testing_ami = var.testing_ami
+  soaking_data_rate = var.data_rate
 }

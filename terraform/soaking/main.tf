@@ -16,55 +16,18 @@ provider "aws" {
   region  = var.region
 }
 
-locals {
-  launch_date = formatdate("YYYY-MM-DD", timestamp())
-}
-# launch ec2
 module "ec2_setup" {
-  source = "../ec2"
+  source = "../ec2_setup"
 
-  ami_family = var.ami_family
-  amis = var.amis
   testing_ami = var.testing_ami
-  aoc_version = var.aoc_version
-  region = var.region
-  testcase = var.testcase
-  sample_app_image = var.soaking_data_emitter_image
-  skip_validation = true
-
-  # soaking test config
-  soaking_compose_file = "../templates/defaults/soaking_docker_compose.tpl"
-  soaking_data_mode = var.soaking_data_mode
-  soaking_data_rate = var.soaking_data_rate
-  soaking_data_type = var.soaking_data_type
-
-  # negative soaking
-  mock_endpoint = var.negative_soaking ? "http://127.0.0.2" : "mocked-server/put-data"
-
-  # install cwagent
-  install_cwagent = true
-
-  # use our own ssh key name
-  ssh_key_name = "aoc-ssh-key-2020-07-22"
-  sshkey_s3_bucket = "aoc-ssh-key"
-  sshkey_s3_private_key = "aoc-ssh-key-2020-07-22.pem"
-
-  # additional dimension
-  commit_id = var.commit_id
-  launch_date = local.launch_date
-  negative_soaking = var.negative_soaking
 }
 
 locals {
-  selected_ami = var.amis[var.testing_ami]
-  ami_family = var.ami_family[local.selected_ami["family"]]
+  ami_family = module.ec2_setup.ami_family
   instance_type = local.ami_family["instance_type"]
   login_user = local.ami_family["login_user"]
   connection_type = local.ami_family["connection_type"]
 }
-
-
-
 
 # create alarm
 ## create cloudwatch alarm base on the metrics emitted by cwagent
@@ -100,9 +63,9 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
         process_name = local.ami_family["soaking_process_name"]
         testcase = split("/", var.testcase)[2]
         testing_ami = var.testing_ami
-        launch_date = local.launch_date
-        commit_id = var.commit_id
-        negative_soaking = var.negative_soaking
+        launch_date = module.ec2_setup.launch_date
+        commit_id = module.ec2_setup.commit_id
+        negative_soaking = module.ec2_setup.negative_soaking
       }
     }
   }
@@ -133,9 +96,9 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
         process_name = local.ami_family["soaking_process_name"]
         testcase = split("/", var.testcase)[2]
         testing_ami = var.testing_ami
-        launch_date = local.launch_date
-        commit_id = var.commit_id
-        negative_soaking = var.negative_soaking
+        launch_date = module.ec2_setup.launch_date
+        commit_id = module.ec2_setup.commit_id
+        negative_soaking = module.ec2_setup.negative_soaking
       }
     }
   }
@@ -198,4 +161,3 @@ output "collector_instance" {
 output "sample_app_instance" {
   value = module.ec2_setup.sample_app_instance_public_ip
 }
-
