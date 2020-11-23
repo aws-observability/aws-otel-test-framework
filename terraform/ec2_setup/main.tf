@@ -19,7 +19,7 @@ locals {
 
 # launch ec2
 module "ec2_setup" {
-  source = "../../ec2"
+  source = "../ec2"
 
   ami_family = var.ami_family
   amis = var.amis

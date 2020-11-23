@@ -16,14 +16,14 @@ provider "aws" {
   region  = var.region
 }
 
-module "setup" {
-  source = "./setup"
+module "ec2_setup" {
+  source = "../ec2_setup"
 
   testing_ami = var.testing_ami
 }
 
 locals {
-  ami_family = module.setup.ami_family
+  ami_family = module.ec2_setup.ami_family
   instance_type = local.ami_family["instance_type"]
   login_user = local.ami_family["login_user"]
   connection_type = local.ami_family["connection_type"]
@@ -34,13 +34,13 @@ locals {
 # wait 2 minute for the metrics to be available on cloudwatch
 resource "time_sleep" "wait_until_metric_appear" {
   create_duration = "120s"
-  depends_on = [module.setup]
+  depends_on = [module.ec2_setup]
 }
 
 # cpu alarm
 resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
   depends_on = [time_sleep.wait_until_metric_appear]
-  alarm_name = "otel-soaking-cpu-alarm-${module.setup.testing_id}"
+  alarm_name = "otel-soaking-cpu-alarm-${module.ec2_setup.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 5
   threshold = "200"
@@ -58,14 +58,14 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
 
       # use this dimension to identify each test
       dimensions = {
-        InstanceId = module.setup.collector_instance_id
+        InstanceId = module.ec2_setup.collector_instance_id
         exe = "aws-otel-collector"
         process_name = local.ami_family["soaking_process_name"]
         testcase = split("/", var.testcase)[2]
         testing_ami = var.testing_ami
-        launch_date = module.setup.launch_date
-        commit_id = module.setup.commit_id
-        negative_soaking = module.setup.negative_soaking
+        launch_date = module.ec2_setup.launch_date
+        commit_id = module.ec2_setup.commit_id
+        negative_soaking = module.ec2_setup.negative_soaking
       }
     }
   }
@@ -74,7 +74,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
 # mem alarm
 resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
   depends_on = [time_sleep.wait_until_metric_appear]
-  alarm_name = "otel-soaking-mem-alarm-${module.setup.testing_id}"
+  alarm_name = "otel-soaking-mem-alarm-${module.ec2_setup.testing_id}"
   comparison_operator = "GreaterThanOrEqualToThreshold"
   evaluation_periods = 5
   threshold = "400000000"
@@ -91,14 +91,14 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
 
       # use this dimension to identify each test
       dimensions = {
-        InstanceId = module.setup.collector_instance_id
+        InstanceId = module.ec2_setup.collector_instance_id
         exe = "aws-otel-collector"
         process_name = local.ami_family["soaking_process_name"]
         testcase = split("/", var.testcase)[2]
         testing_ami = var.testing_ami
-        launch_date = module.setup.launch_date
-        commit_id = module.setup.commit_id
-        negative_soaking = module.setup.negative_soaking
+        launch_date = module.ec2_setup.launch_date
+        commit_id = module.ec2_setup.commit_id
+        negative_soaking = module.ec2_setup.negative_soaking
       }
     }
   }
@@ -107,7 +107,7 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
 # incoming packets alarm on the aoc instance to ensure the pressure
 resource "aws_cloudwatch_metric_alarm" "incoming_bytes" {
   depends_on = [time_sleep.wait_until_metric_appear]
-  alarm_name = "otel-soaking-incoming-bytes-alarm-${module.setup.testing_id}"
+  alarm_name = "otel-soaking-incoming-bytes-alarm-${module.ec2_setup.testing_id}"
   comparison_operator = "LessThanThreshold"
   evaluation_periods = 5
   threshold = "10000" # bytes
@@ -124,7 +124,7 @@ resource "aws_cloudwatch_metric_alarm" "incoming_bytes" {
 
       # use this dimension to identify each test
       dimensions = {
-        InstanceId = module.setup.collector_instance_id
+        InstanceId = module.ec2_setup.collector_instance_id
       }
     }
   }
@@ -143,7 +143,7 @@ module "validator" {
 
   validation_config = "alarm-pulling-validation.yml"
   region = var.region
-  testing_id = module.setup.testing_id
+  testing_id = module.ec2_setup.testing_id
   cpu_alarm = aws_cloudwatch_metric_alarm.cpu_alarm.alarm_name
   mem_alarm = aws_cloudwatch_metric_alarm.mem_alarm.alarm_name
   incoming_packets_alarm = aws_cloudwatch_metric_alarm.incoming_bytes.alarm_name
@@ -155,9 +155,9 @@ module "validator" {
 }
 
 output "collector_instance" {
-  value = module.setup.collector_instance_public_ip
+  value = module.ec2_setup.collector_instance_public_ip
 }
 
 output "sample_app_instance" {
-  value = module.setup.sample_app_instance_public_ip
+  value = module.ec2_setup.sample_app_instance_public_ip
 }

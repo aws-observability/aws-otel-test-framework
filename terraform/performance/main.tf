@@ -21,8 +21,8 @@ module "common" {
   source = "../common"
 }
 
-module "setup" {
-  source = "../soaking/setup"
+module "ec2_setup" {
+  source = "../ec2_setup"
 
   testing_ami = var.testing_ami
   soaking_data_rate = var.data_rate
