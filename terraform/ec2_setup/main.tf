@@ -51,4 +51,7 @@ module "ec2_setup" {
   commit_id = var.commit_id
   launch_date = local.launch_date
   negative_soaking = var.negative_soaking
+
+  install_package_source = var.install_package_source
+  install_package_local_path = var.install_package_local_path
 }

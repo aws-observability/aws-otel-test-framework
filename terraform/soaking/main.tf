@@ -20,6 +20,11 @@ module "ec2_setup" {
   source = "../ec2_setup"
 
   testing_ami = var.testing_ami
+  soaking_data_rate = var.soaking_data_rate
+  soaking_data_type = var.soaking_data_type
+
+  install_package_source = var.install_package_source
+  install_package_local_path = var.install_package_local_path
 }
 
 locals {
@@ -66,6 +71,8 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
         launch_date = module.ec2_setup.launch_date
         commit_id = module.ec2_setup.commit_id
         negative_soaking = module.ec2_setup.negative_soaking
+        data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
+        instance_type = module.ec2_setup.collector_instance_type
       }
     }
   }
@@ -99,6 +106,8 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
         launch_date = module.ec2_setup.launch_date
         commit_id = module.ec2_setup.commit_id
         negative_soaking = module.ec2_setup.negative_soaking
+        data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
+        instance_type = module.ec2_setup.collector_instance_type
       }
     }
   }
