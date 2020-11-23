@@ -13,6 +13,11 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
+# data points emitted per second
+variable "data_rate" {
+  default = 10000
+}
+
 variable "testing_ami" {
   default = "soaking_linux"
 }

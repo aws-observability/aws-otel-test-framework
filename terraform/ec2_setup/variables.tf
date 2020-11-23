@@ -14,5 +14,36 @@
 # -------------------------------------------------------------------------
 
 variable "testing_ami" {
-  default = "soaking_linux"
+}
+
+variable "soaking_data_emitter_image" {
+  default = "aottestbed/aws-otel-load-generator:v0.1.0"
+}
+
+# data type will be emitted. Possible values: metric or trace
+variable "soaking_data_mode" {
+  default = "metric"
+}
+
+# data points emitted per second
+variable "soaking_data_rate" {
+  default = 1000
+}
+
+# data model type. possible values: otlp, xray, etc
+variable "soaking_data_type" {
+  default = "otlp"
+}
+
+variable "negative_soaking" {
+  default = false
+}
+
+variable "ssh_key_name" {
+  default = "aoc-ssh-key-2020-07-22"
+}
+
+# this commit id will be used as a dimension so that we can track metrics
+variable "commit_id" {
+  default = "dummy_commit"
 }
