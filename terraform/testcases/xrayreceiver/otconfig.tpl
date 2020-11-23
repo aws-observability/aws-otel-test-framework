@@ -1,3 +1,6 @@
+extensions:
+  pprof:
+    endpoint: 0.0.0.0:1777
 receivers:
   awsxray:
     endpoint: 0.0.0.0:${udp_port}
@@ -15,3 +18,4 @@ service:
     traces:
       receivers: [awsxray]
       exporters: [logging, awsxray]
+  extensions: [pprof]

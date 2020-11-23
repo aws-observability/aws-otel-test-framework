@@ -1,3 +1,6 @@
+extensions:
+  pprof:
+    endpoint: 0.0.0.0:1777
 receivers:
   otlp:
     protocols:
@@ -20,3 +23,4 @@ service:
       receivers: [otlp]
       processors: [batch/metrics]
       exporters: [logging, awsemf]
+  extensions: [pprof]
