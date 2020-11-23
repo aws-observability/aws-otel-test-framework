@@ -25,6 +25,10 @@ output "collector_instance_id" {
   value = module.ec2_setup.collector_instance_id
 }
 
+output "collector_instance_type" {
+  value = module.ec2_setup.collector_instance_type
+}
+
 output "sample_app_instance_public_ip" {
   value = module.ec2_setup.sample_app_instance_public_ip
 }
@@ -44,3 +48,4 @@ output "commit_id" {
 output "launch_date" {
   value = local.launch_date
 }
+

@@ -26,4 +26,7 @@ module "ec2_setup" {
 
   testing_ami = var.testing_ami
   soaking_data_rate = var.data_rate
+  soaking_data_type = var.data_type
+  install_package_source = var.install_package_source
+  install_package_local_path = var.install_package_local_path
 }

@@ -47,3 +47,13 @@ variable "ssh_key_name" {
 variable "commit_id" {
   default = "dummy_commit"
 }
+
+# options: s3, local
+variable "install_package_source" {
+  default = "s3" # which means we download rpm/dev/msi from s3, the links are defined in the ami map.
+}
+
+# use this parameter when install_package_source is local
+variable "install_package_local_path" {
+  default = "../../../aws-otel-collector/build/packages/linux/amd64/aws-otel-collector.rpm"
+}
