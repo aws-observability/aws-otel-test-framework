@@ -35,6 +35,8 @@ there're three placeholders could be used:
 
 * `${region}`, which refers to the region where the test case will be running and validate. in normal case, region should be auto-detected so this placeholder might not be used in the config. [an example to use region](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_metric/otconfig.tpl#L15)
 
+> **Note:** Please enable `pprof` extension in your `otconfig.tpl` for the debugging purpose.
+
 Please note OTLP receiver is the only receiver which could be configured in the pipeline to serve the traffic at this moment. if you want to add a new receiver, please [contribute a sample app](sample-apps/README.md)
 
 #### 1.1.3 place `parameters.tfvars` under test case folder

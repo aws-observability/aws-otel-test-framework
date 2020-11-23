@@ -1,3 +1,6 @@
+extensions:
+  pprof:
+    endpoint: 0.0.0.0:1777
 receivers:
   awsecscontainermetrics:
 processors:
@@ -55,3 +58,4 @@ service:
       receivers: [awsecscontainermetrics]
       processors: [filter, metricstransform]
       exporters: [logging, awsemf]
+  extensions: [pprof]
