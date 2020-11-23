@@ -15,3 +15,4 @@ service:
     traces:
       receivers: [awsxray]
       exporters: [logging, awsxray]
+  extensions: [pprof]

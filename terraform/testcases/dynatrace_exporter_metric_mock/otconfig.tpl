@@ -1,3 +1,6 @@
+extensions:
+  pprof:
+    endpoint: 0.0.0.0:1777
 receivers:
   otlp:
     protocols:
@@ -21,4 +24,5 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [dynatrace]
+  extensions: [pprof]
 
