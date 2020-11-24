@@ -25,6 +25,8 @@ module "ec2_setup" {
 
   install_package_source = var.install_package_source
   install_package_local_path = var.install_package_local_path
+
+  commit_id = var.commit_id
 }
 
 locals {
