@@ -58,3 +58,41 @@ cat performance_model.json
 
 4. Put the contents of the `performance_model.json` into the pr you are going to create in the [AWS Otel Collector Repo](https://github.com/aws-observability/aws-otel-collector). 
 
+
+## Step 4 [Optional only if you want to debug your test]  Debug
+
+if you want to debug, don't run `terraform destroy`, otherwise the resources will be clean up.
+
+Basically, performance test launches two ec2 instance:
+
+1. An `collector instance` to install AWS Otel Collector, and CloudWatch Agent to collect the cpu/mem metrics.
+2. An `sample-app instance` to launch the sample app container and the mocked server containers, which sends and receives data.
+
+### Log into the collector instance
+
+```shell
+cd aws-otel-test-framework/terraform/performance
+chmod 400 private_key.pem
+ssh -i private_key.pem ec2-user@`terraform output collector_instance`
+```
+
+### the folder and logs of AWS Otel Collector
+
+* the installed folder: `/opt/aws/aws-otel-collector`
+
+* the logs: `/opt/aws/aws-otel-collector/logs`
+
+### Log into the sample app instance
+
+```
+cd aws-otel-test-framework/terraform/performance
+chmod 400 private_key.pem
+ssh -i private_key.pem ec2-user@`terraform output sample_app_instance`
+```
+
+### Check Sample app container and mocked server container
+
+```
+sudo docker ps
+```
+
