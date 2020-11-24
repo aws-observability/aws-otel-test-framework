@@ -44,8 +44,8 @@ module "ec2_setup" {
 
   # use our own ssh key name
   ssh_key_name = var.ssh_key_name
-  sshkey_s3_bucket = "aoc-ssh-key"
-  sshkey_s3_private_key = "aoc-ssh-key-2020-07-22.pem"
+  sshkey_s3_bucket = var.sshkey_s3_bucket
+  sshkey_s3_private_key = var.sshkey_s3_private_key
 
   # additional dimension
   commit_id = var.commit_id
@@ -54,4 +54,6 @@ module "ec2_setup" {
 
   install_package_source = var.install_package_source
   install_package_local_path = var.install_package_local_path
+
+  testing_type = var.testing_type
 }
