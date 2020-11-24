@@ -55,8 +55,6 @@ module "ec2_setup" {
   install_package_source = var.install_package_source
   install_package_local_path = var.install_package_local_path
 
-  testing_type = var.testing_type
-
   soaking_metric_namespace = var.soaking_metric_namespace
 
   debug = var.debug

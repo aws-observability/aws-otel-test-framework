@@ -33,8 +33,6 @@ module "ec2_setup" {
 
   commit_id = var.commit_id
 
-  testing_type = "soak-test"
-
   ssh_key_name = var.ssh_key_name
   sshkey_s3_bucket = var.sshkey_s3_bucket
   sshkey_s3_private_key = var.sshkey_s3_private_key
@@ -89,7 +87,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
         negative_soaking = module.ec2_setup.negative_soaking
         data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
         instance_type = module.ec2_setup.collector_instance_type
-        testing_type = "soak-test"
+        testing_ami = var.testing_ami
       }
     }
   }
@@ -124,7 +122,7 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
         negative_soaking = module.ec2_setup.negative_soaking
         data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
         instance_type = module.ec2_setup.collector_instance_type
-        testing_type = "soak-test"
+        testing_ami = var.testing_ami
       }
     }
   }
