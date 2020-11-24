@@ -35,6 +35,7 @@ module "ec2_setup" {
   sshkey_s3_private_key = var.sshkey_s3_private_key
 
   debug = var.debug
+  negative_soaking = var.negative_soaking
 
 }
 
