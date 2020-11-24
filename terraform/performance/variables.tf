@@ -26,6 +26,10 @@ variable "testing_ami" {
   default = "soaking_linux"
 }
 
+variable "performance_metric_namespace" {
+  default = "AWSOtelCollector/PerfTest"
+}
+
 # options: s3, local
 variable "install_package_source" {
   default = "s3" # which means we download rpm/dev/msi from s3, the links are defined in the ami map.

@@ -20,6 +20,7 @@ provider "aws" {
 module "ec2_setup" {
   source = "../ec2_setup"
 
+  testcase = var.testcase
   testing_ami = var.testing_ami
   soaking_data_rate = var.data_rate
   soaking_data_type = var.data_type
@@ -30,7 +31,7 @@ module "ec2_setup" {
   sshkey_s3_bucket = var.sshkey_s3_bucket
   sshkey_s3_private_key = var.sshkey_s3_private_key
 
-  soaking_metric_namespace = "AWSOtelCollector/PerfTest"
+  soaking_metric_namespace = var.performance_metric_namespace
 
   debug = var.debug
 }
@@ -67,7 +68,7 @@ resource "local_file" "validation_config_file" {
 # Validation
 ##########################################
 resource "time_sleep" "wait_until_metrics_collected" {
-  create_duration = "5s"
+  create_duration = "${var.collection_period}m"
   depends_on = [module.ec2_setup]
 }
 
@@ -77,7 +78,7 @@ module "validator" {
   validation_config = local.validation_config_file
   region = var.region
   testing_id = module.ec2_setup.testing_id
-  metric_namespace = var.soaking_metric_namespace
+  metric_namespace = var.performance_metric_namespace
 
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
