@@ -53,14 +53,15 @@ public class CloudWatchService {
   }
 
   /**
-   * putMetricData publish metric to CloudWatch
+   * putMetricData publish metric to CloudWatch.
    *
    * @param nameSpace the metric namespace on CloudWatch
    * @param metricName the metric name on CloudWatch
    * @param value the metric value on CloudWatch
    * @return Response of PMD call
    */
-  public PutMetricDataResult putMetricData(final String nameSpace, final String metricName, final Double value) {
+  public PutMetricDataResult putMetricData(final String nameSpace,
+                                           final String metricName, final Double value) {
     MetricDatum datum = new MetricDatum()
             .withMetricName(metricName)
             .withUnit(StandardUnit.None)
