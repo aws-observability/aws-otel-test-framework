@@ -30,6 +30,10 @@ variable "mocked_server_validating_url" {
   default = ""
 }
 
+variable "canary" {
+  default = false
+}
+
 variable "metric_namespace" {
   default = ""
 }

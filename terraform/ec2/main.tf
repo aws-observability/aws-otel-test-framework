@@ -220,7 +220,7 @@ data "template_file" "docker_compose" {
     udp_endpoint = "${aws_instance.aoc.private_ip}:${module.common.udp_port}"
 
     mocked_server_image = local.mocked_server_image
-    date_mode = var.soaking_data_mode
+    data_mode = var.soaking_data_mode
     rate = var.soaking_data_rate
     data_type = var.soaking_data_type
   }
@@ -315,6 +315,7 @@ module "validator" {
   metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   sample_app_endpoint = "http://${aws_instance.sidecar.public_ip}:${module.common.sample_app_lb_port}"
   mocked_server_validating_url = "http://${aws_instance.sidecar.public_ip}/check-data"
+  canary = var.canary
 
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key

@@ -32,6 +32,7 @@ data "template_file" "docker_compose" {
     sample_app_endpoint = var.sample_app_endpoint
     mocked_server_validating_url = var.mocked_server_validating_url
     metric_namespace = var.metric_namespace
+    canary = var.canary
 
     # ecs related context
     ecs_cluster_name = var.ecs_cluster_name

@@ -22,16 +22,13 @@ import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.validators.ValidatorFactory;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
-import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.MetricDatum;
 import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
-import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
 import com.amazonaws.services.cloudwatch.model.StandardUnit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
 
-import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
@@ -91,7 +88,7 @@ public class App implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
-    Instant startTime = Instant.now();
+    final Instant startTime = Instant.now();
     // build context
     Context context = new Context(this.testingId, this.region, this.isCanary);
     context.setMetricNamespace(this.metricNamespace);
@@ -103,7 +100,6 @@ public class App implements Callable<Integer> {
     log.info(context);
 
     final AmazonCloudWatch cw = AmazonCloudWatchClientBuilder.defaultClient();
-    Dimension dimension = new Dimension().withName("TestingID").withValue(this.testingId);
 
     // load config
     List<ValidationConfig> validationConfigList =
@@ -120,27 +116,41 @@ public class App implements Callable<Integer> {
         try {
           validatorFactory.launchValidator(validationConfigItem).validate();
         } catch (Exception e) {
-          //output metric
-          MetricDatum datum = new MetricDatum().withMetricName("Success").withUnit(StandardUnit.None).withValue(0.0).withDimensions(dimension);
-          PutMetricDataRequest request = new PutMetricDataRequest()
-                  .withNamespace("Otel/Canary")
-                  .withMetricData(datum);
-          cw.putMetricData(request);
+          if (this.isCanary) {
+            //emit metric
+            MetricDatum datum = new MetricDatum()
+                    .withMetricName("Success")
+                    .withUnit(StandardUnit.None)
+                    .withValue(0.0);
+            PutMetricDataRequest request = new PutMetricDataRequest()
+                    .withNamespace("Otel/Canary")
+                    .withMetricData(datum);
+            cw.putMetricData(request);
+          }
           throw e;
         }
       }
-      log.info("Completed one validation cycle {} for current canary test. Still need to validate {} cycles. Sleep 1 minute then proceed.", cycle + 1, maxValidationCycles - cycle - 1);
-      TimeUnit.MINUTES.sleep(1);
+      if (maxValidationCycles - cycle - 1 > 0) {
+        log.info("Completed {} validation cycle for current canary test. "
+                        + "Still need to validate {} cycles. Sleep 1 minute then proceed.",
+                cycle + 1, maxValidationCycles - cycle - 1);
+        TimeUnit.MINUTES.sleep(1);
+      }
     }
     Instant endTime = Instant.now();
     Duration duration = Duration.between(startTime, endTime);
     log.info("Validation has completed in {} minutes.", duration.toMinutes());
-    //output metric
-    MetricDatum datum = new MetricDatum().withMetricName("Success").withUnit(StandardUnit.None).withValue(1.0).withDimensions(dimension);
-    PutMetricDataRequest request = new PutMetricDataRequest()
-            .withNamespace("Otel/Canary")
-            .withMetricData(datum);
-    cw.putMetricData(request);
+    if (this.isCanary) {
+      //emit metric
+      MetricDatum datum = new MetricDatum()
+              .withMetricName("Success")
+              .withUnit(StandardUnit.None)
+              .withValue(1.0);
+      PutMetricDataRequest request = new PutMetricDataRequest()
+              .withNamespace("Otel/Canary")
+              .withMetricData(datum);
+      cw.putMetricData(request);
+    }
     return null;
   }
 

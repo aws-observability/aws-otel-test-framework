@@ -21,7 +21,7 @@ variable "package_s3_bucket" {
 }
 
 variable "testing_ami" {
-  default = "amazonlinux2"
+  default = "canary_linux"
 }
 
 variable "soaking_compose_file" {
@@ -59,5 +59,5 @@ variable "install_cwagent" {
 }
 
 variable "canary" {
-  default = false
+  default = true
 }
