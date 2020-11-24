@@ -48,7 +48,7 @@ cat performance_model.json
 
 3. Run on rate 10000 tps
 
-```
+```shell
 cd aws-otel-test-framework/terraform/performance
 terraform init
 terraform apply -var="data_rate=1000" -var="testcase=../testcases/{{testcase name}}" -var="install_package_source=local" -var-file="../testcases/{{testcase name}}/parameters.tfvars"
