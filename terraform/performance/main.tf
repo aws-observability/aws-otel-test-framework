@@ -35,4 +35,8 @@ module "ec2_setup" {
   ssh_key_name = var.ssh_key_name
   sshkey_s3_bucket = var.sshkey_s3_bucket
   sshkey_s3_private_key = var.sshkey_s3_private_key
+
+  soaking_metric_namespace = "AWSOtelCollector/PerfTest"
+
+  debug = var.debug
 }
