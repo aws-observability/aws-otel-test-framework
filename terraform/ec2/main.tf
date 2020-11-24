@@ -296,12 +296,12 @@ data "template_file" "cwagent_config" {
   vars = {
     soaking_metric_namespace = var.soaking_metric_namespace
     testcase = split("/", var.testcase)[2]
-    testing_ami = var.testing_ami
     commit_id = var.commit_id
     launch_date = var.launch_date
     negative_soaking = var.negative_soaking
     data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
     instance_type = aws_instance.aoc.instance_type
+    testing_type = var.testing_type
   }
 }
 
