@@ -13,7 +13,7 @@ Please ensure the default profile in your ~/.aws/credentials has Admin permissio
 Setup only needs to be run once
 
 ```shell
-cd terraform/setup 
+cd aws-otel-test-framework/terraform/setup 
 terraform init
 terraform apply
 ```
@@ -23,7 +23,7 @@ terraform apply
 this step might take 20 minutes, it builds and pushes the sample apps and mocked server images to the ecr repos, so that the following test could use them.
 
 ```shell
-cd terraform/imagebuild
+cd aws-otel-test-framework/terraform/imagebuild
 terraform init
 terraform apply
 ```
