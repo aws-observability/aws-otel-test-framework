@@ -46,3 +46,8 @@ variable "soaking_metric_namespace" {
   default = "AWSOtelCollector/SoakingTest"
 }
 
+variable "debug" {
+  type = bool
+  default = false
+}
+

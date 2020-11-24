@@ -13,32 +13,21 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-## right now there's no good way to share variables across modules,
-## so we have to define some of the common vars like region, otconfig_path in each module
-
-variable "package_s3_bucket" {
-  default = "aws-otel-collector-test"
-}
-
 variable "testing_ami" {
-  default = "amazonlinux2"
 }
 
-variable "soaking_compose_file" {
-  default = ""
+variable "soaking_data_emitter_image" {
+  default = "aottestbed/aws-otel-load-generator:v0.1.0"
 }
 
-######################
-# Soaking related
-######################
 # data type will be emitted. Possible values: metric or trace
 variable "soaking_data_mode" {
   default = "metric"
 }
 
-# data points were emitted per second
+# data points emitted per second
 variable "soaking_data_rate" {
-  default = 100
+  default = 1000
 }
 
 # data model type. possible values: otlp, xray, etc
@@ -46,44 +35,25 @@ variable "soaking_data_type" {
   default = "otlp"
 }
 
-variable "skip_validation" {
-  default = false
-}
-
-variable "mock_endpoint" {
-  default = "mocked-server/put-data"
-}
-
-variable "install_cwagent" {
+variable "negative_soaking" {
   default = false
 }
 
 # if ssh_key_name is empty, we create private key every time we create instance.
 # if not, we pull the private key from s3.
 variable "ssh_key_name" {
-  default = ""
 }
 
 variable "sshkey_s3_bucket" {
-  default = ""
 }
 
 variable "sshkey_s3_private_key" {
-  default = ""
 }
 
+# this commit id will be used as a dimension so that we can track metrics
 variable "commit_id" {
-  default = ""
+  default = "dummy_commit"
 }
-
-variable "launch_date" {
-  default = ""
-}
-
-variable "negative_soaking" {
-  default = false
-}
-
 
 # options: s3, local
 variable "install_package_source" {
@@ -95,6 +65,4 @@ variable "install_package_local_path" {
   default = "../../../aws-otel-collector/build/packages/linux/amd64/aws-otel-collector.rpm"
 }
 
-variable "testing_type" {
-  default = ""
-}
+variable "testing_type" {}

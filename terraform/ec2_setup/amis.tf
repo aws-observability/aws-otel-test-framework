@@ -12,7 +12,7 @@ variable "ami_family" {
       user_data = ""
       soaking_cwagent_config = "../templates/cwagent-config/soaking-linux.json.tpl"
       soaking_cwagent_config_destination = "/tmp/cwagent-config.json"
-      cwagent_download_command = "sudo rpm -Uvh https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm"
+      cwagent_download_command = "sudo rpm -Uvh --force https://s3.amazonaws.com/amazoncloudwatch-agent/amazon_linux/amd64/latest/amazon-cloudwatch-agent.rpm"
       cwagent_install_command = "echo 'donothing'"
       cwagent_start_command = "sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -c file:/tmp/cwagent-config.json -s"
       soaking_cpu_metric_name = "procstat_cpu_usage"

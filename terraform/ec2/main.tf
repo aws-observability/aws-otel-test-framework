@@ -165,11 +165,47 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
   }
 }
 
-############################################
-# Start collector
-###########################################
-resource "null_resource" "start_collector" {
 
+############################################
+# Download and Start collector
+############################################
+resource "null_resource" "download_collector_from_local" {
+  count = var.install_package_source == "local" ? 1 : 0
+  provisioner "file" {
+    source = var.install_package_local_path
+    destination = local.ami_family["install_package"]
+
+    connection {
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
+      host = aws_instance.aoc.public_ip
+    }
+  }
+}
+
+resource "null_resource" "download_collector_from_s3" {
+  count = var.install_package_source == "s3" ? 1 : 0
+
+  provisioner "remote-exec" {
+    inline = [
+      local.download_command
+    ]
+
+    connection {
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
+      host = aws_instance.aoc.public_ip
+    }
+  }
+}
+
+resource "null_resource" "start_collector" {
+  # either getting the install package from s3 or from local
+  depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3]
   provisioner "file" {
     content = module.basic_components.otconfig_content
     destination = local.otconfig_destination
@@ -185,7 +221,6 @@ resource "null_resource" "start_collector" {
 
   provisioner "remote-exec" {
     inline = [
-      local.download_command,
       local.ami_family["install_command"],
       local.ami_family["start_command"],
     ]
@@ -261,10 +296,12 @@ data "template_file" "cwagent_config" {
   vars = {
     soaking_metric_namespace = var.soaking_metric_namespace
     testcase = split("/", var.testcase)[2]
-    testing_ami = var.testing_ami
     commit_id = var.commit_id
     launch_date = var.launch_date
     negative_soaking = var.negative_soaking
+    data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
+    instance_type = aws_instance.aoc.instance_type
+    testing_type = var.testing_type
   }
 }
 
