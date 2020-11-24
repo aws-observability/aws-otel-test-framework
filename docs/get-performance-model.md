@@ -96,3 +96,7 @@ ssh -i private_key.pem ec2-user@`terraform output sample_app_instance`
 sudo docker ps
 ```
 
+### Check the metrics on CloudWatch Console
+
+all the metrics will be showing on the CloudWatch Console in your account. The Namespace is `AWSOtelCollector/PerfTest`
+
