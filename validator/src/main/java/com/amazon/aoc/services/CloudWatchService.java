@@ -19,6 +19,10 @@ import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
 import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
 import com.amazonaws.services.cloudwatch.model.Metric;
+import com.amazonaws.services.cloudwatch.model.MetricDatum;
+import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
+import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
+import com.amazonaws.services.cloudwatch.model.StandardUnit;
 
 import java.util.List;
 
@@ -47,4 +51,24 @@ public class CloudWatchService {
         new ListMetricsRequest().withNamespace(nameSpace).withMetricName(metricName);
     return amazonCloudWatch.listMetrics(listMetricsRequest).getMetrics();
   }
+
+  /**
+   * putMetricData publish metric to CloudWatch
+   *
+   * @param nameSpace the metric namespace on CloudWatch
+   * @param metricName the metric name on CloudWatch
+   * @param value the metric value on CloudWatch
+   * @return Response of PMD call
+   */
+  public PutMetricDataResult putMetricData(final String nameSpace, final String metricName, final Double value) {
+    MetricDatum datum = new MetricDatum()
+            .withMetricName(metricName)
+            .withUnit(StandardUnit.None)
+            .withValue(value);
+    PutMetricDataRequest request = new PutMetricDataRequest()
+            .withNamespace(nameSpace)
+            .withMetricData(datum);
+    return amazonCloudWatch.putMetricData(request);
+  }
+
 }

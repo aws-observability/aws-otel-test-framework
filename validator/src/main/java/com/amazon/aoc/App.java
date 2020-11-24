@@ -19,12 +19,8 @@ import com.amazon.aoc.helpers.ConfigLoadHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ECSContext;
 import com.amazon.aoc.models.ValidationConfig;
+import com.amazon.aoc.services.CloudWatchService;
 import com.amazon.aoc.validators.ValidatorFactory;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
-import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
-import com.amazonaws.services.cloudwatch.model.MetricDatum;
-import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
-import com.amazonaws.services.cloudwatch.model.StandardUnit;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
@@ -99,7 +95,7 @@ public class App implements Callable<Integer> {
 
     log.info(context);
 
-    final AmazonCloudWatch cw = AmazonCloudWatchClientBuilder.defaultClient();
+    CloudWatchService cloudWatchService = new CloudWatchService(region);
 
     // load config
     List<ValidationConfig> validationConfigList =
@@ -118,14 +114,7 @@ public class App implements Callable<Integer> {
         } catch (Exception e) {
           if (this.isCanary) {
             //emit metric
-            MetricDatum datum = new MetricDatum()
-                    .withMetricName("Success")
-                    .withUnit(StandardUnit.None)
-                    .withValue(0.0);
-            PutMetricDataRequest request = new PutMetricDataRequest()
-                    .withNamespace("Otel/Canary")
-                    .withMetricData(datum);
-            cw.putMetricData(request);
+            cloudWatchService.putMetricData("Otel/Canary", "Success", 0.0);
           }
           throw e;
         }
@@ -142,14 +131,7 @@ public class App implements Callable<Integer> {
     log.info("Validation has completed in {} minutes.", duration.toMinutes());
     if (this.isCanary) {
       //emit metric
-      MetricDatum datum = new MetricDatum()
-              .withMetricName("Success")
-              .withUnit(StandardUnit.None)
-              .withValue(1.0);
-      PutMetricDataRequest request = new PutMetricDataRequest()
-              .withNamespace("Otel/Canary")
-              .withMetricData(datum);
-      cw.putMetricData(request);
+      cloudWatchService.putMetricData("Otel/Canary", "Success", 1.0);
     }
     return null;
   }

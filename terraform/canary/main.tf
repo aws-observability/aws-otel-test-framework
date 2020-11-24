@@ -13,6 +13,10 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
+provider "aws" {
+  region  = var.region
+}
+
 module "common" {
   source = "../common"
 }
@@ -24,10 +28,6 @@ module "basic_components" {
   testing_id = module.common.testing_id
   mocked_endpoint = var.mock_endpoint
   sample_app = var.sample_app
-}
-
-provider "aws" {
-  region  = var.region
 }
 
 # launch ec2
