@@ -61,7 +61,15 @@ cat performance_model.json
 
 ## Step 4 [Optional only if you want to debug your test]  Debug
 
-if you want to debug, don't run `terraform destroy`, otherwise the resources will be clean up.
+if you want to debug,  add a parameter in the `apply` command: `-var="debug=true"`, for example
+
+```
+terraform apply -var="debug=true" -var="data_rate=1000" -var="testcase=../testcases/{{testcase name}}" -var="install_package_source=local" -var-file="../testcases/{{testcase name}}/parameters.tfvars"
+```
+
+to do so, a private key will be dump to disk so that you can use it to login instances.
+
+please note don't run `terraform destroy` before you finish debugging, otherwise the resources will be clean up.
 
 Basically, performance test launches two ec2 instance:
 
