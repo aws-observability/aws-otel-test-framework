@@ -17,11 +17,11 @@
           "append_dimensions": {
             "commit_id": "${commit_id}",
             "testcase": "${testcase}",
-            "testing_ami": "${testing_ami}",
             "launch_date": "${launch_date}",
             "negative_soaking": "${negative_soaking}",
             "data_rate": "${data_rate}",
-            "instance_type": "${instance_type}"
+            "instance_type": "${instance_type}",
+            "testing_type": "${testing_type}"
           }
         }
       ]

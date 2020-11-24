@@ -27,6 +27,15 @@ module "ec2_setup" {
   install_package_local_path = var.install_package_local_path
 
   commit_id = var.commit_id
+
+  testing_type = "soak-test"
+
+  ssh_key_name = var.ssh_key_name
+  sshkey_s3_bucket = var.sshkey_s3_bucket
+  sshkey_s3_private_key = var.sshkey_s3_private_key
+
+  debug = var.debug
+
 }
 
 locals {
@@ -69,12 +78,12 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
         exe = "aws-otel-collector"
         process_name = local.ami_family["soaking_process_name"]
         testcase = split("/", var.testcase)[2]
-        testing_ami = var.testing_ami
         launch_date = module.ec2_setup.launch_date
         commit_id = module.ec2_setup.commit_id
         negative_soaking = module.ec2_setup.negative_soaking
         data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
         instance_type = module.ec2_setup.collector_instance_type
+        testing_type = "soak-test"
       }
     }
   }
@@ -104,12 +113,12 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
         exe = "aws-otel-collector"
         process_name = local.ami_family["soaking_process_name"]
         testcase = split("/", var.testcase)[2]
-        testing_ami = var.testing_ami
         launch_date = module.ec2_setup.launch_date
         commit_id = module.ec2_setup.commit_id
         negative_soaking = module.ec2_setup.negative_soaking
         data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
         instance_type = module.ec2_setup.collector_instance_type
+        testing_type = "soak-test"
       }
     }
   }

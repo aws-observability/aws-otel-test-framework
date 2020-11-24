@@ -36,6 +36,21 @@ variable "install_package_local_path" {
   default = "../../../aws-otel-collector/build/packages/linux/amd64/aws-otel-collector.rpm"
 }
 
+
 variable "commit_id" {
+  default = "dummy_commit"  
+}
+
+# if ssh_key_name is empty, we create private key every time we create instance.
+# if not, we pull the private key from s3.
+variable "ssh_key_name" {
+  default = ""
+}
+
+variable "sshkey_s3_bucket" {
+  default = ""
+}
+
+variable "sshkey_s3_private_key" {
   default = ""
 }
