@@ -49,3 +49,8 @@ variable "sshkey_s3_bucket" {
 variable "sshkey_s3_private_key" {
   default = ""
 }
+
+# Duration to run performance test and collect metrics (in minutes)
+variable "collection_period" {
+  default = 60
+}
