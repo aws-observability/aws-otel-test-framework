@@ -54,3 +54,7 @@ variable "sshkey_s3_bucket" {
 variable "sshkey_s3_private_key" {
   default = ""
 }
+
+variable "negative_soaking" {
+  default = false
+}
