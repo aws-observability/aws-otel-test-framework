@@ -301,7 +301,7 @@ data "template_file" "cwagent_config" {
     negative_soaking = var.negative_soaking
     data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
     instance_type = aws_instance.aoc.instance_type
-    testing_type = var.testing_type
+    testing_ami = var.testing_ami
   }
 }
 

@@ -21,7 +21,7 @@
             "negative_soaking": "${negative_soaking}",
             "data_rate": "${data_rate}",
             "instance_type": "${instance_type}",
-            "testing_type": "${testing_type}"
+            "testing_ami": "${testing_ami}"
           }
         }
       ]
