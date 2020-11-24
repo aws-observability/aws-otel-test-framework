@@ -19,7 +19,12 @@ provider "aws" {
 module "ec2_setup" {
   source = "../ec2_setup"
 
+  testcase = var.testcase
   testing_ami = var.testing_ami
+  aoc_version = var.aoc_version
+  region = var.region
+
+  soaking_data_mode = var.soaking_data_mode
   soaking_data_rate = var.soaking_data_rate
   soaking_data_type = var.soaking_data_type
 
