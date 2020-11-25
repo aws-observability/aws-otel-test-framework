@@ -56,7 +56,7 @@ terraform destroy
 cat performance_model.json
 ```
 
-4. Put the contents of the `performance_model.json` into the pr you are going to create in the [AWS Otel Collector Repo](https://github.com/aws-observability/aws-otel-collector). 
+4. Put the content of the `performance_model.json` into the pr you are going to create in the [AWS Otel Collector Repo](https://github.com/aws-observability/aws-otel-collector).  Or put it in the issue if you have one.
 
 
 ## Step 4 [Optional only if you want to debug your test]  Debug
