@@ -24,6 +24,9 @@ sshkey.pem
 # Local .terraform directories
 **/.terraform/*
 
+# Local output directories
+**/output/*
+
 # .tfstate files
 *.tfstate
 *.tfstate.*

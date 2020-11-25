@@ -17,13 +17,10 @@ provider "aws" {
   region  = var.region
 }
 
-module "common" {
-  source = "../common"
-}
-
 module "ec2_setup" {
   source = "../ec2_setup"
 
+  testcase = var.testcase
   testing_ami = var.testing_ami
   soaking_data_rate = var.data_rate
   soaking_data_type = var.data_type
@@ -34,7 +31,63 @@ module "ec2_setup" {
   sshkey_s3_bucket = var.sshkey_s3_bucket
   sshkey_s3_private_key = var.sshkey_s3_private_key
 
-  soaking_metric_namespace = "AWSOtelCollector/PerfTest"
+  soaking_metric_namespace = var.performance_metric_namespace
 
   debug = var.debug
+}
+
+locals{
+  validation_config_file = "performance_validation.yml"
+  ami_family = module.ec2_setup.ami_family
+}
+
+data "template_file" "validation_config" {
+  template = file("../templates/defaults/performance_validation.tpl")
+
+  vars = {
+    cpuMetricName = local.ami_family["soaking_cpu_metric_name"]
+    memoryMetricName = local.ami_family["soaking_mem_metric_name"]
+    collectionPeriod = var.collection_period
+    dataType = var.data_type
+    dataRate = var.data_rate
+    testcase = split("/", var.testcase)[2]
+    commitId = module.ec2_setup.commit_id
+    instanceId = module.ec2_setup.collector_instance_id
+    instanceType = module.ec2_setup.collector_instance_type
+    launchDate = module.ec2_setup.launch_date
+    exe = "aws-otel-collector"
+    processName = local.ami_family["soaking_process_name"]
+    testingAmi = var.testing_ami
+    negativeSoaking = module.ec2_setup.negative_soaking
+  }
+}
+
+resource "local_file" "validation_config_file" {
+  content = data.template_file.validation_config.rendered
+
+  filename = "../../validator/src/main/resources/validations/${local.validation_config_file}"
+
+  depends_on = [data.template_file.validation_config]
+}
+
+##########################################
+# Validation
+##########################################
+resource "time_sleep" "wait_until_metrics_collected" {
+  create_duration = "${var.collection_period}m"
+  depends_on = [module.ec2_setup]
+}
+
+module "validator" {
+  source = "../validation"
+
+  validation_config = local.validation_config_file
+  region = var.region
+  testing_id = module.ec2_setup.testing_id
+  metric_namespace = var.performance_metric_namespace
+
+  aws_access_key_id = var.aws_access_key_id
+  aws_secret_access_key = var.aws_secret_access_key
+
+  depends_on = [time_sleep.wait_until_metrics_collected]
 }

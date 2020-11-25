@@ -36,4 +36,24 @@ public class ValidationConfig {
    */
   Integer pullingDuration;
   Integer pullingTimes;
+
+  /**
+   * performance test related.
+   */
+  String cpuMetricName;
+  String memoryMetricName;
+  Integer collectionPeriod;
+  Integer datapointPeriod;
+  String dataType;
+  Integer dataRate;
+  // Dimensions
+  String testcase;
+  String commitId;
+  String instanceId;
+  String instanceType;
+  String launchDate;
+  String exe;
+  String processName;
+  String testingAmi;
+  String negativeSoaking;
 }

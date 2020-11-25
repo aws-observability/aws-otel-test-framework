@@ -17,6 +17,8 @@ package com.amazon.aoc.services;
 
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
+import com.amazonaws.services.cloudwatch.model.Datapoint;
+import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
 import com.amazonaws.services.cloudwatch.model.Metric;
 import com.amazonaws.services.cloudwatch.model.MetricDatum;
@@ -42,34 +44,43 @@ public class CloudWatchService {
   /**
    * listMetrics fetches metrics from CloudWatch.
    *
-   * @param nameSpace the metric namespace on CloudWatch
+   * @param namespace the metric namespace on CloudWatch
    * @param metricName the metric name on CloudWatch
    * @return List of Metrics
    */
-  public List<Metric> listMetrics(final String nameSpace, final String metricName) {
+  public List<Metric> listMetrics(final String namespace, final String metricName) {
     final ListMetricsRequest listMetricsRequest =
-        new ListMetricsRequest().withNamespace(nameSpace).withMetricName(metricName);
+        new ListMetricsRequest().withNamespace(namespace).withMetricName(metricName);
     return amazonCloudWatch.listMetrics(listMetricsRequest).getMetrics();
   }
 
   /**
    * putMetricData publish metric to CloudWatch.
    *
-   * @param nameSpace the metric namespace on CloudWatch
+   * @param namespace the metric namespace on CloudWatch
    * @param metricName the metric name on CloudWatch
    * @param value the metric value on CloudWatch
    * @return Response of PMD call
    */
-  public PutMetricDataResult putMetricData(final String nameSpace,
+  public PutMetricDataResult putMetricData(final String namespace,
                                            final String metricName, final Double value) {
     MetricDatum datum = new MetricDatum()
             .withMetricName(metricName)
             .withUnit(StandardUnit.None)
             .withValue(value);
     PutMetricDataRequest request = new PutMetricDataRequest()
-            .withNamespace(nameSpace)
+            .withNamespace(namespace)
             .withMetricData(datum);
     return amazonCloudWatch.putMetricData(request);
   }
 
+  /**
+   * getDatapoints fetches datapoints from CloudWatch using the given request.
+   *
+   * @param request request for datapoint
+   * @return List of Datapoints
+   */
+  public List<Datapoint> getDatapoints(GetMetricStatisticsRequest request) {
+    return amazonCloudWatch.getMetricStatistics(request).getDatapoints();
+  }
 }

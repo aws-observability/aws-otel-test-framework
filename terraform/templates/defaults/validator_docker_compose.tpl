@@ -6,6 +6,7 @@ services:
       ../../validator
     volumes:
       - ~/.aws:/root/.aws
+      - ./output:/var/output
     env_file:
       - creds.env
     command:
