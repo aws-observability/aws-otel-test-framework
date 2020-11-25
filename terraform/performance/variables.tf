@@ -15,7 +15,7 @@
 
 # data points emitted per second
 variable "data_rate" {
-  default = 10000
+  default = 5000
 }
 
 variable "data_type" {
