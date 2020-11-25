@@ -42,17 +42,23 @@ locals{
 }
 
 data "template_file" "validation_config" {
-  template = file("../templates/defaults/performance-validation.tpl")
+  template = file("../templates/defaults/performance_validation.tpl")
 
   vars = {
     cpuMetricName = local.ami_family["soaking_cpu_metric_name"]
     memoryMetricName = local.ami_family["soaking_mem_metric_name"]
-    testcase = split("/", var.testcase)[2]
-    commitId = module.ec2_setup.commit_id
-    instanceType = module.ec2_setup.collector_instance_type
+    collectionPeriod = var.collection_period
     dataType = var.data_type
     dataRate = var.data_rate
-    collectionPeriod = var.collection_period
+    testcase = split("/", var.testcase)[2]
+    commitId = module.ec2_setup.commit_id
+    instanceId = module.ec2_setup.collector_instance_id
+    instanceType = module.ec2_setup.collector_instance_type
+    launchDate = module.ec2_setup.launch_date
+    exe = "aws-otel-collector"
+    processName = local.ami_family["soaking_process_name"]
+    testingAmi = var.testing_ami
+    negativeSoaking = module.ec2_setup.negative_soaking
   }
 }
 

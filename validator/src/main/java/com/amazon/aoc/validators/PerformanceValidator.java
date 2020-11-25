@@ -26,19 +26,9 @@ import java.util.Arrays;
 
 @Log4j2
 public class PerformanceValidator implements IValidator {
-  String cpuMetricName;
-  String memoryMetricName;
-  String testcase;
-  String commitId;
-  String instanceType;
-  String dataType;
-  Integer dataRate;
-  Integer collectionPeriod;
-  Integer datapointPeriod;
-
   private static int MAX_RETRY_COUNT = 30;
-  private static String testingType = "perf-test";
   private Context context;
+  private ValidationConfig validationConfig;
 
   @Override
   public void init(
@@ -48,15 +38,7 @@ public class PerformanceValidator implements IValidator {
       FileConfig expectedDataTemplate)
       throws Exception {
     this.context = context;
-    this.cpuMetricName = validationConfig.getCpuMetricName();
-    this.memoryMetricName = validationConfig.getMemoryMetricName();
-    this.testcase = validationConfig.getTestcase();
-    this.commitId = validationConfig.getCommitId();
-    this.instanceType = validationConfig.getInstanceType();
-    this.dataType = validationConfig.getDataType();
-    this.dataRate = validationConfig.getDataRate();
-    this.collectionPeriod = validationConfig.getCollectionPeriod();
-    this.datapointPeriod = validationConfig.getDatapointPeriod();
+    this.validationConfig = validationConfig;
   }
 
   // Create dimension given name and value
@@ -83,14 +65,15 @@ public class PerformanceValidator implements IValidator {
 
   private String buildJson(Double avgCpuStat, Double avgMemoryStat) throws JsonProcessingException {
     final PerformanceResult result = new PerformanceResult(
-        this.testcase,
-        this.instanceType,
-        this.dataType,
-        this.dataRate,
+        validationConfig.getTestcase(),
+        validationConfig.getInstanceType(),
+        validationConfig.getTestingAmi(),
+        validationConfig.getDataType(),
+        validationConfig.getDataRate(),
         avgCpuStat,
         avgMemoryStat,
-        this.commitId,
-        this.collectionPeriod
+        validationConfig.getCommitId(),
+        validationConfig.getCollectionPeriod()
     );
     return new ObjectMapper().writeValueAsString(result);
   }
@@ -99,29 +82,38 @@ public class PerformanceValidator implements IValidator {
   public void validate() throws Exception {
     final Date endTime = new Date();
     // Convert collection duration from minutes to milliseconds
-    final Integer durationMs = this.collectionPeriod * 60000;
+    final Integer durationMs = validationConfig.getCollectionPeriod() * 60000;
     final Date startTime = new Date(System.currentTimeMillis() - durationMs);
 
+    final String dataRateKey = validationConfig.getDataType() + "-"
+        + validationConfig.getDataRate();
     List<Dimension> dimensions = Arrays.asList(
-        createDimension("testcase", this.testcase),
-        createDimension("commit_id", this.commitId),
-        createDimension("data_rate", this.dataType + "-" + this.dataRate),
-        createDimension("instance_type", this.instanceType),
-        createDimension("testing_type", testingType)
+        createDimension("testcase", validationConfig.getTestcase()),
+        createDimension("commit_id", validationConfig.getCommitId()),
+        createDimension("data_rate", dataRateKey),
+        createDimension("InstanceId", validationConfig.getInstanceId()),
+        createDimension("instance_type", validationConfig.getInstanceType()),
+        createDimension("launch_date", validationConfig.getLaunchDate()),
+        createDimension("exe", validationConfig.getExe()),
+        createDimension("process_name", validationConfig.getProcessName()),
+        createDimension("testing_ami", validationConfig.getTestingAmi()),
+        createDimension("negative_soaking", validationConfig.getNegativeSoaking())
     );
 
     // Create requests
     final GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
         .withNamespace(context.getMetricNamespace())
-        .withPeriod(this.datapointPeriod)
+        .withPeriod(validationConfig.getDatapointPeriod())
         .withStartTime(startTime)
         .withEndTime(endTime)
         .withDimensions(dimensions)
         .withStatistics(Statistic.Average);
     final GetMetricStatisticsRequest cpuStatsRequest = request
-        .withMetricName(this.cpuMetricName);
+        .clone()
+        .withMetricName(validationConfig.getCpuMetricName());
     final GetMetricStatisticsRequest memoryStatsRequest = request
-        .withMetricName(this.memoryMetricName);
+        .clone()
+        .withMetricName(validationConfig.getMemoryMetricName());
 
     CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
     RetryHelper.retry(
@@ -132,7 +124,7 @@ public class PerformanceValidator implements IValidator {
           Double avgCpu = getAverageStats(cpuDatapoints);
           log.info("retrieving memory statistics");
           List<Datapoint> memoryDatapoints = cloudWatchService.getDatapoints(memoryStatsRequest);
-          Double avgMemory = getAverageStats(memoryDatapoints);
+          Double avgMemory = getAverageStats(memoryDatapoints) / 1000000;
 
           try {
             String jsonResult = buildJson(avgCpu, avgMemory);

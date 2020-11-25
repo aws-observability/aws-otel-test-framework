@@ -42,11 +42,18 @@ public class ValidationConfig {
    */
   String cpuMetricName;
   String memoryMetricName;
-  String testcase;
-  String commitId;
-  String instanceType;
-  String dataType;
-  Integer dataRate;
   Integer collectionPeriod;
   Integer datapointPeriod;
+  String dataType;
+  Integer dataRate;
+  // Dimensions
+  String testcase;
+  String commitId;
+  String instanceId;
+  String instanceType;
+  String launchDate;
+  String exe;
+  String processName;
+  String testingAmi;
+  String negativeSoaking;
 }

@@ -24,6 +24,7 @@ import java.io.Serializable;
 public class PerformanceResult implements Serializable {
   @NonNull private String testcase;
   @NonNull private String instanceType;
+  @NonNull private String testingAmi;
 
   @NonNull private String dataType;
   @NonNull private Integer dataRate;
