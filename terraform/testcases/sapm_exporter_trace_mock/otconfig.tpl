@@ -14,13 +14,12 @@ processors:
 exporters:
   logging:
     loglevel: debug
-  otlphttp:
-    traces_endpoint: "https://${mock_endpoint}"
-    insecure: true
+  sapm:
+    endpoint: "https://${mock_endpoint}"
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [otlphttp]
+      exporters: [sapm]
   extensions: [pprof]

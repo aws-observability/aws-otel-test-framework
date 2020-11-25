@@ -26,4 +26,5 @@ services:
       - "ecsTaskDefVersion=${ecs_taskdef_version}"
       - "--alarm-names=${cpu_alarm}"
       - "--alarm-names=${mem_alarm}"
+      - "--alarm-names=${incoming_packets_alarm}"
 

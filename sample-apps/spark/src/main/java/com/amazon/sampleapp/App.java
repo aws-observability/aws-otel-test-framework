@@ -20,7 +20,7 @@ package com.amazon.sampleapp;
 
 import static spark.Spark.*;
 
-import io.opentelemetry.trace.TracingContextUtils;
+import io.opentelemetry.api.trace.Span;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.Random;
@@ -120,7 +120,7 @@ public class App {
 
   // get x-ray trace id
   private static String getXrayTraceId() {
-    String traceId = TracingContextUtils.getCurrentSpan().getContext().getTraceIdAsHexString();
+    String traceId = Span.current().getSpanContext().getTraceIdAsHexString();
     String xrayTraceId = "1-" + traceId.substring(0, 8) + "-" + traceId.substring(8);
 
     return String.format("{\"traceId\": \"%s\"}", xrayTraceId);

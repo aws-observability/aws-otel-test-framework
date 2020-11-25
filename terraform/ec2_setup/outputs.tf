@@ -13,63 +13,39 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-variable "validation_config" {
-  default = "default-mocked-server-validation.yml"
+output "ami_family" {
+  value = var.ami_family[var.amis[var.testing_ami]["family"]]
 }
 
-variable "testing_id" {}
-
-variable "region" {
+output "collector_instance_public_ip" {
+  value = module.ec2_setup.collector_instance_public_ip
 }
 
-variable "sample_app_endpoint" {
-  default = ""
+output "collector_instance_id" {
+  value = module.ec2_setup.collector_instance_id
 }
 
-variable "mocked_server_validating_url" {
-  default = ""
+output "collector_instance_type" {
+  value = module.ec2_setup.collector_instance_type
 }
 
-variable "canary" {
-  default = false
+output "sample_app_instance_public_ip" {
+  value = module.ec2_setup.sample_app_instance_public_ip
 }
 
-variable "metric_namespace" {
-  default = ""
+output "testing_id" {
+  value = module.ec2_setup.testing_id
 }
 
-variable "ecs_cluster_name" {
-  default = ""
+output "negative_soaking" {
+  value = var.negative_soaking
 }
 
-variable "ecs_task_arn" {
-  default = ""
+output "commit_id" {
+  value = var.commit_id
 }
 
-variable "ecs_taskdef_family" {
-  default = ""
+output "launch_date" {
+  value = local.launch_date
 }
 
-variable "ecs_taskdef_version" {
-  default = ""
-}
-
-variable "cpu_alarm" {
-  default = ""
-}
-
-variable "mem_alarm" {
-  default = ""
-}
-
-variable "incoming_packets_alarm" {
-  default = ""
-}
-
-variable "aws_access_key_id" {
-  default = ""
-}
-
-variable "aws_secret_access_key" {
-  default = ""
-}

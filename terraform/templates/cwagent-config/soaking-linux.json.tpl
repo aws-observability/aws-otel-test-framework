@@ -7,45 +7,22 @@
       "InstanceId": "$${aws:InstanceId}"
     },
     "metrics_collected": {
-      "cpu": {
-        "measurement": [
-          "cpu_usage_idle",
-          "cpu_usage_iowait",
-          "cpu_usage_user",
-          "cpu_usage_system"
-        ],
-        "totalcpu": false
-      },
-      "disk": {
-        "measurement": [
-          "used_percent",
-          "inodes_free"
-        ]
-      },
-      "diskio": {
-        "measurement": [
-          "io_time"
-        ]
-      },
-      "mem": {
-        "measurement": [
-          "mem_used_percent"
-        ]
-      },
-      "statsd": {
-      },
-      "swap": {
-        "measurement": [
-          "swap_used_percent"
-        ]
-      },
       "procstat": [
         {
           "measurement": [
             "cpu_usage",
             "memory_rss"
           ],
-          "exe": "aws-otel-collector"
+          "exe": "aws-otel-collector",
+          "append_dimensions": {
+            "commit_id": "${commit_id}",
+            "testcase": "${testcase}",
+            "launch_date": "${launch_date}",
+            "negative_soaking": "${negative_soaking}",
+            "data_rate": "${data_rate}",
+            "instance_type": "${instance_type}",
+            "testing_ami": "${testing_ami}"
+          }
         }
       ]
     },

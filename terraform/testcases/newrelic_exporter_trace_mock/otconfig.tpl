@@ -14,13 +14,13 @@ processors:
 exporters:
   logging:
     loglevel: debug
-  otlphttp:
-    traces_endpoint: "https://${mock_endpoint}"
-    insecure: true
+  newrelic:
+    apikey: super-secret-api-key
+    spans_url_override: "https://${mock_endpoint}"
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [otlphttp]
+      exporters: [newrelic]
   extensions: [pprof]

@@ -7,7 +7,7 @@ COPY ./settings.gradle ./settings.gradle
 
 RUN gradle build
 RUN tar -xvf build/distributions/spark-sample-app-1.0.tar
-RUN wget https://github.com/aws-observability/aws-otel-java-instrumentation/releases/download/v0.9.0/aws-opentelemetry-agent.jar
+RUN wget https://github.com/aws-observability/aws-otel-java-instrumentation/releases/download/v0.10.1-aws.1/aws-opentelemetry-agent.jar
 
 FROM amazoncorretto:11 
 

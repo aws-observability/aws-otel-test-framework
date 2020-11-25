@@ -13,22 +13,17 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-variable "testing_ami" {
-  default = "soaking_linux"
+# data points emitted per second
+variable "data_rate" {
+  default = 10000
 }
 
-variable "soaking_data_rate" {
-  default = 1000
-}
-
-# data model type. possible values: otlp, xray, etc
-variable "soaking_data_type" {
+variable "data_type" {
   default = "otlp"
 }
 
-# data type will be emitted. Possible values: metric or trace
-variable "soaking_data_mode" {
-  default = "metric"
+variable "testing_ami" {
+  default = "soaking_linux"
 }
 
 # options: s3, local
@@ -39,11 +34,6 @@ variable "install_package_source" {
 # use this parameter when install_package_source is local
 variable "install_package_local_path" {
   default = "../../../aws-otel-collector/build/packages/linux/amd64/aws-otel-collector.rpm"
-}
-
-
-variable "commit_id" {
-  default = "dummy_commit"  
 }
 
 # if ssh_key_name is empty, we create private key every time we create instance.
@@ -58,8 +48,4 @@ variable "sshkey_s3_bucket" {
 
 variable "sshkey_s3_private_key" {
   default = ""
-}
-
-variable "negative_soaking" {
-  default = false
 }

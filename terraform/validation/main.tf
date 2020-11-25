@@ -43,6 +43,7 @@ data "template_file" "docker_compose" {
     # alarm related
     cpu_alarm = var.cpu_alarm
     mem_alarm = var.mem_alarm
+    incoming_packets_alarm = var.incoming_packets_alarm
 
 
   }
@@ -59,7 +60,7 @@ resource "local_file" "docker_compose_file" {
 
 # render credentials env file if the credentials env vars are provided,
 # this will be mainly used in github workflow where there's no ~/.aws folder
-resource "template_file" "env_file_template" {
+data "template_file" "env_file_template" {
   template = file("../templates/defaults/credentials-env.tpl")
 
   vars = {
@@ -71,7 +72,7 @@ resource "template_file" "env_file_template" {
 resource "local_file" "env_file" {
   filename = "creds.env"
 
-  content = local.provide_credentials_via_env_vars ? template_file.env_file_template.rendered : ""
+  content = local.provide_credentials_via_env_vars ? data.template_file.env_file_template.rendered : ""
 }
 
 

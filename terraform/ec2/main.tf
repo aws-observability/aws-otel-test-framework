@@ -61,26 +61,20 @@ locals {
   ecr_login_domain = split("/", data.aws_ecr_repository.sample_app.repository_url)[0]
 }
 
-## get the ssh private key
-resource "tls_private_key" "ssh_key" {
-  algorithm   = "RSA"
-  rsa_bits    = 4096
-}
 
-resource "aws_key_pair" "aws_ssh_key" {
-  key_name = "testing-${module.common.testing_id}"
-  public_key = tls_private_key.ssh_key.public_key_openssh
-}
 
 ## launch a sidecar instance to install data emitter and the mocked server
 resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.suse.id
-  instance_type               = "t2.micro"
+  instance_type               = "m5.2xlarge"
   subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
-  key_name                    = aws_key_pair.aws_ssh_key.key_name
+  key_name                    = local.ssh_key_name
+  tags = {
+    Name = "Integ-test-Sample-App"
+  }
 
 }
 
@@ -92,9 +86,13 @@ resource "aws_instance" "aoc" {
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
-  key_name                    = aws_key_pair.aws_ssh_key.key_name
+  key_name                    = local.ssh_key_name
   get_password_data = local.connection_type == "winrm" ? true : null
   user_data = local.user_data
+
+  tags = {
+    Name = "Integ-test-aoc"
+  }
 
 }
 
@@ -114,7 +112,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
     connection {
       type = local.connection_type
       user = local.login_user
-      password = rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem)
+      password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
       host = aws_instance.aoc.public_ip
     }
   }
@@ -128,7 +126,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
     connection {
       type = local.connection_type
       user = local.login_user
-      password = rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem)
+      password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
       host = aws_instance.aoc.public_ip
     }
   }
@@ -143,8 +141,8 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -161,17 +159,53 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = tls_private_key.ssh_key.private_key_pem
+      private_key = local.private_key_content
       host = aws_instance.aoc.public_ip
     }
   }
 }
 
-############################################
-# Start collector
-###########################################
-resource "null_resource" "start_collector" {
 
+############################################
+# Download and Start collector
+############################################
+resource "null_resource" "download_collector_from_local" {
+  count = var.install_package_source == "local" ? 1 : 0
+  provisioner "file" {
+    source = var.install_package_local_path
+    destination = local.ami_family["install_package"]
+
+    connection {
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
+      host = aws_instance.aoc.public_ip
+    }
+  }
+}
+
+resource "null_resource" "download_collector_from_s3" {
+  count = var.install_package_source == "s3" ? 1 : 0
+
+  provisioner "remote-exec" {
+    inline = [
+      local.download_command
+    ]
+
+    connection {
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
+      host = aws_instance.aoc.public_ip
+    }
+  }
+}
+
+resource "null_resource" "start_collector" {
+  # either getting the install package from s3 or from local
+  depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3]
   provisioner "file" {
     content = module.basic_components.otconfig_content
     destination = local.otconfig_destination
@@ -179,15 +213,14 @@ resource "null_resource" "start_collector" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }
 
   provisioner "remote-exec" {
     inline = [
-      local.download_command,
       local.ami_family["install_command"],
       local.ami_family["start_command"],
     ]
@@ -195,8 +228,8 @@ resource "null_resource" "start_collector" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem : null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -233,7 +266,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
     connection {
       type = "ssh"
       user = "ec2-user"
-      private_key = tls_private_key.ssh_key.private_key_pem
+      private_key = local.private_key_content
       host = aws_instance.sidecar.public_ip
     }
   }
@@ -242,14 +275,14 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       "sudo curl -L 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' -o /usr/local/bin/docker-compose",
       "sudo chmod +x /usr/local/bin/docker-compose",
       "sudo systemctl start docker",
-      "sudo docker run --rm -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password --region ${var.region} | sudo docker login --username AWS --password-stdin ${local.ecr_login_domain}",
+      "sudo `aws ecr get-login --no-include-email --region ${var.region}`",
       "sudo /usr/local/bin/docker-compose -f /tmp/docker-compose.yml up -d"
     ]
 
     connection {
       type = "ssh"
       user = "ec2-user"
-      private_key = tls_private_key.ssh_key.private_key_pem
+      private_key = local.private_key_content
       host = aws_instance.sidecar.public_ip
     }
   }
@@ -262,6 +295,13 @@ data "template_file" "cwagent_config" {
 
   vars = {
     soaking_metric_namespace = var.soaking_metric_namespace
+    testcase = split("/", var.testcase)[2]
+    commit_id = var.commit_id
+    launch_date = var.launch_date
+    negative_soaking = var.negative_soaking
+    data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
+    instance_type = aws_instance.aoc.instance_type
+    testing_ami = var.testing_ami
   }
 }
 
@@ -279,8 +319,8 @@ resource "null_resource" "install_cwagent" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem: null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content: null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }
@@ -295,8 +335,8 @@ resource "null_resource" "install_cwagent" {
     connection {
       type = local.connection_type
       user = local.login_user
-      private_key = local.connection_type == "ssh" ? tls_private_key.ssh_key.private_key_pem: null
-      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, tls_private_key.ssh_key.private_key_pem) : null
+      private_key = local.connection_type == "ssh" ? local.private_key_content: null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host = aws_instance.aoc.public_ip
     }
   }

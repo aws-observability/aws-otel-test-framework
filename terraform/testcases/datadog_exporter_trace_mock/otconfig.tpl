@@ -8,19 +8,23 @@ receivers:
         endpoint: 0.0.0.0:${grpc_port}
 
 processors:
-  batch/metrics:
-    timeout: 60s
+  batch:
+    timeout: 10s
 
 exporters:
   logging:
     loglevel: debug
-  otlphttp:
-    traces_endpoint: "https://${mock_endpoint}"
-    insecure: true
+  datadog:
+    api:
+      key: testapikey
+    metrics:
+      endpoint: "https://${mock_endpoint}"
+    traces:
+      endpoint: "https://${mock_endpoint}"
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [otlphttp]
+      exporters: [datadog]
   extensions: [pprof]

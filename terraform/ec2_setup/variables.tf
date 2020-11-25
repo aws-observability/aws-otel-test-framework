@@ -14,9 +14,18 @@
 # -------------------------------------------------------------------------
 
 variable "testing_ami" {
-  default = "soaking_linux"
 }
 
+variable "soaking_data_emitter_image" {
+  default = "aottestbed/aws-otel-load-generator:v0.1.0"
+}
+
+# data type will be emitted. Possible values: metric or trace
+variable "soaking_data_mode" {
+  default = "metric"
+}
+
+# data points emitted per second
 variable "soaking_data_rate" {
   default = 1000
 }
@@ -26,9 +35,24 @@ variable "soaking_data_type" {
   default = "otlp"
 }
 
-# data type will be emitted. Possible values: metric or trace
-variable "soaking_data_mode" {
-  default = "metric"
+variable "negative_soaking" {
+  default = false
+}
+
+# if ssh_key_name is empty, we create private key every time we create instance.
+# if not, we pull the private key from s3.
+variable "ssh_key_name" {
+}
+
+variable "sshkey_s3_bucket" {
+}
+
+variable "sshkey_s3_private_key" {
+}
+
+# this commit id will be used as a dimension so that we can track metrics
+variable "commit_id" {
+  default = "dummy_commit"
 }
 
 # options: s3, local
@@ -41,25 +65,3 @@ variable "install_package_local_path" {
   default = "../../../aws-otel-collector/build/packages/linux/amd64/aws-otel-collector.rpm"
 }
 
-
-variable "commit_id" {
-  default = "dummy_commit"  
-}
-
-# if ssh_key_name is empty, we create private key every time we create instance.
-# if not, we pull the private key from s3.
-variable "ssh_key_name" {
-  default = ""
-}
-
-variable "sshkey_s3_bucket" {
-  default = ""
-}
-
-variable "sshkey_s3_private_key" {
-  default = ""
-}
-
-variable "negative_soaking" {
-  default = false
-}
