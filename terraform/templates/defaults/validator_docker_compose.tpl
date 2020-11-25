@@ -17,6 +17,7 @@ services:
       - "--mocked-server-validating-url=${mocked_server_validating_url}"
       - "--metric-namespace=${metric_namespace}"
       - "--canary=${canary}"
+      - "--testcase=${testcase}"
       - "--ecs-context"
       - "ecsClusterName=${ecs_cluster_name}"
       - "--ecs-context"

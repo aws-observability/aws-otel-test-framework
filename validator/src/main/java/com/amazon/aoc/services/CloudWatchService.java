@@ -18,6 +18,7 @@ package com.amazon.aoc.services;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
 import com.amazonaws.services.cloudwatch.model.Datapoint;
+import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
 import com.amazonaws.services.cloudwatch.model.Metric;
@@ -60,13 +61,16 @@ public class CloudWatchService {
    * @param namespace the metric namespace on CloudWatch
    * @param metricName the metric name on CloudWatch
    * @param value the metric value on CloudWatch
+   * @param dimensions the dimensions of metric
    * @return Response of PMD call
    */
   public PutMetricDataResult putMetricData(final String namespace,
-                                           final String metricName, final Double value) {
+                                           final String metricName, final Double value,
+                                           final Dimension... dimensions) {
     MetricDatum datum = new MetricDatum()
             .withMetricName(metricName)
             .withUnit(StandardUnit.None)
+            .withDimensions(dimensions)
             .withValue(value);
     PutMetricDataRequest request = new PutMetricDataRequest()
             .withNamespace(namespace)

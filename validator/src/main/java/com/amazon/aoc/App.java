@@ -21,6 +21,7 @@ import com.amazon.aoc.models.ECSContext;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazon.aoc.validators.ValidatorFactory;
+import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
@@ -77,6 +78,15 @@ public class App implements Callable<Integer> {
           defaultValue = "false")
   private boolean isCanary;
 
+  @CommandLine.Option(
+          names = {"--testcase"},
+          defaultValue = "otlp_mock")
+  private String testcase;
+
+  private static final String TEST_CASE_DIM_KEY = "testcase";
+  private static final String CANARY_NAMESPACE = "Otel/Canary";
+  private static final String CANARY_METRIC_NAME = "Success";
+
   public static void main(String[] args) throws Exception {
     int exitCode = new CommandLine(new App()).execute(args);
     System.exit(exitCode);
@@ -111,6 +121,7 @@ public class App implements Callable<Integer> {
   private void validate(Context context, List<ValidationConfig> validationConfigList)
           throws Exception {
     CloudWatchService cloudWatchService = new CloudWatchService(region);
+    Dimension dimension = new Dimension().withName(TEST_CASE_DIM_KEY).withValue(this.testcase);
     int maxValidationCycles = 1;
     ValidatorFactory validatorFactory = new ValidatorFactory(context);
     if (this.isCanary) {
@@ -123,7 +134,7 @@ public class App implements Callable<Integer> {
         } catch (Exception e) {
           if (this.isCanary) {
             //emit metric
-            cloudWatchService.putMetricData("Otel/Canary", "Success", 0.0);
+            cloudWatchService.putMetricData(CANARY_NAMESPACE, CANARY_METRIC_NAME, 0.0, dimension);
           }
           throw e;
         }
@@ -137,9 +148,10 @@ public class App implements Callable<Integer> {
     }
     if (this.isCanary) {
       //emit metric
-      cloudWatchService.putMetricData("Otel/Canary", "Success", 1.0);
+      cloudWatchService.putMetricData(CANARY_NAMESPACE, CANARY_METRIC_NAME, 1.0, dimension);
     }
   }
+
   private ECSContext buildECSContext(Map<String, String> ecsContextMap) {
     if (ecsContextMap == null) {
       return null;

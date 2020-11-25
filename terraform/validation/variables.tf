@@ -34,6 +34,10 @@ variable "canary" {
   default = false
 }
 
+variable "testcase" {
+  default = ""
+}
+
 variable "metric_namespace" {
   default = ""
 }
