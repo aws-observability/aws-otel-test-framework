@@ -49,7 +49,7 @@ public class CortexService {
    * @param timestamp the timestamp from sample app
    * @return List of PrometheusMetrics
    */
-  public List<PrometheusMetric> listMetricsFromSampleApp(final String query, final String timestamp)
+  public List<PrometheusMetric> listMetricsWithTimestamp(final String query, final String timestamp)
           throws IOException, URISyntaxException, BaseException {
     BigDecimal newTimestamp = new BigDecimal(timestamp).add(new BigDecimal(INTERVAL));
     return listMetrics(query, newTimestamp.toPlainString());

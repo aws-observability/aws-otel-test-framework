@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -79,7 +80,6 @@ public class PrometheusMetricValidator implements IValidator {
   private void compareMetricLists(List<PrometheusMetric> toBeCheckedMetricList,
                                   List<PrometheusMetric> baseMetricList)
           throws BaseException {
-
     // load metrics into a tree set
     Comparator<PrometheusMetric> comparator = PrometheusMetric::comparePrometheusMetricLabels;
 
@@ -103,10 +103,19 @@ public class PrometheusMetricValidator implements IValidator {
 
   private List<PrometheusMetric> getExpectedMetricList(Context context) throws Exception {
     if (!validationConfig.getExpectedResultPath().isEmpty()) {
+      // add delay to allow sample app lb to start
+      log.info("sleeping to allow sample app lb to start");
+      TimeUnit.SECONDS.sleep(30);
+      log.info("resuming validation");
+
       log.info("getting expected metrics from sample endpoint");
       PullModeSampleAppClient<List<PrometheusMetric>> pullModeSampleAppClient =
-              new PullModeSampleAppClient<>(context, validationConfig.getExpectedResultPath());
-      return pullModeSampleAppClient.getExpectedResult();
+              new PullModeSampleAppClient<>(context,
+                      validationConfig.getExpectedResultPath(),
+                      new ObjectMapper()
+                              .getTypeFactory()
+                              .constructCollectionType(List.class, PrometheusMetric.class));
+      return pullModeSampleAppClient.getExpectedResults();
     }
 
     log.info("getting expected metrics");
@@ -131,10 +140,9 @@ public class PrometheusMetricValidator implements IValidator {
     List<PrometheusMetric> result = new ArrayList<>();
     for (PrometheusMetric expectedMetric : expectedMetricList) {
       // retrieve metric based on the sample app generated timestamp
-      result.addAll(cortexService.listMetricsFromSampleApp(expectedMetric.getMetricName(),
+      result.addAll(cortexService.listMetricsWithTimestamp(expectedMetric.getMetricName(),
               expectedMetric.getMetricTimestamp()));
     }
-
     return removeSkippedMetrics(result);
   }
 
