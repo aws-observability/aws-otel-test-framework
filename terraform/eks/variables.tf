@@ -17,4 +17,7 @@ variable "eks_cluster_name" {
   default = "aoc-test-eks-ec2"
 }
 
+variable "sample_app_mode" {
+  default = "push"
+}
 

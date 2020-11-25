@@ -105,3 +105,8 @@ output "sample_app_ecr_repo_name" {
 output "mocked_server_ecr_repo_name" {
   value = "otel-test/mocked-server"
 }
+
+output "cortex_instance_endpoint" {
+  # change to your cortex endpoint
+  value = ""
+}
