@@ -1,0 +1,3 @@
+-
+  validationType: "prom-metric-scraping"
+  expectedResultPath: "/expected_metrics"
