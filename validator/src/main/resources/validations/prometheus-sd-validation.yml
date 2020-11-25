@@ -1,0 +1,3 @@
+-
+  validationType: "prom-metric-sd"
+  expectedResultPath: "/expected_metrics"
