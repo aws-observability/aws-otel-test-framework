@@ -1,4 +1,4 @@
-# prometheus-sample-app
+# Prometheus sample app
 
 This Prometheus sample app generates all 4 Prometheus metric types (counter, gauge, histogram, summary) and exposes them at the `/metrics` endpoint
 
@@ -7,7 +7,7 @@ At the same time, the generated metrics are also exposed at the `/expected_metri
 A health check endpoint also exists at `/`
 
 The following is a list of optional environment variables for configuration:
-* `LISTEN_ADDRESS`: (default = ``0.0.0.0:8080`)this defines the address and port that the sample app is exposed to. This is primarily to conform with the test framework requirements.
+* `LISTEN_ADDRESS`: (default = `0.0.0.0:8080`)this defines the address and port that the sample app is exposed to. This is primarily to conform with the test framework requirements.
 * `INSTANCE_ID`: a unique identifier for a batch of metrics from 1 instance of a sample app. Every metric name from a sample app instance will be prefixed by `testINSTANCE_ID_` if specified, else the prefix would be `test_`
 * `METRICS_LOAD`: (default=1) the amount of each type of metric to generate. The same amount of metrics is always generated per metric type.
 
