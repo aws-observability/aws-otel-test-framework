@@ -58,3 +58,7 @@ variable "sshkey_s3_private_key" {
 variable "collection_period" {
   default = 10
 }
+
+variable "commit_id" {
+  default = "dummy_commit"
+}

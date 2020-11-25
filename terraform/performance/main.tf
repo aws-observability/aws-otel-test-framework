@@ -21,6 +21,7 @@ module "ec2_setup" {
   source = "../ec2_setup"
 
   aoc_version = var.aoc_version
+  commit_id = var.commit_id
   testcase = var.testcase
   testing_ami = var.testing_ami
   soaking_data_rate = var.data_rate
