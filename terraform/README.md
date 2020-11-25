@@ -249,7 +249,7 @@ An example for validation config.
   callingType: "http"
   expectedTraceTemplate: "DEFAULT_EXPECTED_TRACE"
 -
-  validationType: "metric"
+  validationType: "cw-metric"
   httpPath: "/span0"
   httpMethod: "get"
   callingType: "http"
