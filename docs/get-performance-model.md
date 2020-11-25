@@ -23,7 +23,7 @@ cd aws-otel-collector && make package-rpm
 
 ## Step 3. Run the performance test and get the performance model.
 
-You are going to run three rounds of the test, each takes one hour, performance model is presented as a file `performance_model.json` after each round.
+You are going to run three rounds of the test, each takes one hour, performance model is presented as a file `output/performance.json` after each round.
 
 
 1. Run on rate 100 tps
@@ -46,17 +46,17 @@ terraform destroy
 cat performance_model.json
 ```
 
-3. Run on rate 10000 tps
+3. Run on rate 5000 tps
 
 ```shell
 cd aws-otel-test-framework/terraform/performance
 terraform init
-terraform apply -var="data_rate=1000" -var="testcase=../testcases/{{testcase name}}" -var="install_package_source=local" -var-file="../testcases/{{testcase name}}/parameters.tfvars"
+terraform apply -var="data_rate=5000" -var="testcase=../testcases/{{testcase name}}" -var="install_package_source=local" -var-file="../testcases/{{testcase name}}/parameters.tfvars"
 terraform destroy
 cat performance_model.json
 ```
 
-4. Put the content of the `performance_model.json` into the pr you are going to create in the [AWS Otel Collector Repo](https://github.com/aws-observability/aws-otel-collector).  Or put it in the issue if you have one.
+4. Put the content of the `output/performance.json` into the pr you are going to create in the [AWS Otel Collector Repo](https://github.com/aws-observability/aws-otel-collector).  Or put it in the issue if you have one.
 
 
 ## Step 4 [Optional only if you want to debug your test]  Debug
