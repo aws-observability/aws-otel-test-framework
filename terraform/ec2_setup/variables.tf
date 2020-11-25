@@ -20,11 +20,6 @@ variable "soaking_data_emitter_image" {
   default = "aottestbed/aws-otel-load-generator:v0.1.0"
 }
 
-# data type will be emitted. Possible values: metric or trace
-variable "soaking_data_mode" {
-  default = "metric"
-}
-
 # data points emitted per second
 variable "soaking_data_rate" {
   default = 1000
