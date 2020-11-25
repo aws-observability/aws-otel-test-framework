@@ -1,3 +1,4 @@
 -
-  validationType: "prom-metric-sd"
+  validationType: "prom-metric"
+  shouldValidateMetricValue: false
   expectedResultPath: "/expected_metrics"

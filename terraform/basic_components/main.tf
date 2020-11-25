@@ -73,7 +73,7 @@ data "template_file" "otconfig" {
     testing_id = var.testing_id
     grpc_port = module.common.grpc_port
     udp_port = module.common.udp_port
-    cortex_instance_endpoint = module.common.cortex_instance_endpoint
+    cortex_instance_endpoint = var.cortex_instance_endpoint
     sample_app_listen_address_ip = module.common.sample_app_listen_address_ip
     sample_app_listen_address_port = module.common.sample_app_listen_address_port
     sample_app_lb_port = module.common.sample_app_lb_port

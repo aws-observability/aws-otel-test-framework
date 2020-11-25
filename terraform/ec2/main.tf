@@ -31,6 +31,8 @@ module "basic_components" {
   mocked_endpoint = var.mock_endpoint
 
   sample_app = var.sample_app
+
+  cortex_instance_endpoint = var.cortex_instance_endpoint
 }
 
 provider "aws" {

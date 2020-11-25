@@ -29,3 +29,6 @@ variable "mocked_endpoint" {
 variable "sample_app" {
 }
 
+variable "cortex_instance_endpoint" {
+
+}

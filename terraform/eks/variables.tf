@@ -17,7 +17,7 @@ variable "eks_cluster_name" {
   default = "aoc-test-eks-ec2"
 }
 
-variable "sample_app_mode" {
-  default = "push"
+variable "cortex_instance_endpoint" {
+  # change to your cortex endpoint
+  default = ""
 }
-
