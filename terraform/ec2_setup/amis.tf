@@ -6,7 +6,7 @@ variable "ami_family" {
       instance_type = "m5.2xlarge"
       otconfig_destination = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
-      install_command = "sudo rpm -Uvh aws-otel-collector.rpm"
+      install_command = "sudo rpm -Uvh aws-otel-collector.rpm && sudo chmod 777 /opt/aws/aws-otel-collector/etc/.env && sudo echo 'GODEBUG=madvdontneed=1' >> /opt/aws/aws-otel-collector/etc/.env"
       start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
