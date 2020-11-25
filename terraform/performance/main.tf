@@ -20,10 +20,14 @@ provider "aws" {
 module "ec2_setup" {
   source = "../ec2_setup"
 
+  aoc_version = var.aoc_version
+  commit_id = var.commit_id
   testcase = var.testcase
   testing_ami = var.testing_ami
   soaking_data_rate = var.data_rate
   soaking_data_type = var.data_type
+  soaking_data_mode = var.soaking_data_mode
+
   install_package_source = var.install_package_source
   install_package_local_path = var.install_package_local_path
 
@@ -50,6 +54,7 @@ data "template_file" "validation_config" {
     collectionPeriod = var.collection_period
     dataType = var.data_type
     dataRate = var.data_rate
+    dataMode = var.soaking_data_mode
     testcase = split("/", var.testcase)[2]
     commitId = module.ec2_setup.commit_id
     instanceId = module.ec2_setup.collector_instance_id

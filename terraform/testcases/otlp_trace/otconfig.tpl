@@ -18,5 +18,5 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [logging, awsxray]
+      exporters: [awsxray]
   extensions: [pprof]

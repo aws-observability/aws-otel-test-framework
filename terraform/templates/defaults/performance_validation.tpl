@@ -5,6 +5,7 @@
   collectionPeriod: ${collectionPeriod}
   datapointPeriod: 60 # The granularity, in seconds, of data points
   dataType: "${dataType}"
+  dataMode: "${dataMode}"
   dataRate: ${dataRate}
   testcase: "${testcase}"
   commitId: "${commitId}"

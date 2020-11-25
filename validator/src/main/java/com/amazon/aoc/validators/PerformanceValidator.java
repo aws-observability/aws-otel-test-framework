@@ -66,7 +66,7 @@ public class PerformanceValidator implements IValidator {
     final Integer durationMs = validationConfig.getCollectionPeriod() * 60000;
     final Date startTime = new Date(System.currentTimeMillis() - durationMs);
 
-    final String dataRateKey = validationConfig.getDataType() + "-"
+    final String dataRateKey = validationConfig.getDataMode() + "-"
         + validationConfig.getDataRate();
     List<Dimension> dimensions = Arrays.asList(
         createDimension("testcase", validationConfig.getTestcase()),

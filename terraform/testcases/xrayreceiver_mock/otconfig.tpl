@@ -20,5 +20,5 @@ service:
   pipelines:
     traces:
       receivers: [awsxray]
-      exporters: [logging, awsxray]
+      exporters: [awsxray]
   extensions: [pprof]

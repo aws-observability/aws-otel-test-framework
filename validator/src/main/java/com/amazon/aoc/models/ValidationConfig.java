@@ -45,7 +45,9 @@ public class ValidationConfig {
   Integer collectionPeriod;
   Integer datapointPeriod;
   String dataType;
+  String dataMode;
   Integer dataRate;
+
   // Dimensions
   String testcase;
   String commitId;

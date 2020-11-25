@@ -31,7 +31,7 @@ variable "aoc_image_repo" {
 }
 
 variable "aoc_version" {
-  default = "v0.3.0-346703560"
+  default = "v0.4.0-382067259"
 }
 
 variable "aws_access_key_id" {
@@ -51,3 +51,6 @@ variable "debug" {
   default = false
 }
 
+variable "soaking_data_mode" {
+  default = "metric"
+}

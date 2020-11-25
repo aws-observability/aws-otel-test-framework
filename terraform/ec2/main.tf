@@ -299,7 +299,7 @@ data "template_file" "cwagent_config" {
     commit_id = var.commit_id
     launch_date = var.launch_date
     negative_soaking = var.negative_soaking
-    data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
+    data_rate = "${var.soaking_data_mode}-${var.soaking_data_rate}"
     instance_type = aws_instance.aoc.instance_type
     testing_ami = var.testing_ami
   }

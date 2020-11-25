@@ -85,7 +85,7 @@ resource "aws_cloudwatch_metric_alarm" "cpu_alarm" {
         launch_date = module.ec2_setup.launch_date
         commit_id = module.ec2_setup.commit_id
         negative_soaking = module.ec2_setup.negative_soaking
-        data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
+        data_rate = "${var.soaking_data_mode}-${var.soaking_data_rate}"
         instance_type = module.ec2_setup.collector_instance_type
         testing_ami = var.testing_ami
       }
@@ -120,7 +120,7 @@ resource "aws_cloudwatch_metric_alarm" "mem_alarm" {
         launch_date = module.ec2_setup.launch_date
         commit_id = module.ec2_setup.commit_id
         negative_soaking = module.ec2_setup.negative_soaking
-        data_rate = "${var.soaking_data_type}-${var.soaking_data_rate}"
+        data_rate = "${var.soaking_data_mode}-${var.soaking_data_rate}"
         instance_type = module.ec2_setup.collector_instance_type
         testing_ami = var.testing_ami
       }
