@@ -95,13 +95,22 @@ public class App implements Callable<Integer> {
 
     log.info(context);
 
-    CloudWatchService cloudWatchService = new CloudWatchService(region);
-
     // load config
     List<ValidationConfig> validationConfigList =
         new ConfigLoadHelper().loadConfigFromFile(configPath);
 
     // run validation
+    validate(context, validationConfigList);
+
+    Instant endTime = Instant.now();
+    Duration duration = Duration.between(startTime, endTime);
+    log.info("Validation has completed in {} minutes.", duration.toMinutes());
+    return null;
+  }
+
+  private void validate(Context context, List<ValidationConfig> validationConfigList)
+          throws Exception {
+    CloudWatchService cloudWatchService = new CloudWatchService(region);
     int maxValidationCycles = 1;
     ValidatorFactory validatorFactory = new ValidatorFactory(context);
     if (this.isCanary) {
@@ -126,16 +135,11 @@ public class App implements Callable<Integer> {
         TimeUnit.MINUTES.sleep(1);
       }
     }
-    Instant endTime = Instant.now();
-    Duration duration = Duration.between(startTime, endTime);
-    log.info("Validation has completed in {} minutes.", duration.toMinutes());
     if (this.isCanary) {
       //emit metric
       cloudWatchService.putMetricData("Otel/Canary", "Success", 1.0);
     }
-    return null;
   }
-
   private ECSContext buildECSContext(Map<String, String> ecsContextMap) {
     if (ecsContextMap == null) {
       return null;

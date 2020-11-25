@@ -39,11 +39,11 @@ module "ec2_setup" {
   testing_ami = var.testing_ami
   aoc_version = var.aoc_version
   region = var.region
-  canary = var.canary
   testcase = var.testcase
   validation_config = var.validation_config
   sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
   skip_validation = false
+  canary = true
 
   # install cwagent
   install_cwagent = false
