@@ -28,24 +28,6 @@ variable "soaking_compose_file" {
   default = ""
 }
 
-######################
-# Soaking related
-######################
-# data type will be emitted. Possible values: metric or trace
-variable "soaking_data_mode" {
-  default = "metric"
-}
-
-# data points were emitted per second
-variable "soaking_data_rate" {
-  default = 100
-}
-
-# data model type. possible values: otlp, xray, etc
-variable "soaking_data_type" {
-  default = "otlp"
-}
-
 variable "skip_validation" {
   default = false
 }
