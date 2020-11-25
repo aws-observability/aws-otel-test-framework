@@ -55,6 +55,9 @@ public class ValidatorFactory {
       case "mocked-server":
         validator = new MockedServerValidator();
         break;
+      case "performance":
+        validator = new PerformanceValidator();
+        break;
       default:
         throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED);
     }
