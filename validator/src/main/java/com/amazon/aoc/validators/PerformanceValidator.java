@@ -1,8 +1,6 @@
 package com.amazon.aoc.validators;
 
 import com.amazon.aoc.callers.ICaller;
-import com.amazon.aoc.exception.BaseException;
-import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
@@ -13,19 +11,17 @@ import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.Statistic;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 
-import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
+import java.io.File;
 import java.util.Date;
 import java.util.List;
 import java.util.Arrays;
 
 @Log4j2
 public class PerformanceValidator implements IValidator {
+  private static String outputFileName = "performance.json";
   private static int MAX_RETRY_COUNT = 30;
   private Context context;
   private ValidationConfig validationConfig;
@@ -61,21 +57,6 @@ public class PerformanceValidator implements IValidator {
     }
 
     return sum / datapoints.size();
-  }
-
-  private String buildJson(Double avgCpuStat, Double avgMemoryStat) throws JsonProcessingException {
-    final PerformanceResult result = new PerformanceResult(
-        validationConfig.getTestcase(),
-        validationConfig.getInstanceType(),
-        validationConfig.getTestingAmi(),
-        validationConfig.getDataType(),
-        validationConfig.getDataRate(),
-        avgCpuStat,
-        avgMemoryStat,
-        validationConfig.getCommitId(),
-        validationConfig.getCollectionPeriod()
-    );
-    return new ObjectMapper().writeValueAsString(result);
   }
 
   @Override
@@ -126,11 +107,23 @@ public class PerformanceValidator implements IValidator {
           List<Datapoint> memoryDatapoints = cloudWatchService.getDatapoints(memoryStatsRequest);
           Double avgMemory = getAverageStats(memoryDatapoints) / 1000000;
 
+          final PerformanceResult result = new PerformanceResult(
+              validationConfig.getTestcase(),
+              validationConfig.getInstanceType(),
+              validationConfig.getTestingAmi(),
+              validationConfig.getDataType(),
+              validationConfig.getDataRate(),
+              avgCpu,
+              avgMemory,
+              validationConfig.getCommitId(),
+              validationConfig.getCollectionPeriod()
+          );
+
           try {
-            String jsonResult = buildJson(avgCpu, avgMemory);
-            log.info(jsonResult);
+            new ObjectMapper().writeValue(new File("/var/output/" + outputFileName), result);
+            log.info("Result written to " + outputFileName);
           } catch (Exception e) {
-            log.error("failed to convert result to json." + e.getMessage());
+            log.error("failed to write performance result to file." + e.getMessage());
           }
         });
   }
