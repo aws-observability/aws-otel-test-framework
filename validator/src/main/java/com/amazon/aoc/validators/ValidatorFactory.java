@@ -49,8 +49,7 @@ public class ValidatorFactory {
         validator = new CWMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
-      case "prom-metric-scraping":
-      case "prom-metric-sd":
+      case "prom-metric":
         validator = new PrometheusMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;

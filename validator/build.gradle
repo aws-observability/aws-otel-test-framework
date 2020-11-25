@@ -61,7 +61,6 @@ dependencies {
 
     // https://mvnrepository.com/artifact/com.github.awslabs/aws-request-signing-apache-interceptor
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
-    implementation files('libs/AWSPrometheusJavaClient-1.11.x.jar')
 
     // http client
     implementation("com.squareup.okhttp3:okhttp:4.9.0")

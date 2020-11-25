@@ -15,7 +15,8 @@
 
 package com.amazon.aoc.services;
 
-import com.amazon.aoc.clients.PrometheusClient;
+import com.amazon.aoc.clients.CortexClient;
+import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.prometheus.PrometheusMetric;
 
@@ -27,7 +28,7 @@ import java.util.List;
 /**
  * a wrapper around the prometheus client.
  */
-public class PrometheusService {
+public class CortexService {
   private static final int INTERVAL = 20;
 
   private final Context context;
@@ -35,7 +36,7 @@ public class PrometheusService {
   /**
    * Construct Prometheus Service with region.
    */
-  public PrometheusService(Context context) {
+  public CortexService(Context context) {
     this.context = context;
   }
 
@@ -49,7 +50,7 @@ public class PrometheusService {
    * @return List of PrometheusMetrics
    */
   public List<PrometheusMetric> listMetricsFromSampleApp(final String query, final String timestamp)
-          throws IOException, URISyntaxException {
+          throws IOException, URISyntaxException, BaseException {
     BigDecimal newTimestamp = new BigDecimal(timestamp).add(new BigDecimal(INTERVAL));
     return listMetrics(query, newTimestamp.toPlainString());
   }
@@ -62,7 +63,7 @@ public class PrometheusService {
    * @return List of PrometheusMetrics
    */
   public List<PrometheusMetric> listMetrics(final String query, final String timestamp)
-          throws IOException, URISyntaxException {
-    return new PrometheusClient(context).listMetrics(query, timestamp);
+          throws IOException, URISyntaxException, BaseException {
+    return new CortexClient(context).query(query, timestamp);
   }
 }

@@ -28,6 +28,7 @@ public class ValidationConfig {
   String httpMethod;
 
   String expectedResultPath;
+  Boolean shouldValidateMetricValue;
 
   ExpectedMetric expectedMetricTemplate;
   ExpectedTrace expectedTraceTemplate;

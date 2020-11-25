@@ -6,7 +6,6 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -52,17 +51,35 @@ public class PrometheusMetric {
   }
 
   /**
-   * Comparator for comparing two Prometheus metrics by the metric name and labels.
+   * Comparison method for comparing two Prometheus metrics by the metric name and labels.
    */
-  public static class MetricLabelsComparator implements Comparator<PrometheusMetric> {
-    public MetricLabelsComparator() {
+  public static int comparePrometheusMetricLabels(PrometheusMetric o1, PrometheusMetric o2) {
+    // check metric name
+    if (!o1.getMetricName().equals(o2.getMetricName())) {
+      return o1.getMetricName().compareTo(o2.getMetricName());
     }
 
-    @Override
-    public int compare(PrometheusMetric o1, PrometheusMetric o2) {
+    // sort and check labels
+    List<String> labelsList1 = labelsMapToList(o1.getLabels());
+    List<String> labelsList2 = labelsMapToList(o2.getLabels());
+
+    return labelsList1.toString().compareTo(labelsList2.toString());
+  }
+
+  /**
+   * Strict comparison method for comparing two Prometheus metrics by the metric name,
+   * labels and values.
+   */
+  public static int staticPrometheusMetricCompare(PrometheusMetric o1, PrometheusMetric o2) {
+    {
       // check metric name
       if (!o1.getMetricName().equals(o2.getMetricName())) {
         return o1.getMetricName().compareTo(o2.getMetricName());
+      }
+
+      // check metric value
+      if (o1.getMetricValue().equals(o2.getMetricValue())) {
+        return o1.getMetricValue().compareTo(o2.getMetricValue());
       }
 
       // sort and check labels
@@ -70,35 +87,6 @@ public class PrometheusMetric {
       List<String> labelsList2 = labelsMapToList(o2.getLabels());
 
       return labelsList1.toString().compareTo(labelsList2.toString());
-    }
-  }
-
-  /**
-   * Strict comparator for comparing two Prometheus metrics by the metric name, labels and values.
-   */
-  public static class StrictMetricComparator implements Comparator<PrometheusMetric> {
-    public StrictMetricComparator() {
-    }
-
-    @Override
-    public int compare(PrometheusMetric o1, PrometheusMetric o2) {
-      {
-        // check metric name
-        if (!o1.getMetricName().equals(o2.getMetricName())) {
-          return o1.getMetricName().compareTo(o2.getMetricName());
-        }
-
-        // check metric value
-        if (o1.getMetricValue().equals(o2.getMetricValue())) {
-          return o1.getMetricValue().compareTo(o2.getMetricValue());
-        }
-
-        // sort and check labels
-        List<String> labelsList1 = labelsMapToList(o1.getLabels());
-        List<String> labelsList2 = labelsMapToList(o2.getLabels());
-
-        return labelsList1.toString().compareTo(labelsList2.toString());
-      }
     }
   }
 

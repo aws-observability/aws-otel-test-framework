@@ -1,5 +1,7 @@
 package com.amazon.aoc.clients;
 
+import com.amazon.aoc.exception.BaseException;
+import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.prometheus.PrometheusMetric;
 import com.amazon.aoc.models.prometheus.PrometheusQueryResult;
@@ -25,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Log4j2
-public class PrometheusClient {
+public class CortexClient {
   private static final String APS_SERVICE_NAME = "aps";
 
   private final String cortexInstanceEndpoint;
@@ -34,7 +36,7 @@ public class PrometheusClient {
   /**
    * construct PrometheusClient.
    */
-  public PrometheusClient(Context context) {
+  public CortexClient(Context context) {
     AWS4Signer signer = new AWS4Signer();
     signer.setServiceName(APS_SERVICE_NAME);
     signer.setRegionName(context.getRegion());
@@ -59,8 +61,8 @@ public class PrometheusClient {
    * @param query the Prometheus expression query string
    * @param timestamp the evaluation timestamp
    */
-  public List<PrometheusMetric> listMetrics(String query, String timestamp)
-          throws IOException, URISyntaxException {
+  public List<PrometheusMetric> query(String query, String timestamp)
+          throws IOException, URISyntaxException, BaseException {
     HttpUrl rawUrl = HttpUrl.parse(cortexInstanceEndpoint);
     URI uri = new URIBuilder()
             .setScheme(Objects.requireNonNull(rawUrl).scheme())
@@ -75,11 +77,12 @@ public class PrometheusClient {
     return execute(request);
   }
 
-  private List<PrometheusMetric> execute(HttpGet request) throws IOException {
+  private List<PrometheusMetric> execute(HttpGet request) throws IOException, BaseException {
     HttpResponse response = httpClient.execute(request);
 
     if (response.getStatusLine().getStatusCode() >= 300) {
-      throw new PrometheusClientException(IOUtils.toString(response.getEntity().getContent()));
+      throw new BaseException(ExceptionCode.CORTEX_CLIENT_REQUEST_FAILED,
+              IOUtils.toString(response.getEntity().getContent()));
     }
 
     String body = IOUtils.toString(response.getEntity().getContent());

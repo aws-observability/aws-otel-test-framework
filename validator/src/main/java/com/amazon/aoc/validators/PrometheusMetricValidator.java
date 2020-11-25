@@ -16,7 +16,7 @@
 package com.amazon.aoc.validators;
 
 import com.amazon.aoc.callers.ICaller;
-import com.amazon.aoc.clients.ExpectedResultClient;
+import com.amazon.aoc.clients.PullModeSampleAppClient;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
@@ -25,7 +25,7 @@ import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.models.prometheus.PrometheusMetric;
-import com.amazon.aoc.services.PrometheusService;
+import com.amazon.aoc.services.CortexService;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -35,12 +35,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Log4j2
 public class PrometheusMetricValidator implements IValidator {
-  private static final int MAX_RETRY_COUNT = 1;
+  private static final int MAX_RETRY_COUNT = 30;
 
   private final MustacheHelper mustacheHelper = new MustacheHelper();
   private Context context;
@@ -54,12 +53,12 @@ public class PrometheusMetricValidator implements IValidator {
     final List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(context);
 
     // get metric from cortex
-    PrometheusService prometheusService = new PrometheusService(context);
+    CortexService cortexService = new CortexService(context);
     RetryHelper.retry(
         MAX_RETRY_COUNT,
         () -> {
           List<PrometheusMetric> metricList =
-                  this.listMetricFromPrometheus(prometheusService, expectedMetricList);
+                  this.listMetricFromPrometheus(cortexService, expectedMetricList);
 
           log.info("check if all the expected metrics are found");
           compareMetricLists(expectedMetricList, metricList);
@@ -82,10 +81,10 @@ public class PrometheusMetricValidator implements IValidator {
           throws BaseException {
 
     // load metrics into a tree set
-    Comparator<PrometheusMetric> comparator = new PrometheusMetric.MetricLabelsComparator();
+    Comparator<PrometheusMetric> comparator = PrometheusMetric::comparePrometheusMetricLabels;
 
-    if (validationConfig.getValidationType().equals("prom-metric-scraping")) {
-      comparator = new PrometheusMetric.StrictMetricComparator();
+    if (validationConfig.getShouldValidateMetricValue()) {
+      comparator = PrometheusMetric::staticPrometheusMetricCompare;
     }
 
     Set<PrometheusMetric> metricSet = new TreeSet<>(comparator);
@@ -104,15 +103,10 @@ public class PrometheusMetricValidator implements IValidator {
 
   private List<PrometheusMetric> getExpectedMetricList(Context context) throws Exception {
     if (!validationConfig.getExpectedResultPath().isEmpty()) {
-      // add delay to allow sample app lb to start
-      log.info("sleeping to allow sample app lb to start");
-      TimeUnit.SECONDS.sleep(90);
-      log.info("resuming validation");
-
       log.info("getting expected metrics from sample endpoint");
-      ExpectedResultClient expectedResultClient =
-              new ExpectedResultClient(context, validationConfig.getExpectedResultPath());
-      return expectedResultClient.getExpectedResults();
+      PullModeSampleAppClient<List<PrometheusMetric>> pullModeSampleAppClient =
+              new PullModeSampleAppClient<>(context, validationConfig.getExpectedResultPath());
+      return pullModeSampleAppClient.getExpectedResult();
     }
 
     log.info("getting expected metrics");
@@ -131,13 +125,13 @@ public class PrometheusMetricValidator implements IValidator {
   }
 
   private List<PrometheusMetric> listMetricFromPrometheus(
-          PrometheusService prometheusService, List<PrometheusMetric> expectedMetricList)
-          throws IOException, URISyntaxException {
+          CortexService cortexService, List<PrometheusMetric> expectedMetricList)
+          throws IOException, URISyntaxException, BaseException {
     // search by metric name
     List<PrometheusMetric> result = new ArrayList<>();
     for (PrometheusMetric expectedMetric : expectedMetricList) {
       // retrieve metric based on the sample app generated timestamp
-      result.addAll(prometheusService.listMetricsFromSampleApp(expectedMetric.getMetricName(),
+      result.addAll(cortexService.listMetricsFromSampleApp(expectedMetric.getMetricName(),
               expectedMetric.getMetricTimestamp()));
     }
 
