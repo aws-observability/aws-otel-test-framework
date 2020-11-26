@@ -42,6 +42,7 @@ module "ec2_setup" {
   testcase = var.testcase
   validation_config = var.validation_config
   sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  package_s3_bucket = "aws-otel-collector"
   skip_validation = false
   canary = true
 
