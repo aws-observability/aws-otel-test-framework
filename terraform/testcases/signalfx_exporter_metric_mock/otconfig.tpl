@@ -15,7 +15,9 @@ exporters:
   logging:
     loglevel: debug
   signalfx:
-    endpoint: "https://${mock_endpoint}"
+    access_token: dummytoken
+    ingest_url: "https://${mock_endpoint}"
+    api_url: "http://localhost/dummy_url"
 
 service:
   pipelines:
