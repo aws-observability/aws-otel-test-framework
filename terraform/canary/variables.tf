@@ -13,67 +13,33 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-variable "validation_config" {
-  default = "default-mocked-server-validation.yml"
+## right now there's no good way to share variables across modules,
+## so we have to define some of the common vars like region, otconfig_path in each module
+
+variable "package_s3_bucket" {
+  default = "aws-otel-collector-test"
 }
 
-variable "testing_id" {}
-
-variable "region" {
+variable "testing_ami" {
+  default = "canary_linux"
 }
 
-variable "sample_app_endpoint" {
+variable "soaking_compose_file" {
   default = ""
 }
 
-variable "mocked_server_validating_url" {
-  default = ""
-}
-
-variable "canary" {
+variable "skip_validation" {
   default = false
 }
 
-variable "testcase" {
-  default = ""
+variable "mock_endpoint" {
+  default = "mocked-server/put-data"
 }
 
-variable "metric_namespace" {
-  default = ""
+variable "install_cwagent" {
+  default = false
 }
 
-variable "ecs_cluster_name" {
-  default = ""
-}
-
-variable "ecs_task_arn" {
-  default = ""
-}
-
-variable "ecs_taskdef_family" {
-  default = ""
-}
-
-variable "ecs_taskdef_version" {
-  default = ""
-}
-
-variable "cpu_alarm" {
-  default = ""
-}
-
-variable "mem_alarm" {
-  default = ""
-}
-
-variable "incoming_packets_alarm" {
-  default = ""
-}
-
-variable "aws_access_key_id" {
-  default = ""
-}
-
-variable "aws_secret_access_key" {
-  default = ""
+variable "canary" {
+  default = true
 }

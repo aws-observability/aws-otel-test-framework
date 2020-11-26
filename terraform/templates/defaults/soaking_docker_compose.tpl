@@ -11,7 +11,7 @@ services:
           memory: 1G
   ot-metric-emitter:
     image: ${sample_app_image}
-    command: ["${date_mode}", "-r=${rate}", "-u=${grpc_endpoint}", "-d=${data_type}"]
+    command: ["${data_mode}", "-r=${rate}", "-u=${grpc_endpoint}", "-d=${data_type}"]
     environment:
       OTEL_RESOURCE_ATTRIBUTES: ${otel_resource_attributes}
       AWS_XRAY_DAEMON_ADDRESS: ${udp_endpoint}

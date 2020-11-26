@@ -19,14 +19,19 @@ import com.amazon.aoc.helpers.ConfigLoadHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ECSContext;
 import com.amazon.aoc.models.ValidationConfig;
+import com.amazon.aoc.services.CloudWatchService;
 import com.amazon.aoc.validators.ValidatorFactory;
+import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 @CommandLine.Command(name = "e2etest", mixinStandardHelpOptions = true, version = "1.0")
 @Log4j2
@@ -65,9 +70,22 @@ public class App implements Callable<Integer> {
 
   @CommandLine.Option(
       names = {"--mocked-server-validating-url"},
-      description = "mocked server validating url"
-  )
+      description = "mocked server validating url")
   private String mockedServerValidatingUrl;
+
+  @CommandLine.Option(
+          names = {"--canary"},
+          defaultValue = "false")
+  private boolean isCanary;
+
+  @CommandLine.Option(
+          names = {"--testcase"},
+          defaultValue = "otlp_mock")
+  private String testcase;
+
+  private static final String TEST_CASE_DIM_KEY = "testcase";
+  private static final String CANARY_NAMESPACE = "Otel/Canary";
+  private static final String CANARY_METRIC_NAME = "Success";
 
   public static void main(String[] args) throws Exception {
     int exitCode = new CommandLine(new App()).execute(args);
@@ -76,8 +94,9 @@ public class App implements Callable<Integer> {
 
   @Override
   public Integer call() throws Exception {
+    final Instant startTime = Instant.now();
     // build context
-    Context context = new Context(this.testingId, this.region);
+    Context context = new Context(this.testingId, this.region, this.isCanary);
     context.setMetricNamespace(this.metricNamespace);
     context.setEndpoint(this.endpoint);
     context.setEcsContext(buildECSContext(ecsContexts));
@@ -91,11 +110,46 @@ public class App implements Callable<Integer> {
         new ConfigLoadHelper().loadConfigFromFile(configPath);
 
     // run validation
-    ValidatorFactory validatorFactory = new ValidatorFactory(context);
-    for (ValidationConfig validationConfigItem : validationConfigList) {
-      validatorFactory.launchValidator(validationConfigItem).validate();
-    }
+    validate(context, validationConfigList);
+
+    Instant endTime = Instant.now();
+    Duration duration = Duration.between(startTime, endTime);
+    log.info("Validation has completed in {} minutes.", duration.toMinutes());
     return null;
+  }
+
+  private void validate(Context context, List<ValidationConfig> validationConfigList)
+          throws Exception {
+    CloudWatchService cloudWatchService = new CloudWatchService(region);
+    Dimension dimension = new Dimension().withName(TEST_CASE_DIM_KEY).withValue(this.testcase);
+    int maxValidationCycles = 1;
+    ValidatorFactory validatorFactory = new ValidatorFactory(context);
+    if (this.isCanary) {
+      maxValidationCycles = 30;
+    }
+    for (int cycle = 0; cycle < maxValidationCycles; cycle++) {
+      for (ValidationConfig validationConfigItem : validationConfigList) {
+        try {
+          validatorFactory.launchValidator(validationConfigItem).validate();
+        } catch (Exception e) {
+          if (this.isCanary) {
+            //emit metric
+            cloudWatchService.putMetricData(CANARY_NAMESPACE, CANARY_METRIC_NAME, 0.0, dimension);
+          }
+          throw e;
+        }
+      }
+      if (maxValidationCycles - cycle - 1 > 0) {
+        log.info("Completed {} validation cycle for current canary test. "
+                        + "Still need to validate {} cycles. Sleep 1 minute then proceed.",
+                cycle + 1, maxValidationCycles - cycle - 1);
+        TimeUnit.MINUTES.sleep(1);
+      }
+    }
+    if (this.isCanary) {
+      //emit metric
+      cloudWatchService.putMetricData(CANARY_NAMESPACE, CANARY_METRIC_NAME, 1.0, dimension);
+    }
   }
 
   private ECSContext buildECSContext(Map<String, String> ecsContextMap) {
