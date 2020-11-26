@@ -16,10 +16,6 @@
 ## right now there's no good way to share variables across modules,
 ## so we have to define some of the common vars like region, otconfig_path in each module
 
-variable "package_s3_bucket" {
-  default = "aws-otel-collector"
-}
-
 variable "testing_ami" {
   default = "canary_linux"
 }
