@@ -224,6 +224,7 @@ resource "null_resource" "start_collector" {
   provisioner "remote-exec" {
     inline = [
       local.ami_family["install_command"],
+      local.ami_family["set_env_vars"],
       local.ami_family["start_command"],
     ]
 
@@ -304,6 +305,7 @@ data "template_file" "cwagent_config" {
     data_rate = "${var.soaking_data_mode}-${var.soaking_data_rate}"
     instance_type = aws_instance.aoc.instance_type
     testing_ami = var.testing_ami
+    testing_type = var.testing_type
   }
 }
 
@@ -359,6 +361,8 @@ module "validator" {
   mocked_server_validating_url = "http://${aws_instance.sidecar.public_ip}/check-data"
   canary = var.canary
   testcase = split("/", var.testcase)[2]
+
+  cortex_instance_endpoint = module.common.cortex_instance_endpoint
 
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
