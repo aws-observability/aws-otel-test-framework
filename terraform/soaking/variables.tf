@@ -57,3 +57,11 @@ variable "soaking_data_rate" {
 variable "soaking_data_type" {
   default = "otlp"
 }
+
+variable "soaking_compose_file" {
+  default = "../templates/defaults/soaking_docker_compose.tpl"
+}
+
+variable "data_emitter" {
+  default = ""
+}

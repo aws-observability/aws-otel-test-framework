@@ -13,8 +13,18 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
+module "common" {
+  source = "../common"
+
+  aoc_version = var.aoc_version
+}
+
 locals {
   launch_date = formatdate("YYYY-MM-DD", timestamp())
+}
+
+data "aws_ecr_repository" "sample_apps" {
+  name = module.common.sample_app_ecr_repo_name
 }
 
 # launch ec2
@@ -27,11 +37,11 @@ module "ec2_setup" {
   aoc_version = var.aoc_version
   region = var.region
   testcase = var.testcase
-  sample_app_image = var.soaking_data_emitter_image
+  sample_app_image = var.data_emitter != "" ? "${data.aws_ecr_repository.sample_apps.repository_url}:${var.data_emitter}-latest" : var.soaking_data_emitter_image
   skip_validation = true
 
   # soaking test config
-  soaking_compose_file = "../templates/defaults/soaking_docker_compose.tpl"
+  soaking_compose_file = var.soaking_compose_file
   soaking_data_mode = var.soaking_data_mode
   soaking_data_rate = var.soaking_data_rate
   soaking_data_type = var.soaking_data_type
