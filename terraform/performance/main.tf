@@ -24,6 +24,9 @@ module "ec2_setup" {
   commit_id = var.commit_id
   testcase = var.testcase
   testing_ami = var.testing_ami
+
+  soaking_compose_file = var.soaking_compose_file
+  data_emitter = var.data_emitter
   soaking_data_rate = var.data_rate
   soaking_data_type = var.data_type
   soaking_data_mode = var.soaking_data_mode

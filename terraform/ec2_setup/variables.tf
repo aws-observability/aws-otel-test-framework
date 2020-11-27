@@ -20,6 +20,14 @@ variable "soaking_data_emitter_image" {
   default = "aottestbed/aws-otel-load-generator:v0.1.0"
 }
 
+variable "data_emitter" {
+  default = ""
+}
+
+variable "soaking_compose_file" {
+  default = "../templates/defaults/soaking_docker_compose.tpl"
+}
+
 # data points emitted per second
 variable "soaking_data_rate" {
   default = 1000
