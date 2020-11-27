@@ -224,7 +224,7 @@ resource "null_resource" "start_collector" {
   provisioner "remote-exec" {
     inline = [
       local.ami_family["install_command"],
-      local.ami_family["set_env_vars"],
+      local.selected_ami["family"] == "amazon_linux" ? "sudo chmod 777 /opt/aws/aws-otel-collector/etc/.env && sudo echo 'SAMPLE_APP_HOST=${aws_instance.sidecar.public_ip}' >> /opt/aws/aws-otel-collector/etc/.env && sudo echo 'SAMPLE_APP_PORT=${module.common.sample_app_lb_port}' >> /opt/aws/aws-otel-collector/etc/.env" : "echo \"not amazon linux\"",
       local.ami_family["start_command"],
     ]
 
