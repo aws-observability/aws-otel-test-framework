@@ -88,6 +88,7 @@ resource "null_resource" "run_docker_compose" {
 module "validator" {
   source = "../validation"
 
+  validation_config = var.validation_config
   region = var.region
   testing_id = module.common.testing_id
   sample_app_endpoint = "http://172.17.0.1:${module.common.sample_app_listen_address_port}"

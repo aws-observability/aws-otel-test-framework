@@ -26,6 +26,8 @@ services:
       - AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
       - AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
       - GODEBUG=x509ignoreCN=0
+      - SAMPLE_APP_PORT=${sample_app_external_port}
+      - SAMPLE_APP_HOST=172.17.0.1
     depends_on:
       - mocked-server
 
