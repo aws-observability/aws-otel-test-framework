@@ -18,12 +18,11 @@ package com.amazon.opentelemetry.load.generator.emitter;
 import com.amazon.opentelemetry.load.generator.factory.AwsTracerProviderFactory;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
 import io.grpc.ManagedChannelBuilder;
-import io.opentelemetry.exporters.otlp.OtlpGrpcSpanExporter;
+import io.opentelemetry.exporter.otlp.OtlpGrpcSpanExporter;
 import io.opentelemetry.sdk.trace.TracerSdkProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
-import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
-import io.opentelemetry.trace.Span;
-import io.opentelemetry.trace.Tracer;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -47,16 +46,15 @@ public class OtlpTraceEmitter extends TraceEmitter {
     TracerSdkProvider tracerProvider = (TracerSdkProvider) new AwsTracerProviderFactory().create();
     tracer =
         tracerProvider.get("aws-otel-load-generator-trace", "semver:0.1.0");
-    OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.newBuilder()
+    OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
         .setChannel(
             ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
         .setDeadlineMs(TimeUnit.SECONDS.toMillis(10))
         .build();
 
     BatchSpanProcessor spanProcessor =
-        BatchSpanProcessor.newBuilder(spanExporter).setScheduleDelayMillis(100).build();
+        BatchSpanProcessor.builder(spanExporter).setScheduleDelayMillis(100).build();
     tracerProvider.addSpanProcessor(spanProcessor);
-
   }
 
   @Override
