@@ -1,0 +1,4 @@
+-
+  validationType: "prom-metric"
+  shouldValidateMetricValue: true
+  expectedResultPath: "/expected_metrics"

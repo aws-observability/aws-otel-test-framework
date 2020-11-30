@@ -54,3 +54,7 @@ variable "debug" {
 variable "soaking_data_mode" {
   default = "metric"
 }
+
+variable "sample_app_mode" {
+  default = "push"
+}

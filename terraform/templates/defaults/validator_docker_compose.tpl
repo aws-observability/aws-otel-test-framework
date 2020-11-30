@@ -29,4 +29,5 @@ services:
       - "--alarm-names=${cpu_alarm}"
       - "--alarm-names=${mem_alarm}"
       - "--alarm-names=${incoming_packets_alarm}"
+      - "--cortex-instance-endpoint=${cortex_instance_endpoint}"
 

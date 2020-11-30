@@ -32,6 +32,8 @@ module "basic_components" {
   mocked_endpoint = "localhost/put-data"
 
   sample_app = var.sample_app
+
+  cortex_instance_endpoint = var.cortex_instance_endpoint
 }
 
 locals {

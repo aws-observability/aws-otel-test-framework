@@ -36,6 +36,8 @@ module "basic_components" {
   mocked_endpoint = "localhost/put-data"
 
   sample_app = var.sample_app
+
+  cortex_instance_endpoint = var.cortex_instance_endpoint
 }
 
 locals {
@@ -109,8 +111,39 @@ locals {
   eks_pod_config = yamldecode(data.template_file.eksconfig.rendered)["sample_app"]
 }
 
+resource "kubernetes_service_account" "aoc-role" {
+  metadata {
+    name = "aoc-role"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+
+  automount_service_account_token = true
+}
+
+resource "kubernetes_cluster_role_binding" "aoc-role-binding" {
+  metadata {
+    name = "aoc-role-binding"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "aoc-role"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+}
+
+##########################################
+# Push mode deployments
+##########################################
+
 # deploy aoc and mocked server
 resource "kubernetes_deployment" "aoc_deployment" {
+  count = var.sample_app_mode == "push" ? 1 : 0
+
   metadata {
     name = "aoc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
@@ -137,6 +170,8 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
 
       spec {
+        service_account_name = "aoc-role"
+
         volume {
           name = "otel-config"
           config_map {
@@ -194,37 +229,19 @@ resource "kubernetes_deployment" "aoc_deployment" {
   }
 }
 
-# create service upon the mocked server
-resource "kubernetes_service" "mocked_server_service" {
-  metadata {
-    name = "mocked-server"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
-  }
-  spec {
-    selector = {
-      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
-    }
-
-    type = "LoadBalancer"
-
-    port {
-      port = 80
-      target_port = 8080
-    }
-  }
-}
-
 # create service upon AOC (GRPC port)
 # NOTE: we have to create a service for each port protocol type because
 # Kubernetes does not support mixed protocols: https://github.com/kubernetes/kubernetes/pull/64471.
 resource "kubernetes_service" "aoc_grpc_service" {
+  count = var.sample_app_mode == "push" ? 1 : 0
+  
   metadata {
     name = "aoc-grpc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
-      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
+      app = kubernetes_deployment.aoc_deployment[0].metadata[0].labels.app
     }
 
     port {
@@ -237,13 +254,15 @@ resource "kubernetes_service" "aoc_grpc_service" {
 
 # create service upon AOC (UDP port)
 resource "kubernetes_service" "aoc_udp_service" {
+  count = var.sample_app_mode == "push" ? 1 : 0
+  
   metadata {
     name = "aoc-udp"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
-      app = kubernetes_deployment.aoc_deployment.metadata[0].labels.app
+      app = kubernetes_deployment.aoc_deployment[0].metadata[0].labels.app
     }
 
     port {
@@ -256,6 +275,8 @@ resource "kubernetes_service" "aoc_udp_service" {
 
 # deploy sample app
 resource "kubernetes_deployment" "sample_app_deployment" {
+  count = var.sample_app_mode == "push" ? 1 : 0
+  
   metadata {
     name = "sample-app"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
@@ -292,12 +313,12 @@ resource "kubernetes_deployment" "sample_app_deployment" {
 
           env {
             name = "OTEL_EXPORTER_OTLP_ENDPOINT"
-            value = "${kubernetes_service.aoc_grpc_service.metadata[0].name}:${module.common.grpc_port}"
+            value = "${kubernetes_service.aoc_grpc_service[0].metadata[0].name}:${module.common.grpc_port}"
           }
 
           env {
             name = "AWS_XRAY_DAEMON_ADDRESS"
-            value = "${kubernetes_service.aoc_udp_service.metadata[0].name}:${module.common.udp_port}"
+            value = "${kubernetes_service.aoc_udp_service[0].metadata[0].name}:${module.common.udp_port}"
           }
 
           env {
@@ -342,6 +363,30 @@ resource "kubernetes_deployment" "sample_app_deployment" {
   }
 }
 
+##########################################
+# Common components for both push and pull modes
+##########################################
+
+# create service upon the mocked server
+resource "kubernetes_service" "mocked_server_service" {
+  metadata {
+    name = "mocked-server"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+  spec {
+    selector = {
+      app = var.sample_app_mode == "push" ? kubernetes_deployment.aoc_deployment[0].metadata[0].labels.app : kubernetes_deployment.pull_mode_aoc_deployment[0].metadata[0].labels.app
+    }
+
+    type = "LoadBalancer"
+
+    port {
+      port = 80
+      target_port = 8080
+    }
+  }
+}
+
 # create service upon the sample app
 resource "kubernetes_service" "sample_app_service" {
   metadata {
@@ -350,7 +395,7 @@ resource "kubernetes_service" "sample_app_service" {
   }
   spec {
     selector = {
-      app = kubernetes_deployment.sample_app_deployment.metadata[0].labels.app
+      app = var.sample_app_mode == "push" ? kubernetes_deployment.sample_app_deployment[0].metadata[0].labels.app : kubernetes_deployment.pull_mode_sample_app_deployment[0].metadata[0].labels.app
     }
 
     type = "LoadBalancer"
@@ -374,6 +419,8 @@ module "validator" {
   metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   sample_app_endpoint = "http://${kubernetes_service.sample_app_service.load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}"
   mocked_server_validating_url = "http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data"
+
+  cortex_instance_endpoint = var.cortex_instance_endpoint
 
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key

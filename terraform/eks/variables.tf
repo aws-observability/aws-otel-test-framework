@@ -17,4 +17,7 @@ variable "eks_cluster_name" {
   default = "aoc-test-eks-ec2"
 }
 
-
+variable "cortex_instance_endpoint" {
+  # change to your cortex endpoint
+  default = ""
+}

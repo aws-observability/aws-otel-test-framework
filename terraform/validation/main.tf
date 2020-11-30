@@ -46,7 +46,7 @@ data "template_file" "docker_compose" {
     mem_alarm = var.mem_alarm
     incoming_packets_alarm = var.incoming_packets_alarm
 
-
+    cortex_instance_endpoint = var.cortex_instance_endpoint
   }
 
 }
