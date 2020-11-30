@@ -11,7 +11,7 @@
   callingType: "http"
   expectedTraceTemplate: "OTEL_SDK_AWSSDK_EXPECTED_TRACE"
 -
-  validationType: "metric"
+  validationType: "cw-metric"
   httpPath: "/outgoing-http-call"
   httpMethod: "get"
   callingType: "http"
