@@ -43,7 +43,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @Log4j2
-public class MetricValidator implements IValidator {
+public class CWMetricValidator implements IValidator {
   private static int MAX_RETRY_COUNT = 30;
   private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
 

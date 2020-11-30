@@ -43,6 +43,10 @@ public enum ExceptionCode {
   MOCKED_SERVER_NOT_AVAILABLE(80001, "mocked server is not available"),
   MOCKED_SERVER_NOT_RECEIVE_DATA(80002, "mocked server not receive data"),
 
+  // clients failed
+  CORTEX_CLIENT_REQUEST_FAILED(90001, "request to pull mode sample app failed"),
+  PULL_MODE_SAMPLE_APP_CLIENT_REQUEST_FAILED(90001, "request to pull mode sample app failed"),
+
   ;
   private int code;
   private String message;

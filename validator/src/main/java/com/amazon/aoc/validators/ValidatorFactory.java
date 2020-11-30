@@ -45,8 +45,12 @@ public class ValidatorFactory {
         validator = new TraceValidator();
         expectedData = validationConfig.getExpectedTraceTemplate();
         break;
-      case "metric":
-        validator = new MetricValidator();
+      case "cw-metric":
+        validator = new CWMetricValidator();
+        expectedData = validationConfig.getExpectedMetricTemplate();
+        break;
+      case "prom-metric":
+        validator = new PrometheusMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
       case "alarm-pulling":

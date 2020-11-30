@@ -45,4 +45,9 @@ public class Context {
   mocked server parameters
    */
   private String mockedServerValidatingUrl;
+
+  /*
+  cortex parameters
+   */
+  private String cortexInstanceEndpoint;
 }

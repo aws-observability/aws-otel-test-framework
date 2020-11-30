@@ -23,6 +23,10 @@ version 'unspecified'
 
 repositories {
     mavenCentral()
+
+    maven {
+        url 'https://repository.mulesoft.org/nexus/content/repositories/public/'
+    }
 }
 
 dependencies {
@@ -54,6 +58,9 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-s3'
     implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
     implementation 'com.amazonaws:aws-java-sdk-xray'
+
+    // https://mvnrepository.com/artifact/com.github.awslabs/aws-request-signing-apache-interceptor
+    implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
     // http client
     implementation("com.squareup.okhttp3:okhttp:4.9.0")

@@ -18,7 +18,6 @@ package com.amazon.aoc.models;
 import com.amazon.aoc.fileconfigs.ExpectedMetric;
 import com.amazon.aoc.fileconfigs.ExpectedTrace;
 import lombok.Data;
-import org.apache.logging.log4j.core.appender.rolling.action.IfNot;
 
 @Data
 public class ValidationConfig {
@@ -27,6 +26,9 @@ public class ValidationConfig {
 
   String httpPath;
   String httpMethod;
+
+  String expectedResultPath;
+  Boolean shouldValidateMetricValue;
 
   ExpectedMetric expectedMetricTemplate;
   ExpectedTrace expectedTraceTemplate;

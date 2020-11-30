@@ -1,4 +1,4 @@
 -
-  validationType: "metric"
+  validationType: "cw-metric"
   callingType: "none"
   expectedMetricTemplate: "ECS_CONTAINER_EXPECTED_METRIC"

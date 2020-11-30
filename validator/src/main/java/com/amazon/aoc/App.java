@@ -83,6 +83,11 @@ public class App implements Callable<Integer> {
           defaultValue = "otlp_mock")
   private String testcase;
 
+  @CommandLine.Option(
+      names = {"--cortex-instance-endpoint"},
+      description = "cortex instance validating url")
+  private String cortexInstanceEndpoint;
+
   private static final String TEST_CASE_DIM_KEY = "testcase";
   private static final String CANARY_NAMESPACE = "Otel/Canary";
   private static final String CANARY_METRIC_NAME = "Success";
@@ -102,6 +107,7 @@ public class App implements Callable<Integer> {
     context.setEcsContext(buildECSContext(ecsContexts));
     context.setAlarmNameList(alarmNameList);
     context.setMockedServerValidatingUrl(mockedServerValidatingUrl);
+    context.setCortexInstanceEndpoint(this.cortexInstanceEndpoint);
 
     log.info(context);
 

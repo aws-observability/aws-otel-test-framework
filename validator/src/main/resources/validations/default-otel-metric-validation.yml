@@ -1,5 +1,5 @@
 -
-  validationType: "metric"
+  validationType: "cw-metric"
   httpPath: "/outgoing-http-call"
   httpMethod: "get"
   callingType: "http"
