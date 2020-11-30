@@ -67,4 +67,3 @@ variable "install_package_source" {
 variable "install_package_local_path" {
   default = "../../../aws-otel-collector/build/packages/linux/amd64/aws-otel-collector.rpm"
 }
-

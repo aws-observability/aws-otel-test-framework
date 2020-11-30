@@ -46,6 +46,8 @@ module "ec2_setup" {
   soaking_data_rate = var.soaking_data_rate
   soaking_data_type = var.soaking_data_type
 
+  cortex_instance_endpoint = var.cortex_instance_endpoint
+
   # negative soaking
   mock_endpoint = var.negative_soaking ? "http://127.0.0.2" : "mocked-server/put-data"
 

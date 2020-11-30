@@ -58,3 +58,8 @@ variable "soaking_data_mode" {
 variable "sample_app_mode" {
   default = "push"
 }
+
+variable "cortex_instance_endpoint" {
+  # change to your cortex endpoint
+  default = ""
+}

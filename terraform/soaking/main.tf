@@ -30,6 +30,8 @@ module "ec2_setup" {
   soaking_data_rate = var.soaking_data_rate
   soaking_data_type = var.soaking_data_type
 
+  cortex_instance_endpoint = var.cortex_instance_endpoint
+
   install_package_source = var.install_package_source
   install_package_local_path = var.install_package_local_path
 
