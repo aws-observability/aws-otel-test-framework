@@ -14,10 +14,8 @@ exporters:
       region: ${region}
       service: "aps"
     timeout: 10s
-  logging:
-    loglevel: debug
 service:
   pipelines:
     metrics:
      receivers: [prometheus]
-     exporters: [awsprometheusremotewrite, logging]
+     exporters: [awsprometheusremotewrite]
