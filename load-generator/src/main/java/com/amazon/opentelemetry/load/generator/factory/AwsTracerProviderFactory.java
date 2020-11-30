@@ -1,9 +1,9 @@
 package com.amazon.opentelemetry.load.generator.factory;
 
-import io.opentelemetry.sdk.extensions.trace.aws.AwsXRayIdsGenerator;
+import io.opentelemetry.sdk.extension.trace.aws.AwsXrayIdGenerator;
 import io.opentelemetry.sdk.trace.TracerSdkProvider;
-import io.opentelemetry.trace.TracerProvider;
-import io.opentelemetry.trace.spi.TracerProviderFactory;
+import io.opentelemetry.api.trace.TracerProvider;
+import io.opentelemetry.api.trace.spi.TracerProviderFactory;
 
 
 public class AwsTracerProviderFactory implements TracerProviderFactory {
@@ -16,7 +16,7 @@ public class AwsTracerProviderFactory implements TracerProviderFactory {
       }
     }
     TRACER_PROVIDER =
-        TracerSdkProvider.builder().setIdsGenerator(new AwsXRayIdsGenerator()).build();
+        TracerSdkProvider.builder().setIdsGenerator(new AwsXrayIdGenerator()).build();
   }
   @Override
   public TracerProvider create() {

@@ -17,12 +17,12 @@ package com.amazon.opentelemetry.load.generator.emitter;
 
 import com.amazon.opentelemetry.load.generator.model.Parameter;
 import io.grpc.ManagedChannelBuilder;
-import io.opentelemetry.OpenTelemetry;
-import io.opentelemetry.common.Labels;
-import io.opentelemetry.exporters.otlp.OtlpGrpcMetricExporter;
-import io.opentelemetry.metrics.LongCounter;
-import io.opentelemetry.metrics.LongValueRecorder;
-import io.opentelemetry.metrics.Meter;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.common.Labels;
+import io.opentelemetry.api.metrics.LongCounter;
+import io.opentelemetry.api.metrics.LongValueRecorder;
+import io.opentelemetry.api.metrics.Meter;
+import io.opentelemetry.exporter.otlp.OtlpGrpcMetricExporter;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.metrics.export.IntervalMetricReader;
 import io.opentelemetry.sdk.metrics.export.MetricExporter;
@@ -57,19 +57,19 @@ public class OtlpMetricEmitter extends MetricEmitter {
   @Override
   public void setupProvider() {
     MetricExporter metricExporter =
-        OtlpGrpcMetricExporter.newBuilder()
+        OtlpGrpcMetricExporter.builder()
             .setChannel(
                 ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
             .build();
 
     IntervalMetricReader.builder()
         .setMetricProducers(
-            Collections.singleton(OpenTelemetrySdk.getMeterProvider().getMetricProducer()))
+            Collections.singleton(OpenTelemetrySdk.getGlobalMeterProvider().getMetricProducer()))
         .setExportIntervalMillis(param.getFlushInterval())
         .setMetricExporter(metricExporter)
         .build();
 
-    Meter meter = OpenTelemetry.getMeter("aws-otel-load-generator-metric", "0.1.0");
+    Meter meter = OpenTelemetry.getGlobalMeter("aws-otel-load-generator-metric", "0.1.0");
 
     apiBytesSentCounter = meter
         .longCounterBuilder(API_COUNTER_METRIC)
