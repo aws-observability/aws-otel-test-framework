@@ -1,0 +1,4 @@
+-
+  validationType: "mocked-server"
+  # no call to prometheus sample app needed to produce metrics
+  callingType: "none" 

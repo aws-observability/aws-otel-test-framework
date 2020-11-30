@@ -30,8 +30,10 @@ public class MockedServerValidator implements IValidator {
 
   @Override
   public void validate() throws Exception {
-    // hit the endpoint to generate data
-    caller.callSampleApp();
+    // hit the endpoint to generate data if need be
+    if (caller != null) {
+      caller.callSampleApp();
+    }
 
     // hit the mocked server to validate to if it receives data
     callMockedServer();
