@@ -63,10 +63,6 @@ variable "commit_id" {
   default = "dummy_commit"
 }
 
-variable "soaking_compose_file" {
-  default = "../templates/defaults/soaking_docker_compose.tpl"
-}
-
 variable "data_emitter" {
   default = ""
 }

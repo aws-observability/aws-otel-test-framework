@@ -41,7 +41,7 @@ module "ec2_setup" {
   skip_validation = true
 
   # soaking test config
-  soaking_compose_file = var.soaking_compose_file
+  soaking_compose_file = var.sample_app_mode == "push" ? "../templates/defaults/soaking_docker_compose.tpl" : "../templates/defaults/soaking_docker_compose_pull_mode.tpl"
   soaking_data_mode = var.soaking_data_mode
   soaking_data_rate = var.soaking_data_rate
   soaking_data_type = var.soaking_data_type
