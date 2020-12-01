@@ -50,7 +50,7 @@ You will need to place a `parameters.tfvars` file under the test case folder to 
 
 [Example PR for http exporter](https://github.com/aws-observability/aws-otel-collector/pull/124)
 
-Before creating the PR, please follow [get-performance-model](docs/get-performance-model.md) to get your performance model and put it into the PR.
+Before creating the PR, please follow [get-performance-model](docs/get-performance-model.md) to get your performance model and put it into the PR description.
 
 Once the first PR get merged, you will need to create a PR to AWS Otel Collector Repo, this PR needs to build the component and link test cases in one shot, which includes
 
