@@ -61,5 +61,5 @@ variable "sample_app_mode" {
 
 variable "cortex_instance_endpoint" {
   # change to your cortex endpoint
-  default = ""
+  default = "https://aps-workspaces-gamma.us-west-2.amazonaws.com/workspaces/AWS_TEST_ACCOUNT_WORKSPACE"
 }
