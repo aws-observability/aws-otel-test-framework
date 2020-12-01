@@ -30,5 +30,5 @@ variable "sample_app" {
 }
 
 variable "cortex_instance_endpoint" {
-
+  default = ""
 }
