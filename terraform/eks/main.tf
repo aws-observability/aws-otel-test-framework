@@ -113,7 +113,7 @@ locals {
 
 resource "kubernetes_service_account" "aoc-role" {
   metadata {
-    name = "aoc-role"
+    name = "aoc-role-${module.common.testing_id}"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
@@ -122,7 +122,7 @@ resource "kubernetes_service_account" "aoc-role" {
 
 resource "kubernetes_cluster_role_binding" "aoc-role-binding" {
   metadata {
-    name = "aoc-role-binding"
+    name = "aoc-role-binding-${module.common.testing_id}"
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
@@ -131,7 +131,7 @@ resource "kubernetes_cluster_role_binding" "aoc-role-binding" {
   }
   subject {
     kind      = "ServiceAccount"
-    name      = "aoc-role"
+    name      = "aoc-role-${module.common.testing_id}"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
 }
@@ -170,7 +170,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
 
       spec {
-        service_account_name = "aoc-role"
+        service_account_name = "aoc-role-${module.common.testing_id}"
 
         volume {
           name = "otel-config"
