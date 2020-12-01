@@ -14,7 +14,7 @@
 # -------------------------------------------------------------------------
 
 variable "eks_cluster_name" {
-  default = "aoc-test-eks-ec2"
+  default = "aws-otel-testing-framework-eks"
 }
 
 variable "cortex_instance_endpoint" {
