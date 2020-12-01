@@ -1,6 +1,8 @@
-# How to get performance model
+# How to get performance model with the real endpoint
 
 You can run testing framework upon your testcase to get its performance model as the testing result. 
+* the performance test with the mocked endpoint will be performed in the github workflow after your code is merged to aws otel collector repo. 
+* you need to run the performance test locally with your `real endpoint` and provide the result, this doc is a guideline about how to use the testing framework to get the performance model upon the real endpoint.
 
 ## Step 1. Setup basic components in your aws account.
 
@@ -21,10 +23,17 @@ git clone git@github.com:aws-observability/aws-otel-collector.git
 cd aws-otel-collector && make package-rpm
 ```
 
-## Step 3. Run the performance test and get the performance model.
+## Step 3. Temporarily Change the otconfig to the real endpoint in your testcase.
+
+In this step, you need to modify the otconfig which is defined in your testcase folder `aws-otel-test-framework/terraform/testcases/{{testcase name}}/otconfig.tpl`, so that the exporter sends data to the real endpoint.
+
+1. remove the mocked endpoint config.
+2. add any required config to your exporter, for example, the apikey or credentials.
+
+
+## Step 4. Run the performance test and get the performance model.
 
 You are going to run three rounds of the test, each takes one hour, performance model is presented as a file `output/performance.json` after each round.
-
 
 1. Run on rate 100 tps
 
@@ -59,7 +68,7 @@ cat performance_model.json
 4. the performance model could be found under `aws-otel-test-framework/terraform/performance/output/performance.json`.
 
 
-## Step 4 [Optional only if you want to debug your test]  Debug
+## Step 5 [Optional only if you want to debug your test]  Debug
 
 if you want to debug,  add a parameter in the `apply` command: `-var="debug=true"`, for example
 
@@ -74,7 +83,7 @@ please note don't run `terraform destroy` before you finish debugging, otherwise
 Basically, performance test launches two ec2 instance:
 
 1. An `collector instance` to install AWS Otel Collector, and CloudWatch Agent to collect the cpu/mem metrics.
-2. An `sample-app instance` to launch the sample app container and the mocked server containers, which sends and receives data.
+2. An `sample-app instance` to launch the sample app container and the mocked server containers, which sends and receives data, if you are sending data to the real endpoint, you can ignore the mock server container. 
 
 ### Log into the collector instance
 
