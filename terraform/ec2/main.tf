@@ -224,7 +224,7 @@ resource "null_resource" "start_collector" {
   provisioner "remote-exec" {
     inline = [
       local.ami_family["install_command"],
-      local.selected_ami["family"] == "amazon_linux" ? "sudo chmod 777 /opt/aws/aws-otel-collector/etc/.env && sudo echo 'SAMPLE_APP_HOST=${aws_instance.sidecar.public_ip}' >> /opt/aws/aws-otel-collector/etc/.env && sudo echo 'SAMPLE_APP_PORT=${module.common.sample_app_lb_port}' >> /opt/aws/aws-otel-collector/etc/.env" : "echo \"not amazon linux\"",
+      format(local.ami_family["set_env_var_command"], aws_instance.sidecar.public_ip, module.common.sample_app_lb_port),
       local.ami_family["start_command"],
     ]
 
@@ -306,7 +306,6 @@ data "template_file" "cwagent_config" {
     data_rate = "${var.soaking_data_mode}-${var.soaking_data_rate}"
     instance_type = aws_instance.aoc.instance_type
     testing_ami = var.testing_ami
-    testing_type = var.testing_type
   }
 }
 
@@ -363,7 +362,7 @@ module "validator" {
   canary = var.canary
   testcase = split("/", var.testcase)[2]
 
-  cortex_instance_endpoint = module.common.cortex_instance_endpoint
+  cortex_instance_endpoint = var.cortex_instance_endpoint
 
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key

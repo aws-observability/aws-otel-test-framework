@@ -98,8 +98,3 @@ variable "testing_type" {
 variable "canary" {
   default = false
 }
-
-variable "cortex_instance_endpoint" {
-  # change to your cortex endpoint
-  default = ""
-}
