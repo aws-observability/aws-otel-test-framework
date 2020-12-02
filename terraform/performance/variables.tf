@@ -63,6 +63,6 @@ variable "commit_id" {
   default = "dummy_commit"
 }
 
-variable "data_emitter" {
+variable "soaking_sample_app" {
   default = ""
 }

@@ -37,7 +37,7 @@ module "ec2_setup" {
   aoc_version = var.aoc_version
   region = var.region
   testcase = var.testcase
-  sample_app_image = var.data_emitter != "" ? "${data.aws_ecr_repository.sample_apps.repository_url}:${var.data_emitter}-latest" : var.soaking_data_emitter_image
+  sample_app_image = var.soaking_sample_app != "" ? "${data.aws_ecr_repository.sample_apps.repository_url}:${var.soaking_sample_app}-latest" : var.soaking_sample_app_image
   skip_validation = true
 
   # soaking test config
