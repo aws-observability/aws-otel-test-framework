@@ -3,6 +3,7 @@
 You can run testing framework upon your testcase to get its performance model as the testing result. 
 * the performance test with the mocked endpoint will be performed in the github workflow after your code is merged to aws otel collector repo. 
 * you need to run the performance test locally with your `real endpoint` and provide the result, this doc is a guideline about how to use the testing framework to get the performance model upon the real endpoint.
+* you can also follow this document to reproduce the performance test with mock endpoint by just skipping step 3.
 
 ## Step 1. Setup basic components in your aws account.
 
@@ -24,6 +25,8 @@ cd aws-otel-collector && make package-rpm
 ```
 
 ## Step 3. Temporarily Change the otconfig to the real endpoint in your testcase.
+
+skip it if you just want to reproduce the performance test with mock endpoint.
 
 In this step, you need to modify the otconfig which is defined in your testcase folder `aws-otel-test-framework/terraform/testcases/{{testcase name}}/otconfig.tpl`, so that the exporter sends data to the real endpoint.
 
