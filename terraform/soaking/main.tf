@@ -25,7 +25,7 @@ module "ec2_setup" {
   region = var.region
 
   sample_app_mode = var.sample_app_mode
-  data_emitter = var.data_emitter
+  soaking_sample_app = var.soaking_sample_app
   soaking_data_mode = var.soaking_data_mode
   soaking_data_rate = var.soaking_data_rate
   soaking_data_type = var.soaking_data_type

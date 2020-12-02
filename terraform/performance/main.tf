@@ -26,7 +26,7 @@ module "ec2_setup" {
   testing_ami = var.testing_ami
 
   sample_app_mode = var.sample_app_mode
-  data_emitter = var.data_emitter
+  soaking_sample_app = var.soaking_sample_app
   soaking_data_rate = var.data_rate
   soaking_data_type = var.data_type
   soaking_data_mode = var.soaking_data_mode

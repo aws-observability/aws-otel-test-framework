@@ -58,6 +58,6 @@ variable "soaking_data_type" {
   default = "otlp"
 }
 
-variable "data_emitter" {
+variable "soaking_sample_app" {
   default = ""
 }

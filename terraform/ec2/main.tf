@@ -362,8 +362,6 @@ module "validator" {
   canary = var.canary
   testcase = split("/", var.testcase)[2]
 
-  cortex_instance_endpoint = var.cortex_instance_endpoint
-
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 

@@ -2,7 +2,7 @@ validation_config="default-mocked-server-prometheus-validation.yml"
 
 sample_app="prometheus"
 
-data_emitter="prometheus"
+soaking_sample_app="prometheus"
 
 soaking_data_type="prometheus"
 
