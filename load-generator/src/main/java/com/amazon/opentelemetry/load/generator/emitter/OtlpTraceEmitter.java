@@ -23,6 +23,7 @@ import io.opentelemetry.sdk.trace.TracerSdkProvider;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
@@ -52,9 +53,9 @@ public class OtlpTraceEmitter extends TraceEmitter {
         .setDeadlineMs(TimeUnit.SECONDS.toMillis(10))
         .build();
 
-    BatchSpanProcessor spanProcessor =
-        BatchSpanProcessor.builder(spanExporter).setScheduleDelayMillis(100).build();
-    tracerProvider.addSpanProcessor(spanProcessor);
+    tracerProvider.addSpanProcessor(
+        SimpleSpanProcessor.builder(spanExporter).build());
+
   }
 
   @Override
