@@ -8,7 +8,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 1G
+          memory: 4G
   ot-metric-emitter:
     image: ${sample_app_image}
     command: ["${data_mode}", "-r=${rate}", "-u=${grpc_endpoint}", "-d=${data_type}"]
