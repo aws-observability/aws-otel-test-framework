@@ -21,5 +21,3 @@ output "sample_app_instance_id" {
 output "testing_id" {
   value = module.common.testing_id
 }
-
-
