@@ -22,6 +22,7 @@ variable "ami_family" {
       otconfig_destination = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
       install_command = "sudo dpkg -i aws-otel-collector.deb"
+      set_env_var_command = "echo \"no env vars to assign values %s and %s to\""
       start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
@@ -33,6 +34,7 @@ variable "ami_family" {
       otconfig_destination = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
       install_command = "sudo rpm -Uvh aws-otel-collector.rpm"
+      set_env_var_command = "sudo chmod 777 /opt/aws/aws-otel-collector/etc/.env && sudo echo 'SAMPLE_APP_HOST=%s' >> /opt/aws/aws-otel-collector/etc/.env && sudo echo 'SAMPLE_APP_PORT=%s' >> /opt/aws/aws-otel-collector/etc/.env"
       start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
@@ -44,6 +46,7 @@ variable "ami_family" {
       otconfig_destination = "C:\\ot-default.yml"
       download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
       install_command = "msiexec /i C:\\aws-otel-collector.msi"
+      set_env_var_command = "powershell \"[System.Environment]::SetEnvironmentVariable('SAMPLE_APP_HOST', '%s', [System.EnvironmentVariableTarget]::Machine); [System.Environment]::SetEnvironmentVariable('SAMPLE_APP_PORT', '%s', [System.EnvironmentVariableTarget]::Machine)\""
       start_command = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation C:\\ot-default.yml -Action start\""
       connection_type = "winrm"
       user_data = <<EOF

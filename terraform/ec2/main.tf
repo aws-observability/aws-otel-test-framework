@@ -224,6 +224,7 @@ resource "null_resource" "start_collector" {
   provisioner "remote-exec" {
     inline = [
       local.ami_family["install_command"],
+      format(local.ami_family["set_env_var_command"], aws_instance.sidecar.public_ip, module.common.sample_app_lb_port),
       local.ami_family["start_command"],
     ]
 
@@ -361,10 +362,12 @@ module "validator" {
   canary = var.canary
   testcase = split("/", var.testcase)[2]
 
+  cortex_instance_endpoint = var.cortex_instance_endpoint
+
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
-  depends_on = [null_resource.setup_sample_app_and_mock_server]
+  depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]
 }
 
 output "public_ip" {

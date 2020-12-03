@@ -100,6 +100,5 @@ variable "canary" {
 }
 
 variable "cortex_instance_endpoint" {
-  # change to your cortex endpoint
   default = ""
 }
