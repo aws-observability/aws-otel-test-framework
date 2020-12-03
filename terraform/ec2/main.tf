@@ -278,6 +278,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       "sudo chmod +x /usr/local/bin/docker-compose",
       "sudo systemctl start docker",
       "sudo `aws ecr get-login --no-include-email --region ${var.region}`",
+      "sleep 30", // sleep 30s to wait until dockerd is totally set up
       "sudo /usr/local/bin/docker-compose -f /tmp/docker-compose.yml up -d"
     ]
 
