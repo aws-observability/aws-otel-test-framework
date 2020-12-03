@@ -46,7 +46,7 @@ variable "ami_family" {
       otconfig_destination = "C:\\ot-default.yml"
       download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
       install_command = "msiexec /i C:\\aws-otel-collector.msi"
-      set_env_var_command = "SET SAMPLE_APP_HOST=%s && SET SAMPLE_APP_PORT=%s"
+      set_env_var_command = "powershell \"[System.Environment]::SetEnvironmentVariable('SAMPLE_APP_HOST', '%s', [System.EnvironmentVariableTarget]::Machine); [System.Environment]::SetEnvironmentVariable('SAMPLE_APP_PORT', '%s', [System.EnvironmentVariableTarget]::Machine)\""
       start_command = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation C:\\ot-default.yml -Action start\""
       connection_type = "winrm"
       user_data = <<EOF

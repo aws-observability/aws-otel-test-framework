@@ -367,7 +367,7 @@ module "validator" {
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
-  depends_on = [null_resource.setup_sample_app_and_mock_server]
+  depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]
 }
 
 output "public_ip" {
