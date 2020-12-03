@@ -27,6 +27,7 @@ public class PerformanceResult implements Serializable {
   @NonNull private String testingAmi;
 
   @NonNull private String dataType;
+  @NonNull private String dataMode;
   @NonNull private Integer dataRate;
 
   // Calculated average statistics
