@@ -98,3 +98,7 @@ variable "testing_type" {
 variable "canary" {
   default = false
 }
+
+variable "cortex_instance_endpoint" {
+  default = ""
+}
