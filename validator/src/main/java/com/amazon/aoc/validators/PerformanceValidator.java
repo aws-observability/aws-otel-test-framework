@@ -112,6 +112,7 @@ public class PerformanceValidator implements IValidator {
               validationConfig.getInstanceType(),
               validationConfig.getTestingAmi(),
               validationConfig.getDataType(),
+              validationConfig.getDataMode(),
               validationConfig.getDataRate(),
               avgCpu,
               avgMemory,
