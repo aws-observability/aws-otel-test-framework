@@ -120,3 +120,11 @@ sudo docker ps
 
 all the metrics will be showing on the CloudWatch Console in your account. The Namespace is `AWSOtelCollector/PerfTest`
 
+### Profiling
+
+port 1777 on the collector instance is opened for golang profiling. For example
+
+```
+curl http://127.0.0.1:1777/debug/pprof/heap > /tmp/perf.out
+```
+
