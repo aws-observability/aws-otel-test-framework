@@ -13,7 +13,7 @@ exporters:
     aws_auth:
       region: ${region}
       service: "aps"
-    timeout: 10s
+    timeout: 15s
 service:
   pipelines:
     metrics:
