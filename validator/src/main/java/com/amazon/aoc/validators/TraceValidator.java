@@ -123,7 +123,8 @@ public class TraceValidator implements IValidator {
                 new ObjectMapper().readValue(segment1.getDocument(), Map.class);
             Map<String, Object> map2 =
                 new ObjectMapper().readValue(segment2.getDocument(), Map.class);
-            return map1.get("start_time").toString().compareTo(map2.get("start_time").toString());
+            return Double.valueOf(map1.get("start_time").toString())
+              .compareTo(Double.valueOf(map2.get("start_time").toString()));
           } catch (Exception ex) {
             log.error(ex);
             return 0;
