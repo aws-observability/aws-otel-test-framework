@@ -13,11 +13,9 @@ exporters:
     aws_auth:
       region: ${region}
       service: "aps"
-    timeout: 10s
-  logging:
-    loglevel: debug
+    timeout: 15s
 service:
   pipelines:
     metrics:
      receivers: [prometheus]
-     exporters: [awsprometheusremotewrite, logging]
+     exporters: [awsprometheusremotewrite]

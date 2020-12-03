@@ -20,8 +20,3 @@ variable "ecs_launch_type" {
 variable "sample_app_callable" {
   default = true
 }
-
-variable "cortex_instance_endpoint" {
-  # change to your cortex endpoint
-  default = ""
-}
