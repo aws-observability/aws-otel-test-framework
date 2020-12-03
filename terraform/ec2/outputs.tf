@@ -21,3 +21,7 @@ output "sample_app_instance_id" {
 output "testing_id" {
   value = module.common.testing_id
 }
+
+output "otconfig_content" {
+  value = module.basic_components.otconfig_content
+}

@@ -24,7 +24,9 @@ import java.io.Serializable;
 public class PerformanceResult implements Serializable {
   @NonNull private String testcase;
   @NonNull private String instanceType;
-  @NonNull private String testingAmi;
+  @NonNull private String[] receivers;
+  @NonNull private String[] processors;
+  @NonNull private String[] exporters;
 
   @NonNull private String dataType;
   @NonNull private String dataMode;
@@ -37,4 +39,5 @@ public class PerformanceResult implements Serializable {
   // Metadata
   @NonNull private String commitId;
   @NonNull private Integer collectionPeriod;
+  @NonNull private String testingAmi;
 }
