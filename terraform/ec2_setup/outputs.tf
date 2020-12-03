@@ -49,3 +49,6 @@ output "launch_date" {
   value = local.launch_date
 }
 
+output "otconfig_content" {
+  value = module.ec2_setup.otconfig_content
+}
