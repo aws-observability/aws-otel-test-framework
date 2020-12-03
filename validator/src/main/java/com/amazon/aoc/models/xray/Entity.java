@@ -42,6 +42,7 @@ public class Entity {
 
   private List<Entity> subsegments;
 
+  private Map<String, Object> cause;
   private Map<String, Object> http;
   private Map<String, Object> aws;
   private Map<String, Object> sql;
