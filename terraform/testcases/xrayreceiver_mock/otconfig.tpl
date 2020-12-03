@@ -6,6 +6,9 @@ receivers:
     endpoint: 0.0.0.0:${udp_port}
     transport: udp
 
+processors:
+  batch:
+
 exporters:
   logging:
     loglevel: debug
@@ -20,5 +23,6 @@ service:
   pipelines:
     traces:
       receivers: [awsxray]
+      processors: [batch]
       exporters: [awsxray]
   extensions: [pprof]
