@@ -112,7 +112,7 @@ public class TraceValidator implements IValidator {
     AtomicReference<Map<String, Object>> flattenedJsonMapForRetrievedTrace =
         new AtomicReference<>();
     RetryHelper.retry(
-        5,
+        30,
         () -> {
           List<Trace> retrieveTraceList = null;
           retrieveTraceList = xrayService.listTraceByIds(traceIdList);

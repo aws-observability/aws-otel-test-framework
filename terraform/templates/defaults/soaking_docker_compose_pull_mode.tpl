@@ -8,14 +8,15 @@ services:
     deploy:
       resources:
         limits:
-          memory: 4G
+          memory: 1G
   ot-metric-emitter:
     image: ${sample_app_image}
-    command: ["${data_mode}", "-r=${rate}", "-u=${grpc_endpoint}", "-d=${data_type}"]
+    command: []
+    ports:
+      - ${sample_app_external_port}:${sample_app_listen_address_port}
     environment:
-      OTEL_RESOURCE_ATTRIBUTES: ${otel_resource_attributes}
-      AWS_XRAY_DAEMON_ADDRESS: ${udp_endpoint}
-      AWS_REGION: ${region}
+      METRICS_LOAD: ${rate}
+      LISTEN_ADDRESS: ${listen_address}
     deploy:
       resources:
         limits:

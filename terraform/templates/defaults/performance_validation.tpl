@@ -7,6 +7,9 @@
   dataType: "${dataType}"
   dataMode: "${dataMode}"
   dataRate: ${dataRate}
+  otReceivers: [${otReceivers}]
+  otProcessors: [${otProcessors}]
+  otExporters: [${otExporters}]
   testcase: "${testcase}"
   commitId: "${commitId}"
   instanceId: "${instanceId}"

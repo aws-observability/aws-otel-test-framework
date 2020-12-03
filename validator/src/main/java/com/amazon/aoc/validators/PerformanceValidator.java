@@ -110,13 +110,17 @@ public class PerformanceValidator implements IValidator {
           final PerformanceResult result = new PerformanceResult(
               validationConfig.getTestcase(),
               validationConfig.getInstanceType(),
-              validationConfig.getTestingAmi(),
+              validationConfig.getOtReceivers(),
+              validationConfig.getOtProcessors(),
+              validationConfig.getOtExporters(),
               validationConfig.getDataType(),
+              validationConfig.getDataMode(),
               validationConfig.getDataRate(),
               avgCpu,
               avgMemory,
               validationConfig.getCommitId(),
-              validationConfig.getCollectionPeriod()
+              validationConfig.getCollectionPeriod(),
+              validationConfig.getTestingAmi()
           );
 
           try {

@@ -62,3 +62,7 @@ variable "collection_period" {
 variable "commit_id" {
   default = "dummy_commit"
 }
+
+variable "soaking_sample_app" {
+  default = ""
+}
