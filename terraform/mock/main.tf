@@ -40,6 +40,8 @@ data "template_file" "otconfig" {
     grpc_port = module.common.grpc_port
     udp_port = module.common.udp_port
     mock_endpoint = local.mock_endpoint
+    sample_app_listen_address_host = "172.17.0.1"
+    sample_app_listen_address_port = module.common.sample_app_listen_address_port
   }
 }
 
