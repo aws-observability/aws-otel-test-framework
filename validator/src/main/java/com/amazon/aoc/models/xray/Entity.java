@@ -37,6 +37,8 @@ public class Entity {
   private boolean inProgress;
   @JsonInclude(JsonInclude.Include.NON_DEFAULT)
   private boolean inferred;
+  @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+  private boolean stubbed;
 
   private String namespace;
 

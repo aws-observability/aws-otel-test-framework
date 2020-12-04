@@ -5,6 +5,7 @@ import com.amazon.aoc.models.xray.Entity;
 import java.util.List;
 
 public final class SortUtils {
+  private static final int MAX_RESURSIVE_DEPTH = 10;
 
   /**
    * Given a list of entities, which are X-Ray segments or subsegments, recursively sort each of
@@ -13,13 +14,18 @@ public final class SortUtils {
    * @param entities - list of X-Ray entities to sort recursively. Modified in place.
    */
   public static void recursiveEntitySort(List<Entity> entities) {
-    if (entities == null || entities.size() == 0) {
+    recursiveEntitySort(entities, 0);
+  }
+
+  private static void recursiveEntitySort(List<Entity> entities, int depth) {
+    if (entities == null || entities.size() == 0 || depth >= MAX_RESURSIVE_DEPTH) {
       return;
     }
+    int currDepth = depth + 1;
 
     for (Entity entity : entities) {
-      if (entity.getSubsegments() != null && entity.getSubsegments().size() > 1) {
-        recursiveEntitySort(entity.getSubsegments());
+      if (entity.getSubsegments() != null && !entity.getSubsegments().isEmpty()) {
+        recursiveEntitySort(entity.getSubsegments(), currDepth);
       }
     }
 

@@ -68,6 +68,19 @@ public class SortUtilsTest {
     assertThat(bottomEntities).containsSequence(generated.get(6), generated.get(7));
   }
 
+  @Test
+  public void testInfiniteLoop() {
+    Entity current = new Entity();
+    List<Entity> entityList = new ArrayList<>();
+    entityList.add(current);
+    current.setSubsegments(entityList);  // set up an infinite children loop
+
+    SortUtils.recursiveEntitySort(entityList);
+
+    // Not really testing anything, just making sure we don't infinite loop
+    assertThat(entityList).hasSize(1);
+  }
+
   private List<Entity> generateEntities(int n) {
     List<Entity> ret = new ArrayList<>();
 
