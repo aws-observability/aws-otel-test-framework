@@ -6,6 +6,7 @@ services:
       - "80:8080"
       - "443:443"
   sample_app:
+    privileged: true
     image: ${sample_app_image}
     ports:
       - "${sample_app_external_port}:${sample_app_listen_address_port}"
