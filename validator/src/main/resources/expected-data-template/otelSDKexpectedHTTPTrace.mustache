@@ -1,8 +1,6 @@
 [{
-  "name": "/outgoing-http-call",
   "fault": false,
   "error": false,
-  "throttle": false,
   "http": {
     "request": {
       "url": "{{endpoint}}/outgoing-http-call",
@@ -12,29 +10,26 @@
       "status": 200
     }
   },
+  "metadata": {
+    "default": {
+      "otel.resource.telemetry.sdk.name": "opentelemetry"
+    }
+  },
   "subsegments": [
     {
+      "name": "HTTP GET",
       "fault": false,
       "error": false,
-      "throttle": false,
-      "subsegments": [
-        {
-          "name": "aws.amazon.com",
-          "fault": false,
-          "error": false,
-          "throttle": false,
-          "http": {
-            "request": {
-              "url": "https://aws.amazon.com/",
-              "method": "GET"
-            },
-            "response": {
-              "status": 200
-            }
-          },
-          "namespace": "remote"
+      "http": {
+        "request": {
+          "url": "https://aws.amazon.com/",
+          "method": "GET"
+        },
+        "response": {
+          "status": 200
         }
-      ]
+      },
+      "namespace": "remote"
     }
   ]
 }]
