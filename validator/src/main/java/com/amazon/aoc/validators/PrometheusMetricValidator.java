@@ -50,14 +50,18 @@ public class PrometheusMetricValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("Start prometheus metric validating");
-    // get expected metrics
-    final List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(context);
+    log.info("sleeping to allow metrics to propogate through AOC");
+    TimeUnit.SECONDS.sleep(30);
+    log.info("resuming validation");
 
-    // get metric from cortex
-    CortexService cortexService = new CortexService(context);
     RetryHelper.retry(
         MAX_RETRY_COUNT,
         () -> {
+          // get expected metrics
+          List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(context);
+          // get metric from cortex
+          CortexService cortexService = new CortexService(context);
+
           List<PrometheusMetric> metricList =
                   this.listMetricFromPrometheus(cortexService, expectedMetricList);
 
@@ -103,11 +107,6 @@ public class PrometheusMetricValidator implements IValidator {
 
   private List<PrometheusMetric> getExpectedMetricList(Context context) throws Exception {
     if (!validationConfig.getExpectedResultPath().isEmpty()) {
-      // add delay to allow sample app lb to start
-      log.info("sleeping to allow sample app lb to start");
-      TimeUnit.SECONDS.sleep(30);
-      log.info("resuming validation");
-
       log.info("getting expected metrics from sample endpoint");
       PullModeSampleAppClient<List<PrometheusMetric>> pullModeSampleAppClient =
               new PullModeSampleAppClient<>(context,

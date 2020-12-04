@@ -32,3 +32,11 @@ variable "sample_app" {
 variable "cortex_instance_endpoint" {
   default = ""
 }
+
+variable "sample_app_listen_address_host" {
+  default = ""
+}
+
+variable "sample_app_listen_address_port" {
+  default = ""
+}

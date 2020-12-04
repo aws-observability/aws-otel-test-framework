@@ -82,16 +82,6 @@ resource "kubernetes_deployment" "pull_mode_aoc_deployment" {
           args = [
             "--config=/aoc/aoc-config.yml"]
 
-          env {
-            name = "SAMPLE_APP_HOST"
-            value = kubernetes_service.sample_app_service.load_balancer_ingress.0.hostname
-          }
-
-          env {
-            name = "SAMPLE_APP_PORT"
-            value = module.common.sample_app_lb_port
-          }
-
           resources {
             requests {
               cpu = "0.2"
@@ -190,6 +180,28 @@ resource "kubernetes_deployment" "pull_mode_sample_app_deployment" {
           }
         }
       }
+    }
+  }
+}
+
+# create service upon the sample app
+resource "kubernetes_service" "pull_mode_sample_app_service" {
+  count = var.sample_app_mode == "pull" ? 1 : 0
+
+  metadata {
+    name = "sample-app"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+  spec {
+    selector = {
+      app = kubernetes_deployment.pull_mode_sample_app_deployment[0].metadata[0].labels.app
+    }
+
+    type = "LoadBalancer"
+
+    port {
+      port = module.common.sample_app_lb_port
+      target_port = module.common.sample_app_listen_address_port
     }
   }
 }

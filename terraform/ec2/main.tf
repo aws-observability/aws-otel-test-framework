@@ -33,6 +33,10 @@ module "basic_components" {
   sample_app = var.sample_app
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
+
+  sample_app_listen_address_host = aws_instance.sidecar.public_ip
+
+  sample_app_listen_address_port = module.common.sample_app_lb_port
 }
 
 provider "aws" {
@@ -224,7 +228,6 @@ resource "null_resource" "start_collector" {
   provisioner "remote-exec" {
     inline = [
       local.ami_family["install_command"],
-      format(local.ami_family["set_env_var_command"], aws_instance.sidecar.public_ip, module.common.sample_app_lb_port),
       local.ami_family["start_command"],
     ]
 
