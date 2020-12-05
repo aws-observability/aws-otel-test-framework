@@ -1,0 +1,6 @@
+-
+  validationType: "trace"
+  httpPath: ""
+  httpMethod: "get"
+  callingType: "http"
+  expectedTraceTemplate: "LAMBDA_EXPECTED_TRACE"
