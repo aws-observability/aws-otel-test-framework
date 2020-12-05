@@ -30,7 +30,13 @@ public enum ExpectedTrace implements FileConfig {
   SPRINGBOOT_SDK_HTTP_EXPECTED_TRACE(
     "/expected-data-template/springboot/springbootAppExpectedHTTPTrace.mustache"),
   SPRINGBOOT_SDK_AWSSDK_EXPECTED_TRACE(
-    "/expected-data-template/springboot/springbootAppExpectedAWSSDKTrace.mustache")
+    "/expected-data-template/springboot/springbootAppExpectedAWSSDKTrace.mustache"),
+  GO_SDK_HTTP_EXPECTED_TRACE(
+    "/expected-data-template/go/goAppExpectedHTTPTrace.mustache"
+  ),
+  GO_SDK_AWSSDK_EXPECTED_TRACE(
+    "/expected-data-template/go/goAppExpectedAWSSDKTrace.mustache"
+  )
   ;
 
   private String path;
