@@ -27,7 +27,6 @@ public enum ExpectedTrace implements FileConfig {
   SPARK_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedHTTPTrace.mustache"),
   SPARK_SDK_AWSSDK_EXPECTED_TRACE(
           "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache"),
-  LAMBDA_EXPECTED_TRACE("/expected-data-template/lambdaExpectedTrace.mustache"),
   SPRINGBOOT_SDK_HTTP_EXPECTED_TRACE(
     "/expected-data-template/springboot/springbootAppExpectedHTTPTrace.mustache"),
   SPRINGBOOT_SDK_AWSSDK_EXPECTED_TRACE(

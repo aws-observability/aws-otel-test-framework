@@ -30,10 +30,9 @@ public class RetryHelper {
    * @param retryCount the total retry count
    * @param sleepInMilliSeconds sleep time among retries
    * @param retryable the lambda
-   * @return false if retryCount exhausted
    * @throws Exception when the retry count is reached
    */
-  public static boolean retry(
+  public static void retry(
       int retryCount, int sleepInMilliSeconds, boolean throwExceptionInTheEnd, Retryable retryable)
       throws Exception {
     Exception exceptionInTheEnd = null;
@@ -41,7 +40,7 @@ public class RetryHelper {
       try {
         log.info("retry attempt left : {} ", retryCount);
         retryable.execute();
-        return true;
+        return;
       } catch (Exception ex) {
         exceptionInTheEnd = ex;
         log.info("retrying after {} seconds", TimeUnit.MILLISECONDS.toSeconds(sleepInMilliSeconds));
@@ -53,7 +52,6 @@ public class RetryHelper {
       log.error("retries exhausted, possible");
       throw exceptionInTheEnd;
     }
-    return false;
   }
 
   /**
