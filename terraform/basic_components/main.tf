@@ -91,4 +91,11 @@ data "aws_ecr_repository" "mocked_server" {
   name = module.common.mocked_server_ecr_repo_name
 }
 
+data "aws_ecr_repository" "grpc_metrics_mocked_server" {
+  name = module.common.grpc_metrics_mocked_server_ecr_repo
+}
+
+data "aws_ecr_repository" "grpc_trace_mocked_server" {
+  name = module.common.grpc_trace_mocked_server_ecr_repo
+}
 

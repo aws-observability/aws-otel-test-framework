@@ -48,3 +48,11 @@ output "sample_app_image" {
 output "mocked_server_image" {
   value = "${data.aws_ecr_repository.mocked_server.repository_url}:latest"
 }
+
+output "grpc_metrics_mocked_server_image" {
+  value = "${data.aws_ecr_repository.grpc_metrics_mocked_server.repository_url}:latest"
+}
+
+output "grpc_trace_mocked_server_image" {
+  value = "${data.aws_ecr_repository.grpc_trace_mocked_server.repository_url}:latest"
+}

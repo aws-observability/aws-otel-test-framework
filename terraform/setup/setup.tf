@@ -126,6 +126,13 @@ resource "aws_security_group" "aoc_sg" {
   }
 
   ingress {
+    from_port = 55670
+    to_port = 55670
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
     from_port = 55680
     to_port = 55680
     protocol = "tcp"
@@ -182,4 +189,12 @@ resource "aws_ecr_repository" "sample_app_ecr_repo" {
 }
 resource "aws_ecr_repository" "mocked_server_ecr_repo" {
   name = module.common.mocked_server_ecr_repo_name
+}
+
+resource "aws_ecr_repository" "grpc_metrics_mocked_server_ecr_repo" {
+  name = module.common.grpc_metrics_mocked_server_ecr_repo
+}
+
+resource "aws_ecr_repository" "grpc_trace_mocked_server_ecr_repo" {
+  name = module.common.grpc_trace_mocked_server_ecr_repo
 }

@@ -57,7 +57,7 @@ locals {
   download_command = format(local.ami_family["download_command_pattern"], "https://${var.package_s3_bucket}.s3.amazonaws.com/${local.selected_ami["family"]}/${local.selected_ami["arch"]}/${var.aoc_version}/${local.ami_family["install_package"]}")
 
   sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
-  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
+  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : var.mocked_server_validating_url_type != "grpc" ? module.basic_components.mocked_server_image : var.soaking_data_mode == "metric" ? module.basic_components.grpc_metrics_mocked_server_image : module.basic_components.grpc_trace_mocked_server_image
 
   # get ecr login domain
   ecr_login_domain = split("/", data.aws_ecr_repository.sample_app.repository_url)[0]
@@ -356,7 +356,7 @@ module "validator" {
   testing_id = module.common.testing_id
   metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   sample_app_endpoint = "http://${aws_instance.sidecar.public_ip}:${module.common.sample_app_lb_port}"
-  mocked_server_validating_url = "http://${aws_instance.sidecar.public_ip}/check-data"
+  mocked_server_validating_url = var.mocked_server_validating_url_type == "grpc" ? "${aws_instance.sidecar.public_ip}:55670" : "http://${aws_instance.sidecar.public_ip}/check-data"
   canary = var.canary
   testcase = split("/", var.testcase)[2]
 

@@ -8,6 +8,8 @@ plugins {
 
     // check style
     id 'checkstyle'
+
+    id 'com.google.protobuf' version '0.8.14'
 }
 
 tasks.withType(Checkstyle) {
@@ -65,10 +67,32 @@ dependencies {
     // http client
     implementation("com.squareup.okhttp3:okhttp:4.9.0")
 
+    // grpc
+    implementation 'io.grpc:grpc-netty-shaded:1.34.0'
+    implementation 'io.grpc:grpc-protobuf:1.34.0'
+    implementation 'io.grpc:grpc-stub:1.34.0'
+    compileOnly 'org.apache.tomcat:annotations-api:6.0.53'
+
     // command cli
     compile 'info.picocli:picocli:4.3.2'
 
     compileOnly 'info.picocli:picocli-codegen:4.3.2'
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.12.0"
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.34.0'
+        }
+    }
+    generateProtoTasks {
+        all()*.plugins {
+            grpc {}
+        }
+    }
 }
 
 application {

@@ -33,6 +33,14 @@ data "aws_ecr_repository" "mocked_server" {
   name = module.common.mocked_server_ecr_repo_name
 }
 
+data "aws_ecr_repository" "grpc_metrics_mocked_server" {
+  name = module.common.grpc_metrics_mocked_server_ecr_repo
+}
+
+data "aws_ecr_repository" "grpc_trace_mocked_server" {
+  name = module.common.grpc_trace_mocked_server_ecr_repo
+}
+
 locals {
   # get all the sample-apps under folder ../../sample-apps
   dockerfile_list = tolist(fileset("../../sample-apps", "*/Dockerfile"))
@@ -71,6 +79,32 @@ resource "null_resource" "build_and_push_mocked_server" {
 
   provisioner "local-exec" {
     command = "docker push ${data.aws_ecr_repository.mocked_server.repository_url}"
+  }
+
+  depends_on = [null_resource.login_ecr]
+}
+
+# build and push grpc metrics mocked server image
+resource "null_resource" "build_and_push_grpc_metrics_mocked_server" {
+  provisioner "local-exec" {
+    command = "docker build -t ${data.aws_ecr_repository.grpc_metrics_mocked_server.repository_url} ../../mocked_server/grpc_metrics/"
+  }
+
+  provisioner "local-exec" {
+    command = "docker push ${data.aws_ecr_repository.grpc_metrics_mocked_server.repository_url}"
+  }
+
+  depends_on = [null_resource.login_ecr]
+}
+
+# build and push grpc trace mocked server image
+resource "null_resource" "build_and_push_grpc_trace_mocked_server" {
+  provisioner "local-exec" {
+    command = "docker build -t ${data.aws_ecr_repository.grpc_trace_mocked_server.repository_url} ../../mocked_server/grpc_trace/"
+  }
+
+  provisioner "local-exec" {
+    command = "docker push ${data.aws_ecr_repository.grpc_trace_mocked_server.repository_url}"
   }
 
   depends_on = [null_resource.login_ecr]
