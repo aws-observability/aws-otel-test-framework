@@ -24,9 +24,14 @@ module "ec2_setup" {
   commit_id = var.commit_id
   testcase = var.testcase
   testing_ami = var.testing_ami
+
+  sample_app_mode = var.sample_app_mode
+  soaking_sample_app = var.soaking_sample_app
   soaking_data_rate = var.data_rate
   soaking_data_type = var.data_type
   soaking_data_mode = var.soaking_data_mode
+
+  cortex_instance_endpoint = var.cortex_instance_endpoint
 
   install_package_source = var.install_package_source
   install_package_local_path = var.install_package_local_path
@@ -43,6 +48,11 @@ module "ec2_setup" {
 locals{
   validation_config_file = "performance_validation.yml"
   ami_family = module.ec2_setup.ami_family
+  otconfig = yamldecode(module.ec2_setup.otconfig_content)
+  ot_components = lookup(local.otconfig["service"]["pipelines"], "${var.soaking_data_mode}s", {})
+  ot_receivers = lookup(local.ot_components, "receivers", [])
+  ot_processors = lookup(local.ot_components, "processors", [])
+  ot_exporters = lookup(local.ot_components, "exporters", [])
 }
 
 data "template_file" "validation_config" {
@@ -53,8 +63,11 @@ data "template_file" "validation_config" {
     memoryMetricName = local.ami_family["soaking_mem_metric_name"]
     collectionPeriod = var.collection_period
     dataType = var.data_type
-    dataRate = var.data_rate
     dataMode = var.soaking_data_mode
+    dataRate = var.data_rate
+    otReceivers = join(", ", local.ot_receivers)
+    otProcessors = join(", ", local.ot_processors)
+    otExporters = join(", ", local.ot_exporters)
     testcase = split("/", var.testcase)[2]
     commitId = module.ec2_setup.commit_id
     instanceId = module.ec2_setup.collector_instance_id

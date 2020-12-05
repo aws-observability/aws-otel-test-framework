@@ -38,6 +38,10 @@ module "basic_components" {
   sample_app = var.sample_app
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
+
+  sample_app_listen_address_host = var.sample_app_mode == "pull" ? kubernetes_service.pull_mode_sample_app_service[0].load_balancer_ingress.0.hostname : ""
+
+  sample_app_listen_address_port = module.common.sample_app_lb_port
 }
 
 locals {
@@ -389,13 +393,15 @@ resource "kubernetes_service" "mocked_server_service" {
 
 # create service upon the sample app
 resource "kubernetes_service" "sample_app_service" {
+  count = var.sample_app_mode == "push" ? 1 : 0
+
   metadata {
     name = "sample-app"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
-      app = var.sample_app_mode == "push" ? kubernetes_deployment.sample_app_deployment[0].metadata[0].labels.app : kubernetes_deployment.pull_mode_sample_app_deployment[0].metadata[0].labels.app
+      app = kubernetes_deployment.sample_app_deployment[0].metadata[0].labels.app
     }
 
     type = "LoadBalancer"
@@ -417,7 +423,7 @@ module "validator" {
   region = var.region
   testing_id = module.common.testing_id
   metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-  sample_app_endpoint = "http://${kubernetes_service.sample_app_service.load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}"
+  sample_app_endpoint = "http://${var.sample_app_mode == "push" ? kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname : kubernetes_service.pull_mode_sample_app_service[0].load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}"
   mocked_server_validating_url = var.mocked_server_validating_url_type == "grpc" ? "${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}:55670" : "http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data"
 
   cortex_instance_endpoint = var.cortex_instance_endpoint

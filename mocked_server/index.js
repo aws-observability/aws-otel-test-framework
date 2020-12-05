@@ -6,14 +6,25 @@ const http = require('http');
 const fs = require('fs');
 const app = express();
 
-var get_data = ""
+let data = "";
+let numTransactions = 0;
+const startTime = new Date();
 
-app.get("/check-data", function(req, res){
-    res.send(get_data);
+// Retrieve number of transactions per minute
+app.get("/tpm", function (req, res) {
+    // Calculate duration in minutes
+    const duration = Math.ceil((new Date() - startTime) / 60000);
+    const tpm = numTransactions / duration;
+    res.send({ tpm });
+});
+
+app.get("/check-data", function (req, res) {
+    res.send(data);
 });
 
 app.all('/put-data*', function (req, res) {
-    get_data = "success";
+    data = "success";
+    numTransactions++;
     res.send('{}');
 });
 

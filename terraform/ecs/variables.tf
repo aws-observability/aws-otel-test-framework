@@ -21,11 +21,6 @@ variable "sample_app_callable" {
   default = true
 }
 
-variable "cortex_instance_endpoint" {
-  # change to your cortex endpoint
-  default = ""
-}
-
 variable "mocked_server_validating_url_type" {
   default = ""
 }

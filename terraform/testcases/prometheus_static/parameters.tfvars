@@ -3,7 +3,8 @@ validation_config="prometheus-metric-validation.yml"
 
 sample_app="prometheus"
 
-# change to your cortex endpoint
-cortex_instance_endpoint=""
+soaking_sample_app="prometheus"
+
+soaking_data_type="prometheus"
 
 sample_app_mode="pull"

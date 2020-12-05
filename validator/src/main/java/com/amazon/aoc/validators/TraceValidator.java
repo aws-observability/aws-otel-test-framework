@@ -91,7 +91,7 @@ public class TraceValidator implements IValidator {
     AtomicReference<Map<String, Object>> flattenedJsonMapForRetrievedTrace =
         new AtomicReference<>();
     RetryHelper.retry(
-        5,
+        30,
         () -> {
           List<Trace> retrieveTraceList = null;
           retrieveTraceList = xrayService.listTraceByIds(traceIdList);
@@ -123,7 +123,8 @@ public class TraceValidator implements IValidator {
                 new ObjectMapper().readValue(segment1.getDocument(), Map.class);
             Map<String, Object> map2 =
                 new ObjectMapper().readValue(segment2.getDocument(), Map.class);
-            return map1.get("start_time").toString().compareTo(map2.get("start_time").toString());
+            return Double.valueOf(map1.get("start_time").toString())
+              .compareTo(Double.valueOf(map2.get("start_time").toString()));
           } catch (Exception ex) {
             log.error(ex);
             return 0;

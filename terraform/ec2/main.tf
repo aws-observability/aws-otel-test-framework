@@ -33,6 +33,10 @@ module "basic_components" {
   sample_app = var.sample_app
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
+
+  sample_app_listen_address_host = aws_instance.sidecar.public_ip
+
+  sample_app_listen_address_port = module.common.sample_app_lb_port
 }
 
 provider "aws" {
@@ -278,6 +282,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       "sudo chmod +x /usr/local/bin/docker-compose",
       "sudo systemctl start docker",
       "sudo `aws ecr get-login --no-include-email --region ${var.region}`",
+      "sleep 30", // sleep 30s to wait until dockerd is totally set up
       "sudo /usr/local/bin/docker-compose -f /tmp/docker-compose.yml up -d"
     ]
 
@@ -360,10 +365,12 @@ module "validator" {
   canary = var.canary
   testcase = split("/", var.testcase)[2]
 
+  cortex_instance_endpoint = var.cortex_instance_endpoint
+
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
-  depends_on = [null_resource.setup_sample_app_and_mock_server]
+  depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]
 }
 
 output "public_ip" {
