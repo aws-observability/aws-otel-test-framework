@@ -10,6 +10,7 @@ services:
         limits:
           memory: 1G
   ot-metric-emitter:
+    privileged: true
     image: ${sample_app_image}
     command: []
     ports:

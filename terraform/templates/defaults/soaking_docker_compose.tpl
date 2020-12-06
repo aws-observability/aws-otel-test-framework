@@ -10,6 +10,7 @@ services:
         limits:
           memory: 4G
   ot-metric-emitter:
+    privileged: true
     image: ${sample_app_image}
     command: ["${data_mode}", "-r=${rate}", "-u=${grpc_endpoint}", "-d=${data_type}"]
     environment:

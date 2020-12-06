@@ -70,4 +70,6 @@ module "ec2_setup" {
   soaking_metric_namespace = var.soaking_metric_namespace
 
   debug = var.debug
+
+  testing_type = var.testing_type
 }
