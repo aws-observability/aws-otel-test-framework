@@ -65,6 +65,9 @@ locals {
 
   # get ecr login domain
   ecr_login_domain = split("/", data.aws_ecr_repository.sample_app.repository_url)[0]
+
+  # get instance subnet, use separate subnet for soaking and performance test as it takes more instances and some times eat up all the available ip address in the subnet
+  instance_subnet = var.testing_type == "e2e" ? tolist(module.basic_components.aoc_public_subnet_ids)[1] : tolist(module.basic_components.aoc_public_subnet_ids)[0]
 }
 
 
@@ -73,7 +76,7 @@ locals {
 resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.suse.id
   instance_type               = "m5.2xlarge"
-  subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
+  subnet_id                   = local.instance_subnet
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
@@ -88,7 +91,7 @@ resource "aws_instance" "sidecar" {
 resource "aws_instance" "aoc" {
   ami                         = local.ami_id
   instance_type               = local.instance_type
-  subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
+  subnet_id                   = local.instance_subnet
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
