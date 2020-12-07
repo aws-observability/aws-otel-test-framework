@@ -74,7 +74,7 @@ locals {
 
 ## launch a sidecar instance to install data emitter and the mocked server
 resource "aws_instance" "sidecar" {
-  ami                         = data.aws_ami.suse.id
+  ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = "m5.2xlarge"
   subnet_id                   = local.instance_subnet
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
@@ -281,9 +281,11 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
   }
   provisioner "remote-exec" {
     inline = [
+      "sudo amazon-linux-extras install docker -y",
+      "sudo service docker start",
+      "sudo usermod -a -G docker ec2-user",
       "sudo curl -L 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' -o /usr/local/bin/docker-compose",
       "sudo chmod +x /usr/local/bin/docker-compose",
-      "sudo systemctl start docker",
       "sudo `aws ecr get-login --no-include-email --region ${var.region}`",
       "sleep 30", // sleep 30s to wait until dockerd is totally set up
       "sudo /usr/local/bin/docker-compose -f /tmp/docker-compose.yml up -d"

@@ -101,17 +101,12 @@ data "aws_ami" "selected" {
 
 
 # this ami is used to launch the emitter instance
-data "aws_ami" "suse" {
+data "aws_ami" "amazonlinux2" {
   most_recent = true
 
   filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
-
-  filter {
     name   = "name"
-    values = ["suse-sles-15-sp1-v20200501-hvm-ssd-x86_64"]
+    values = ["amzn2-ami-hvm*"]
   }
 
   owners = ["amazon"] # Canonical
