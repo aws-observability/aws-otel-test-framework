@@ -49,10 +49,6 @@ variable "mock_endpoint" {
   default = "mocked-server/put-data"
 }
 
-variable "mocked_server_validating_url_type" {
-  default = ""
-}
-
 variable "install_cwagent" {
   default = false
 }

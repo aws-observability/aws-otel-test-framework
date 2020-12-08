@@ -33,9 +33,11 @@ module "basic_components" {
 
   testing_id = module.common.testing_id
 
-  mocked_endpoint = var.mocked_server_validating_url_type != "grpc" ? "localhost/put-data" : "localhost:55670"
+  mocked_endpoint = replace(var.mock_endpoint, "mocked-server", "localhost")
 
   sample_app = var.sample_app
+
+  mocked_server = var.mocked_server
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
@@ -47,7 +49,7 @@ module "basic_components" {
 locals {
   eks_pod_config_path = fileexists("${var.testcase}/eks_pod_config.tpl") ? "${var.testcase}/eks_pod_config.tpl" : module.common.default_eks_pod_config_path
   sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
-  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : var.mocked_server_validating_url_type != "grpc" ? module.basic_components.mocked_server_image : var.soaking_data_mode == "metric" ? module.basic_components.grpc_metrics_mocked_server_image : module.basic_components.grpc_trace_mocked_server_image
+  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
 }
 
 # region
@@ -424,7 +426,7 @@ module "validator" {
   testing_id = module.common.testing_id
   metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   sample_app_endpoint = "http://${var.sample_app_mode == "push" ? kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname : kubernetes_service.pull_mode_sample_app_service[0].load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}"
-  mocked_server_validating_url = var.mocked_server_validating_url_type == "grpc" ? "${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}:55670" : "http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data"
+  mocked_server_validating_url = "http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data"
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 

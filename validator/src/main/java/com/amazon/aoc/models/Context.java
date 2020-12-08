@@ -34,8 +34,6 @@ public class Context {
 
   private ECSContext ecsContext;
 
-  private String testcase;
-
   /*
   alarm related parameters
    */

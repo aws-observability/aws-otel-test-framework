@@ -33,17 +33,12 @@ data "aws_ecr_repository" "mocked_server" {
   name = module.common.mocked_server_ecr_repo_name
 }
 
-data "aws_ecr_repository" "grpc_metrics_mocked_server" {
-  name = module.common.grpc_metrics_mocked_server_ecr_repo
-}
-
-data "aws_ecr_repository" "grpc_trace_mocked_server" {
-  name = module.common.grpc_trace_mocked_server_ecr_repo
-}
-
 locals {
   # get all the sample-apps under folder ../../sample-apps
-  dockerfile_list = tolist(fileset("../../sample-apps", "*/Dockerfile"))
+  sample_apps_dockerfile_list = tolist(fileset("../../sample-apps", "*/Dockerfile"))
+
+  # get all the mocked_servers under folder ../../mocked_servers
+  mocked_servers_dockerfile_list = tolist(fileset("../../mocked_servers", "*/Dockerfile"))
 
   # get ecr login domain
   ecr_login_domain = split("/", data.aws_ecr_repository.sample_app.repository_url)[0]
@@ -58,14 +53,14 @@ resource "null_resource" "login_ecr" {
 
 # build and push sample apps image
 resource "null_resource" "build_and_push_sample_apps" {
-  count = length(local.dockerfile_list)
+  count = length(local.sample_apps_dockerfile_list)
 
   provisioner "local-exec" {
-    command = "docker build -t ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.dockerfile_list, count.index))}-latest ../../sample-apps/${dirname(element(local.dockerfile_list, count.index))}/"
+    command = "docker build -t ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.sample_apps_dockerfile_list, count.index))}-latest ../../sample-apps/${dirname(element(local.sample_apps_dockerfile_list, count.index))}/"
   }
 
   provisioner "local-exec" {
-    command = "docker push ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.dockerfile_list, count.index))}-latest"
+    command = "docker push ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.sample_apps_dockerfile_list, count.index))}-latest"
   }
 
   depends_on = [null_resource.login_ecr]
@@ -73,43 +68,23 @@ resource "null_resource" "build_and_push_sample_apps" {
 
 # build and push mocked server image
 resource "null_resource" "build_and_push_mocked_server" {
+  count = length(local.mocked_servers_dockerfile_list)
+
   provisioner "local-exec" {
-    command = "docker build -t ${data.aws_ecr_repository.mocked_server.repository_url} ../../mocked_server/"
+    command = "docker build -t ${data.aws_ecr_repository.mocked_server.repository_url}:${dirname(element(local.mocked_servers_dockerfile_list, count.index))}-latest ../../mocked_servers/${dirname(element(local.mocked_servers_dockerfile_list, count.index))}/"
   }
 
   provisioner "local-exec" {
-    command = "docker push ${data.aws_ecr_repository.mocked_server.repository_url}"
-  }
-
-  depends_on = [null_resource.login_ecr]
-}
-
-# build and push grpc metrics mocked server image
-resource "null_resource" "build_and_push_grpc_metrics_mocked_server" {
-  provisioner "local-exec" {
-    command = "docker build -t ${data.aws_ecr_repository.grpc_metrics_mocked_server.repository_url} ../../mocked_server/grpc_metrics/"
-  }
-
-  provisioner "local-exec" {
-    command = "docker push ${data.aws_ecr_repository.grpc_metrics_mocked_server.repository_url}"
+    command = "docker push ${data.aws_ecr_repository.mocked_server.repository_url}:${dirname(element(local.mocked_servers_dockerfile_list, count.index))}-latest"
   }
 
   depends_on = [null_resource.login_ecr]
 }
 
-# build and push grpc trace mocked server image
-resource "null_resource" "build_and_push_grpc_trace_mocked_server" {
-  provisioner "local-exec" {
-    command = "docker build -t ${data.aws_ecr_repository.grpc_trace_mocked_server.repository_url} ../../mocked_server/grpc_trace/"
-  }
-
-  provisioner "local-exec" {
-    command = "docker push ${data.aws_ecr_repository.grpc_trace_mocked_server.repository_url}"
-  }
-
-  depends_on = [null_resource.login_ecr]
+output "sample_apps_dockerfile_list" {
+  value = local.sample_apps_dockerfile_list
 }
 
-output "dockerfile_list" {
-  value = local.dockerfile_list
+output "mocked_servers_dockerfile_list" {
+  value = local.mocked_servers_dockerfile_list
 }

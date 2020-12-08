@@ -2,14 +2,10 @@ syntax = "proto3";
 
 package opentelemetry.proto.collector.metrics.v1;
 
-option java_package = "com.amazon.aoc.clients";
-
 // The Metric Handler service definition.
 service MetricsService {
     // Export data
     rpc Export (Request) returns (ExportMetricsResponse) {}
-    // Check data
-    rpc CheckData (Request) returns (CheckDataResponse) {}
 }
 
 message Request {
@@ -17,9 +13,5 @@ message Request {
 }
 
 message ExportMetricsResponse {
-    string message = 1;
-}
-
-message CheckDataResponse {
     string message = 1;
 }

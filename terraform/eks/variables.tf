@@ -17,6 +17,6 @@ variable "eks_cluster_name" {
   default = "aws-otel-testing-framework-eks"
 }
 
-variable "mocked_server_validating_url_type" {
-  default = ""
+variable "mock_endpoint" {
+  default = "localhost/put-data"
 }

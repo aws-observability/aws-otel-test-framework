@@ -108,7 +108,6 @@ public class App implements Callable<Integer> {
     context.setAlarmNameList(alarmNameList);
     context.setMockedServerValidatingUrl(mockedServerValidatingUrl);
     context.setCortexInstanceEndpoint(this.cortexInstanceEndpoint);
-    context.setTestcase(this.testcase);
 
     log.info(context);
 

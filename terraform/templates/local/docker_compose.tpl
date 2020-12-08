@@ -2,7 +2,7 @@ version: "3.8"
 services:
   mocked-server:
     build:
-      context: ../../mocked_server
+      context: ../../mocked_servers
     ports:
       - 80:8080
 
@@ -14,12 +14,12 @@ services:
     command: ["--config=/tmp/otconfig.yaml", "--log-level=DEBUG"]
     volumes:
       - ./otconfig.yml:/tmp/otconfig.yaml
-      - "../../mocked_server/certificates/ssl/certificate.crt:/etc/ssl/certs/ca-certificates.crt"
-      - "../../mocked_server/certificates/ssl/certificate.crt:/etc/ssl/cert.pem"
-      - "../../mocked_server/certificates/ssl/certificate.crt:/etc/pki/tls/certs/ca-bundle.crt"
-      - "../../mocked_server/certificates/ssl/certificate.crt:/etc/ssl/ca-bundle.pem"
-      - "../../mocked_server/certificates/ssl/certificate.crt:/etc/pki/tls/cacert.pem"
-      - "../../mocked_server/certificates/ssl/certificate.crt:/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
+      - "../../mocked_servers/https/certificates/ssl/certificate.crt:/etc/ssl/certs/ca-certificates.crt"
+      - "../../mocked_servers/https/certificates/ssl/certificate.crt:/etc/ssl/cert.pem"
+      - "../../mocked_servers/https/certificates/ssl/certificate.crt:/etc/pki/tls/certs/ca-bundle.crt"
+      - "../../mocked_servers/https/certificates/ssl/certificate.crt:/etc/ssl/ca-bundle.pem"
+      - "../../mocked_servers/https/certificates/ssl/certificate.crt:/etc/pki/tls/cacert.pem"
+      - "../../mocked_servers/https/certificates/ssl/certificate.crt:/etc/pki/ca-trust/extracted/pem/tls-ca-bundle.pem"
     environment:
       - AWS_REGION=${region}
       # faked credentials

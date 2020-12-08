@@ -190,11 +190,3 @@ resource "aws_ecr_repository" "sample_app_ecr_repo" {
 resource "aws_ecr_repository" "mocked_server_ecr_repo" {
   name = module.common.mocked_server_ecr_repo_name
 }
-
-resource "aws_ecr_repository" "grpc_metrics_mocked_server_ecr_repo" {
-  name = module.common.grpc_metrics_mocked_server_ecr_repo
-}
-
-resource "aws_ecr_repository" "grpc_trace_mocked_server_ecr_repo" {
-  name = module.common.grpc_trace_mocked_server_ecr_repo
-}

@@ -29,9 +29,11 @@ module "basic_components" {
 
   testing_id = module.common.testing_id
 
-  mocked_endpoint = var.mocked_server_validating_url_type != "grpc" ? "localhost/put-data" : "localhost:55670"
+  mocked_endpoint = replace(var.mock_endpoint, "mocked-server", "localhost")
 
   sample_app = var.sample_app
+
+  mocked_server = var.mocked_server
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 }
@@ -39,7 +41,7 @@ module "basic_components" {
 locals {
   ecs_taskdef_path = fileexists("${var.testcase}/ecs_taskdef.tpl") ? "${var.testcase}/ecs_taskdef.tpl" : module.common.default_ecs_taskdef_path
   sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
-  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : var.mocked_server_validating_url_type != "grpc" ? module.basic_components.mocked_server_image : var.soaking_data_mode == "metric" ? module.basic_components.grpc_metrics_mocked_server_image : module.basic_components.grpc_trace_mocked_server_image
+  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
 }
 
 provider "aws" {
@@ -227,7 +229,7 @@ module "validator" {
   testing_id = module.common.testing_id
   metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   sample_app_endpoint = "http://${aws_lb.aoc_lb[0].dns_name}:${module.common.sample_app_lb_port}"
-  mocked_server_validating_url = var.mocked_server_validating_url_type == "grpc" ? "${aws_lb.mocked_server_lb.dns_name}:55670" : "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
+  mocked_server_validating_url = "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
 
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
@@ -243,7 +245,7 @@ module "validator_without_sample_app" {
   region = var.region
   testing_id = module.common.testing_id
   metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-  mocked_server_validating_url = var.mocked_server_validating_url_type == "grpc" ? "${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}:55670" : "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
+  mocked_server_validating_url = "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
 
   ecs_cluster_name = module.ecs_cluster.cluster_name
   ecs_task_arn = aws_ecs_task_definition.aoc.arn

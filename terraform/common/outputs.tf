@@ -105,11 +105,3 @@ output "sample_app_ecr_repo_name" {
 output "mocked_server_ecr_repo_name" {
   value = "otel-test/mocked-server"
 }
-
-output "grpc_metrics_mocked_server_ecr_repo" {
-  value = "otel-test/grpc-metrics-mocked-server"
-}
-
-output "grpc_trace_mocked_server_ecr_repo" {
-  value = "otel-test/grpc-trace-mocked-server"
-}

@@ -6,8 +6,6 @@ package opentelemetry.proto.collector.trace.v1;
 service TraceService {
     // Export data
     rpc Export (Request) returns (ExportTraceServiceResponse) {}
-    // Check data
-    rpc CheckData (Request) returns (CheckDataResponse) {}
 }
 
 message Request {
@@ -15,9 +13,5 @@ message Request {
 }
 
 message ExportTraceServiceResponse {
-    string message = 1;
-}
-
-message CheckDataResponse {
     string message = 1;
 }

@@ -82,22 +82,13 @@ data "template_file" "otconfig" {
 }
 
 data "template_file" "mocked_server_cert" {
-  template = file("../../mocked_server/certificates/ssl/ca-bundle.crt")
+  template = file("../../mocked_servers/https/certificates/ssl/ca-bundle.crt")
 }
 
 data "aws_ecr_repository" "sample_apps" {
   name = module.common.sample_app_ecr_repo_name
 }
 
-data "aws_ecr_repository" "mocked_server" {
+data "aws_ecr_repository" "mocked_servers" {
   name = module.common.mocked_server_ecr_repo_name
 }
-
-data "aws_ecr_repository" "grpc_metrics_mocked_server" {
-  name = module.common.grpc_metrics_mocked_server_ecr_repo
-}
-
-data "aws_ecr_repository" "grpc_trace_mocked_server" {
-  name = module.common.grpc_trace_mocked_server_ecr_repo
-}
-
