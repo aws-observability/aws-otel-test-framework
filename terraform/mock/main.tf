@@ -68,6 +68,7 @@ data "template_file" "docker_compose" {
     region = var.region
     sample_app = var.sample_app
     sample_app_image = var.sample_app_image
+    mocked_server = var.mocked_server
   }
 }
 

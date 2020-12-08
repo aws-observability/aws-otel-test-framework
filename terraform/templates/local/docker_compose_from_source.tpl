@@ -2,7 +2,7 @@ version: "3.8"
 services:
   mocked-server:
     build:
-      context: ../../mocked_servers/https
+      context: ../../mocked_servers/${mocked_server}
     ports:
       - 80:8080
 
