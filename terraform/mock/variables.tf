@@ -17,5 +17,9 @@ variable "collector_repo_path" {
   default = "../../../aws-otel-collector"
 }
 
+variable "mock_endpoint" {
+  default = "mocked-server/put-data"
+}
+
 
 
