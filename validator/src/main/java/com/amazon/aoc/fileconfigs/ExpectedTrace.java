@@ -37,6 +37,12 @@ public enum ExpectedTrace implements FileConfig {
   ),
   GO_SDK_AWSSDK_EXPECTED_TRACE(
     "/expected-data-template/go/goAppExpectedAWSSDKTrace.mustache"
+  ),
+  JS_SDK_HTTP_EXPECTED_TRACE(
+    "/expected-data-template/js/jsAppExpectedHTTPTrace.mustache"
+  ),
+  JS_SDK_AWSSDK_EXPECTED_TRACE(
+    "/expected-data-template/js/jsAppExpectedAWSSDKTrace.mustache"
   )
   ;
 

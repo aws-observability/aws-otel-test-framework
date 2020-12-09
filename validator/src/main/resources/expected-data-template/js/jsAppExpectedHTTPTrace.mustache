@@ -1,0 +1,29 @@
+[{
+  "http": {
+    "request": {
+      "url": "{{endpoint}}/outgoing-http-call",
+      "method": "GET"
+    },
+    "response": {
+    }
+  },
+  "metadata": {
+    "default": {
+      "otel.resource.telemetry.sdk.name": "opentelemetry"
+    }
+  },
+  "subsegments": [
+    {
+      "name": "aws.amazon.com:80",
+      "http": {
+        "request": {
+          "url": "http://aws.amazon.com/",
+          "method": "GET"
+        },
+        "response": {
+        }
+      },
+      "namespace": "remote"
+    }
+  ]
+}]

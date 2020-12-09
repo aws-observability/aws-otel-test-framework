@@ -1,0 +1,29 @@
+[{
+  "http": {
+    "request": {
+      "url": "{{endpoint}}/aws-sdk-call",
+      "method": "GET"
+    },
+    "response": {
+    }
+  },
+  "metadata": {
+    "default": {
+      "otel.resource.telemetry.sdk.name": "opentelemetry"
+    }
+  },
+  "subsegments": [
+    {
+      "name": "aws.s3.listBuckets",
+      "http": {
+        "response": {
+        }
+      },
+      "metadata": {
+        "default": {
+          "aws.service.api": "S3"
+        }
+      }
+    }
+  ]
+}]
