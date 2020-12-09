@@ -10,3 +10,4 @@
   httpMethod: "get"
   callingType: "http"
   expectedTraceTemplate: "JS_SDK_AWSSDK_EXPECTED_TRACE"
+  
