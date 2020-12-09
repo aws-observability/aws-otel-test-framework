@@ -25,7 +25,7 @@ app.get("/check-data", function (req, res) {
 app.all('/put-data*', function (req, res) {
     data = "success";
     numTransactions++;
-    res.send('{}');
+    setTimeout((function() {res.send("{}")}), 200);
 });
 
 app.all('/', function (req, res) {
