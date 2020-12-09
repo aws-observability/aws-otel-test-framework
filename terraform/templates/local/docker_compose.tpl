@@ -5,7 +5,7 @@ services:
       context: ../../mocked_servers/${mocked_server}
     ports:
       - 80:8080
-      - 55670:55670
+      - 55671:55671
 
   aws-ot-collector:
     build:
