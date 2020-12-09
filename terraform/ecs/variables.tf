@@ -20,3 +20,7 @@ variable "ecs_launch_type" {
 variable "sample_app_callable" {
   default = true
 }
+
+variable "mock_endpoint" {
+  default = "localhost/put-data"
+}

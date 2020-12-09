@@ -4,7 +4,7 @@ Before adding a new component into AWS Otel Collector, we require contributors t
 
 * Contributors won't need to run the test locally to provide the testing result, instead, just define it. The test case will be automatically picked by the github workflow in AWS Otel Collector repo to run integration test and soaking test on different platforms. We will notify contributors if a certain test case is failed.
 
-* Contributors won't need to build the validation logic for their own backends, no api keys or credentials are required. We use our own version of [mocked backend](mocked_server/) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy. [The mechanism of testing framework](docs/mechanism-of-testing-framework.md)
+* Contributors won't need to build the validation logic for their own backends, no api keys or credentials are required. We use our own version of [mocked backend](mocked_servers/) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy. [The mechanism of testing framework](docs/mechanism-of-testing-framework.md)
 
 * Contributors won't need to define different test cases for different platforms. The point is, one test case for multiple types of tests including integration test and soaking test. 
 

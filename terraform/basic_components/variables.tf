@@ -29,6 +29,9 @@ variable "mocked_endpoint" {
 variable "sample_app" {
 }
 
+variable "mocked_server" {
+}
+
 variable "cortex_instance_endpoint" {
   default = ""
 }

@@ -5,6 +5,7 @@ services:
     ports:
       - "80:8080"
       - "443:443"
+      - "55670:55670"
   sample_app:
     privileged: true
     image: ${sample_app_image}

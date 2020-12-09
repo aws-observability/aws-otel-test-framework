@@ -33,9 +33,11 @@ module "basic_components" {
 
   testing_id = module.common.testing_id
 
-  mocked_endpoint = "localhost/put-data"
+  mocked_endpoint = replace(var.mock_endpoint, "mocked-server", "localhost")
 
   sample_app = var.sample_app
+
+  mocked_server = var.mocked_server
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 

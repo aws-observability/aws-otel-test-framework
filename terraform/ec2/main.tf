@@ -32,6 +32,8 @@ module "basic_components" {
 
   sample_app = var.sample_app
 
+  mocked_server = var.mocked_server
+
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
   sample_app_listen_address_host = aws_instance.sidecar.public_ip
@@ -109,7 +111,7 @@ resource "aws_instance" "aoc" {
 # setup mocked server cert and host binding
 ############################################
 data "template_file" "mocked_server_cert_for_windows" {
-  template = file("../../mocked_server/certificates/ssl/certificate.crt")
+  template = file("../../mocked_servers/https/certificates/ssl/certificate.crt")
 }
 resource "null_resource" "setup_mocked_server_cert_for_windows" {
   count = local.selected_ami["family"] == "windows" ? 1 : 0
