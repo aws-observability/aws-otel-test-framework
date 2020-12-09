@@ -11,6 +11,9 @@
   callingType: "http"
   expectedTraceTemplate: "JS_SDK_AWSSDK_EXPECTED_TRACE"
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
   
 >>>>>>> 33f3d52... add space at eof
+=======
+>>>>>>> c4d6669... add space at eof
