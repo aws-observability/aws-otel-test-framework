@@ -39,7 +39,7 @@ app.get("/check-data", function (req, res) {
 function main() {
     var server = new grpc.Server();
     server.addService(data_handler_proto.TraceService.service, {Export: Export});
-    server.bindAsync('0.0.0.0:55670', grpc.ServerCredentials.createInsecure(), () => {
+    server.bindAsync('0.0.0.0:55671', grpc.ServerCredentials.createInsecure(), () => {
         server.start();
     });
     http.createServer(app).listen(8080, "0.0.0.0");
