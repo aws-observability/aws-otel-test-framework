@@ -24,7 +24,7 @@ locals {
   otconfig_file_path = "./otconfig.yml"
   docker_compose_path = "./docker_compose.yml"
 
-  mock_endpoint = "mocked-server/put-data"
+  mock_endpoint = var.mock_endpoint
   sample_app_listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
 }
 
