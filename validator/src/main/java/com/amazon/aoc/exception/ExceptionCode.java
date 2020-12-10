@@ -25,7 +25,7 @@ public enum ExceptionCode {
 
   // validating errors
   TRACE_ID_NOT_MATCHED(50001, "trace id not matched"),
-  DATA_MODEL_NOT_MATCHED(50006, "data model not matched"),
+  DATA_MODEL_NOT_MATCHED(50006, "trace id not matched"),
   TRACE_SPAN_LIST_NOT_MATCHED(50002, "trace span list has different length"),
   TRACE_SPAN_NOT_MATCHED(50003, "trace span not matched"),
   TRACE_LIST_NOT_MATCHED(50004, "trace list has different length"),
