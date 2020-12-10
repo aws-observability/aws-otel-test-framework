@@ -37,6 +37,7 @@ public class RetryHelper {
       int retryCount, int sleepInMilliSeconds, boolean throwExceptionInTheEnd, Retryable retryable)
       throws Exception {
     Exception exceptionInTheEnd = null;
+    int initialCount = retryCount;
     while (retryCount-- > 0) {
       try {
         log.info("retry attempt left : {} ", retryCount);
@@ -49,8 +50,8 @@ public class RetryHelper {
       }
     }
 
+    log.error("All {} retries exhausted", initialCount);
     if (throwExceptionInTheEnd) {
-      log.error("retries exhausted, possible");
       throw exceptionInTheEnd;
     }
     return false;
