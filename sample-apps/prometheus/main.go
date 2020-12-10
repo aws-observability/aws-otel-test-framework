@@ -74,9 +74,9 @@ func loadMetricCountFromEnv() int {
 func updateMetrics() {
 	for {
 		time.Sleep(time.Second * 30)
+		mtx.Lock()
 		mc.timestamp = float64(time.Now().UnixNano()) / 1000000000
 		for idx := 0; idx < mc.metricCount; idx++ {
-			mtx.Lock()
 			mc.counters[idx].Add(rand.Float64())
 			mc.gauges[idx].Add(rand.Float64())
 			lowerBound := math.Mod(rand.Float64(), 1)
@@ -85,8 +85,8 @@ func updateMetrics() {
 				mc.histograms[idx].Observe(i)
 				mc.summarys[idx].Observe(i)
 			}
-			mtx.Unlock()
 		}
+		mtx.Unlock()
 	}
 }
 
