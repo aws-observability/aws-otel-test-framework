@@ -22,7 +22,7 @@
           "error": false,
           "http": {
             "request": {
-              "url": "https://s3.{{region}}.amazonaws.com/",
+              "url": "https://s3\\.{{region}}\\.amazonaws\\.com/",
               "method": "GET"
             },
             "response": {
@@ -32,12 +32,12 @@
           "namespace": "aws",
           "subsegments": [
             {
-              "name": "s3.{{region}}.amazonaws.com",
+              "name": "s3\\.{{region}}\\.amazonaws\\.com",
               "fault": false,
               "error": false,
               "http": {
                 "request": {
-                  "url": "https://s3.{{region}}.amazonaws.com/",
+                  "url": "https://s3\\.{{region}}\\.amazonaws\\.com/",
                   "method": "GET"
                 },
                 "response": {
