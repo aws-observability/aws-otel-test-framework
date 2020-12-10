@@ -50,8 +50,8 @@ public class PrometheusMetricValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("Start prometheus metric validating");
-    log.info("sleeping to allow metrics to propogate through AOC");
-    TimeUnit.SECONDS.sleep(30);
+    log.info("allow sample app load balancer to start");
+    TimeUnit.SECONDS.sleep(60);
     log.info("resuming validation");
 
     RetryHelper.retry(
@@ -59,6 +59,10 @@ public class PrometheusMetricValidator implements IValidator {
         () -> {
           // get expected metrics
           List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(context);
+
+          // Since we add 20s to timestamp, must sleep 20s between requests
+          TimeUnit.SECONDS.sleep(20);
+
           // get metric from cortex
           CortexService cortexService = new CortexService(context);
 
