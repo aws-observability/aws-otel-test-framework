@@ -16,8 +16,6 @@
 package com.amazon.aoc.helpers;
 
 import com.amazon.aoc.enums.GenericConstants;
-import com.amazon.aoc.exception.BaseException;
-import com.amazon.aoc.exception.ExceptionCode;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.concurrent.TimeUnit;

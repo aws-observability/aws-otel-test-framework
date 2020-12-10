@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Log4j2
@@ -96,8 +96,9 @@ public class TraceValidator implements IValidator {
                   throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
                 }
 
-                if (!Pattern.matches(entry.getValue().toString(),
-                    retrievedTrace.get(targetKey).toString())) {
+                Pattern p = Pattern.compile(entry.getValue().toString(), Pattern.CASE_INSENSITIVE);
+                Matcher m = p.matcher(retrievedTrace.get(targetKey).toString());
+                if (!m.matches()) {
                   log.error("data model validation failed");
                   log.info("mis matched data model field list");
                   log.info("value of stored trace map: {}", entry.getValue());
