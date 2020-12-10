@@ -22,7 +22,7 @@ let get_data = "";
  */
 function Export(call, callback) {
     get_data = "success";
-    callback(null, {message: "Export Data!"});
+    setTimeout((function() {callback(null, {message: "Export Data!"})}), 15);
 }
 
 /**
