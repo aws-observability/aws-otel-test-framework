@@ -1,7 +1,5 @@
 [{
   "name": "/aws-sdk-call",
-  "fault": false,
-  "error": false,
   "http": {
     "request": {
       "url": "{{endpoint}}/aws-sdk-call",
@@ -13,13 +11,9 @@
   },
   "subsegments": [
     {
-      "fault": false,
-      "error": false,
       "subsegments": [
         {
           "name": "S3",
-          "fault": false,
-          "error": false,
           "http": {
             "request": {
               "url": "https://s3\\.{{region}}\\.amazonaws\\.com/",
@@ -33,8 +27,6 @@
           "subsegments": [
             {
               "name": "s3\\.{{region}}\\.amazonaws\\.com",
-              "fault": false,
-              "error": false,
               "http": {
                 "request": {
                   "url": "https://s3\\.{{region}}\\.amazonaws\\.com/",
