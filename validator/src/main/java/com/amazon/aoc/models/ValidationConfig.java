@@ -49,6 +49,9 @@ public class ValidationConfig {
   String dataType;
   String dataMode;
   Integer dataRate;
+  String[] otReceivers;
+  String[] otProcessors;
+  String[] otExporters;
 
   // Dimensions
   String testcase;

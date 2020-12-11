@@ -1,0 +1,23 @@
+[{
+  "http": {
+    "request": {
+      "url": "{{endpoint}}/outgoing-http-call",
+      "method": "GET"
+    },
+    "response": {
+      "status": 200
+    }
+  },
+  "subsegments": [
+    {
+      "name": "aws\\.amazon\\.com",
+      "http": {
+        "request": {
+          "url": "https://aws\\.amazon\\.com",
+          "method": "GET"
+        }
+      },
+      "namespace": "remote"
+    }
+  ]
+}]

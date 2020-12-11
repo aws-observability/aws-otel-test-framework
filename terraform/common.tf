@@ -20,6 +20,10 @@ variable "mocked_server_image" {
   default = ""
 }
 
+variable "mocked_server" {
+  default = "https"
+}
+
 # we use sample_app_image if it's not empty, if it's empty, the sample_app_image will come from the basic component, which is built by imagebuild module
 # instead "sample_app" will be used to choose the image
 variable "sample_app_image" {
@@ -57,4 +61,9 @@ variable "soaking_data_mode" {
 
 variable "sample_app_mode" {
   default = "push"
+}
+
+variable "cortex_instance_endpoint" {
+  # change to your cortex endpoint
+  default = "https://aps-workspaces-gamma.us-west-2.amazonaws.com/workspaces/ws-31eb305d-3208-42d5-a7f4-32ce1191e699"
 }

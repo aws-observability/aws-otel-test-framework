@@ -26,7 +26,24 @@ public enum ExpectedTrace implements FileConfig {
   XRAY_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedHTTPTrace.mustache"),
   SPARK_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedHTTPTrace.mustache"),
   SPARK_SDK_AWSSDK_EXPECTED_TRACE(
-          "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache")
+          "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache"),
+  LAMBDA_EXPECTED_TRACE("/expected-data-template/lambdaExpectedTrace.mustache"),
+  SPRINGBOOT_SDK_HTTP_EXPECTED_TRACE(
+    "/expected-data-template/springboot/springbootAppExpectedHTTPTrace.mustache"),
+  SPRINGBOOT_SDK_AWSSDK_EXPECTED_TRACE(
+    "/expected-data-template/springboot/springbootAppExpectedAWSSDKTrace.mustache"),
+  GO_SDK_HTTP_EXPECTED_TRACE(
+    "/expected-data-template/go/goAppExpectedHTTPTrace.mustache"
+  ),
+  GO_SDK_AWSSDK_EXPECTED_TRACE(
+    "/expected-data-template/go/goAppExpectedAWSSDKTrace.mustache"
+  ),
+  JS_SDK_HTTP_EXPECTED_TRACE(
+    "/expected-data-template/js/jsAppExpectedHTTPTrace.mustache"
+  ),
+  JS_SDK_AWSSDK_EXPECTED_TRACE(
+    "/expected-data-template/js/jsAppExpectedAWSSDKTrace.mustache"
+  )
   ;
 
   private String path;

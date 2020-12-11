@@ -13,8 +13,18 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
+module "common" {
+  source = "../common"
+
+  aoc_version = var.aoc_version
+}
+
 locals {
   launch_date = formatdate("YYYY-MM-DD", timestamp())
+}
+
+data "aws_ecr_repository" "sample_apps" {
+  name = module.common.sample_app_ecr_repo_name
 }
 
 # launch ec2
@@ -27,14 +37,16 @@ module "ec2_setup" {
   aoc_version = var.aoc_version
   region = var.region
   testcase = var.testcase
-  sample_app_image = var.soaking_data_emitter_image
+  sample_app_image = var.soaking_sample_app != "" ? "${data.aws_ecr_repository.sample_apps.repository_url}:${var.soaking_sample_app}-latest" : var.soaking_sample_app_image
   skip_validation = true
 
   # soaking test config
-  soaking_compose_file = "../templates/defaults/soaking_docker_compose.tpl"
+  soaking_compose_file = var.sample_app_mode == "push" ? "../templates/defaults/soaking_docker_compose.tpl" : "../templates/defaults/soaking_docker_compose_pull_mode.tpl"
   soaking_data_mode = var.soaking_data_mode
   soaking_data_rate = var.soaking_data_rate
   soaking_data_type = var.soaking_data_type
+
+  cortex_instance_endpoint = var.cortex_instance_endpoint
 
   # negative soaking
   mock_endpoint = var.negative_soaking ? "http://127.0.0.2" : "mocked-server/put-data"
@@ -58,4 +70,6 @@ module "ec2_setup" {
   soaking_metric_namespace = var.soaking_metric_namespace
 
   debug = var.debug
+
+  testing_type = var.testing_type
 }

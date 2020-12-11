@@ -74,21 +74,21 @@ data "template_file" "otconfig" {
     grpc_port = module.common.grpc_port
     udp_port = module.common.udp_port
     cortex_instance_endpoint = var.cortex_instance_endpoint
+    sample_app_listen_address_host = var.sample_app_listen_address_host
+    sample_app_listen_address_port = var.sample_app_listen_address_port
     
     mock_endpoint = var.mocked_endpoint
   }
 }
 
 data "template_file" "mocked_server_cert" {
-  template = file("../../mocked_server/certificates/ssl/ca-bundle.crt")
+  template = file("../../mocked_servers/https/certificates/ssl/ca-bundle.crt")
 }
 
 data "aws_ecr_repository" "sample_apps" {
   name = module.common.sample_app_ecr_repo_name
 }
 
-data "aws_ecr_repository" "mocked_server" {
+data "aws_ecr_repository" "mocked_servers" {
   name = module.common.mocked_server_ecr_repo_name
 }
-
-

@@ -78,7 +78,7 @@ public class PrometheusMetric {
       }
 
       // check metric value
-      if (o1.getMetricValue().equals(o2.getMetricValue())) {
+      if (!o1.getMetricValue().equals(o2.getMetricValue())) {
         return o1.getMetricValue().compareTo(o2.getMetricValue());
       }
 

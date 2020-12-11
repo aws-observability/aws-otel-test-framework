@@ -6,7 +6,7 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.prometheus.PrometheusMetric;
 import com.amazon.aoc.models.prometheus.PrometheusQueryResult;
 import com.amazonaws.auth.AWS4Signer;
-import com.amazonaws.auth.profile.ProfileCredentialsProvider;
+import com.amazonaws.auth.DefaultAWSCredentialsProviderChain;
 import com.amazonaws.http.AWSRequestSigningApacheInterceptor;
 import com.amazonaws.util.IOUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,7 +44,7 @@ public class CortexClient {
     this.httpClient = HttpClients.custom()
             .addInterceptorLast(
                     new AWSRequestSigningApacheInterceptor(APS_SERVICE_NAME, signer,
-                            new ProfileCredentialsProvider()))
+                            new DefaultAWSCredentialsProviderChain()))
             .setRetryHandler(new DefaultHttpRequestRetryHandler())
             .setDefaultRequestConfig(
                     RequestConfig.custom()

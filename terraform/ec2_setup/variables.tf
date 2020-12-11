@@ -16,8 +16,16 @@
 variable "testing_ami" {
 }
 
-variable "soaking_data_emitter_image" {
+variable "soaking_sample_app_image" {
   default = "aottestbed/aws-otel-load-generator:v0.1.0"
+}
+
+variable "soaking_sample_app" {
+  default = ""
+}
+
+variable "soaking_compose_file" {
+  default = "../templates/defaults/soaking_docker_compose.tpl"
 }
 
 # data points emitted per second
@@ -60,3 +68,6 @@ variable "install_package_local_path" {
   default = "../../../aws-otel-collector/build/packages/linux/amd64/aws-otel-collector.rpm"
 }
 
+variable "testing_type" {
+  default = "e2e"
+}

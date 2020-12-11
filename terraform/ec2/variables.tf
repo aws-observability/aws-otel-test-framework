@@ -91,15 +91,10 @@ variable "install_package_local_path" {
 }
 
 variable "testing_type" {
-  default = ""
+  default = "e2e"
 }
 
 # flag used by canary test to run EC2 tests in canary mode
 variable "canary" {
   default = false
-}
-
-variable "cortex_instance_endpoint" {
-  # change to your cortex endpoint
-  default = ""
 }

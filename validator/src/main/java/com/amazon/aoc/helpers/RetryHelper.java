@@ -16,8 +16,6 @@
 package com.amazon.aoc.helpers;
 
 import com.amazon.aoc.enums.GenericConstants;
-import com.amazon.aoc.exception.BaseException;
-import com.amazon.aoc.exception.ExceptionCode;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.concurrent.TimeUnit;
@@ -30,17 +28,19 @@ public class RetryHelper {
    * @param retryCount the total retry count
    * @param sleepInMilliSeconds sleep time among retries
    * @param retryable the lambda
+   * @return false if retryCount exhausted
    * @throws Exception when the retry count is reached
    */
-  public static void retry(
+  public static boolean retry(
       int retryCount, int sleepInMilliSeconds, boolean throwExceptionInTheEnd, Retryable retryable)
       throws Exception {
     Exception exceptionInTheEnd = null;
+    int initialCount = retryCount;
     while (retryCount-- > 0) {
       try {
         log.info("retry attempt left : {} ", retryCount);
         retryable.execute();
-        return;
+        return true;
       } catch (Exception ex) {
         exceptionInTheEnd = ex;
         log.info("retrying after {} seconds", TimeUnit.MILLISECONDS.toSeconds(sleepInMilliSeconds));
@@ -48,10 +48,11 @@ public class RetryHelper {
       }
     }
 
+    log.error("All {} retries exhausted", initialCount);
     if (throwExceptionInTheEnd) {
-      log.error("retries exhausted, possible");
       throw exceptionInTheEnd;
     }
+    return false;
   }
 
   /**

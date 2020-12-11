@@ -21,7 +21,6 @@ variable "sample_app_callable" {
   default = true
 }
 
-variable "cortex_instance_endpoint" {
-  # change to your cortex endpoint
-  default = ""
+variable "mock_endpoint" {
+  default = "localhost/put-data"
 }

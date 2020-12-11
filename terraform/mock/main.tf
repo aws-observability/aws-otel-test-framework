@@ -24,7 +24,7 @@ locals {
   otconfig_file_path = "./otconfig.yml"
   docker_compose_path = "./docker_compose.yml"
 
-  mock_endpoint = "mocked-server/put-data"
+  mock_endpoint = var.mock_endpoint
   sample_app_listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
 }
 
@@ -40,6 +40,8 @@ data "template_file" "otconfig" {
     grpc_port = module.common.grpc_port
     udp_port = module.common.udp_port
     mock_endpoint = local.mock_endpoint
+    sample_app_listen_address_host = "172.17.0.1"
+    sample_app_listen_address_port = module.common.sample_app_listen_address_port
   }
 }
 
@@ -66,6 +68,7 @@ data "template_file" "docker_compose" {
     region = var.region
     sample_app = var.sample_app
     sample_app_image = var.sample_app_image
+    mocked_server = var.mocked_server
   }
 }
 

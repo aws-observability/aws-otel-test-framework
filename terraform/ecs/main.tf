@@ -29,9 +29,11 @@ module "basic_components" {
 
   testing_id = module.common.testing_id
 
-  mocked_endpoint = "localhost/put-data"
+  mocked_endpoint = replace(var.mock_endpoint, "mocked-server", "localhost")
 
   sample_app = var.sample_app
+
+  mocked_server = var.mocked_server
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 }
@@ -50,7 +52,7 @@ module "ecs_cluster" {
   source  = "infrablocks/ecs-cluster/aws"
   version = "3.0.0"
 
-  cluster_name = "${module.common.testing_id}"
+  cluster_name = module.common.testing_id
   component = "aoc"
   deployment_identifier = "testing"
   vpc_id = module.basic_components.aoc_vpc_id

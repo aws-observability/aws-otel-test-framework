@@ -24,9 +24,13 @@ module "ec2_setup" {
   aoc_version = var.aoc_version
   region = var.region
 
+  sample_app_mode = var.sample_app_mode
+  soaking_sample_app = var.soaking_sample_app
   soaking_data_mode = var.soaking_data_mode
   soaking_data_rate = var.soaking_data_rate
   soaking_data_type = var.soaking_data_type
+
+  cortex_instance_endpoint = var.cortex_instance_endpoint
 
   install_package_source = var.install_package_source
   install_package_local_path = var.install_package_local_path
@@ -40,6 +44,7 @@ module "ec2_setup" {
   debug = var.debug
   negative_soaking = var.negative_soaking
 
+  testing_type = "soaking"
 }
 
 locals {

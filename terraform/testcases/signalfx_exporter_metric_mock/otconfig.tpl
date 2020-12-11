@@ -8,8 +8,7 @@ receivers:
         endpoint: 0.0.0.0:${grpc_port}
 
 processors:
-  batch/metrics:
-    timeout: 60s
+  batch:
 
 exporters:
   logging:
@@ -23,6 +22,6 @@ service:
   pipelines:
     metrics:
       receivers: [otlp]
-      processors: [batch/metrics]
+      processors: [batch]
       exporters: [signalfx]
   extensions: [pprof]

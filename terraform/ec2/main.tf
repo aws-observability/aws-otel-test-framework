@@ -32,7 +32,13 @@ module "basic_components" {
 
   sample_app = var.sample_app
 
+  mocked_server = var.mocked_server
+
   cortex_instance_endpoint = var.cortex_instance_endpoint
+
+  sample_app_listen_address_host = aws_instance.sidecar.public_ip
+
+  sample_app_listen_address_port = module.common.sample_app_lb_port
 }
 
 provider "aws" {
@@ -61,15 +67,18 @@ locals {
 
   # get ecr login domain
   ecr_login_domain = split("/", data.aws_ecr_repository.sample_app.repository_url)[0]
+
+  # get instance subnet, use separate subnet for soaking and performance test as it takes more instances and some times eat up all the available ip address in the subnet
+  instance_subnet = var.testing_type == "e2e" ? tolist(module.basic_components.aoc_public_subnet_ids)[1] : tolist(module.basic_components.aoc_public_subnet_ids)[0]
 }
 
 
 
 ## launch a sidecar instance to install data emitter and the mocked server
 resource "aws_instance" "sidecar" {
-  ami                         = data.aws_ami.suse.id
+  ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = "m5.2xlarge"
-  subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
+  subnet_id                   = local.instance_subnet
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
@@ -84,7 +93,7 @@ resource "aws_instance" "sidecar" {
 resource "aws_instance" "aoc" {
   ami                         = local.ami_id
   instance_type               = local.instance_type
-  subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
+  subnet_id                   = local.instance_subnet
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
@@ -102,7 +111,7 @@ resource "aws_instance" "aoc" {
 # setup mocked server cert and host binding
 ############################################
 data "template_file" "mocked_server_cert_for_windows" {
-  template = file("../../mocked_server/certificates/ssl/certificate.crt")
+  template = file("../../mocked_servers/https/certificates/ssl/certificate.crt")
 }
 resource "null_resource" "setup_mocked_server_cert_for_windows" {
   count = local.selected_ami["family"] == "windows" ? 1 : 0
@@ -274,10 +283,13 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
   }
   provisioner "remote-exec" {
     inline = [
+      "sudo amazon-linux-extras install docker -y",
+      "sudo service docker start",
+      "sudo usermod -a -G docker ec2-user",
       "sudo curl -L 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' -o /usr/local/bin/docker-compose",
       "sudo chmod +x /usr/local/bin/docker-compose",
-      "sudo systemctl start docker",
       "sudo `aws ecr get-login --no-include-email --region ${var.region}`",
+      "sleep 30", // sleep 30s to wait until dockerd is totally set up
       "sudo /usr/local/bin/docker-compose -f /tmp/docker-compose.yml up -d"
     ]
 
@@ -360,10 +372,12 @@ module "validator" {
   canary = var.canary
   testcase = split("/", var.testcase)[2]
 
+  cortex_instance_endpoint = var.cortex_instance_endpoint
+
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
-  depends_on = [null_resource.setup_sample_app_and_mock_server]
+  depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]
 }
 
 output "public_ip" {
