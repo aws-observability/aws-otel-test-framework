@@ -195,6 +195,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
         container {
           name = "mocked-server"
           image = local.mocked_server_image
+          image_pull_policy = "Always"
 
           readiness_probe {
             http_get {
