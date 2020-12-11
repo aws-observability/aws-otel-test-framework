@@ -2,15 +2,9 @@
 # Pull mode deployments
 ##########################################
 
-resource "time_sleep" "wait_until_sample_app_produces_metrics" {
-  create_duration = "30s"
-  depends_on = [kubernetes_service.sample_app_service]
-}
-
 # deploy aoc and mocked server
 resource "kubernetes_deployment" "pull_mode_aoc_deployment" {
   count = var.sample_app_mode == "pull" ? 1 : 0
-  depends_on = [time_sleep.wait_until_sample_app_produces_metrics]
 
   metadata {
     name = "aoc"

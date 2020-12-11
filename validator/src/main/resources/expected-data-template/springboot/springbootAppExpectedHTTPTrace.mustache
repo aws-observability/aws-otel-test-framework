@@ -1,7 +1,5 @@
 [{
   "name": "/outgoing-http-call",
-  "fault": false,
-  "error": false,
   "http": {
     "request": {
       "url": "{{endpoint}}/outgoing-http-call",
@@ -13,16 +11,12 @@
   },
   "subsegments": [
     {
-      "fault": false,
-      "error": false,
       "subsegments": [
         {
-          "name": "aws.amazon.com",
-          "fault": false,
-          "error": false,
+          "name": "aws\\.amazon\\.com",
           "http": {
             "request": {
-              "url": "https://aws.amazon.com/",
+              "url": "https://aws\\.amazon\\.com/",
               "method": "GET"
             },
             "response": {
