@@ -32,6 +32,10 @@ app.get("/check-data", function (req, res) {
     res.send(get_data);
 });
 
+app.get("/", function(req, res){
+    res.send("healthcheck");
+});
+
 /**
  * Starts an RPC server that receives requests for the data handler service at the sample server port
  * Starts an HTTP server that receives request from validator only to verify the data ingestion
