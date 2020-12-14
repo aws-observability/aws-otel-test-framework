@@ -42,6 +42,8 @@ module "ec2_setup" {
   region = var.region
   testcase = var.testcase
   validation_config = var.validation_config
+  mock_endpoint = var.mock_endpoint
+  mocked_server = var.mocked_server
   sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
   package_s3_bucket = "aws-otel-collector"
   skip_validation = false
