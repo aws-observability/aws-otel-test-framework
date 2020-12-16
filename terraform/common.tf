@@ -31,11 +31,11 @@ variable "sample_app_image" {
 }
 
 variable "aoc_image_repo" {
-  default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/aws/aws-otel-collector"
+  default = "public.ecr.aws/aws-observability/aws-otel-collector"
 }
 
 variable "aoc_version" {
-  default = "v0.4.0-382067259"
+  default = "v0.6.0"
 }
 
 variable "aws_access_key_id" {

@@ -35,6 +35,10 @@ module "basic_components" {
 
   mocked_server = var.mocked_server
 
+  sample_app_listen_address_host = module.common.sample_app_listen_address_ip
+  
+  sample_app_listen_address_port = module.common.sample_app_listen_address_port
+
   cortex_instance_endpoint = var.cortex_instance_endpoint
 }
 
@@ -83,6 +87,7 @@ data "template_file" "task_def" {
     ssm_parameter_arn = aws_ssm_parameter.otconfig.name
     sample_app_container_name = module.common.sample_app_container_name
     sample_app_listen_address = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
+    sample_app_listen_address_host = module.common.sample_app_listen_address_ip
     sample_app_listen_port = module.common.sample_app_listen_address_port
     udp_port = module.common.udp_port
     grpc_port = module.common.grpc_port
@@ -230,6 +235,7 @@ module "validator" {
   metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   sample_app_endpoint = "http://${aws_lb.aoc_lb[0].dns_name}:${module.common.sample_app_lb_port}"
   mocked_server_validating_url = "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
+  cortex_instance_endpoint = var.cortex_instance_endpoint
 
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key

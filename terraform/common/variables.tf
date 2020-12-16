@@ -38,9 +38,9 @@ variable "aoc_vpc_name" {
 }
 
 variable "aoc_image_repo" {
-  default = "josephwy/ttt"
+  default = "public.ecr.aws/aws-observability/aws-otel-collector"
 }
 
 variable "aoc_version" {
-  default = "v0.1.11"
+  default = "v0.6.0"
 }
