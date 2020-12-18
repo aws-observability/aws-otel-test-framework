@@ -43,7 +43,7 @@ module "basic_components" {
 }
 
 locals {
-  ecs_taskdef_path = fileexists("${var.testcase}/ecs_taskdef.tpl") ? "${var.testcase}/ecs_taskdef.tpl" : module.common.default_ecs_taskdef_path
+  ecs_taskdef_path = "../templates/${var.ecs_taskdef_directory}/ecs_taskdef.tpl"
   sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
   mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
 }

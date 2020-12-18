@@ -20,9 +20,9 @@ import lombok.Getter;
 @Getter
 public enum GenericConstants {
   // retry
-  SLEEP_IN_MILLISECONDS("10000"), // ms
+  SLEEP_IN_MILLISECONDS("20000"), // ms
   SLEEP_IN_SECONDS("30"),
-  MAX_RETRIES("20"),
+  MAX_RETRIES("10"),
 
   // validator env vars
   ENV_VAR_AGENT_VERSION("AGENT_VERSION"),

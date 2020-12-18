@@ -42,5 +42,5 @@ variable "aoc_image_repo" {
 }
 
 variable "aoc_version" {
-  default = "v0.6.0"
+  default = "latest"
 }
