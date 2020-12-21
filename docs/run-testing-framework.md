@@ -92,4 +92,28 @@ Don't forget to clean up your resources:
 terraform destroy
 ````
  
-#### 2.4 Run in EC2 [TBD]
+#### 2.4 Run in EC2
+````
+cd terraform/ec2 && terraform init && terraform apply \
+    -var="aoc_version={{the aoc binary version}}" \
+    -var="testcase=../testcases/{{your test case folder name}}" \
+    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
+````
+ 
+Don't forget to clean up your resources:
+````
+terraform destroy
+````
+
+#### 2.5 Run in canary
+````
+cd terraform/canary && terraform init && terraform apply \
+    -var="aoc_version={{ the aoc binary version}}" \
+    -var="testcase=../testcases/{{your test case folder name}}" \
+    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
+````
+ 
+Don't forget to clean up your resources:
+````
+terraform destroy
+````

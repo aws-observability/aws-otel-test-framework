@@ -29,11 +29,11 @@ You will need to place a `otconfig.tpl` file under the test case folder, We requ
 
 there're three placeholders could be used:
 
-* `${mocked_endpoint}`, which refers to the mocked_endpoint provided in the testing framework. [An example to use mock_endpoint to override the real backend](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_http_exporter_metric_mock/otconfig.tpl#L15)
+* `${mocked_endpoint}`, which refers to the mocked_endpoint provided in the testing framework. [An example to use mock_endpoint to override the real backend](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_http_exporter_metric_mock/otconfig.tpl#L17)
 
-* `${grpc_port}`, which refers to the recevier grpc port allocated in the testing framework so that the throughput could be sent into the collector. [An example to use grpc_port](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_http_exporter_metric_mock/otconfig.tpl#L5)
+* `${grpc_port}`, which refers to the recevier grpc port allocated in the testing framework so that the throughput could be sent into the collector. [An example to use grpc_port](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_http_exporter_metric_mock/otconfig.tpl#L7)
 
-* `${region}`, which refers to the region where the test case will be running and validate. in normal case, region should be auto-detected so this placeholder might not be used in the config. [an example to use region](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_metric/otconfig.tpl#L15)
+* `${region}`, which refers to the region where the test case will be running and validate. in normal case, region should be auto-detected so this placeholder might not be used in the config. [an example to use region](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_metric/otconfig.tpl#L17)
 
 > **Note:** Please enable `pprof` extension in your `otconfig.tpl` for the debugging purpose.
 
@@ -74,17 +74,19 @@ You will need to add a block in the [testcases.json](https://github.com/aws-obse
 * EKS, which will run the test in the main branch workflow under an eks/k8s cluster.
 * SOAKING, which will run every night, and perform high throughput to your test case and monitor the resource usages.
 * NEG_SOAKING, which will run every night, and perform high throughput to your test case with false endpoint and monitor the resource usages.
+* CANARY, which will run hourly, and test against the latest released version of aoc.
 
 ## 2. Run testing framework
 
 If a certain test case is failed in the github workflow of AWS Otel Collector, you might need to debug the test case locally. 
 
 * [run the local test](docs/run-mock-test.md)
-* [run the ec2 test](docs/run-testing-framework.md#24-run-in-ec2-tbd)
+* [run the ec2 test](docs/run-testing-framework.md#24-run-in-ec2)
 * [run the ecs test](docs/run-testing-framework.md#22-run-in-ecs)
 * [run the eks test](docs/run-testing-framework.md#23-run-in-eks)
 * [run the soaking test](docs/run-testing-framework.md)
 * [run the negative soaking test](docs/run-testing-framework.md)
+* [run the canary test](docs/run-testing-framework.md#25-run-in-canary)
 
 
 ## 3. Contributing

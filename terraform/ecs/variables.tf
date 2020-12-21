@@ -24,3 +24,7 @@ variable "sample_app_callable" {
 variable "mock_endpoint" {
   default = "localhost/put-data"
 }
+
+variable "ecs_taskdef_directory" {
+  default = "defaults"
+}

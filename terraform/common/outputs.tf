@@ -69,10 +69,6 @@ output "default_eks_pod_config_path" {
   value = "../templates/defaults/eks_pod_config.tpl"
 }
 
-output "default_ecs_taskdef_path" {
-  value = "../templates/defaults/ecs_taskdef.tpl"
-}
-
 output "default_docker_compose_path" {
   value = "../templates/defaults/docker_compose.tpl"
 }
