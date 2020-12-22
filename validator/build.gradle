@@ -25,7 +25,7 @@ repositories {
     mavenCentral()
 
     maven {
-        url 'https://repository.mulesoft.org/nexus/content/repositories/public/'
+        url 'https://jitpack.io'
     }
 }
 
