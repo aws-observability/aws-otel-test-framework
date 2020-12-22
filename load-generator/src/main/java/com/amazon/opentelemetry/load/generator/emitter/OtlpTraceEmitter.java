@@ -18,9 +18,12 @@ package com.amazon.opentelemetry.load.generator.emitter;
 import com.amazon.opentelemetry.load.generator.factory.AwsTracerProviderFactory;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
 import io.grpc.ManagedChannelBuilder;
+import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.TracerProvider;
 import io.opentelemetry.exporter.otlp.OtlpGrpcSpanExporter;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.trace.TracerSdkManagement;
 import io.opentelemetry.sdk.trace.TracerSdkProvider;
-import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
@@ -44,9 +47,10 @@ public class OtlpTraceEmitter extends TraceEmitter {
 
   @Override
   public void setupProvider() throws Exception {
-    TracerSdkProvider tracerProvider = (TracerSdkProvider) new AwsTracerProviderFactory().create();
+    OpenTelemetrySdk otelSdk = new AwsTracerProviderFactory().create();
+    TracerSdkManagement tracerProvider = otelSdk.getTracerManagement();
     tracer =
-        tracerProvider.get("aws-otel-load-generator-trace", "semver:0.1.0");
+        otelSdk.getTracerProvider().get("aws-otel-load-generator-trace", "semver:0.1.0");
     OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
         .setChannel(
             ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
@@ -55,7 +59,6 @@ public class OtlpTraceEmitter extends TraceEmitter {
 
     tracerProvider.addSpanProcessor(
         SimpleSpanProcessor.builder(spanExporter).build());
-
   }
 
   @Override
