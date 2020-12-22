@@ -28,13 +28,13 @@ dependencies {
     // This dependency is used by the application.
     implementation 'com.google.guava:guava:28.2-jre'
 
-    implementation "io.grpc:grpc-bom:1.29.0"
-    implementation "io.grpc:grpc-api:1.29.0"
+    implementation "io.grpc:grpc-bom:1.34.1"
+    implementation "io.grpc:grpc-api:1.34.1"
 
-    implementation "io.grpc:grpc-netty-shaded:1.29.0"
-    implementation "io.opentelemetry:opentelemetry-sdk:0.10.0"
-    implementation "io.opentelemetry:opentelemetry-exporter-otlp:0.10.0"
-    implementation "io.opentelemetry:opentelemetry-sdk-extension-aws-v1-support:0.10.0"
+    implementation "io.grpc:grpc-netty-shaded:1.34.1"
+    implementation "io.opentelemetry:opentelemetry-sdk:0.12.0"
+    implementation "io.opentelemetry:opentelemetry-exporter-otlp:0.12.0"
+    implementation "io.opentelemetry:opentelemetry-sdk-extension-aws:0.12.0"
 
     compile "com.amazonaws:aws-xray-recorder-sdk-core:2.7.0"
     compile "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.7.0"
