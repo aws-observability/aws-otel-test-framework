@@ -173,6 +173,7 @@ module "validator" {
   validation_config = "alarm-pulling-validation.yml"
   region = var.region
   testing_id = module.ec2_setup.testing_id
+  testcase = split("/", var.testcase)[2]
   cpu_alarm = aws_cloudwatch_metric_alarm.cpu_alarm.alarm_name
   mem_alarm = aws_cloudwatch_metric_alarm.mem_alarm.alarm_name
   incoming_packets_alarm = aws_cloudwatch_metric_alarm.incoming_bytes.alarm_name

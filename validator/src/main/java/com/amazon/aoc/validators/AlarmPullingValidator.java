@@ -8,6 +8,8 @@ import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchAlarmService;
+import com.amazon.aoc.services.CloudWatchService;
+import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.MetricAlarm;
 import lombok.extern.log4j.Log4j2;
 
@@ -21,6 +23,11 @@ public class AlarmPullingValidator implements IValidator {
   private Integer pullDuration;
   private Integer pullTimes;
   private CloudWatchAlarmService cloudWatchAlarmService;
+  private CloudWatchService cloudWatchService;
+
+  private static final String SOAKING_NAMESPACE = "AWSOtelCollector/SoakingTest";
+  private static final String TEST_CASE_DIM_KEY = "testcase";
+  private static final String METRIC_NAME = "Success";
 
   @Override
   public void init(
@@ -33,11 +40,14 @@ public class AlarmPullingValidator implements IValidator {
     this.pullDuration = validationConfig.getPullingDuration();
     this.pullTimes = validationConfig.getPullingTimes();
     this.cloudWatchAlarmService = new CloudWatchAlarmService(context.getRegion());
+    this.cloudWatchService = new CloudWatchService(context.getRegion());
   }
 
   @Override
   public void validate() throws Exception {
     Collections.sort(context.getAlarmNameList());
+    Dimension dimension = new Dimension()
+        .withName(TEST_CASE_DIM_KEY).withValue(context.getTestcase());
     RetryHelper.retry(
         this.pullTimes,
         this.pullDuration * 1000,
@@ -51,6 +61,8 @@ public class AlarmPullingValidator implements IValidator {
           for (int i = 0; i != context.getAlarmNameList().size(); ++i) {
             if (!context.getAlarmNameList().get(i).equals(alarmList.get(i).getAlarmName())) {
               log.error("alarm {} can not be found", context.getAlarmNameList().get(i));
+              //emit soaking validation metric
+              cloudWatchService.putMetricData(SOAKING_NAMESPACE, METRIC_NAME, 0.0, dimension);
               System.exit(1);
             }
           }
@@ -64,11 +76,14 @@ public class AlarmPullingValidator implements IValidator {
                   metricAlarm.getAlarmName(),
                   metricAlarm.getStateValue(),
                   metricAlarm.getMetrics());
+              cloudWatchService.putMetricData(SOAKING_NAMESPACE, METRIC_NAME, 0.0, dimension);
               System.exit(1);
             }
           }
 
-          log.info("alarms look good, continue to bake");
+          log.info("all alarms look good, continue to bake");
+          cloudWatchService.putMetricData(SOAKING_NAMESPACE, METRIC_NAME, 1.0, dimension);
+
           // throw a dummy exception here to make it retry
           throw new BaseException(ExceptionCode.ALARM_BAKING);
         });
