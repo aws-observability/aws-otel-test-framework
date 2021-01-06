@@ -187,6 +187,63 @@ EOF
     }
 
 
+    # arm amis
+    arm_amazonlinux2 = {
+      os_family = "amazon_linux"
+      ami_search_pattern = "amzn2-ami-hvm-2.0.20200722.0-arm64*"
+      family = "linux"
+      ami_owner = "amazon"
+      arch = "arm64"
+      instance_type = "t4g.nano"
+    }
+
+    arm_suse15 = {
+      os_family = "suse"
+      ami_search_pattern = "suse-sles-15-sp2-v20200721-hvm-ssd-arm64*"
+      family = "linux"
+      ami_owner = "amazon"
+      arch = "arm64"
+      instance_type = "t4g.nano"
+    }
+
+    arm_redhat8 = {
+      os_family = "redhat"
+      ami_search_pattern = "RHEL-8.0.0_HVM-20190426-arm64*"
+      family = "linux"
+      ami_owner = "309956199498"
+      arch = "arm64"
+      instance_type = "t4g.micro"
+    }
+
+    arm_redhat7 = {
+      os_family = "redhat"
+      ami_search_pattern = "RHEL-7.6_HVM_GA-20181122-arm64*"
+      family = "linux"
+      ami_owner = "309956199498"
+      arch = "arm64"
+      instance_type = "t4g.micro"
+    }
+
+    arm_ubuntu18 = {
+      os_family = "ubuntu"
+      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-arm64*"
+      family = "debian"
+      ami_owner = "099720109477"
+      arch = "arm64"
+      instance_type = "t4g.nano"
+    }
+
+    arm_ubuntu16 = {
+      os_family = "ubuntu"
+      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-arm64*"
+      family = "debian"
+      ami_owner = "099720109477"
+      arch = "arm64"
+      instance_type = "t4g.nano"
+    }
+
+
+
   }
 }
 

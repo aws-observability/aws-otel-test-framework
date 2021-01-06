@@ -55,7 +55,7 @@ locals {
   selected_ami = var.amis[var.testing_ami]
   ami_family = var.ami_family[local.selected_ami["family"]]
   ami_id = data.aws_ami.selected.id
-  instance_type = local.ami_family["instance_type"]
+  instance_type = lookup(local.selected_ami, "instance_type", local.ami_family["instance_type"])
   otconfig_destination = local.ami_family["otconfig_destination"]
   login_user = lookup(local.selected_ami, "login_user", local.ami_family["login_user"])
   connection_type = local.ami_family["connection_type"]
