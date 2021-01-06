@@ -58,12 +58,14 @@ EOF
 variable "amis" {
   default = {
     soaking_windows = {
+      os_family = "windows"
       ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
       ami_owner = "amazon"
       family = "windows"
       arch = "amd64"
     }
     soaking_linux = {
+      os_family = "amazon_linux"
       ami_search_pattern = "amzn2-ami-hvm*"
       ami_owner = "amazon"
       family = "amazon_linux"
