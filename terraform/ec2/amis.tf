@@ -113,7 +113,7 @@ variable "amis" {
       os_family = "amazon_linux"
       ami_search_pattern = "amzn2-ami-hvm*"
       ami_owner = "amazon"
-      family = "amazon_linux"
+      family = "linux"
       arch = "amd64"
       login_user = "ec2-user"
     }
@@ -129,7 +129,7 @@ variable "amis" {
       os_family = "amazon_linux"
       ami_search_pattern = "amzn-ami-hvm*"
       ami_owner = "amazon"
-      family = "amazon_linux"
+      family = "linux"
       arch = "amd64"
       login_user = "ec2-user"
     }
