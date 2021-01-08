@@ -38,7 +38,7 @@ variable "ami_family" {
       user_data = ""
     }
     windows = {
-
+      login_user = "Administrator"
       install_package = "aws-otel-collector.msi"
       instance_type = "t3.medium"
       otconfig_destination = "C:\\ot-default.yml"
