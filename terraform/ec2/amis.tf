@@ -38,7 +38,7 @@ variable "ami_family" {
       user_data = ""
     }
     windows = {
-
+      login_user = "Administrator"
       install_package = "aws-otel-collector.msi"
       instance_type = "t3.medium"
       otconfig_destination = "C:\\ot-default.yml"
@@ -113,7 +113,7 @@ variable "amis" {
       os_family = "amazon_linux"
       ami_search_pattern = "amzn2-ami-hvm*"
       ami_owner = "amazon"
-      family = "amazon_linux"
+      family = "linux"
       arch = "amd64"
       login_user = "ec2-user"
     }
@@ -129,7 +129,7 @@ variable "amis" {
       os_family = "amazon_linux"
       ami_search_pattern = "amzn-ami-hvm*"
       ami_owner = "amazon"
-      family = "amazon_linux"
+      family = "linux"
       arch = "amd64"
       login_user = "ec2-user"
     }
