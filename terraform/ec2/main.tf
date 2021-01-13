@@ -55,12 +55,12 @@ locals {
   selected_ami = var.amis[var.testing_ami]
   ami_family = var.ami_family[local.selected_ami["family"]]
   ami_id = data.aws_ami.selected.id
-  instance_type = local.ami_family["instance_type"]
+  instance_type = lookup(local.selected_ami, "instance_type", local.ami_family["instance_type"])
   otconfig_destination = local.ami_family["otconfig_destination"]
-  login_user = local.ami_family["login_user"]
+  login_user = lookup(local.selected_ami, "login_user", local.ami_family["login_user"])
   connection_type = local.ami_family["connection_type"]
-  user_data = local.ami_family["user_data"]
-  download_command = format(local.ami_family["download_command_pattern"], "https://${var.package_s3_bucket}.s3.amazonaws.com/${local.selected_ami["family"]}/${local.selected_ami["arch"]}/${var.aoc_version}/${local.ami_family["install_package"]}")
+  user_data = lookup(local.selected_ami, "user_data", local.ami_family["user_data"])
+  download_command = format(local.ami_family["download_command_pattern"], "https://${var.package_s3_bucket}.s3.amazonaws.com/${local.selected_ami["os_family"]}/${local.selected_ami["arch"]}/${var.aoc_version}/${local.ami_family["install_package"]}")
 
   sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
   mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image

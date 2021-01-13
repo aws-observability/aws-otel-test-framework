@@ -42,12 +42,14 @@ EOF
 variable "amis" {
   default = {
     canary_windows = {
+      os_family = "windows"
       ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
       ami_owner = "amazon"
       family = "windows"
       arch = "amd64"
     }
     canary_linux = {
+      os_family = "amazon_linux"
       ami_search_pattern = "amzn2-ami-hvm*"
       ami_owner = "amazon"
       family = "amazon_linux"
@@ -56,31 +58,3 @@ variable "amis" {
   }
 }
 
-data "aws_ami" "selected" {
-  most_recent = true
-
-  filter {
-    name   = "name"
-    values = [var.amis[var.testing_ami]["ami_search_pattern"]]
-  }
-
-  owners = [var.amis[var.testing_ami]["ami_owner"]] # Canonical
-}
-
-
-# this ami is used to launch the emitter instance
-data "aws_ami" "suse" {
-  most_recent = true
-
-  filter {
-    name   = "owner-alias"
-    values = ["amazon"]
-  }
-
-  filter {
-    name   = "name"
-    values = ["suse-sles-15-sp1-v20200501-hvm-ssd-x86_64"]
-  }
-
-  owners = ["amazon"] # Canonical
-}
