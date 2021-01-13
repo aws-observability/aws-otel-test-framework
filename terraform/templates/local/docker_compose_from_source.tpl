@@ -9,7 +9,7 @@ services:
 
   aws-ot-collector:
     build:
-      context: ../../../aws-otel-collector-1
+      context: ../../../aws-otel-collector
       dockerfile: cmd/awscollector/Dockerfile
 
     command: ["--config=/tmp/otconfig.yaml", "--log-level=DEBUG"]

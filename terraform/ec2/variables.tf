@@ -17,7 +17,7 @@
 ## so we have to define some of the common vars like region, otconfig_path in each module
 
 variable "package_s3_bucket" {
-  default = "aws-otel-collector"
+  default = "aws-otel-collector-test"
 }
 
 variable "testing_ami" {
