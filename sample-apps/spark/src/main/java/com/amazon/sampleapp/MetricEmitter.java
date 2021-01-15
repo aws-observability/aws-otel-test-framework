@@ -63,20 +63,6 @@ public class MetricEmitter {
   String statusCodeValue = "";
 
   public MetricEmitter() {
-    String otelExporterOtlpEndpoint = System.getenv("OTEL_EXPORTER_OTLP_ENDPOINT") != null ? System.getenv("OTEL_EXPORTER_OTLP_ENDPOINT") : "0.0.0.0:55680";
-    MetricExporter metricExporter =
-            OtlpGrpcMetricExporter.builder()
-                    .setChannel(
-                            ManagedChannelBuilder.forTarget(otelExporterOtlpEndpoint).usePlaintext().build())
-                    .build();
-
-    IntervalMetricReader.builder()
-            .setMetricProducers(
-                    Collections.singleton(OpenTelemetrySdk.getGlobalMeterProvider().getMetricProducer()))
-            .setExportIntervalMillis(1000)
-            .setMetricExporter(metricExporter)
-            .build();
-
     Meter meter = OpenTelemetry.getGlobalMeter("aws-otel", "1.0");
 
     // give a instanceId appending to the metricname so that we can check the metric for each round
