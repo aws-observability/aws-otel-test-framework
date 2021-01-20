@@ -72,8 +72,6 @@ locals {
   instance_subnet = var.testing_type == "e2e" ? tolist(module.basic_components.aoc_public_subnet_ids)[1] : tolist(module.basic_components.aoc_public_subnet_ids)[0]
 }
 
-
-
 ## launch a sidecar instance to install data emitter and the mocked server
 resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.amazonlinux2.id
@@ -85,8 +83,8 @@ resource "aws_instance" "sidecar" {
   key_name                    = local.ssh_key_name
   tags = {
     Name = "Integ-test-Sample-App"
+    Patch = var.patch
   }
-
 }
 
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
@@ -103,8 +101,19 @@ resource "aws_instance" "aoc" {
 
   tags = {
     Name = "Integ-test-aoc"
+    Patch = var.patch
   }
+}
 
+resource "null_resource" "check_patch" {
+  depends_on = [aws_instance.aoc, aws_instance.sidecar]
+  count = var.patch ? 1 : 0
+  provisioner "local-exec" {
+    command = <<-EOT
+      bash ../templates/local/check-patch.sh "${aws_instance.sidecar.id}"
+      bash ../templates/local/check-patch.sh "${aws_instance.aoc.id}"
+    EOT
+  }
 }
 
 ############################################
@@ -114,6 +123,7 @@ data "template_file" "mocked_server_cert_for_windows" {
   template = file("../../mocked_servers/https/certificates/ssl/certificate.crt")
 }
 resource "null_resource" "setup_mocked_server_cert_for_windows" {
+  depends_on = [null_resource.check_patch]
   count = local.selected_ami["family"] == "windows" ? 1 : 0
 
   provisioner "file" {
@@ -144,6 +154,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
 }
 
 resource "null_resource" "setup_mocked_server_cert_for_linux" {
+  depends_on = [null_resource.check_patch]
   count = local.selected_ami["family"] != "windows" ? 1 : 0
   provisioner "file" {
     content = module.basic_components.mocked_server_cert_content
@@ -181,6 +192,7 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
 # Download and Start collector
 ############################################
 resource "null_resource" "download_collector_from_local" {
+  depends_on = [null_resource.check_patch]
   count = var.install_package_source == "local" ? 1 : 0
   provisioner "file" {
     source = var.install_package_local_path
@@ -197,6 +209,7 @@ resource "null_resource" "download_collector_from_local" {
 }
 
 resource "null_resource" "download_collector_from_s3" {
+  depends_on = [null_resource.check_patch]
   count = var.install_package_source == "s3" ? 1 : 0
 
   provisioner "remote-exec" {
@@ -271,6 +284,7 @@ data "template_file" "docker_compose" {
 }
 
 resource "null_resource" "setup_sample_app_and_mock_server" {
+  depends_on = [null_resource.check_patch]
   provisioner "file" {
     content = data.template_file.docker_compose.rendered
     destination = "/tmp/docker-compose.yml"

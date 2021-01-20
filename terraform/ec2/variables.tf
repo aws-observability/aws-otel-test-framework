@@ -98,3 +98,11 @@ variable "testing_type" {
 variable "canary" {
   default = false
 }
+
+# if patch is true, we will wait until the instance gets patched after launching the instance,
+# also set a patch tag onto the instance so that the instance get picked by the ssm patching process.
+# and then start the installation of collector.
+variable "patch" {
+  default = false
+}
+
