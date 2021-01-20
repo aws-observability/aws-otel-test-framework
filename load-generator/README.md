@@ -28,3 +28,8 @@
 ```
 ./gradlew :load-generator:run --args="trace -r=100 -u=localhost:55680 -d=xray"
 ```
+
+### StatsD Metrics Load Test Sample Command,
+```
+./gradlew :load-generator:run --args="metric -r=100 -u=localhost:8125 -d=statsd"
+```
