@@ -32,6 +32,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 
 public class App {
   static final String REQUEST_START_TIME = "requestStartTime";
+  static int mimicQueueSize;
 
   private static MetricEmitter buildMetricEmitter() {
     return new MetricEmitter();
@@ -101,12 +102,17 @@ public class App {
             String statusCode = String.valueOf(res.status());
             // calculate return time
             Long requestStartTime = req.attribute(REQUEST_START_TIME);
-            metricEmitter.emitReturnTimeMetric(
-                System.currentTimeMillis() - requestStartTime, req.pathInfo(), statusCode);
-
+            long returnTime = System.currentTimeMillis() - requestStartTime;
+            metricEmitter.emitReturnTimeMetric(returnTime, req.pathInfo(), statusCode);
+            metricEmitter.updateLastLatencyMetric(returnTime, req.pathInfo(), statusCode);
             // emit http request load size
-            metricEmitter.emitBytesSentMetric(
-                req.contentLength() + mimicPayloadSize(), req.pathInfo(), statusCode);
+            int loadSize = req.contentLength() + mimicPayloadSize();
+            metricEmitter.emitBytesSentMetric(loadSize, req.pathInfo(), statusCode);
+            metricEmitter.updateTotalBytesSentMetric(loadSize, req.pathInfo(), statusCode);
+            // mimic a queue size reporter
+            int queueSizeChange = mimicQueueSizeChange();
+            metricEmitter.emitQueueSizeChangeMetric(queueSizeChange, req.pathInfo(), statusCode);
+            metricEmitter.updateActualQueueSizeMetric(queueSizeChange, req.pathInfo(), statusCode);
           }
         });
 
@@ -129,5 +135,13 @@ public class App {
   private static int mimicPayloadSize() {
     Random randomGenerator = new Random();
     return randomGenerator.nextInt(1000);
+  }
+
+  private static int mimicQueueSizeChange() {
+    Random randomGenerator = new Random();
+    int newQueueSize = randomGenerator.nextInt(100);
+    int queueSizeChange = newQueueSize - mimicQueueSize;
+    mimicQueueSize = newQueueSize;
+    return queueSizeChange;
   }
 }
