@@ -45,6 +45,8 @@ module "ec2_setup" {
   negative_soaking = var.negative_soaking
 
   testing_type = "soaking"
+
+  patch = true
 }
 
 locals {

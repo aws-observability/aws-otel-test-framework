@@ -72,4 +72,6 @@ module "ec2_setup" {
   debug = var.debug
 
   testing_type = var.testing_type
+
+  patch = var.patch
 }

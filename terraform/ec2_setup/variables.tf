@@ -71,3 +71,7 @@ variable "install_package_local_path" {
 variable "testing_type" {
   default = "e2e"
 }
+
+variable "patch" {
+  default = false
+}
