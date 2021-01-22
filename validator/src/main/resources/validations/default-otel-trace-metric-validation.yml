@@ -15,4 +15,4 @@
   httpPath: "/outgoing-http-call"
   httpMethod: "get"
   callingType: "http"
-  expectedMetricTemplate: "DEFAULT_EXPECTED_METRIC"
+  expectedMetricTemplate: "ENHANCED_EXPECTED_METRIC"
