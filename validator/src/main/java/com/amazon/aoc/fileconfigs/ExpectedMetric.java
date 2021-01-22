@@ -20,6 +20,7 @@ import lombok.Getter;
 @Getter
 public enum ExpectedMetric implements FileConfig {
   DEFAULT_EXPECTED_METRIC("/expected-data-template/defaultExpectedMetric.mustache"),
+  ENHANCED_EXPECTED_METRIC("/expected-data-template/enhancedExpectedMetric.mustache"),
   STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),
   ECS_CONTAINER_EXPECTED_METRIC("/expected-data-template/ecsContainerExpectedMetric.mustache"),
   ;
