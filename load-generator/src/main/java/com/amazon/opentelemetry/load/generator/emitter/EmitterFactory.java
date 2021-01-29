@@ -37,6 +37,8 @@ public class EmitterFactory {
   private static Emitter getMetricEmitter(Parameter param) {
     if (param.getDataFormat().equalsIgnoreCase(Constants.OTLP)) {
       return new OtlpMetricEmitter(param);
+    } else if (param.getDataFormat().equalsIgnoreCase(Constants.STATSD)) {
+      return new StatsdMetricEmitter(param);
     } else {
       throw new RuntimeException("unknown metric data format specified");
     }

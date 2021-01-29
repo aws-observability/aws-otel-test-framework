@@ -1,21 +1,18 @@
 -
-  metricName: testCounter.metric_{{testingId}}
+  metricName: statsdTestMetric1g_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
-      name: key
-      value: val
+      name: mykey1
+      value: myvalue1
     -
-      name: key1
-      value: val1
+      name: mykey2
+      value: myvalue2
 
 -
-  metricName: testGauge.metric_{{testingId}}
+  metricName: statsdTestMetric1c_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
-      name: keyg
-      value: valg
-    -
-      name: keyg1
-      value: valg1
+      name: mykey3
+      value: myvalue3

@@ -16,6 +16,7 @@ services:
     environment:
       OTEL_RESOURCE_ATTRIBUTES: ${otel_resource_attributes}
       AWS_XRAY_DAEMON_ADDRESS: ${udp_endpoint}
+      COLLECTOR_UDP_ADDRESS: ${udp_endpoint}
       AWS_REGION: ${region}
     deploy:
       resources:

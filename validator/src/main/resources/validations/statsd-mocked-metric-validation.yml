@@ -1,0 +1,5 @@
+-
+  validationType: "mocked-server"
+  httpPath: "/statsd"
+  httpMethod: "get"
+  callingType: "http"

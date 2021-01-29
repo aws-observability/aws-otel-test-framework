@@ -1,4 +1,6 @@
 -
   validationType: "cw-metric"
-  callingType: "none"
+  httpMethod: "get"
+  httpPath: "/statsd"
+  callingType: "http"
   expectedMetricTemplate: "STATSD_EXPECTED_METRIC"

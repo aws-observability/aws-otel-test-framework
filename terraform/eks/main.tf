@@ -324,6 +324,11 @@ resource "kubernetes_deployment" "sample_app_deployment" {
           }
 
           env {
+            name = "COLLECTOR_UDP_ADDRESS"
+            value = "${kubernetes_service.aoc_udp_service[0].metadata[0].name}:${module.common.udp_port}"
+          }
+
+          env {
             name = "AWS_XRAY_DAEMON_ADDRESS"
             value = "${kubernetes_service.aoc_udp_service[0].metadata[0].name}:${module.common.udp_port}"
           }

@@ -17,6 +17,7 @@ services:
       INSTANCE_ID: ${testing_id}
       OTEL_EXPORTER_OTLP_ENDPOINT: ${grpc_endpoint}
       AWS_XRAY_DAEMON_ADDRESS: ${udp_endpoint}
+      COLLECTOR_UDP_ADDRESS: ${udp_endpoint}
       AWS_REGION: ${region}
 
     healthcheck:
