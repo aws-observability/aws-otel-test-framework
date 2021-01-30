@@ -38,7 +38,7 @@ output "aoc_iam_role_name" {
 }
 
 output "aoc_vpc_name" {
-  value = "aoc-vpc-large"
+  value = "aoc-vpc"
 }
 
 output "aoc_vpc_security_group" {
