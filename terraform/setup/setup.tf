@@ -78,8 +78,8 @@ module "vpc" {
   cidr = "10.0.0.0/16"
 
   azs             = ["${var.region}a", "${var.region}b", "${var.region}c"]
-  private_subnets = ["10.0.1.0/16", "10.0.2.0/16", "10.0.3.0/16"]
-  public_subnets  = ["10.0.101.0/16", "10.0.102.0/16", "10.0.103.0/16"]
+  private_subnets = ["10.0.0.0/19", "10.0.32.0/19", "10.0.64.0/19"]
+  public_subnets  = ["10.0.128.0/19", "10.0.160.0/19", "10.0.192.0/19"]
 
   enable_nat_gateway = true
   enable_vpn_gateway = true
