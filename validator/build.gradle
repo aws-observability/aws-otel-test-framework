@@ -2,6 +2,7 @@ plugins {
     id 'java'
 
     id 'application'
+    id 'com.google.cloud.tools.jib'
 
     // lombok
     id "io.freefair.lombok" version "5.1.0"
@@ -75,4 +76,13 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClassName = 'com.amazon.aoc.App'
+}
+
+jib {
+    to {
+        image = "public.ecr.aws/u0d6r4y4/aws-otel-test-validator:alpha"
+    }
+    from {
+        image = "public.ecr.aws/u0d6r4y4/amazoncorretto-distroless:alpha"
+    }
 }
