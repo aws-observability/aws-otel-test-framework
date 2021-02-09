@@ -29,7 +29,7 @@ public class CommonOption {
 
   @Option(names = {"-u", "--url"},
       description = "aws-otel-collector receiver endpoint",
-      defaultValue = "localhost:55680")
+      defaultValue = "localhost:4317")
   private String endpoint;
 
   @Option(names = {"-d", "--dataFormat"},

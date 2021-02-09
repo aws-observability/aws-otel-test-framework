@@ -73,7 +73,7 @@ the output will be
 CONTAINER ID        IMAGE                   COMMAND                  CREATED             STATUS              PORTS                    NAMES
 8a48f60534cf        mock_validator          "/app/bin/app -c=def…"   12 seconds ago      Up 10 seconds                                mock_validator_1
 443ee2e388ea        mock_sample_app         "/app/bin/spark-samp…"   32 seconds ago      Up 31 seconds       0.0.0.0:4567->4567/tcp   mock_sample_app_1
-67f401637b67        mock_aws-ot-collector   "/awscollector --con…"   34 seconds ago      Up 32 seconds       55680-55681/tcp          mock_aws-ot-collector_1
+67f401637b67        mock_aws-ot-collector   "/awscollector --con…"   34 seconds ago      Up 32 seconds       4317-4318/tcp          mock_aws-ot-collector_1
 db75def68bb0        mock_mocked-server      "docker-entrypoint.s…"   36 seconds ago      Up 34 seconds       0.0.0.0:80->8080/tcp     mock_mocked-server_1
 ```
 

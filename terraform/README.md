@@ -105,7 +105,7 @@ an example:
       "environment": [
         {
           "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
-          "value": "127.0.0.1:55680"
+          "value": "127.0.0.1:4317"
         },
         {
           "name": "INSTANCE_ID",
@@ -155,8 +155,8 @@ an example:
       "memory": 256,
       "portMappings": [
         {
-          "containerPort": 55680,
-          "hostPort": 55680,
+          "containerPort": 4317,
+          "hostPort": 4317,
           "protocol": "tcp"
         }
       ],

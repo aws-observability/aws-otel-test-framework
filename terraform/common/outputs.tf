@@ -87,7 +87,7 @@ output "mocked_server_lb_port" {
 }
 
 output "grpc_port" {
-  value = "55680"
+  value = "4317"
 }
 
 output "udp_port" {

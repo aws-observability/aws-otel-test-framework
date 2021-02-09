@@ -180,7 +180,7 @@ variable "amis" {
       arch = "amd64"
       user_data = <<EOF
 #! /bin/bash
-sudo iptables -I INPUT -p tcp -m tcp --dport 55680 -j ACCEPT
+sudo iptables -I INPUT -p tcp -m tcp --dport 4317 -j ACCEPT
 sudo iptables -I INPUT -p udp -m udp --dport 55690 -j ACCEPT
 sudo service iptables save
 EOF
