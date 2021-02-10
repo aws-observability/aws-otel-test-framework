@@ -39,8 +39,8 @@
       "memory": 256,
       "portMappings": [
         {
-          "containerPort": 55680,
-          "hostPort": 55680,
+          "containerPort": 4317,
+          "hostPort": 4317,
           "protocol": "tcp"
         },
         {
