@@ -265,7 +265,7 @@ data "aws_ami" "amazonlinux2" {
 
   filter {
     name   = "name"
-    values = ["amzn2-ami-hvm*"]
+    values = ["amzn2-ami-hvm*-gp2"]
   }
 
   owners = ["amazon"] # Canonical

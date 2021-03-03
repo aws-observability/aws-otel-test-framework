@@ -297,6 +297,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
   }
   provisioner "remote-exec" {
     inline = [
+      "sudo yum update -y",
       "sudo amazon-linux-extras install docker -y",
       "sudo service docker start",
       "sudo usermod -a -G docker ec2-user",
