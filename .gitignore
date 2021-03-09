@@ -23,6 +23,7 @@ sshkey.pem
 
 # Local .terraform directories
 **/.terraform/*
+terraform/**/.terraform.lock.hcl
 
 # Local output directories
 **/output/*
