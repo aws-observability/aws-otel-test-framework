@@ -81,6 +81,7 @@ variable "amis" {
       os_family = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"
       ami_owner = "099720109477"
+      ami_product_code = []
       family = "debian"
       arch = "amd64"
       login_user = "ubuntu"
@@ -89,6 +90,7 @@ variable "amis" {
       os_family = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server*"
       ami_owner = "099720109477"
+      ami_product_code = []
       family = "debian"
       arch = "amd64"
       login_user = "ubuntu"
@@ -97,6 +99,9 @@ variable "amis" {
       os_family = "debian"
       ami_search_pattern = "debian-10-amd64*"
       ami_owner = "679593333241"
+      # NOTE: we need product code to pick the right debian 10.
+      ami_product_code = [
+        "auhljmclkudu651zy27rih2x2"]
       family = "debian"
       arch = "amd64"
       login_user = "admin"
@@ -105,14 +110,16 @@ variable "amis" {
       os_family = "debian"
       ami_search_pattern = "debian-stretch-hvm-x86_64-gp2*"
       ami_owner = "679593333241"
+      ami_product_code = []
       family = "debian"
       arch = "amd64"
       login_user = "admin"
     }
     amazonlinux2 = {
       os_family = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-hvm*"
+      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
       ami_owner = "amazon"
+      ami_product_code = []
       family = "linux"
       arch = "amd64"
       login_user = "ec2-user"
@@ -121,14 +128,16 @@ variable "amis" {
       os_family = "windows"
       ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
       ami_owner = "amazon"
+      ami_product_code = []
       family = "windows"
       arch = "amd64"
       login_user = "Administrator"
     }
     amazonlinux = {
       os_family = "amazon_linux"
-      ami_search_pattern = "amzn-ami-hvm*"
+      ami_search_pattern = "amzn-ami-hvm-????.??.?.????????-x86_64-gp2"
       ami_owner = "amazon"
+      ami_product_code = []
       family = "linux"
       arch = "amd64"
       login_user = "ec2-user"
@@ -136,47 +145,53 @@ variable "amis" {
     suse15 = {
       os_family = "suse"
       ami_search_pattern = "suse-sles-15*"
+      ami_owner = "amazon"
+      ami_product_code = []
       family = "linux"
       login_user = "ec2-user"
       arch = "amd64"
-      ami_owner = "amazon"
     }
     suse12 = {
       os_family = "suse"
       ami_search_pattern = "suse-sles-12*"
+      ami_owner = "amazon"
+      ami_product_code = []
       family = "linux"
       login_user = "ec2-user"
       arch = "amd64"
-      ami_owner = "amazon"
     }
     redhat8 = {
       os_family = "redhat"
       ami_search_pattern = "RHEL-8.0.0_HVM*"
-      family = "linux"
       ami_owner = "309956199498"
+      ami_product_code = []
+      family = "linux"
       arch = "amd64"
     }
     redhat7 = {
       os_family = "redhat"
       ami_search_pattern = "RHEL-7.7_HVM*"
-      family = "linux"
       ami_owner = "309956199498"
+      ami_product_code = []
+      family = "linux"
       arch = "amd64"
     }
     centos7 = {
       login_user = "centos"
       os_family = "centos"
       ami_search_pattern = "CentOS Linux 7 x86_64*"
-      family = "linux"
       ami_owner = "679593333241"
+      ami_product_code = []
+      family = "linux"
       arch = "amd64"
     }
     centos6 = {
       login_user = "centos"
       os_family = "centos"
       ami_search_pattern = "CentOS Linux 6 x86_64 HVM EBS 2002*"
-      family = "linux"
       ami_owner = "679593333241"
+      ami_product_code = []
+      family = "linux"
       arch = "amd64"
       user_data = <<EOF
 #! /bin/bash
@@ -190,9 +205,10 @@ EOF
     # arm amis
     arm_amazonlinux2 = {
       os_family = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-hvm-2.0.20200722.0-arm64*"
-      family = "linux"
+      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-arm64-gp2"
       ami_owner = "amazon"
+      ami_product_code = []
+      family = "linux"
       arch = "arm64"
       instance_type = "t4g.nano"
     }
@@ -200,8 +216,9 @@ EOF
     arm_suse15 = {
       os_family = "suse"
       ami_search_pattern = "suse-sles-15-sp2-v20200721-hvm-ssd-arm64*"
-      family = "linux"
       ami_owner = "amazon"
+      ami_product_code = []
+      family = "linux"
       arch = "arm64"
       instance_type = "t4g.nano"
     }
@@ -209,8 +226,9 @@ EOF
     arm_redhat8 = {
       os_family = "redhat"
       ami_search_pattern = "RHEL-8.0.0_HVM-20190426-arm64*"
-      family = "linux"
       ami_owner = "309956199498"
+      ami_product_code = []
+      family = "linux"
       arch = "arm64"
       instance_type = "t4g.micro"
     }
@@ -218,8 +236,9 @@ EOF
     arm_redhat7 = {
       os_family = "redhat"
       ami_search_pattern = "RHEL-7.6_HVM_GA-20181122-arm64*"
-      family = "linux"
       ami_owner = "309956199498"
+      ami_product_code = []
+      family = "linux"
       arch = "arm64"
       instance_type = "t4g.micro"
     }
@@ -227,8 +246,9 @@ EOF
     arm_ubuntu18 = {
       os_family = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-arm64*"
-      family = "debian"
       ami_owner = "099720109477"
+      ami_product_code = []
+      family = "debian"
       arch = "arm64"
       instance_type = "t4g.nano"
     }
@@ -236,14 +256,12 @@ EOF
     arm_ubuntu16 = {
       os_family = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-arm64*"
-      family = "debian"
       ami_owner = "099720109477"
+      ami_product_code = []
+      family = "debian"
       arch = "arm64"
       instance_type = "t4g.nano"
     }
-
-
-
   }
 }
 
@@ -251,11 +269,31 @@ data "aws_ami" "selected" {
   most_recent = true
 
   filter {
-    name   = "name"
-    values = [var.amis[var.testing_ami]["ami_search_pattern"]]
+    name = "name"
+    values = [
+      var.amis[var.testing_ami]["ami_search_pattern"]]
   }
 
-  owners = [var.amis[var.testing_ami]["ami_owner"]] # Canonical
+  filter {
+    name = "state"
+    values = [
+      "available"]
+  }
+
+  # Only apply product code filter for some AMI, e.g. debian10
+  # https://www.terraform.io/docs/language/expressions/dynamic-blocks.html
+  dynamic "filter" {
+    for_each = var.amis[var.testing_ami]["ami_product_code"]
+    content {
+      name = "product-code"
+      values = [
+        filter.value
+      ]
+    }
+  }
+
+  owners = [
+    var.amis[var.testing_ami]["ami_owner"]]
 }
 
 
@@ -263,12 +301,21 @@ data "aws_ami" "selected" {
 data "aws_ami" "amazonlinux2" {
   most_recent = true
 
+  # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html#finding-quick-start-ami
   filter {
-    name   = "name"
-    values = ["amzn2-ami-hvm*-gp2"]
+    name = "name"
+    values = [
+      "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"]
   }
 
-  owners = ["amazon"] # Canonical
+  filter {
+    name = "state"
+    values = [
+      "available"]
+  }
+
+  owners = [
+    "amazon"]
 }
 
 
