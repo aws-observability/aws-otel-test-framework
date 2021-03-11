@@ -29,7 +29,7 @@ variable "skip_validation" {
 }
 
 variable "mock_endpoint" {
-  default = "mocked-server/put-data"
+  default = "mocked-server"
 }
 
 variable "install_cwagent" {
