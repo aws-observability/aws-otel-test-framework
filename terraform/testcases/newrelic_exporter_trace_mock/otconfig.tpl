@@ -15,7 +15,7 @@ exporters:
     loglevel: debug
   newrelic:
     apikey: super-secret-api-key
-    spans_host_override: "${mock_endpoint}"
+    spans_host_override: ${mock_endpoint}
 
 service:
   pipelines:
