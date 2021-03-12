@@ -5,6 +5,7 @@ const https = require('https');
 const http = require('http');
 const fs = require('fs');
 const app = express();
+const dataApp = express();
 
 let data = "";
 let numTransactions = 0;
@@ -22,22 +23,27 @@ app.get("/check-data", function (req, res) {
     res.send(data);
 });
 
-app.all('/put-data*', function (req, res) {
+app.all('/', function (req, res) {
+    res.send('healthcheck');
+});
+
+// Separate data app from the management app to be path agnostic
+let dataReceived = function (req, res) {
     data = "success";
     numTransactions++;
 
     setTimeout((function() {res.send("{}")}), 15);
 
-});
+};
+dataApp.all('/put-data*', dataReceived);
+dataApp.all('/trace/v1', dataReceived);
+dataApp.all('/metric/v1', dataReceived);
 
-app.all('/', function (req, res) {
-    res.send('healthcheck');
-});
-
-// listen on http and https at the same time
-http.createServer(app).listen(8080, "0.0.0.0");
+// Listen on port 443 for data app
 https.createServer({
     key: fs.readFileSync("./certificates/private.key"),
     cert: fs.readFileSync("./certificates/ssl/certificate.crt")
-}, app).listen(443, "0.0.0.0");
+}, dataApp).listen(443, "0.0.0.0");
 
+// Listen on port 8080 for management app
+http.createServer(app).listen(8080, "0.0.0.0");
