@@ -59,6 +59,10 @@ variable "soaking_data_mode" {
   default = "metric"
 }
 
+variable "soaking_data_type" {
+  default = "otlp"
+}
+
 variable "sample_app_mode" {
   default = "push"
 }

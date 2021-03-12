@@ -45,7 +45,8 @@ cd aws-otel-test-framework/terraform/performance
 terraform init
 terraform apply -var="data_rate=100" -var="testcase=../testcases/{{testcase name}}" -var="install_package_source=local" -var-file="../testcases/{{testcase name}}/parameters.tfvars"
 terraform destroy
-cat performance_model.json
+cd output
+cat performance.json
 ```
 
 2. Run on rate 1000 tps
@@ -55,7 +56,8 @@ cd aws-otel-test-framework/terraform/performance
 terraform init
 terraform apply -var="data_rate=1000" -var="testcase=../testcases/{{testcase name}}" -var="install_package_source=local" -var-file="../testcases/{{testcase name}}/parameters.tfvars"
 terraform destroy
-cat performance_model.json
+cd output
+cat performance.json
 ```
 
 3. Run on rate 5000 tps
@@ -65,7 +67,8 @@ cd aws-otel-test-framework/terraform/performance
 terraform init
 terraform apply -var="data_rate=5000" -var="testcase=../testcases/{{testcase name}}" -var="install_package_source=local" -var-file="../testcases/{{testcase name}}/parameters.tfvars"
 terraform destroy
-cat performance_model.json
+cd output
+cat performance.json
 ```
 
 4. the performance model could be found under `aws-otel-test-framework/terraform/performance/output/performance.json`, and you can open an issue to [AWS Otel Collector Repo](https://github.com/aws-observability/aws-otel-collector) with the performance model file so we can gather it into the performance model readme. 

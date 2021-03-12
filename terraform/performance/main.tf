@@ -28,7 +28,7 @@ module "ec2_setup" {
   sample_app_mode = var.sample_app_mode
   soaking_sample_app = var.soaking_sample_app
   soaking_data_rate = var.data_rate
-  soaking_data_type = var.data_type
+  soaking_data_type = var.soaking_data_type
   soaking_data_mode = var.soaking_data_mode
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
@@ -64,7 +64,7 @@ data "template_file" "validation_config" {
     cpuMetricName = local.ami_family["soaking_cpu_metric_name"]
     memoryMetricName = local.ami_family["soaking_mem_metric_name"]
     collectionPeriod = var.collection_period
-    dataType = var.data_type
+    dataType = var.soaking_data_type
     dataMode = var.soaking_data_mode
     dataRate = var.data_rate
     otReceivers = join(", ", local.ot_receivers)

@@ -18,10 +18,6 @@ variable "data_rate" {
   default = 5000
 }
 
-variable "data_type" {
-  default = "otlp"
-}
-
 variable "testing_ami" {
   default = "soaking_linux"
 }
