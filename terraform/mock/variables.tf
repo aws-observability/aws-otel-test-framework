@@ -18,7 +18,7 @@ variable "collector_repo_path" {
 }
 
 variable "mock_endpoint" {
-  default = "mocked-server"
+  default = "mocked-server/put-data"
 }
 
 

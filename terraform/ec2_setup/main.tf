@@ -49,7 +49,7 @@ module "ec2_setup" {
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
   # negative soaking
-  mock_endpoint = var.negative_soaking ? "http://127.0.0.2" : "mocked-server"
+  mock_endpoint = var.negative_soaking ? "http://127.0.0.2" : "mocked-server/put-data"
 
   # install cwagent
   install_cwagent = true
