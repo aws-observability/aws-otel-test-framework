@@ -28,13 +28,16 @@ app.all('/', function (req, res) {
 });
 
 // Separate data app from the management app to be path agnostic
-dataApp.all('/*', function (req, res) {
+let dataReceived = function (req, res) {
     data = "success";
     numTransactions++;
 
     setTimeout((function() {res.send("{}")}), 15);
 
-});
+};
+dataApp.all('/put-data*', dataReceived);
+dataApp.all('/trace/v1', dataReceived);
+dataApp.all('/metric/v1', dataReceived);
 
 // Listen on port 443 for data app
 https.createServer({
