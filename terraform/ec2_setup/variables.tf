@@ -33,11 +33,6 @@ variable "soaking_data_rate" {
   default = 1000
 }
 
-# data model type. possible values: otlp, xray, etc
-variable "soaking_data_type" {
-  default = "otlp"
-}
-
 variable "negative_soaking" {
   default = false
 }

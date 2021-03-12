@@ -36,11 +36,6 @@ variable "soaking_data_rate" {
   default = 100
 }
 
-# data model type. possible values: otlp, xray, etc
-variable "soaking_data_type" {
-  default = "otlp"
-}
-
 variable "skip_validation" {
   default = false
 }
