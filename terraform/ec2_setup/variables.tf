@@ -17,7 +17,7 @@ variable "testing_ami" {
 }
 
 variable "soaking_sample_app_image" {
-  default = "aottestbed/aws-otel-load-generator:v0.1.0"
+  default = "aottestbed/aws-otel-load-generator:v0.1.3"
 }
 
 variable "soaking_sample_app" {
