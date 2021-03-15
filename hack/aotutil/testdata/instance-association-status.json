@@ -1,0 +1,37 @@
+{
+    "InstanceAssociationStatusInfos": [
+        {
+            "AssociationId": "7db95f33-a39f-4ebd-bc69-b066de88b70a",
+            "Name": "AWS-GatherSoftwareInventory",
+            "DocumentVersion": "1",
+            "AssociationVersion": "1",
+            "InstanceId": "i-0e7af2bb70fa81a01",
+            "ExecutionDate": "2021-03-10T13:17:15-08:00",
+            "Status": "Success",
+            "ExecutionSummary": "1 out of 1 plugin processed, 1 success, 0 failed, 0 timedout, 0 skipped. ",
+            "AssociationName": "PVRE-InventoryCollection"
+        },
+        {
+            "AssociationId": "049bdbc4-2758-40a0-8917-37c0f3285f1c",
+            "Name": "PVRE-CollectRunningKernel",
+            "DocumentVersion": "1",
+            "AssociationVersion": "1",
+            "InstanceId": "i-0e7af2bb70fa81a01",
+            "ExecutionDate": "2021-03-10T12:50:06.576000-08:00",
+            "Status": "Success",
+            "DetailedStatus": "Success",
+            "AssociationName": "616237574086-CollectRunningKernel"
+        },
+        {
+            "AssociationId": "ad82e2be-045f-44b8-808e-3dbb47e3220b",
+            "Name": "AWS-RunPatchBaseline",
+            "DocumentVersion": "1",
+            "AssociationVersion": "1",
+            "InstanceId": "i-0e7af2bb70fa81a01",
+            "ExecutionDate": "2021-03-09T14:52:41.464000-08:00",
+            "Status": "Success",
+            "DetailedStatus": "Success",
+            "AssociationName": "616237574086-PatchWeekly"
+        }
+    ]
+}

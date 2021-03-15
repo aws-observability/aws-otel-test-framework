@@ -24,6 +24,8 @@ sshkey.pem
 # Local .terraform directories
 **/.terraform/*
 terraform/**/.terraform.lock.hcl
+terraform/**/creds.env
+terraform/**/validator_docker_compose.yml
 
 # Local output directories
 **/output/*
