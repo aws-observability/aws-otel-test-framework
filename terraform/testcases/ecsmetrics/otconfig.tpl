@@ -3,6 +3,7 @@ extensions:
     endpoint: 0.0.0.0:1777
 receivers:
   awsecscontainermetrics:
+
 processors:
   filter:
     metrics:
@@ -43,19 +44,58 @@ processors:
       - metric_name: ecs.task.storage.write_bytes
         action: update
         new_name: ecs.task.storage.write_bytes_${testing_id}
+  resource:
+    attributes:
+    - key: aws.ecs.docker.name
+      action: delete
+    - key: aws.ecs.task.pull_started_at
+      action: delete
+    - key: aws.ecs.task.pull_stopped_at
+      action: delete
+    - key: cloud.zone
+      action: delete
+    - key: aws.ecs.task.launch_type
+      action: delete
+    - key: cloud.region
+      action: delete
+    - key: cloud.account.id
+      action: delete
+    - key: container.id
+      action: delete
+    - key: container.name
+      action: delete
+    - key: container.image.name
+      action: delete
+    - key: aws.ecs.container.image.id
+      action: delete
+    - key: aws.ecs.container.exit_code
+      action: delete
+    - key: aws.ecs.container.created_at
+      action: delete
+    - key: aws.ecs.container.started_at
+      action: delete
+    - key: aws.ecs.container.finished_at
+      action: delete
+    - key: container.image.tag
+      action: delete
+    - key: aws.ecs.container.know_status
+      action: delete
+    - key: aws.ecs.task.known_status
+      action: delete
+
 exporters:
-  logging:
-    loglevel: debug
   awsemf:
     namespace: '${otel_service_namespace}/${otel_service_name}'
     region: '${region}'
     resource_to_telemetry_conversion:
       enabled: true
+  logging:
+    loglevel: debug
 
 service:
   pipelines:
     metrics:
       receivers: [awsecscontainermetrics]
-      processors: [filter, metricstransform]
-      exporters: [logging, awsemf]
+      processors: [filter, metricstransform, resource]
+      exporters: [awsemf,logging]
   extensions: [pprof]
