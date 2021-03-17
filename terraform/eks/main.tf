@@ -17,6 +17,14 @@
 # so in the eks/k8s test, we need tester to provide the cluster instead of creating it in terraform
 # so that we can shorten the execution time
 
+terraform {
+  required_providers {
+    kubernetes = {
+      version = "~> 1.13"
+    }
+  }
+}
+
 module "common" {
   source = "../common"
 
@@ -54,7 +62,7 @@ locals {
 
 # region
 provider "aws" {
-  region  = var.region
+  region = var.region
 }
 
 # get eks cluster by name
@@ -71,7 +79,6 @@ provider "kubernetes" {
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
   token = data.aws_eks_cluster_auth.testing_cluster.token
   load_config_file = false
-  version = "~> 1.13"
 }
 
 # create a unique namespace for each run
@@ -132,12 +139,12 @@ resource "kubernetes_cluster_role_binding" "aoc-role-binding" {
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
+    kind = "ClusterRole"
+    name = "cluster-admin"
   }
   subject {
-    kind      = "ServiceAccount"
-    name      = "aoc-role-${module.common.testing_id}"
+    kind = "ServiceAccount"
+    name = "aoc-role-${module.common.testing_id}"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
 }
@@ -212,7 +219,8 @@ resource "kubernetes_deployment" "aoc_deployment" {
           name = "aoc"
           image = module.common.aoc_image
           image_pull_policy = "Always"
-          args = ["--config=/aoc/aoc-config.yml"]
+          args = [
+            "--config=/aoc/aoc-config.yml"]
 
           resources {
             requests {
@@ -241,7 +249,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 # Kubernetes does not support mixed protocols: https://github.com/kubernetes/kubernetes/pull/64471.
 resource "kubernetes_service" "aoc_grpc_service" {
   count = var.sample_app_mode == "push" ? 1 : 0
-  
+
   metadata {
     name = "aoc-grpc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
@@ -262,7 +270,7 @@ resource "kubernetes_service" "aoc_grpc_service" {
 # create service upon AOC (UDP port)
 resource "kubernetes_service" "aoc_udp_service" {
   count = var.sample_app_mode == "push" ? 1 : 0
-  
+
   metadata {
     name = "aoc-udp"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
@@ -283,7 +291,7 @@ resource "kubernetes_service" "aoc_udp_service" {
 # deploy sample app
 resource "kubernetes_deployment" "sample_app_deployment" {
   count = var.sample_app_mode == "push" ? 1 : 0
-  
+
   metadata {
     name = "sample-app"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
@@ -312,7 +320,7 @@ resource "kubernetes_deployment" "sample_app_deployment" {
         # sample app
         container {
           name = "sample-app"
-          image= local.eks_pod_config["image"]
+          image = local.eks_pod_config["image"]
           image_pull_policy = "Always"
           command = length(local.eks_pod_config["command"]) != 0 ? local.eks_pod_config["command"] : null
           args = length(local.eks_pod_config["args"]) != 0 ? local.eks_pod_config["args"] : null
@@ -439,5 +447,6 @@ module "validator" {
   aws_access_key_id = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
-  depends_on = [kubernetes_service.mocked_server_service]
+  depends_on = [
+    kubernetes_service.mocked_server_service]
 }
