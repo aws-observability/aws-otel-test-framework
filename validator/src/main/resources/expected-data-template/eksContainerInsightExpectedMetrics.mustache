@@ -1,0 +1,186 @@
+- metricName: envoy_http_downstream_rq_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_cx_rx_bytes_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_cx_tx_bytes_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_membership_healthy
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_membership_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_server_memory_heap_size
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_server_memory_allocated
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_cx_connect_timeout
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_rq_pending_failure_eject
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_rq_pending_overflow
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_rq_timeout
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_rq_per_try_timeout
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_rq_rx_reset
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_cx_destroy_local_with_active_rq
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_http_downstream_cx_destroy_remote_active_rq
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_rq_maintenance_mode
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_flow_control_paused_reading_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_flow_control_resumed_reading_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_flow_control_backed_up_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_flow_control_drained_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_rq_retry
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_rq_retry_success
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_cluster_upstream_rq_retry_overflow
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_server_live
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_server_uptime
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+- metricName: envoy_http_downstream_rq_xx
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.appMesh.namespace}}
+    - name: envoy_response_code_class
+      value: 2
+    - name: envoy_http_conn_manager_prefix
+      value: ingress

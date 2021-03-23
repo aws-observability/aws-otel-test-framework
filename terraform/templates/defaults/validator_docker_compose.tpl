@@ -26,6 +26,7 @@ services:
       - "ecsTaskDefFamily=${ecs_taskdef_family}"
       - "--ecs-context"
       - "ecsTaskDefVersion=${ecs_taskdef_version}"
+      - "--cloudwatch-context=${cloudwatch_context_json}"
       - "--alarm-names=${cpu_alarm}"
       - "--alarm-names=${mem_alarm}"
       - "--alarm-names=${incoming_packets_alarm}"

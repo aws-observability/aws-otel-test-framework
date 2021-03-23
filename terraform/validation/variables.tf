@@ -70,6 +70,10 @@ variable "incoming_packets_alarm" {
   default = ""
 }
 
+variable "cloudwatch_context_json" {
+  default = "{}"
+}
+
 variable "aws_access_key_id" {
   default = ""
 }
