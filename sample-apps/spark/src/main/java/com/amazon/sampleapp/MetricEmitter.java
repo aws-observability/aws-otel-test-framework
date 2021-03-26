@@ -18,9 +18,8 @@
 
 package com.amazon.sampleapp;
 
-import io.grpc.ManagedChannelBuilder;
-import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.api.common.Labels;
+import io.opentelemetry.api.metrics.GlobalMetricsProvider;
+import io.opentelemetry.api.metrics.common.Labels;
 import io.opentelemetry.api.metrics.LongCounter;
 import io.opentelemetry.api.metrics.LongSumObserver;
 import io.opentelemetry.api.metrics.LongUpDownCounter;
@@ -28,12 +27,6 @@ import io.opentelemetry.api.metrics.LongUpDownSumObserver;
 import io.opentelemetry.api.metrics.LongValueObserver;
 import io.opentelemetry.api.metrics.LongValueRecorder;
 import io.opentelemetry.api.metrics.Meter;
-import io.opentelemetry.exporter.otlp.OtlpGrpcMetricExporter;
-import io.opentelemetry.sdk.OpenTelemetrySdk;
-import io.opentelemetry.sdk.metrics.export.IntervalMetricReader;
-import io.opentelemetry.sdk.metrics.export.MetricExporter;
-
-import java.util.Collections;
 
 public class MetricEmitter {
 
@@ -62,15 +55,17 @@ public class MetricEmitter {
   String apiNameValue = "";
   String statusCodeValue = "";
 
+  String latencyMetricName;
+
   public MetricEmitter() {
-    Meter meter = OpenTelemetry.getGlobalMeter("aws-otel", "1.0");
+    Meter meter = GlobalMetricsProvider.getMeter("aws-otel", "1.0");
 
     // give a instanceId appending to the metricname so that we can check the metric for each round
     // of integ-test
 
     System.out.println("OTLP port is: " + System.getenv("OTEL_EXPORTER_OTLP_ENDPOINT"));
 
-    String latencyMetricName = API_LATENCY_METRIC;
+    latencyMetricName = API_LATENCY_METRIC;
     String apiBytesSentMetricName = API_COUNTER_METRIC;
     String totalApiBytesSentMetricName = API_SUM_METRIC;
     String lastLatencyMetricName = API_LAST_LATENCY_METRIC;
@@ -113,11 +108,23 @@ public class MetricEmitter {
             .longSumObserverBuilder(totalApiBytesSentMetricName)
             .setDescription("Total API request load sent in bytes")
             .setUnit("one")
-            .setCallback(longResult -> {
-                System.out.println("emit total http request size " + totalBytesSent + " byte, " + apiNameValue + "," + statusCodeValue);
-                longResult.observe(totalBytesSent,
-                        Labels.of(DIMENSION_API_NAME, apiNameValue, DIMENSION_STATUS_CODE, statusCodeValue));
-            })
+            .setUpdater(
+                longResult -> {
+                  System.out.println(
+                      "emit total http request size "
+                          + totalBytesSent
+                          + " byte, "
+                          + apiNameValue
+                          + ","
+                          + statusCodeValue);
+                  longResult.observe(
+                      totalBytesSent,
+                      Labels.of(
+                          DIMENSION_API_NAME,
+                          apiNameValue,
+                          DIMENSION_STATUS_CODE,
+                          statusCodeValue));
+                })
             .build();
 
     apiLastLatencyObserver =
@@ -125,22 +132,46 @@ public class MetricEmitter {
             .longValueObserverBuilder(lastLatencyMetricName)
             .setDescription("The last API latency observed at collection interval")
             .setUnit("ms")
-            .setCallback(longResult -> {
-                System.out.println("emit last api latency " + apiLastLatency + "," + apiNameValue + "," + statusCodeValue);
-                longResult.observe(apiLastLatency,
-                        Labels.of(DIMENSION_API_NAME, apiNameValue, DIMENSION_STATUS_CODE, statusCodeValue));
-            })
+            .setUpdater(
+                longResult -> {
+                  System.out.println(
+                      "emit last api latency "
+                          + apiLastLatency
+                          + ","
+                          + apiNameValue
+                          + ","
+                          + statusCodeValue);
+                  longResult.observe(
+                      apiLastLatency,
+                      Labels.of(
+                          DIMENSION_API_NAME,
+                          apiNameValue,
+                          DIMENSION_STATUS_CODE,
+                          statusCodeValue));
+                })
             .build();
     actualQueueSizeObserver =
         meter
             .longUpDownSumObserverBuilder(actualQueueSizeMetricName)
             .setDescription("The actual queue size observed at collection interval")
             .setUnit("one")
-            .setCallback(longResult -> {
-                System.out.println("emit actual queue size " + actualQueueSize + "," + apiNameValue + "," + statusCodeValue);
-                longResult.observe(actualQueueSize,
-                        Labels.of(DIMENSION_API_NAME, apiNameValue, DIMENSION_STATUS_CODE, statusCodeValue));
-            })
+            .setUpdater(
+                longResult -> {
+                  System.out.println(
+                      "emit actual queue size "
+                          + actualQueueSize
+                          + ","
+                          + apiNameValue
+                          + ","
+                          + statusCodeValue);
+                  longResult.observe(
+                      actualQueueSize,
+                      Labels.of(
+                          DIMENSION_API_NAME,
+                          apiNameValue,
+                          DIMENSION_STATUS_CODE,
+                          statusCodeValue));
+                })
             .build();
   }
 
@@ -153,7 +184,7 @@ public class MetricEmitter {
    */
   public void emitReturnTimeMetric(Long returnTime, String apiName, String statusCode) {
     System.out.println(
-        "emit metric with return time " + returnTime + "," + apiName + "," + statusCode);
+        "emit metric with return time " + returnTime + "," + apiName + "," + statusCode + "," + latencyMetricName);
     apiLatencyRecorder.record(
         returnTime, Labels.of(DIMENSION_API_NAME, apiName, DIMENSION_STATUS_CODE, statusCode));
   }

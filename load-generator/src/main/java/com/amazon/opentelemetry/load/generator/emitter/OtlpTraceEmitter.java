@@ -15,20 +15,19 @@
 
 package com.amazon.opentelemetry.load.generator.emitter;
 
-import com.amazon.opentelemetry.load.generator.factory.AwsTracerProviderFactory;
+import com.amazon.opentelemetry.load.generator.factory.AwsTracerConfigurer;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
 import io.grpc.ManagedChannelBuilder;
-import io.opentelemetry.api.OpenTelemetry;
+import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.TracerProvider;
-import io.opentelemetry.exporter.otlp.OtlpGrpcSpanExporter;
-import io.opentelemetry.sdk.OpenTelemetrySdk;
-import io.opentelemetry.sdk.trace.TracerSdkManagement;
-import io.opentelemetry.sdk.trace.TracerSdkProvider;
+import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import java.time.Duration;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 public class OtlpTraceEmitter extends TraceEmitter {
 
@@ -47,23 +46,25 @@ public class OtlpTraceEmitter extends TraceEmitter {
 
   @Override
   public void setupProvider() throws Exception {
-    OpenTelemetrySdk otelSdk = new AwsTracerProviderFactory().create();
-    TracerSdkManagement tracerProvider = otelSdk.getTracerManagement();
-    tracer =
-        otelSdk.getTracerProvider().get("aws-otel-load-generator-trace", "semver:0.1.0");
     OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
         .setChannel(
             ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
-        .setDeadlineMs(TimeUnit.SECONDS.toMillis(10))
+        .setTimeout(Duration.ofMillis(10))
         .build();
 
-    tracerProvider.addSpanProcessor(
-        SimpleSpanProcessor.builder(spanExporter).build());
+    SdkTracerProviderBuilder builder = SdkTracerProvider.builder();
+    new AwsTracerConfigurer().configure(builder);
+    builder.addSpanProcessor(SimpleSpanProcessor.create(spanExporter));
+    TracerProvider tracerProvider = builder.build();
+
+    tracer =
+        tracerProvider.get("aws-otel-load-generator-trace", "semver:0.1.0");
+
   }
 
   @Override
   public void nextDataPoint() {
-    Span exampleSpan = tracer.spanBuilder("Example Span").setSpanKind(Span.Kind.SERVER).startSpan();
+    Span exampleSpan = tracer.spanBuilder("Example Span").setSpanKind(SpanKind.SERVER).startSpan();
 
     exampleSpan.setAttribute("good", "true");
     exampleSpan.setAttribute("exampleNumber", UUID.randomUUID().toString());

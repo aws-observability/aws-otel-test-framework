@@ -7,7 +7,7 @@ COPY ./settings.gradle ./settings.gradle
 
 RUN gradle build
 RUN tar -xvf build/distributions/spark-sample-app-1.0.tar
-RUN wget https://github.com/aws-observability/aws-otel-java-instrumentation/releases/download/v0.12.1-aws.1/aws-opentelemetry-agent.jar
+RUN wget https://github.com/aws-observability/aws-otel-java-instrumentation/releases/download/v0.18.0-aws.1/aws-opentelemetry-agent.jar
 
 FROM amazoncorretto:11 
 
@@ -17,6 +17,7 @@ COPY --from=build /app/aws-opentelemetry-agent.jar ./aws-opentelemetry-agent.jar
 
 ENV JAVA_OPTS "-javaagent:/app/aws-opentelemetry-agent.jar -Dotel.imr.export.interval=1000"
 ENV HOME=/root
+ENV OTEL_RESOURCE_ATTRIBUTES 'service.namespace=AWSOTel,service.name=AWSOTelSampleApp'
 
 CMD ["/app/bin/spark-sample-app"]
 
