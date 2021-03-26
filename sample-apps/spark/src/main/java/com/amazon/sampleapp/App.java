@@ -18,7 +18,12 @@
 
 package com.amazon.sampleapp;
 
-import static spark.Spark.*;
+import static spark.Spark.after;
+import static spark.Spark.before;
+import static spark.Spark.exception;
+import static spark.Spark.get;
+import static spark.Spark.ipAddress;
+import static spark.Spark.port;
 
 import io.opentelemetry.api.trace.Span;
 import java.io.IOException;
@@ -126,7 +131,7 @@ public class App {
 
   // get x-ray trace id
   private static String getXrayTraceId() {
-    String traceId = Span.current().getSpanContext().getTraceIdAsHexString();
+    String traceId = Span.current().getSpanContext().getTraceId();
     String xrayTraceId = "1-" + traceId.substring(0, 8) + "-" + traceId.substring(8);
 
     return String.format("{\"traceId\": \"%s\"}", xrayTraceId);

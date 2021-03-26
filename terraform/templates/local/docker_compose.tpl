@@ -39,7 +39,7 @@ services:
       - AWS_REGION=${region}
       - OTEL_RESOURCE_ATTRIBUTES=${otel_resource_attributes}
       - INSTANCE_ID=${testing_id}
-      - OTEL_EXPORTER_OTLP_ENDPOINT=aws-ot-collector:${grpc_port}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://aws-ot-collector:${grpc_port}
       - AWS_XRAY_DAEMON_ADDRESS=aws-ot-collector:${udp_port}
       - COLLECTOR_UDP_ADDRESS=aws-ot-collector:${udp_port}
     depends_on:
