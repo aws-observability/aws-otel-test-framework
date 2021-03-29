@@ -245,6 +245,7 @@ resource "null_resource" "start_collector" {
 
   provisioner "remote-exec" {
     inline = [
+      local.ami_family["wait_cloud_init"],
       local.ami_family["install_command"],
       local.ami_family["start_command"],
     ]

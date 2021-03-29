@@ -25,6 +25,7 @@ variable "ami_family" {
       start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
+      wait_cloud_init = "for i in {1..60}; do [ ! -f /var/lib/cloud/instance/boot-finished ] && echo 'Waiting for cloud-init...' && sleep 1 || break; done"
     }
     linux = {
       login_user = "ec2-user"
@@ -36,6 +37,7 @@ variable "ami_family" {
       start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
+      wait_cloud_init = "for i in {1..60}; do [ ! -f /var/lib/cloud/instance/boot-finished ] && echo 'Waiting for cloud-init...' && sleep 1 || break; done"
     }
     windows = {
       login_user = "Administrator"
@@ -61,6 +63,7 @@ net start winrm
 Set-NetFirewallProfile -Profile Public -Enabled False
 </powershell>
 EOF
+      wait_cloud_init = ""
     }
   }
 }
@@ -105,6 +108,13 @@ variable "amis" {
       family = "debian"
       arch = "amd64"
       login_user = "admin"
+      user_data = <<EOF
+#! /bin/bash
+cd /tmp
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+sudo dpkg -i amazon-ssm-agent.deb
+sudo systemctl enable amazon-ssm-agent
+EOF
     }
     debian9 = {
       os_family = "debian"
@@ -114,6 +124,13 @@ variable "amis" {
       family = "debian"
       arch = "amd64"
       login_user = "admin"
+      user_data = <<EOF
+#! /bin/bash
+cd /tmp
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+sudo dpkg -i amazon-ssm-agent.deb
+sudo systemctl enable amazon-ssm-agent
+EOF
     }
     amazonlinux2 = {
       os_family = "amazon_linux"
@@ -150,6 +167,14 @@ variable "amis" {
       family = "linux"
       login_user = "ec2-user"
       arch = "amd64"
+      user_data = <<EOF
+#! /bin/bash
+cd /tmp
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+sudo rpm -ivh amazon-ssm-agent.rpm
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
+EOF
     }
     suse12 = {
       os_family = "suse"
@@ -159,6 +184,14 @@ variable "amis" {
       family = "linux"
       login_user = "ec2-user"
       arch = "amd64"
+      user_data = <<EOF
+#! /bin/bash
+cd /tmp
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+sudo rpm -ivh amazon-ssm-agent.rpm
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
+EOF
     }
     redhat8 = {
       os_family = "redhat"
@@ -167,6 +200,10 @@ variable "amis" {
       ami_product_code = []
       family = "linux"
       arch = "amd64"
+      user_data = <<EOF
+#! /bin/bash
+sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+EOF
     }
     redhat7 = {
       os_family = "redhat"
@@ -175,6 +212,10 @@ variable "amis" {
       ami_product_code = []
       family = "linux"
       arch = "amd64"
+      user_data = <<EOF
+#! /bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+EOF
     }
     centos7 = {
       login_user = "centos"
@@ -184,6 +225,10 @@ variable "amis" {
       ami_product_code = []
       family = "linux"
       arch = "amd64"
+      user_data = <<EOF
+#! /bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+EOF
     }
     centos6 = {
       login_user = "centos"
@@ -198,6 +243,7 @@ variable "amis" {
 sudo iptables -I INPUT -p tcp -m tcp --dport 4317 -j ACCEPT
 sudo iptables -I INPUT -p udp -m udp --dport 55690 -j ACCEPT
 sudo service iptables save
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 EOF
     }
 
@@ -221,6 +267,12 @@ EOF
       family = "linux"
       arch = "arm64"
       instance_type = "t4g.nano"
+      user_data = <<EOF
+#! /bin/bash
+cd /tmp
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
+sudo rpm -ivh amazon-ssm-agent.rpm
+EOF
     }
 
     arm_redhat8 = {
@@ -231,6 +283,10 @@ EOF
       family = "linux"
       arch = "arm64"
       instance_type = "t4g.micro"
+      user_data = <<EOF
+#! /bin/bash
+sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
+EOF
     }
 
     arm_redhat7 = {
@@ -241,6 +297,10 @@ EOF
       family = "linux"
       arch = "arm64"
       instance_type = "t4g.micro"
+      user_data = <<EOF
+#! /bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
+EOF
     }
 
     arm_ubuntu18 = {
