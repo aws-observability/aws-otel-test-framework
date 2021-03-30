@@ -163,6 +163,14 @@ resource "kubernetes_deployment" "standalone_aoc_deployment" {
   }
 }
 
+module "demo_nginx" {
+  source = "./nginx"
+
+  kubeconfig = local_file.kubeconfig.filename
+  testcase = var.testcase
+  testing_id = module.common.testing_id
+}
+
 module "demo_appmesh" {
   source = "./appmesh"
 
@@ -189,6 +197,10 @@ module "validator" {
     appMesh: {
       namespace: module.demo_appmesh.metric_dimension_namespace
       job: "kubernetes-pod-appmesh-envoy"
+    }
+    nginx: {
+      namespace: module.demo_nginx.metric_dimension_namespace
+      job: "kubernetes-service-endpoints"
     }
   })
 
