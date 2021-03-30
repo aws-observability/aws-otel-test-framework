@@ -15,6 +15,7 @@
 
 package com.amazon.aoc.models;
 
+import com.amazon.aoc.fileconfigs.ExpectedLogStructure;
 import com.amazon.aoc.fileconfigs.ExpectedMetric;
 import com.amazon.aoc.fileconfigs.ExpectedTrace;
 import lombok.Data;
@@ -32,6 +33,7 @@ public class ValidationConfig {
 
   ExpectedMetric expectedMetricTemplate;
   ExpectedTrace expectedTraceTemplate;
+  ExpectedLogStructure expectedLogStructureTemplate;
 
   /**
    * alarm related.

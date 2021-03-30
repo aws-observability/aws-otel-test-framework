@@ -31,6 +31,7 @@ public enum ExceptionCode {
   TRACE_LIST_NOT_MATCHED(50004, "trace list has different length"),
   DATA_EMITTER_UNAVAILABLE(50005, "the data emitter is unavailable to ping"),
   EMPTY_LIST(50007, "list is empty or null"),
+  LOG_FORMAT_NOT_MATCHED(50008, "log format not matched"),
 
   // build validator
   VALIDATION_TYPE_NOT_EXISTED(60001, "validation type not existed"),

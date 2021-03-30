@@ -49,6 +49,7 @@ dependencies {
 
     // json flattener
     compile group: 'com.github.wnameless', name: 'json-flattener', version: '0.1.0'
+    compile group: 'com.github.fge', name: 'json-schema-validator', version: '2.0.0'
 
     // command cli
     compile 'info.picocli:picocli:4.3.2'
@@ -60,6 +61,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-s3'
     implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
     implementation 'com.amazonaws:aws-java-sdk-xray'
+    implementation 'com.amazonaws:aws-java-sdk-logs'
 
     // https://mvnrepository.com/artifact/com.github.awslabs/aws-request-signing-apache-interceptor
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'

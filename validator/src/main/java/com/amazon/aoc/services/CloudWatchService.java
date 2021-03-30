@@ -31,6 +31,11 @@ import com.amazonaws.services.cloudwatch.model.MetricStat;
 import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
 import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
 import com.amazonaws.services.cloudwatch.model.StandardUnit;
+import com.amazonaws.services.logs.AWSLogs;
+import com.amazonaws.services.logs.AWSLogsClientBuilder;
+import com.amazonaws.services.logs.model.GetLogEventsRequest;
+import com.amazonaws.services.logs.model.GetLogEventsResult;
+import com.amazonaws.services.logs.model.OutputLogEvent;
 
 import java.util.Date;
 import java.util.List;
@@ -42,7 +47,8 @@ public class CloudWatchService {
   private static final int MAX_QUERY_PERIOD = 60;
   private static final String REQUESTER = "integrationTest";
 
-  AmazonCloudWatch amazonCloudWatch;
+  private AmazonCloudWatch amazonCloudWatch;
+  private AWSLogs awsLogs;
 
   /**
    * Construct CloudWatch Service with region.
@@ -51,6 +57,7 @@ public class CloudWatchService {
    */
   public CloudWatchService(String region) {
     amazonCloudWatch = AmazonCloudWatchClientBuilder.standard().withRegion(region).build();
+    awsLogs = AWSLogsClientBuilder.standard().withRegion(region).build();
   }
 
   /**
@@ -116,5 +123,25 @@ public class CloudWatchService {
    */
   public List<Datapoint> getDatapoints(GetMetricStatisticsRequest request) {
     return amazonCloudWatch.getMetricStatistics(request).getDatapoints();
+  }
+
+  /**
+   * getLogs fetches log entries from CloudWatch.
+   * @param logGroupName the log group name
+   * @param logStreamName the log stream name
+   * @param startFromTimestamp the start timestamp
+   * @param limit the maximum number of log events to be returned in a single query
+   * @return List of OutputLogEvent
+   */
+  public List<OutputLogEvent> getLogs(String logGroupName, String logStreamName,
+                                      long startFromTimestamp, int limit) {
+    GetLogEventsRequest request = new GetLogEventsRequest()
+            .withLogGroupName(logGroupName)
+            .withLogStreamName(logStreamName)
+            .withStartTime(startFromTimestamp)
+            .withLimit(limit);
+    
+    GetLogEventsResult result = awsLogs.getLogEvents(request);
+    return result.getEvents();
   }
 }
