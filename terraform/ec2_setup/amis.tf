@@ -18,6 +18,7 @@ variable "ami_family" {
       soaking_cpu_metric_name = "procstat_cpu_usage"
       soaking_mem_metric_name = "procstat_memory_rss"
       soaking_process_name = "aws-otel-collector"
+      wait_cloud_init = "for i in {1..60}; do [ ! -f /var/lib/cloud/instance/boot-finished ] && echo 'Waiting for cloud-init...' && sleep 1 || break; done"
     }
     windows = {
       login_user = "Administrator"
@@ -51,6 +52,7 @@ net start winrm
 Set-NetFirewallProfile -Profile Public -Enabled False
 </powershell>
 EOF
+      wait_cloud_init = ""
     }
   }
 }
