@@ -182,6 +182,14 @@ module "demo_appmesh" {
   testing_id = module.common.testing_id
 }
 
+module "demo_jmx" {
+  source = "./jmx"
+
+  sample_app_image_repo = var.sample_app_image_repo
+  testcase = var.testcase
+  testing_id = module.common.testing_id
+}
+
 ##########################################
 # Validation
 ##########################################
@@ -201,6 +209,10 @@ module "validator" {
     nginx: {
       namespace: module.demo_nginx.metric_dimension_namespace
       job: "kubernetes-service-endpoints"
+    }
+    jmx: {
+      namespace: module.demo_jmx.metric_dimension_namespace
+      job: "kubernetes-pod-jmx"
     }
   })
 
