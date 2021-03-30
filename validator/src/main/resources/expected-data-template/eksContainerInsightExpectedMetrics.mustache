@@ -510,3 +510,138 @@
       value: get
     - name: status
       value: hit
+
+- metricName: haproxy_backend_status
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_backend_bytes_in_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_backend_bytes_out_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_backend_connection_errors_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_backend_current_sessions
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_frontend_bytes_in_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_frontend_bytes_out_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_frontend_connections_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_frontend_http_requests_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_frontend_request_errors_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_frontend_requests_denied_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_frontend_current_sessions
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+- metricName: haproxy_backend_http_responses_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+    - name: backend
+      value: _default_backend
+    - name: code
+      value: 2xx
+- metricName: haproxy_frontend_http_responses_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.haproxy.namespace}}
+    - name: Service
+      value: terraform-haproxy-ingress-metrics
+    - name: frontend
+      value: _front_http
+    - name: code
+      value: 2xx

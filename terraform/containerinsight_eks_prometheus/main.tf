@@ -198,6 +198,14 @@ module "demo_memcached" {
   testing_id = module.common.testing_id
 }
 
+module "demo_haproxy" {
+  // source folder name cannot be the same as the chart name: https://github.com/hashicorp/terraform-provider-helm/issues/509
+  source = "./haproxy"
+
+  testcase = var.testcase
+  testing_id = module.common.testing_id
+}
+
 ##########################################
 # Validation
 ##########################################
@@ -224,6 +232,10 @@ module "validator" {
     }
     memcached: {
       namespace: module.demo_memcached.metric_dimension_namespace
+      job: "kubernetes-service-endpoints"
+    }
+    haproxy: {
+      namespace: module.demo_haproxy.metric_dimension_namespace
       job: "kubernetes-service-endpoints"
     }
   })
