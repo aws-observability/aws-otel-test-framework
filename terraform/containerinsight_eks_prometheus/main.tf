@@ -190,6 +190,14 @@ module "demo_jmx" {
   testing_id = module.common.testing_id
 }
 
+module "demo_memcached" {
+  // source folder name cannot be the same as the chart name: https://github.com/hashicorp/terraform-provider-helm/issues/509
+  source = "./memcached-service"
+
+  testcase = var.testcase
+  testing_id = module.common.testing_id
+}
+
 ##########################################
 # Validation
 ##########################################
@@ -213,6 +221,10 @@ module "validator" {
     jmx: {
       namespace: module.demo_jmx.metric_dimension_namespace
       job: "kubernetes-pod-jmx"
+    }
+    memcached: {
+      namespace: module.demo_memcached.metric_dimension_namespace
+      job: "kubernetes-service-endpoints"
     }
   })
 
