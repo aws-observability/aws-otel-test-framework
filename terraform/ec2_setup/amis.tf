@@ -52,7 +52,7 @@ net start winrm
 Set-NetFirewallProfile -Profile Public -Enabled False
 </powershell>
 EOF
-      wait_cloud_init = ""
+      wait_cloud_init = " "
     }
   }
 }
