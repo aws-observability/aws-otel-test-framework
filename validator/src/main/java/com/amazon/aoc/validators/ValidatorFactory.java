@@ -66,6 +66,10 @@ public class ValidatorFactory {
         validator = new ContainerInsightMetricsValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
+      case "eks-container-insight-logs":
+        validator = new ContainerInsightStructuredLogValidator();
+        expectedData = validationConfig.getExpectedLogStructureTemplate();
+        break;
       default:
         throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED);
     }
