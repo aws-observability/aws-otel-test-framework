@@ -10,6 +10,7 @@ variable "ami_family" {
       start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       connection_type = "ssh"
       user_data = ""
+      wait_cloud_init = "for i in {1..60}; do [ ! -f /var/lib/cloud/instance/boot-finished ] && echo 'Waiting for cloud-init...' && sleep 1 || break; done"
     }
     windows = {
       login_user = "Administrator"
@@ -35,6 +36,7 @@ net start winrm
 Set-NetFirewallProfile -Profile Public -Enabled False
 </powershell>
 EOF
+      wait_cloud_init = ""
     }
   }
 }
