@@ -415,3 +415,98 @@
       value: {{cloudWatchContext.jmx.namespace}}
     - name: pool
       value: Metaspace
+
+- metricName: memcached_written_bytes_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+- metricName: memcached_read_bytes_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+- metricName: memcached_items_evicted_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+- metricName: memcached_items_reclaimed_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+- metricName: memcached_commands_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+- metricName: memcached_current_items
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+- metricName: memcached_current_connections
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+- metricName: memcached_current_bytes
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+- metricName: memcached_limit_bytes
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+- metricName: memcached_commands_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.memcached.namespace}}
+    - name: Service
+      value: memcached-metrics
+    - name: command
+      value: get
+    - name: status
+      value: hit
