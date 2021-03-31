@@ -22,17 +22,22 @@ import java.util.List;
 
 @Data
 public class Context {
-  @NonNull private String testingId;
+  @NonNull
+  private String testingId;
 
-  @NonNull private String region;
+  @NonNull
+  private String region;
 
-  @NonNull private boolean isCanary;
+  @NonNull
+  private boolean isCanary;
 
   private String metricNamespace;
 
   private String endpoint;
 
   private ECSContext ecsContext;
+
+  private CloudWatchContext cloudWatchContext;
 
   /* testcase name */
   private String testcase;

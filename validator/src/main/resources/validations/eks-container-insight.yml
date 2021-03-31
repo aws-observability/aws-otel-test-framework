@@ -1,0 +1,4 @@
+-
+  validationType: "eks-container-insight-metrics"
+  shouldValidateMetricValue: false
+  expectedMetricTemplate: "EKS_CONTAINER_INSIGHT_METRIC"

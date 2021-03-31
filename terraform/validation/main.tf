@@ -41,6 +41,10 @@ data "template_file" "docker_compose" {
     ecs_taskdef_family = var.ecs_taskdef_family
     ecs_taskdef_version = var.ecs_taskdef_version
 
+    # Escaping (") in the JSON when using as a terraform string variable.
+    # For more information: https://www.terraform.io/docs/configuration-0-11/interpolation.html#built-in-functions
+    cloudwatch_context_json = replace(var.cloudwatch_context_json, "\"", "\\\"")
+
     # alarm related
     cpu_alarm = var.cpu_alarm
     mem_alarm = var.mem_alarm

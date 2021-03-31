@@ -62,6 +62,10 @@ public class ValidatorFactory {
       case "performance":
         validator = new PerformanceValidator();
         break;
+      case "eks-container-insight-metrics":
+        validator = new ContainerInsightMetricsValidator();
+        expectedData = validationConfig.getExpectedMetricTemplate();
+        break;
       default:
         throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED);
     }

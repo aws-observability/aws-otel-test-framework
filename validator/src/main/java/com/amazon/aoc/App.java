@@ -16,12 +16,14 @@
 package com.amazon.aoc;
 
 import com.amazon.aoc.helpers.ConfigLoadHelper;
+import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ECSContext;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazon.aoc.validators.ValidatorFactory;
 import com.amazonaws.services.cloudwatch.model.Dimension;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine;
@@ -64,8 +66,12 @@ public class App implements Callable<Integer> {
   private Map<String, String> ecsContexts;
 
   @CommandLine.Option(
-      names = {"--alarm-names"},
-      description = "the cloudwatch alarm names")
+          names = {"--cloudwatch-context"})
+  private String cloudWatchContext;
+
+  @CommandLine.Option(
+          names = {"--alarm-names"},
+          description = "the cloudwatch alarm names")
   private List<String> alarmNameList;
 
   @CommandLine.Option(
@@ -105,6 +111,7 @@ public class App implements Callable<Integer> {
     context.setMetricNamespace(this.metricNamespace);
     context.setEndpoint(this.endpoint);
     context.setEcsContext(buildECSContext(ecsContexts));
+    context.setCloudWatchContext(buildJsonContext(cloudWatchContext, CloudWatchContext.class));
     context.setAlarmNameList(alarmNameList);
     context.setMockedServerValidatingUrl(mockedServerValidatingUrl);
     context.setCortexInstanceEndpoint(this.cortexInstanceEndpoint);
@@ -164,5 +171,13 @@ public class App implements Callable<Integer> {
       return null;
     }
     return new ObjectMapper().convertValue(ecsContextMap, ECSContext.class);
+  }
+
+  private <T> T buildJsonContext(String metricContext, Class<T> clazz)
+          throws JsonProcessingException {
+    if (metricContext == null || metricContext.isEmpty()) {
+      return null;
+    }
+    return new ObjectMapper().readValue(metricContext, clazz);
   }
 }

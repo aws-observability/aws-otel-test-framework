@@ -19,18 +19,29 @@ import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
 import com.amazonaws.services.cloudwatch.model.Datapoint;
 import com.amazonaws.services.cloudwatch.model.Dimension;
+import com.amazonaws.services.cloudwatch.model.GetMetricDataRequest;
+import com.amazonaws.services.cloudwatch.model.GetMetricDataResult;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.ListMetricsRequest;
 import com.amazonaws.services.cloudwatch.model.Metric;
+import com.amazonaws.services.cloudwatch.model.MetricDataQuery;
+import com.amazonaws.services.cloudwatch.model.MetricDataResult;
 import com.amazonaws.services.cloudwatch.model.MetricDatum;
+import com.amazonaws.services.cloudwatch.model.MetricStat;
 import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
 import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
 import com.amazonaws.services.cloudwatch.model.StandardUnit;
 
+import java.util.Date;
 import java.util.List;
 
-/** a wrapper of cloudwatch client. */
+/**
+ * a wrapper of cloudwatch client.
+ */
 public class CloudWatchService {
+  private static final int MAX_QUERY_PERIOD = 60;
+  private static final String REQUESTER = "integrationTest";
+
   AmazonCloudWatch amazonCloudWatch;
 
   /**
@@ -53,6 +64,25 @@ public class CloudWatchService {
     final ListMetricsRequest listMetricsRequest =
         new ListMetricsRequest().withNamespace(namespace).withMetricName(metricName);
     return amazonCloudWatch.listMetrics(listMetricsRequest).getMetrics();
+  }
+
+
+  /**
+   * getMetricData fetches the history data of the given metric from CloudWatch.
+   * @param metric metric query object
+   * @param startTime the start timestamp
+   * @param endTime the end timestamp
+   * @return List of MetricDataResult
+   */
+  public List<MetricDataResult> getMetricData(Metric metric, Date startTime, Date endTime) {
+    MetricStat stat = new MetricStat().withMetric(metric).withStat("Average")
+            .withPeriod(MAX_QUERY_PERIOD);
+    MetricDataQuery query = new MetricDataQuery().withMetricStat(stat).withId(REQUESTER);
+    final GetMetricDataRequest request = new GetMetricDataRequest().withMetricDataQueries(query)
+            .withStartTime(startTime).withEndTime(endTime);
+
+    GetMetricDataResult result = amazonCloudWatch.getMetricData(request);
+    return result.getMetricDataResults();
   }
 
   /**
