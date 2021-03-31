@@ -88,6 +88,10 @@ variable "amis" {
       family = "debian"
       arch = "amd64"
       login_user = "ubuntu"
+      user_data = <<EOF
+#! /bin/bash
+sudo snap refresh amazon-ssm-agent
+EOF
     }
     ubuntu18 = {
       os_family = "ubuntu"
@@ -97,6 +101,10 @@ variable "amis" {
       family = "debian"
       arch = "amd64"
       login_user = "ubuntu"
+      user_data = <<EOF
+#! /bin/bash
+sudo snap refresh amazon-ssm-agent
+EOF
     }
     debian10 = {
       os_family = "debian"
@@ -140,6 +148,10 @@ EOF
       family = "linux"
       arch = "amd64"
       login_user = "ec2-user"
+      user_data = <<EOF
+#! /bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+EOF
     }
     windows2019 = {
       os_family = "windows"
@@ -158,6 +170,11 @@ EOF
       family = "linux"
       arch = "amd64"
       login_user = "ec2-user"
+      user_data = <<EOF
+#! /bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+sudo restart amazon-ssm-agent
+EOF
     }
     suse15 = {
       os_family = "suse"
@@ -171,7 +188,7 @@ EOF
 #! /bin/bash
 cd /tmp
 sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-sudo rpm -ivh amazon-ssm-agent.rpm
+sudo rpm -Uvh amazon-ssm-agent.rpm
 sudo systemctl enable amazon-ssm-agent
 sudo systemctl start amazon-ssm-agent
 EOF
@@ -188,7 +205,7 @@ EOF
 #! /bin/bash
 cd /tmp
 sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-sudo rpm -ivh amazon-ssm-agent.rpm
+sudo rpm -Uvh amazon-ssm-agent.rpm
 sudo systemctl enable amazon-ssm-agent
 sudo systemctl start amazon-ssm-agent
 EOF
@@ -243,7 +260,9 @@ EOF
 sudo iptables -I INPUT -p tcp -m tcp --dport 4317 -j ACCEPT
 sudo iptables -I INPUT -p udp -m udp --dport 55690 -j ACCEPT
 sudo service iptables save
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+cd /tmp
+sudo curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
+sudo rpm -ivh amazon-ssm-agent.rpm
 EOF
     }
 
@@ -257,6 +276,10 @@ EOF
       family = "linux"
       arch = "arm64"
       instance_type = "t4g.nano"
+      user_data = <<EOF
+#! /bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
+EOF
     }
 
     arm_suse15 = {
@@ -311,6 +334,10 @@ EOF
       family = "debian"
       arch = "arm64"
       instance_type = "t4g.nano"
+      user_data = <<EOF
+#! /bin/bash
+sudo snap refresh amazon-ssm-agent
+EOF
     }
 
     arm_ubuntu16 = {
@@ -321,6 +348,10 @@ EOF
       family = "debian"
       arch = "arm64"
       instance_type = "t4g.nano"
+      user_data = <<EOF
+#! /bin/bash
+sudo snap refresh amazon-ssm-agent
+EOF
     }
   }
 }
