@@ -64,7 +64,7 @@ func (s *SSMWrapper) WaitPatch(ctx context.Context, instanceId string, timeout t
 			switch status {
 			case "Success":
 				logger.Info("patch on instance succeeded",
-					zap.Time("PatchedOn", aws.ToTime(assoc.ExecutionDate)),
+					zap.Time("PatchTime", aws.ToTime(assoc.ExecutionDate)),
 					zap.Duration("Waited", time.Now().Sub(start)))
 				return WaitDone, nil
 			case "Failed":
