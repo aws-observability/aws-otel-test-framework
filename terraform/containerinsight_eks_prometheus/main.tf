@@ -17,6 +17,14 @@
 # so in the eks/k8s test, we need tester to provide the cluster instead of creating it in terraform
 # so that we can shorten the execution time
 
+terraform {
+  required_providers {
+    kubernetes = {
+      version = "~> 1.13"
+    }
+  }
+}
+
 module "common" {
   source = "../common"
 
