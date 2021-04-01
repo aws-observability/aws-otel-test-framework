@@ -49,6 +49,10 @@ public class EmitterFactory {
       return new OtlpTraceEmitter(param);
     } else if (param.getDataFormat().equalsIgnoreCase(Constants.XRAY)) {
       return new XRayTraceEmitter(param);
+    } else if (param.getDataFormat().equalsIgnoreCase(Constants.ZIPKIN)) {
+      return new ZipkinTraceEmitter(param);
+    } else if (param.getDataFormat().equalsIgnoreCase(Constants.JAEGER)) {
+      return new JaegerTraceEmitter(param);
     } else {
       throw new RuntimeException("unknown trace data format specified");
     }

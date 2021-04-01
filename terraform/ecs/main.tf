@@ -91,6 +91,7 @@ data "template_file" "task_def" {
     sample_app_listen_port = module.common.sample_app_listen_address_port
     udp_port = module.common.udp_port
     grpc_port = module.common.grpc_port
+    http_port = module.common.http_port
 
     mocked_server_image = local.mocked_server_image
   }

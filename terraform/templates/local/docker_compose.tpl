@@ -42,5 +42,7 @@ services:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://aws-ot-collector:${grpc_port}
       - AWS_XRAY_DAEMON_ADDRESS=aws-ot-collector:${udp_port}
       - COLLECTOR_UDP_ADDRESS=aws-ot-collector:${udp_port}
+      - JAEGER_RECEIVER_ENDPOINT=aws-ot-collector:${http_port}
+      - ZIPKIN_RECEIVER_ENDPOINT=aws-ot-collector:${http_port}
     depends_on:
       - aws-ot-collector

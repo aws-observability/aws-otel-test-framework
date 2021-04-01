@@ -276,6 +276,7 @@ data "template_file" "docker_compose" {
     testing_id = module.common.testing_id
     grpc_endpoint = "${aws_instance.aoc.private_ip}:${module.common.grpc_port}"
     udp_endpoint = "${aws_instance.aoc.private_ip}:${module.common.udp_port}"
+    http_endpoint = "${aws_instance.aoc.private_ip}:${module.common.http_port}"
 
     mocked_server_image = local.mocked_server_image
     data_mode = var.soaking_data_mode

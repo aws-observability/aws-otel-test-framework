@@ -1,0 +1,5 @@
+-
+  validationType: "mocked-server"
+  httpPath: "/outgoing-zipkin-http-call"
+  httpMethod: "get"
+  callingType: "http"

@@ -1,0 +1,52 @@
+plugins {
+    id 'java'
+
+    // Apply the application plugin to add support for building a CLI application.
+    id 'application'
+    id 'com.google.cloud.tools.jib' version "2.7.1"
+}
+
+group 'com.amazon.sampleapp'
+version '1.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+}
+
+repositories {
+    mavenCentral()
+    mavenLocal()
+    maven {
+        setUrl("https://oss.sonatype.org/content/repositories/snapshots")
+    }
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+configurations {
+    extraLibs
+}
+
+application {
+    // Define the main class for the application.
+    mainClassName = 'com.amazon.sampleapp.App'
+}
+
+dependencies {
+    implementation "com.sparkjava:spark-core:2.9.3"
+    implementation "com.squareup.okhttp3:okhttp:3.14.8"
+    implementation "software.amazon.awssdk:s3:2.14.26"
+    implementation "io.grpc:grpc-api:1.34.1"
+    implementation "io.grpc:grpc-netty-shaded:1.34.1"
+
+    // local project can't be referenced in Dockerfile
+    // the workaround is build fat jar and copy it in Dockerfile for building docker image
+    //  implementation files('build/libs/trace-java-client-1.0-all.jar')
+
+    implementation project(":trace-java-client")
+
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
