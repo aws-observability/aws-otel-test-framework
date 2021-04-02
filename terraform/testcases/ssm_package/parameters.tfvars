@@ -1,0 +1,18 @@
+# SSM package name for Otel Collector
+ssm_package_name = "testAWSDistroOTel-Collector"
+
+# Base64 value of Otel Collector YAML configuration
+ssm_config = "ZXh0ZW5zaW9uczoKICBoZWFsdGhfY2hlY2s6CiAgcHByb2Y6CiAgICBlbmRwb2ludDogMC4wLjAuMDoxNzc3CgpyZWNlaXZlcnM6CiAgb3RscDoKICAgIHByb3RvY29sczoKICAgICAgZ3JwYzoKICAgICAgICBlbmRwb2ludDogMC4wLjAuMDo0MzE3Cgpwcm9jZXNzb3JzOgogIGJhdGNoOgoKZXhwb3J0ZXJzOgogIGxvZ2dpbmc6CiAgICBsb2dsZXZlbDogZGVidWcKICBhd3N4cmF5OgogICAgcmVnaW9uOiAndXMtd2VzdC0yJwogIGF3c2VtZjoKICAgIHJlZ2lvbjogJ3VzLXdlc3QtMicKCnNlcnZpY2U6CiAgcGlwZWxpbmVzOgogICAgdHJhY2VzOgogICAgICByZWNlaXZlcnM6IFtvdGxwXQogICAgICBleHBvcnRlcnM6IFthd3N4cmF5XQogICAgbWV0cmljczoKICAgICAgcmVjZWl2ZXJzOiBbb3RscF0KICAgICAgZXhwb3J0ZXJzOiBbYXdzZW1mXQoKICBleHRlbnNpb25zOiBbcHByb2ZdCg=="
+
+# enable SSM package validation
+enable_ssm_validate = true
+
+# disable mocked server
+disable_mocked_server = true
+
+# enable patch
+patch = true
+
+# enable SSM installation
+install_package_source = "ssm"
+
