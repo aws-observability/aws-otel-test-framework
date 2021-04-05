@@ -1,6 +1,6 @@
 # this file is defined in validator/src/main/resources/validations
-validation_config="prometheus-sd-validation.yml"
+validation_config = "prometheus-sd-validation.yml"
 
-sample_app="prometheus"
+sample_app = "prometheus"
 
-sample_app_mode="pull"
+sample_app_mode = "pull"

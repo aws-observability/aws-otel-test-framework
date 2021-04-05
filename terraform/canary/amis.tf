@@ -1,27 +1,27 @@
 variable "ami_family" {
   default = {
     amazon_linux = {
-      login_user = "ec2-user"
-      install_package = "aws-otel-collector.rpm"
-      instance_type = "m5.2xlarge"
-      otconfig_destination = "/tmp/ot-default.yml"
+      login_user               = "ec2-user"
+      install_package          = "aws-otel-collector.rpm"
+      instance_type            = "m5.2xlarge"
+      otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
-      install_command = "sudo rpm -Uvh aws-otel-collector.rpm"
-      start_command = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
-      connection_type = "ssh"
-      user_data = ""
-      wait_cloud_init = "for i in {1..60}; do [ ! -f /var/lib/cloud/instance/boot-finished ] && echo 'Waiting for cloud-init...' && sleep 1 || break; done"
+      install_command          = "sudo rpm -Uvh aws-otel-collector.rpm"
+      start_command            = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
+      connection_type          = "ssh"
+      user_data                = ""
+      wait_cloud_init          = "for i in {1..60}; do [ ! -f /var/lib/cloud/instance/boot-finished ] && echo 'Waiting for cloud-init...' && sleep 1 || break; done"
     }
     windows = {
-      login_user = "Administrator"
-      install_package = "aws-otel-collector.msi"
-      instance_type = "t3.medium"
-      otconfig_destination = "C:\\ot-default.yml"
+      login_user               = "Administrator"
+      install_package          = "aws-otel-collector.msi"
+      instance_type            = "t3.medium"
+      otconfig_destination     = "C:\\ot-default.yml"
       download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
-      install_command = "msiexec /i C:\\aws-otel-collector.msi"
-      start_command = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation C:\\ot-default.yml -Action start\""
-      connection_type = "winrm"
-      user_data = <<EOF
+      install_command          = "msiexec /i C:\\aws-otel-collector.msi"
+      start_command            = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation C:\\ot-default.yml -Action start\""
+      connection_type          = "winrm"
+      user_data                = <<EOF
 <powershell>
 winrm quickconfig -q
 winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="300"}'
@@ -36,7 +36,7 @@ net start winrm
 Set-NetFirewallProfile -Profile Public -Enabled False
 </powershell>
 EOF
-      wait_cloud_init = " "
+      wait_cloud_init          = " "
     }
   }
 }
@@ -44,20 +44,20 @@ EOF
 variable "amis" {
   default = {
     canary_windows = {
-      os_family = "windows"
+      os_family          = "windows"
       ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
-      ami_owner = "amazon"
-      ami_product_code = []
-      family = "windows"
-      arch = "amd64"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "windows"
+      arch               = "amd64"
     }
     canary_linux = {
-      os_family = "amazon_linux"
+      os_family          = "amazon_linux"
       ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
-      ami_owner = "amazon"
-      ami_product_code = []
-      family = "amazon_linux"
-      arch = "amd64"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "amazon_linux"
+      arch               = "amd64"
     }
   }
 }

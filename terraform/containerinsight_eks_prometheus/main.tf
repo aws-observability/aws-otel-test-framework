@@ -29,7 +29,7 @@ module "common" {
   source = "../common"
 
   aoc_image_repo = var.aoc_image_repo
-  aoc_version = var.aoc_version
+  aoc_version    = var.aoc_version
 }
 
 # region
@@ -49,31 +49,31 @@ data "aws_eks_cluster_auth" "testing_cluster" {
 provider "kubernetes" {
   // Note: copy from eks module. Please avoid use shorted-lived tokens when running locally.
   // For more information: https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#exec-plugins
-  host = data.aws_eks_cluster.testing_cluster.endpoint
+  host                   = data.aws_eks_cluster.testing_cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
-  token = data.aws_eks_cluster_auth.testing_cluster.token
-  load_config_file = false
+  token                  = data.aws_eks_cluster_auth.testing_cluster.token
+  load_config_file       = false
 }
 
 data "template_file" "kubeconfig_file" {
   template = file("./kubeconfig.tpl")
   vars = {
-    CA_DATA: data.aws_eks_cluster.testing_cluster.certificate_authority[0].data
-    SERVER_ENDPOINT: data.aws_eks_cluster.testing_cluster.endpoint
+    CA_DATA : data.aws_eks_cluster.testing_cluster.certificate_authority[0].data
+    SERVER_ENDPOINT : data.aws_eks_cluster.testing_cluster.endpoint
     TOKEN = data.aws_eks_cluster_auth.testing_cluster.token
   }
 }
 
 resource "local_file" "kubeconfig" {
   filename = "kubeconfig"
-  content = data.template_file.kubeconfig_file.rendered
+  content  = data.template_file.kubeconfig_file.rendered
 }
 
 provider "helm" {
   kubernetes {
-    host = data.aws_eks_cluster.testing_cluster.endpoint
+    host                   = data.aws_eks_cluster.testing_cluster.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
-    token = data.aws_eks_cluster_auth.testing_cluster.token
+    token                  = data.aws_eks_cluster_auth.testing_cluster.token
   }
 }
 
@@ -86,7 +86,7 @@ resource "kubernetes_namespace" "aoc_ns" {
 
 resource "kubernetes_service_account" "aoc_role" {
   metadata {
-    name = "aoc-role-${module.common.testing_id}"
+    name      = "aoc-role-${module.common.testing_id}"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   automount_service_account_token = true
@@ -98,18 +98,18 @@ resource "kubernetes_cluster_role_binding" "aoc_role_binding" {
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
-    kind = "ClusterRole"
-    name = "cluster-admin"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
   }
   subject {
-    kind = "ServiceAccount"
-    name = "aoc-role-${module.common.testing_id}"
+    kind      = "ServiceAccount"
+    name      = "aoc-role-${module.common.testing_id}"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
 }
 resource "kubernetes_deployment" "standalone_aoc_deployment" {
   metadata {
-    name = "aoc"
+    name      = "aoc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
     labels = {
       app = "aoc"
@@ -133,27 +133,27 @@ resource "kubernetes_deployment" "standalone_aoc_deployment" {
       }
 
       spec {
-        service_account_name = "aoc-role-${module.common.testing_id}"
+        service_account_name            = "aoc-role-${module.common.testing_id}"
         automount_service_account_token = true
         # aoc
         container {
-          name = "aoc"
-          image = module.common.aoc_image
+          name              = "aoc"
+          image             = module.common.aoc_image
           image_pull_policy = "Always"
           args = [
             "--config",
-            "/etc/eks/prometheus/config-all.yaml"]
+          "/etc/eks/prometheus/config-all.yaml"]
           env {
-            name = "AWS_REGION"
+            name  = "AWS_REGION"
             value = var.region
           }
           env {
-            name = "OTEL_RESOURCE_ATTRIBUTES"
+            name  = "OTEL_RESOURCE_ATTRIBUTES"
             value = "ClusterName=${var.eks_cluster_name}"
           }
           resources {
             requests {
-              cpu = "0.2"
+              cpu    = "0.2"
               memory = "256Mi"
             }
           }
@@ -167,34 +167,34 @@ module "demo_nginx" {
   source = "./nginx"
 
   kubeconfig = local_file.kubeconfig.filename
-  testcase = var.testcase
+  testcase   = var.testcase
   testing_id = module.common.testing_id
 }
 
 module "demo_appmesh" {
   source = "./appmesh"
 
-  kubeconfig = local_file.kubeconfig.filename
-  provider_url = data.aws_eks_cluster.testing_cluster.identity[0].oidc[0].issuer
-  region = var.region
+  kubeconfig            = local_file.kubeconfig.filename
+  provider_url          = data.aws_eks_cluster.testing_cluster.identity[0].oidc[0].issuer
+  region                = var.region
   sample_app_image_repo = var.sample_app_image_repo
-  testcase = var.testcase
-  testing_id = module.common.testing_id
+  testcase              = var.testcase
+  testing_id            = module.common.testing_id
 }
 
 module "demo_jmx" {
   source = "./jmx"
 
   sample_app_image_repo = var.sample_app_image_repo
-  testcase = var.testcase
-  testing_id = module.common.testing_id
+  testcase              = var.testcase
+  testing_id            = module.common.testing_id
 }
 
 module "demo_memcached" {
   // source folder name cannot be the same as the chart name: https://github.com/hashicorp/terraform-provider-helm/issues/509
   source = "./memcached-service"
 
-  testcase = var.testcase
+  testcase   = var.testcase
   testing_id = module.common.testing_id
 }
 
@@ -202,7 +202,7 @@ module "demo_haproxy" {
   // source folder name cannot be the same as the chart name: https://github.com/hashicorp/terraform-provider-helm/issues/509
   source = "./haproxy"
 
-  testcase = var.testcase
+  testcase   = var.testcase
   testing_id = module.common.testing_id
 }
 
@@ -213,33 +213,33 @@ module "validator" {
   source = "../validation"
 
   validation_config = var.validation_config
-  region = var.region
-  testing_id = module.common.testing_id
-  metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+  region            = var.region
+  testing_id        = module.common.testing_id
+  metric_namespace  = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   cloudwatch_context_json = jsonencode({
-    clusterName: var.eks_cluster_name
-    appMesh: {
-      namespace: module.demo_appmesh.metric_dimension_namespace
-      job: "kubernetes-pod-appmesh-envoy"
+    clusterName : var.eks_cluster_name
+    appMesh : {
+      namespace : module.demo_appmesh.metric_dimension_namespace
+      job : "kubernetes-pod-appmesh-envoy"
     }
-    nginx: {
-      namespace: module.demo_nginx.metric_dimension_namespace
-      job: "kubernetes-service-endpoints"
+    nginx : {
+      namespace : module.demo_nginx.metric_dimension_namespace
+      job : "kubernetes-service-endpoints"
     }
-    jmx: {
-      namespace: module.demo_jmx.metric_dimension_namespace
-      job: "kubernetes-pod-jmx"
+    jmx : {
+      namespace : module.demo_jmx.metric_dimension_namespace
+      job : "kubernetes-pod-jmx"
     }
-    memcached: {
-      namespace: module.demo_memcached.metric_dimension_namespace
-      job: "kubernetes-service-endpoints"
+    memcached : {
+      namespace : module.demo_memcached.metric_dimension_namespace
+      job : "kubernetes-service-endpoints"
     }
-    haproxy: {
-      namespace: module.demo_haproxy.metric_dimension_namespace
-      job: "kubernetes-service-endpoints"
+    haproxy : {
+      namespace : module.demo_haproxy.metric_dimension_namespace
+      job : "kubernetes-service-endpoints"
     }
   })
 
-  aws_access_key_id = var.aws_access_key_id
+  aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 }

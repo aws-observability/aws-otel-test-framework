@@ -59,12 +59,12 @@ data "aws_ami" "amazonlinux2" {
 }
 
 resource "tls_private_key" "ssh_key" {
-  algorithm   = "RSA"
-  rsa_bits    = 4096
+  algorithm = "RSA"
+  rsa_bits  = 4096
 }
 
 resource "aws_key_pair" "aws_ssh_key" {
-  key_name = "testing-${module.common.testing_id}"
+  key_name   = "testing-${module.common.testing_id}"
   public_key = tls_private_key.ssh_key.public_key_openssh
 }
 
@@ -93,10 +93,10 @@ resource "null_resource" "mount_efs" {
     ]
 
     connection {
-      type = "ssh"
-      user = "ec2-user"
+      type        = "ssh"
+      user        = "ec2-user"
       private_key = tls_private_key.ssh_key.private_key_pem
-      host = aws_instance.collector_efs_ec2.public_ip
+      host        = aws_instance.collector_efs_ec2.public_ip
     }
   }
 
@@ -104,13 +104,13 @@ resource "null_resource" "mount_efs" {
 }
 resource "null_resource" "scp_cert" {
   provisioner "file" {
-    content = module.basic_components.mocked_server_cert_content
+    content     = module.basic_components.mocked_server_cert_content
     destination = "/tmp/ca-bundle.crt"
     connection {
-      type = "ssh"
-      user = "ec2-user"
+      type        = "ssh"
+      user        = "ec2-user"
       private_key = tls_private_key.ssh_key.private_key_pem
-      host = aws_instance.collector_efs_ec2.public_ip
+      host        = aws_instance.collector_efs_ec2.public_ip
     }
   }
 
@@ -119,10 +119,10 @@ resource "null_resource" "scp_cert" {
       "sudo cp /tmp/ca-bundle.crt /efs/ca-bundle.crt"
     ]
     connection {
-      type = "ssh"
-      user = "ec2-user"
+      type        = "ssh"
+      user        = "ec2-user"
       private_key = tls_private_key.ssh_key.private_key_pem
-      host = aws_instance.collector_efs_ec2.public_ip
+      host        = aws_instance.collector_efs_ec2.public_ip
     }
   }
 

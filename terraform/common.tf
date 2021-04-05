@@ -51,7 +51,7 @@ variable "soaking_metric_namespace" {
 }
 
 variable "debug" {
-  type = bool
+  type    = bool
   default = false
 }
 

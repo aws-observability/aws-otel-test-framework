@@ -15,7 +15,7 @@
 
 ## any one who refer this module will trigger the validator run
 
-locals{
+locals {
   docker_compose_path = "validator_docker_compose.yml"
 
   provide_credentials_via_env_vars = var.aws_access_key_id != "" && var.aws_secret_access_key != ""
@@ -26,19 +26,19 @@ data "template_file" "docker_compose" {
   template = file("../templates/defaults/validator_docker_compose.tpl")
 
   vars = {
-    validation_config = var.validation_config
-    testing_id = var.testing_id
-    region = var.region
-    sample_app_endpoint = var.sample_app_endpoint
+    validation_config            = var.validation_config
+    testing_id                   = var.testing_id
+    region                       = var.region
+    sample_app_endpoint          = var.sample_app_endpoint
     mocked_server_validating_url = var.mocked_server_validating_url
-    metric_namespace = var.metric_namespace
-    canary = var.canary
-    testcase = var.testcase
+    metric_namespace             = var.metric_namespace
+    canary                       = var.canary
+    testcase                     = var.testcase
 
     # ecs related context
-    ecs_cluster_name = var.ecs_cluster_name
-    ecs_task_arn = var.ecs_task_arn
-    ecs_taskdef_family = var.ecs_taskdef_family
+    ecs_cluster_name    = var.ecs_cluster_name
+    ecs_task_arn        = var.ecs_task_arn
+    ecs_taskdef_family  = var.ecs_taskdef_family
     ecs_taskdef_version = var.ecs_taskdef_version
 
     # Escaping (") in the JSON when using as a terraform string variable.
@@ -46,8 +46,8 @@ data "template_file" "docker_compose" {
     cloudwatch_context_json = replace(var.cloudwatch_context_json, "\"", "\\\"")
 
     # alarm related
-    cpu_alarm = var.cpu_alarm
-    mem_alarm = var.mem_alarm
+    cpu_alarm              = var.cpu_alarm
+    mem_alarm              = var.mem_alarm
     incoming_packets_alarm = var.incoming_packets_alarm
 
     cortex_instance_endpoint = var.cortex_instance_endpoint
@@ -69,9 +69,9 @@ data "template_file" "env_file_template" {
   template = file("../templates/defaults/credentials-env.tpl")
 
   vars = {
-    aws_access_key_id = var.aws_access_key_id
+    aws_access_key_id     = var.aws_access_key_id
     aws_secret_access_key = var.aws_secret_access_key
-    region = var.region
+    region                = var.region
   }
 }
 resource "local_file" "env_file" {

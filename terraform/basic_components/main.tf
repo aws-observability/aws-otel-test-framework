@@ -27,7 +27,7 @@ data "aws_iam_role" "aoc_iam_role" {
 
 data "aws_vpc" "aoc_vpc" {
   filter {
-    name = "tag:Name"
+    name   = "tag:Name"
     values = [module.common.aoc_vpc_name]
   }
 }
@@ -36,7 +36,7 @@ data "aws_vpc" "aoc_vpc" {
 data "aws_subnet_ids" "aoc_private_subnet_ids" {
   vpc_id = data.aws_vpc.aoc_vpc.id
   filter {
-    name   = "tag:Name"
+    name = "tag:Name"
     values = [
       "${module.common.aoc_vpc_name}-private-${var.region}a",
       "${module.common.aoc_vpc_name}-private-${var.region}b",
@@ -49,7 +49,7 @@ data "aws_subnet_ids" "aoc_private_subnet_ids" {
 data "aws_subnet_ids" "aoc_public_subnet_ids" {
   vpc_id = data.aws_vpc.aoc_vpc.id
   filter {
-    name   = "tag:Name"
+    name = "tag:Name"
     values = [
       "${module.common.aoc_vpc_name}-public-${var.region}a",
       "${module.common.aoc_vpc_name}-public-${var.region}b",
@@ -67,17 +67,17 @@ data "template_file" "otconfig" {
   template = file(local.otconfig_path)
 
   vars = {
-    region = var.region
-    otel_service_namespace = module.common.otel_service_namespace
-    otel_service_name = module.common.otel_service_name
-    testing_id = var.testing_id
-    grpc_port = module.common.grpc_port
-    udp_port = module.common.udp_port
-    http_port = module.common.http_port
-    cortex_instance_endpoint = var.cortex_instance_endpoint
+    region                         = var.region
+    otel_service_namespace         = module.common.otel_service_namespace
+    otel_service_name              = module.common.otel_service_name
+    testing_id                     = var.testing_id
+    grpc_port                      = module.common.grpc_port
+    udp_port                       = module.common.udp_port
+    http_port                      = module.common.http_port
+    cortex_instance_endpoint       = var.cortex_instance_endpoint
     sample_app_listen_address_host = var.sample_app_listen_address_host
     sample_app_listen_address_port = var.sample_app_listen_address_port
-    
+
     mock_endpoint = var.mocked_endpoint
   }
 }

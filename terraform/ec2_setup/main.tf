@@ -31,21 +31,21 @@ data "aws_ecr_repository" "sample_apps" {
 module "ec2_setup" {
   source = "../ec2"
 
-  ami_family = var.ami_family
-  amis = var.amis
-  testing_ami = var.testing_ami
-  aoc_version = var.aoc_version
-  region = var.region
-  testcase = var.testcase
+  ami_family       = var.ami_family
+  amis             = var.amis
+  testing_ami      = var.testing_ami
+  aoc_version      = var.aoc_version
+  region           = var.region
+  testcase         = var.testcase
   sample_app_image = var.soaking_sample_app != "" ? "${data.aws_ecr_repository.sample_apps.repository_url}:${var.soaking_sample_app}-latest" : var.soaking_sample_app_image
-  skip_validation = true
+  skip_validation  = true
 
   # soaking test config
   # StatsD use its own docker compose for udp port
   soaking_compose_file = fileexists("${var.testcase}/soaking_docker_compose.tpl") ? "${var.testcase}/soaking_docker_compose.tpl" : (var.sample_app_mode == "push" ? "../templates/defaults/soaking_docker_compose.tpl" : "../templates/defaults/soaking_docker_compose_pull_mode.tpl")
-  soaking_data_mode = var.soaking_data_mode
-  soaking_data_rate = var.soaking_data_rate
-  soaking_data_type = var.soaking_data_type
+  soaking_data_mode    = var.soaking_data_mode
+  soaking_data_rate    = var.soaking_data_rate
+  soaking_data_type    = var.soaking_data_type
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
@@ -56,16 +56,16 @@ module "ec2_setup" {
   install_cwagent = true
 
   # use our own ssh key name
-  ssh_key_name = var.ssh_key_name
-  sshkey_s3_bucket = var.sshkey_s3_bucket
+  ssh_key_name          = var.ssh_key_name
+  sshkey_s3_bucket      = var.sshkey_s3_bucket
   sshkey_s3_private_key = var.sshkey_s3_private_key
 
   # additional dimension
-  commit_id = var.commit_id
-  launch_date = local.launch_date
+  commit_id        = var.commit_id
+  launch_date      = local.launch_date
   negative_soaking = var.negative_soaking
 
-  install_package_source = var.install_package_source
+  install_package_source     = var.install_package_source
   install_package_local_path = var.install_package_local_path
 
   soaking_metric_namespace = var.soaking_metric_namespace

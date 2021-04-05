@@ -117,12 +117,12 @@ variable "ssm_config" {
 
 # bypass mocked server setup
 variable "disable_mocked_server" {
-  type = bool
+  type    = bool
   default = false
 }
 
 # use ssm_validation instead of validator
 variable "enable_ssm_validate" {
-  type = bool
+  type    = bool
   default = false
 }

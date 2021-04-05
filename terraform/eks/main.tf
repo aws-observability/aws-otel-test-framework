@@ -29,7 +29,7 @@ module "common" {
   source = "../common"
 
   aoc_image_repo = var.aoc_image_repo
-  aoc_version = var.aoc_version
+  aoc_version    = var.aoc_version
 }
 
 module "basic_components" {
@@ -56,7 +56,7 @@ module "basic_components" {
 
 locals {
   eks_pod_config_path = fileexists("${var.testcase}/eks_pod_config.tpl") ? "${var.testcase}/eks_pod_config.tpl" : module.common.default_eks_pod_config_path
-  sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  sample_app_image    = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
   mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
 }
 
@@ -75,10 +75,10 @@ data "aws_eks_cluster_auth" "testing_cluster" {
 
 # set up kubectl
 provider "kubernetes" {
-  host = data.aws_eks_cluster.testing_cluster.endpoint
+  host                   = data.aws_eks_cluster.testing_cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
-  token = data.aws_eks_cluster_auth.testing_cluster.token
-  load_config_file = false
+  token                  = data.aws_eks_cluster_auth.testing_cluster.token
+  load_config_file       = false
 }
 
 # create a unique namespace for each run
@@ -89,7 +89,7 @@ resource "kubernetes_namespace" "aoc_ns" {
 }
 resource "kubernetes_config_map" "aoc_config_map" {
   metadata {
-    name = "otel-config"
+    name      = "otel-config"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
@@ -104,14 +104,14 @@ data "template_file" "eksconfig" {
 
   vars = {
     data_emitter_image = local.sample_app_image
-    testing_id = module.common.testing_id
+    testing_id         = module.common.testing_id
   }
 }
 
 # load the faked cert for mocked server
 resource "kubernetes_config_map" "mocked_server_cert" {
   metadata {
-    name = "mocked-server-cert"
+    name      = "mocked-server-cert"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
@@ -126,7 +126,7 @@ locals {
 
 resource "kubernetes_service_account" "aoc-role" {
   metadata {
-    name = "aoc-role-${module.common.testing_id}"
+    name      = "aoc-role-${module.common.testing_id}"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
@@ -139,12 +139,12 @@ resource "kubernetes_cluster_role_binding" "aoc-role-binding" {
   }
   role_ref {
     api_group = "rbac.authorization.k8s.io"
-    kind = "ClusterRole"
-    name = "cluster-admin"
+    kind      = "ClusterRole"
+    name      = "cluster-admin"
   }
   subject {
-    kind = "ServiceAccount"
-    name = "aoc-role-${module.common.testing_id}"
+    kind      = "ServiceAccount"
+    name      = "aoc-role-${module.common.testing_id}"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
 }
@@ -158,7 +158,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
   count = var.sample_app_mode == "push" ? 1 : 0
 
   metadata {
-    name = "aoc"
+    name      = "aoc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
     labels = {
       app = "aoc"
@@ -200,8 +200,8 @@ resource "kubernetes_deployment" "aoc_deployment" {
         }
 
         container {
-          name = "mocked-server"
-          image = local.mocked_server_image
+          name              = "mocked-server"
+          image             = local.mocked_server_image
           image_pull_policy = "Always"
 
           readiness_probe {
@@ -210,33 +210,33 @@ resource "kubernetes_deployment" "aoc_deployment" {
               port = 8080
             }
             initial_delay_seconds = 10
-            period_seconds = 5
+            period_seconds        = 5
           }
         }
 
         # aoc
         container {
-          name = "aoc"
-          image = module.common.aoc_image
+          name              = "aoc"
+          image             = module.common.aoc_image
           image_pull_policy = "Always"
           args = [
-            "--config=/aoc/aoc-config.yml"]
+          "--config=/aoc/aoc-config.yml"]
 
           resources {
             requests {
-              cpu = "0.2"
+              cpu    = "0.2"
               memory = "256Mi"
             }
           }
 
           volume_mount {
             mount_path = "/aoc"
-            name = "otel-config"
+            name       = "otel-config"
           }
 
           volume_mount {
             mount_path = "/etc/pki/tls/certs"
-            name = "mocked-server-cert"
+            name       = "mocked-server-cert"
           }
         }
       }
@@ -251,7 +251,7 @@ resource "kubernetes_service" "aoc_grpc_service" {
   count = var.sample_app_mode == "push" ? 1 : 0
 
   metadata {
-    name = "aoc-grpc"
+    name      = "aoc-grpc"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
@@ -260,9 +260,9 @@ resource "kubernetes_service" "aoc_grpc_service" {
     }
 
     port {
-      port = module.common.grpc_port
+      port        = module.common.grpc_port
       target_port = module.common.grpc_port
-      protocol = "TCP"
+      protocol    = "TCP"
     }
   }
 }
@@ -272,7 +272,7 @@ resource "kubernetes_service" "aoc_udp_service" {
   count = var.sample_app_mode == "push" ? 1 : 0
 
   metadata {
-    name = "aoc-udp"
+    name      = "aoc-udp"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
@@ -281,9 +281,9 @@ resource "kubernetes_service" "aoc_udp_service" {
     }
 
     port {
-      port = module.common.udp_port
+      port        = module.common.udp_port
       target_port = module.common.udp_port
-      protocol = "UDP"
+      protocol    = "UDP"
     }
   }
 }
@@ -293,7 +293,7 @@ resource "kubernetes_service" "aoc_tcp_service" {
   count = var.sample_app_mode == "push" ? 1 : 0
 
   metadata {
-    name = "aoc-udp"
+    name      = "aoc-udp"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
@@ -302,7 +302,7 @@ resource "kubernetes_service" "aoc_tcp_service" {
     }
 
     port {
-      port = module.common.http_port
+      port        = module.common.http_port
       target_port = module.common.http_port
     }
   }
@@ -313,7 +313,7 @@ resource "kubernetes_deployment" "sample_app_deployment" {
   count = var.sample_app_mode == "push" ? 1 : 0
 
   metadata {
-    name = "sample-app"
+    name      = "sample-app"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
     labels = {
       app = "sample-app"
@@ -339,61 +339,61 @@ resource "kubernetes_deployment" "sample_app_deployment" {
       spec {
         # sample app
         container {
-          name = "sample-app"
-          image = local.eks_pod_config["image"]
+          name              = "sample-app"
+          image             = local.eks_pod_config["image"]
           image_pull_policy = "Always"
-          command = length(local.eks_pod_config["command"]) != 0 ? local.eks_pod_config["command"] : null
-          args = length(local.eks_pod_config["args"]) != 0 ? local.eks_pod_config["args"] : null
+          command           = length(local.eks_pod_config["command"]) != 0 ? local.eks_pod_config["command"] : null
+          args              = length(local.eks_pod_config["args"]) != 0 ? local.eks_pod_config["args"] : null
 
 
           env {
-            name = "OTEL_EXPORTER_OTLP_ENDPOINT"
+            name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
             value = "${kubernetes_service.aoc_grpc_service[0].metadata[0].name}:${module.common.grpc_port}"
           }
 
           env {
-            name = "COLLECTOR_UDP_ADDRESS"
+            name  = "COLLECTOR_UDP_ADDRESS"
             value = "${kubernetes_service.aoc_udp_service[0].metadata[0].name}:${module.common.udp_port}"
           }
 
           env {
-            name = "AWS_XRAY_DAEMON_ADDRESS"
+            name  = "AWS_XRAY_DAEMON_ADDRESS"
             value = "${kubernetes_service.aoc_udp_service[0].metadata[0].name}:${module.common.udp_port}"
           }
 
           env {
-            name = "AWS_REGION"
+            name  = "AWS_REGION"
             value = var.region
           }
 
           env {
-            name = "INSTANCE_ID"
+            name  = "INSTANCE_ID"
             value = module.common.testing_id
           }
 
           env {
-            name = "OTEL_RESOURCE_ATTRIBUTES"
+            name  = "OTEL_RESOURCE_ATTRIBUTES"
             value = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
           }
 
           env {
-            name = "LISTEN_ADDRESS"
+            name  = "LISTEN_ADDRESS"
             value = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
           }
 
           env {
-            name = "JAEGER_RECEIVER_ENDPOINT"
+            name  = "JAEGER_RECEIVER_ENDPOINT"
             value = "${kubernetes_service.aoc_tcp_service[0].metadata[0].name}:${module.common.http_port}"
           }
 
           env {
-            name = "ZIPKIN_RECEIVER_ENDPOINT"
+            name  = "ZIPKIN_RECEIVER_ENDPOINT"
             value = "${kubernetes_service.aoc_tcp_service[0].metadata[0].name}:${module.common.http_port}"
           }
 
           resources {
             requests {
-              cpu = "0.2"
+              cpu    = "0.2"
               memory = "256Mi"
             }
 
@@ -405,7 +405,7 @@ resource "kubernetes_deployment" "sample_app_deployment" {
               port = module.common.sample_app_listen_address_port
             }
             initial_delay_seconds = 10
-            period_seconds = 5
+            period_seconds        = 5
           }
         }
       }
@@ -420,7 +420,7 @@ resource "kubernetes_deployment" "sample_app_deployment" {
 # create service upon the mocked server
 resource "kubernetes_service" "mocked_server_service" {
   metadata {
-    name = "mocked-server"
+    name      = "mocked-server"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
@@ -431,7 +431,7 @@ resource "kubernetes_service" "mocked_server_service" {
     type = "LoadBalancer"
 
     port {
-      port = 80
+      port        = 80
       target_port = 8080
     }
   }
@@ -442,7 +442,7 @@ resource "kubernetes_service" "sample_app_service" {
   count = var.sample_app_mode == "push" ? 1 : 0
 
   metadata {
-    name = "sample-app"
+    name      = "sample-app"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
@@ -453,7 +453,7 @@ resource "kubernetes_service" "sample_app_service" {
     type = "LoadBalancer"
 
     port {
-      port = module.common.sample_app_lb_port
+      port        = module.common.sample_app_lb_port
       target_port = module.common.sample_app_listen_address_port
     }
   }
@@ -465,18 +465,18 @@ resource "kubernetes_service" "sample_app_service" {
 module "validator" {
   source = "../validation"
 
-  validation_config = var.validation_config
-  region = var.region
-  testing_id = module.common.testing_id
-  metric_namespace = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-  sample_app_endpoint = "http://${var.sample_app_mode == "push" ? kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname : kubernetes_service.pull_mode_sample_app_service[0].load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}"
+  validation_config            = var.validation_config
+  region                       = var.region
+  testing_id                   = module.common.testing_id
+  metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+  sample_app_endpoint          = "http://${var.sample_app_mode == "push" ? kubernetes_service.sample_app_service[0].load_balancer_ingress.0.hostname : kubernetes_service.pull_mode_sample_app_service[0].load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}"
   mocked_server_validating_url = "http://${kubernetes_service.mocked_server_service.load_balancer_ingress.0.hostname}/check-data"
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
-  aws_access_key_id = var.aws_access_key_id
+  aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [
-    kubernetes_service.mocked_server_service]
+  kubernetes_service.mocked_server_service]
 }
