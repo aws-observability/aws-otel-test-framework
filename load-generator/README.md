@@ -33,3 +33,13 @@
 ```
 ./gradlew :load-generator:run --args="metric -r=100 -u=localhost:8125 -d=statsd"
 ```
+
+### Zipkin Trace Load Test Sample Command,
+```
+./gradlew :load-generator:run --args="trace -r=100 -u=http://localhost:9411 -d=zipkin"
+```
+
+### Jaeger Trace Load Test Sample Command,
+```
+./gradlew :load-generator:run --args="trace -r=100 -u=http://localhost:14268 -d=jaeger"
+```

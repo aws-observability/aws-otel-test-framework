@@ -288,6 +288,26 @@ resource "kubernetes_service" "aoc_udp_service" {
   }
 }
 
+# create service upon AOC (TCP port)
+resource "kubernetes_service" "aoc_tcp_service" {
+  count = var.sample_app_mode == "push" ? 1 : 0
+
+  metadata {
+    name = "aoc-udp"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+  spec {
+    selector = {
+      app = kubernetes_deployment.aoc_deployment[0].metadata[0].labels.app
+    }
+
+    port {
+      port = module.common.http_port
+      target_port = module.common.http_port
+    }
+  }
+}
+
 # deploy sample app
 resource "kubernetes_deployment" "sample_app_deployment" {
   count = var.sample_app_mode == "push" ? 1 : 0
@@ -359,6 +379,16 @@ resource "kubernetes_deployment" "sample_app_deployment" {
           env {
             name = "LISTEN_ADDRESS"
             value = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
+          }
+
+          env {
+            name = "JAEGER_RECEIVER_ENDPOINT"
+            value = "${kubernetes_service.aoc_tcp_service[0].metadata[0].name}:${module.common.http_port}"
+          }
+
+          env {
+            name = "ZIPKIN_RECEIVER_ENDPOINT"
+            value = "${kubernetes_service.aoc_tcp_service[0].metadata[0].name}:${module.common.http_port}"
           }
 
           resources {

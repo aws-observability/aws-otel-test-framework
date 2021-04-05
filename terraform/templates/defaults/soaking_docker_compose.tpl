@@ -18,6 +18,8 @@ services:
       AWS_XRAY_DAEMON_ADDRESS: ${udp_endpoint}
       COLLECTOR_UDP_ADDRESS: ${udp_endpoint}
       AWS_REGION: ${region}
+      JAEGER_RECEIVER_ENDPOINT: ${http_endpoint}
+      ZIPKIN_RECEIVER_ENDPOINT: ${http_endpoint}
     deploy:
       resources:
         limits:

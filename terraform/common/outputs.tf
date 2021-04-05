@@ -94,6 +94,10 @@ output "udp_port" {
   value = "55690"
 }
 
+output "http_port" {
+  value = "9411"
+}
+
 output "sample_app_ecr_repo_name" {
   value = "otel-test/sample-apps"
 }

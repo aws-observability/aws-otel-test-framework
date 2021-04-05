@@ -51,6 +51,11 @@ dependencies {
     // log
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
+
+    // local project can't be referenced in Dockerfile
+    // the workaround is build fat jar and copy it in Dockerfile for building docker image
+    //  implementation files('build/libs/trace-java-client-1.0-all.jar')
+    implementation project(":trace-java-client")
 }
 
 application {

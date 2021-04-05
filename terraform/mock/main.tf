@@ -39,6 +39,7 @@ data "template_file" "otconfig" {
     testing_id = module.common.testing_id
     grpc_port = module.common.grpc_port
     udp_port = module.common.udp_port
+    http_port = module.common.http_port
     mock_endpoint = local.mock_endpoint
     sample_app_listen_address_host = "172.17.0.1"
     sample_app_listen_address_port = module.common.sample_app_listen_address_port
@@ -60,6 +61,7 @@ data "template_file" "docker_compose" {
     otconfig_path = local.otconfig_file_path
     grpc_port = module.common.grpc_port
     udp_port = module.common.udp_port
+    http_port = module.common.http_port
     sample_app_external_port = module.common.sample_app_listen_address_port
     sample_app_listen_address_port = module.common.sample_app_listen_address_port
     sample_app_listen_address = local.sample_app_listen_address

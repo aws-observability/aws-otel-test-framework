@@ -20,5 +20,7 @@ public class Constants {
   public static final String OTLP = "otlp";
   public static final String XRAY = "xray";
   public static final String STATSD = "statsd";
+  public static final String ZIPKIN = "zipkin";
+  public static final String JAEGER = "jaeger";
 
 }
