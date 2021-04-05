@@ -70,6 +70,9 @@ locals {
 
   # get instance subnet, use separate subnet for soaking and performance test as it takes more instances and some times eat up all the available ip address in the subnet
   instance_subnet = var.testing_type == "e2e" ? tolist(module.basic_components.aoc_public_subnet_ids)[1] : tolist(module.basic_components.aoc_public_subnet_ids)[0]
+
+  # get SSM package version, latest is the default version
+  ssm_package_version = var.aoc_version == "latest" ? "\"\"" : trimprefix(var.aoc_version, "v")
 }
 
 ## launch a sidecar instance to install data emitter and the mocked server
@@ -228,6 +231,7 @@ resource "null_resource" "download_collector_from_s3" {
 }
 
 resource "null_resource" "start_collector" {
+  count = var.install_package_source == "ssm" ? 0 : 1
   # either getting the install package from s3 or from local
   depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3]
   provisioner "file" {
@@ -260,6 +264,38 @@ resource "null_resource" "start_collector" {
   }
 }
 
+resource "aws_ssm_parameter" "setup_aoc_config" {
+  count = var.install_package_source == "ssm" ? 1 : 0
+  name  = format("aoc-config-%s", module.common.testing_id)
+  type  = "String"
+  value = var.ssm_config
+}
+
+resource "null_resource" "install_collector_from_ssm" {
+  depends_on = [null_resource.check_patch, aws_ssm_parameter.setup_aoc_config]
+  count = var.install_package_source == "ssm" ? 1 : 0
+
+  provisioner "remote-exec" {
+    inline = [
+      local.ami_family["wait_cloud_init"],
+    ]
+
+    connection {
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
+      host = aws_instance.aoc.public_ip
+    }
+  }
+
+    provisioner "local-exec" {
+      command = <<-EOT
+        bash ../templates/local/ssm-install-aoc.sh ${aws_instance.aoc.id} ${var.ssm_package_name} ${local.ssm_package_version} ${aws_ssm_parameter.setup_aoc_config[0].name}
+    EOT
+  }
+}
+
 ########################################
 # Start Sample app and mocked server
 #########################################
@@ -286,6 +322,7 @@ data "template_file" "docker_compose" {
 }
 
 resource "null_resource" "setup_sample_app_and_mock_server" {
+  count = var.disable_mocked_server ? 0 : 1
   depends_on = [null_resource.check_patch]
   provisioner "file" {
     content = data.template_file.docker_compose.rendered
@@ -377,7 +414,7 @@ resource "null_resource" "install_cwagent" {
 # Validation
 ##########################################
 module "validator" {
-  count = !var.skip_validation ? 1 : 0
+  count = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
   source = "../validation"
 
   validation_config = var.validation_config
@@ -395,6 +432,26 @@ module "validator" {
   aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]
+}
+
+resource "null_resource" "ssm_validation" {
+  depends_on = [null_resource.install_collector_from_ssm]
+  count = !var.skip_validation && var.enable_ssm_validate ? 1 : 0
+
+  provisioner "remote-exec" {
+    inline = [
+      local.ami_family["status_command"],
+      local.ami_family["ssm_validate"],
+    ]
+
+    connection {
+      type = local.connection_type
+      user = local.login_user
+      private_key = local.connection_type == "ssh" ? local.private_key_content : null
+      password = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
+      host = aws_instance.aoc.public_ip
+    }
+  }
 }
 
 output "public_ip" {

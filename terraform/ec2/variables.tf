@@ -75,7 +75,7 @@ variable "negative_soaking" {
 }
 
 
-# options: s3, local
+# options: s3, local, ssm
 variable "install_package_source" {
   default = "s3" # which means we download rpm/dev/msi from s3, the links are defined in the ami map.
 }
@@ -101,3 +101,28 @@ variable "patch" {
   default = false
 }
 
+######################
+# SSM related
+######################
+
+# ADOT SSM package name
+variable "ssm_package_name" {
+  default = "AWSDistroOTel-Collector"
+}
+
+# Base64 value of ADOT Collector YMAL configuration
+variable "ssm_config" {
+  default = ""
+}
+
+# bypass mocked server setup
+variable "disable_mocked_server" {
+  type = bool
+  default = false
+}
+
+# use ssm_validation instead of validator
+variable "enable_ssm_validate" {
+  type = bool
+  default = false
+}
