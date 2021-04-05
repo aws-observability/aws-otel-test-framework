@@ -74,7 +74,9 @@ func (s *SSMWrapper) WaitPatch(ctx context.Context, instanceId string, timeout t
 				return WaitContinue, nil
 			}
 		}
-		return WaitDone, fmt.Errorf("patch document is not associated on the instance, requiores %s", SSMPatchDocument)
+		//return WaitDone, fmt.Errorf("patch document is not associated on the instance, requires %s", SSMPatchDocument)
+		// NOTE: it seems it takes a while for SSM to associate the documents to instance ...
+		return WaitContinue, nil
 	})
 }
 
