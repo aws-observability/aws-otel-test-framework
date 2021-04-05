@@ -21,6 +21,15 @@ on:
     - cron: '18 17 * * 6'
 
 jobs:
+  fomrat:
+    name: Format
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Format Terraform
+      run: cd terraform && make check-fmt
+
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
