@@ -29,7 +29,7 @@ variable "install_package_local_path" {
 
 
 variable "commit_id" {
-  default = "dummy_commit"  
+  default = "dummy_commit"
 }
 
 # if ssh_key_name is empty, we create private key every time we create instance.

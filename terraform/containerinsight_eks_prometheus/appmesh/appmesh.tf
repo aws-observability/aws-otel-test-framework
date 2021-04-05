@@ -39,7 +39,7 @@ variable "testcase" {
 }
 
 variable "kubeconfig" {
-  type = string
+  type    = string
   default = "kubeconfig"
 }
 
@@ -136,7 +136,7 @@ resource "kubernetes_namespace" "traffic_ns" {
 
 resource "null_resource" "delete_mesh" {
   triggers = {
-    mesh_name = local.mesh_name
+    mesh_name  = local.mesh_name
     kubeconfig = var.kubeconfig
   }
   provisioner "local-exec" {

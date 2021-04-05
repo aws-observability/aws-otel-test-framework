@@ -27,7 +27,7 @@ provider "aws" {
 # create ssh key pair and upload them to s3
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
-  rsa_bits = 4096
+  rsa_bits  = 4096
 }
 
 ## create one iam role for all the tests
@@ -66,7 +66,7 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "ec2-read-only-policy-attachment" {
-  role = aws_iam_role.aoc_role.name
+  role       = aws_iam_role.aoc_role.name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
@@ -85,16 +85,16 @@ module "vpc" {
   enable_vpn_gateway = true
 
   enable_dns_hostnames = true
-  enable_dns_support = true
+  enable_dns_support   = true
 
   tags = {
-    Terraform = "true"
+    Terraform   = "true"
     Environment = "dev"
   }
 }
 
 resource "aws_security_group" "aoc_sg" {
-  name = module.common.aoc_vpc_security_group
+  name   = module.common.aoc_vpc_security_group
   vpc_id = module.vpc.vpc_id
 
   ingress {
@@ -126,59 +126,59 @@ resource "aws_security_group" "aoc_sg" {
   }
 
   ingress {
-    from_port = 55671
-    to_port = 55671
-    protocol = "tcp"
+    from_port   = 55671
+    to_port     = 55671
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 55671
-    to_port = 55671
-    protocol = "tcp"
+    from_port   = 55671
+    to_port     = 55671
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 4317
-    to_port = 4317
-    protocol = "tcp"
+    from_port   = 4317
+    to_port     = 4317
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 55690
-    to_port = 55690
-    protocol = "udp"
+    from_port   = 55690
+    to_port     = 55690
+    protocol    = "udp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 4567
-    to_port = 4567
-    protocol = "tcp"
+    from_port   = 4567
+    to_port     = 4567
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 5985
-    to_port = 5985
-    protocol = "tcp"
+    from_port   = 5985
+    to_port     = 5985
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port = 3389
-    to_port = 3389
-    protocol = "tcp"
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   # efs
   ingress {
-    from_port = 2049
-    to_port = 2049
-    protocol = "tcp"
+    from_port   = 2049
+    to_port     = 2049
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 

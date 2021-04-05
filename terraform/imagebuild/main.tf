@@ -22,7 +22,7 @@ module "common" {
 }
 
 provider "aws" {
-  region  = var.region
+  region = var.region
 }
 
 data "aws_ecr_repository" "sample_app" {

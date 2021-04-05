@@ -18,7 +18,7 @@ variable "testing_id" {
 }
 
 variable "testcase" {
-  type = string
+  type    = string
   default = "../testcases/container_insight"
 }
 
@@ -33,25 +33,25 @@ resource "kubernetes_namespace" "memcached_ns" {
 }
 
 resource "helm_release" "bitnami" {
-  name = "memcached"
+  name      = "memcached"
   namespace = kubernetes_namespace.memcached_ns.metadata[0].name
 
   repository = "https://charts.bitnami.com/bitnami"
-  chart = "memcached"
-  version = "5.8.1"
+  chart      = "memcached"
+  version    = "5.8.1"
 
   set {
-    name = "metrics.enabled"
+    name  = "metrics.enabled"
     value = "true"
   }
   set {
-    name = "serviceAnnotations.prometheus\\.io/port"
-    type = "string"
+    name  = "serviceAnnotations.prometheus\\.io/port"
+    type  = "string"
     value = "9150"
   }
   set {
-    name = "serviceAnnotations.prometheus\\.io/scrape"
-    type = "string"
+    name  = "serviceAnnotations.prometheus\\.io/scrape"
+    type  = "string"
     value = "true"
   }
 }

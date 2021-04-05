@@ -15,34 +15,34 @@
 
 resource "aws_lb" "mocked_server_lb" {
   # use public subnet to make the lb accessible from public internet
-  subnets = module.basic_components.aoc_public_subnet_ids
+  subnets         = module.basic_components.aoc_public_subnet_ids
   security_groups = [module.basic_components.aoc_security_group_id]
-  name = "aoc-lb-${module.common.testing_id}"
+  name            = "aoc-lb-${module.common.testing_id}"
 }
 
 resource "aws_lb_target_group" "mocked_server_lb_tg" {
-  name = "ms-lbtg-${module.common.testing_id}"
-  port = module.common.mocked_server_http_port
-  protocol = "HTTP"
+  name        = "ms-lbtg-${module.common.testing_id}"
+  port        = module.common.mocked_server_http_port
+  protocol    = "HTTP"
   target_type = "ip"
-  vpc_id = module.basic_components.aoc_vpc_id
+  vpc_id      = module.basic_components.aoc_vpc_id
 
   health_check {
-    path = "/"
+    path                = "/"
     unhealthy_threshold = 10
-    healthy_threshold = 2
-    interval = 10
-    matcher = "200,404"
+    healthy_threshold   = 2
+    interval            = 10
+    matcher             = "200,404"
   }
 }
 
 resource "aws_lb_listener" "mocked_server_lb_listener" {
   load_balancer_arn = aws_lb.mocked_server_lb.arn
-  port = module.common.mocked_server_lb_port
-  protocol = "HTTP"
+  port              = module.common.mocked_server_lb_port
+  protocol          = "HTTP"
 
   default_action {
-    type = "forward"
+    type             = "forward"
     target_group_arn = aws_lb_target_group.mocked_server_lb_tg.arn
   }
 }

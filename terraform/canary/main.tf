@@ -14,7 +14,7 @@
 # -------------------------------------------------------------------------
 
 provider "aws" {
-  region  = var.region
+  region = var.region
 }
 
 module "common" {
@@ -22,37 +22,37 @@ module "common" {
 }
 
 module "basic_components" {
-  source = "../basic_components"
-  region = var.region
-  testcase = var.testcase
-  testing_id = module.common.testing_id
+  source          = "../basic_components"
+  region          = var.region
+  testcase        = var.testcase
+  testing_id      = module.common.testing_id
   mocked_endpoint = var.mock_endpoint
-  sample_app = var.sample_app
-  mocked_server = var.mocked_server
+  sample_app      = var.sample_app
+  mocked_server   = var.mocked_server
 }
 
 # launch ec2
 module "ec2_setup" {
   source = "../ec2"
 
-  ami_family = var.ami_family
-  amis = var.amis
-  testing_ami = var.testing_ami
-  aoc_version = var.aoc_version
-  region = var.region
-  testcase = var.testcase
+  ami_family        = var.ami_family
+  amis              = var.amis
+  testing_ami       = var.testing_ami
+  aoc_version       = var.aoc_version
+  region            = var.region
+  testcase          = var.testcase
   validation_config = var.validation_config
-  mock_endpoint = var.mock_endpoint
-  mocked_server = var.mocked_server
-  sample_app_image = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  mock_endpoint     = var.mock_endpoint
+  mocked_server     = var.mocked_server
+  sample_app_image  = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
   package_s3_bucket = "aws-otel-collector"
-  skip_validation = false
-  canary = true
+  skip_validation   = false
+  canary            = true
 
   # install cwagent
   install_cwagent = false
 
-  aws_access_key_id = var.aws_access_key_id
+  aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
   patch = true
