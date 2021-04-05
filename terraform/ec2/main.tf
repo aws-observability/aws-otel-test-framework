@@ -111,27 +111,10 @@ resource "aws_instance" "aoc" {
 resource "null_resource" "check_patch" {
   depends_on = [aws_instance.aoc, aws_instance.sidecar]
   count = var.patch ? 1 : 0
-
-  # https://discuss.hashicorp.com/t/how-to-rewrite-null-resource-with-local-exec-provisioner-when-destroy-to-prepare-for-deprecation-after-0-12-8/4580/2
-  triggers = {
-    sidecar_id = aws_instance.sidecar.id
-    aoc_id = aws_instance.aoc.id
-    # TODO: change to a var so we can configure it in adot's CI,CD
-    aotutil = "../../hack/aotutil/aotutil"
-  }
-
   provisioner "local-exec" {
     command = <<-EOT
-     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id}"
-     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}"
-    EOT
-  }
-
-  provisioner "local-exec" {
-    when = destroy
-    command = <<-EOT
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.sidecar_id}"
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.aoc_id}"
+      bash ../templates/local/check-patch.sh "${aws_instance.sidecar.id}"
+      bash ../templates/local/check-patch.sh "${aws_instance.aoc.id}"
     EOT
   }
 }
