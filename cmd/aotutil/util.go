@@ -26,6 +26,10 @@ const (
 	WaitDone
 )
 
+// Wait run f once then start polling based on interval.
+// It stops when f return any error. It does NOT have retryable error logic.
+// i.e. it checks error before checking action.  If you need to deal with retryable error,
+// you should handle it inside f and return (WaitContinue, nil).
 func Wait(interval, timeout time.Duration, f func() (WaitAction, error)) error {
 	// Run f once
 	act, err := f()
@@ -51,6 +55,7 @@ func Wait(interval, timeout time.Duration, f func() (WaitAction, error)) error {
 			if act == WaitDone {
 				return nil
 			}
+			// Keep polling
 		case <-timer:
 			return fmt.Errorf("wait timeout after %s", time.Now().Sub(start))
 		}

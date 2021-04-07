@@ -110,7 +110,7 @@ resource "aws_instance" "aoc" {
 
 resource "null_resource" "check_patch" {
   depends_on = [aws_instance.aoc, aws_instance.sidecar]
-  count = var.patch ? 1 : 0
+  count      = var.patch ? 1 : 0
   provisioner "local-exec" {
     command = <<-EOT
       bash ../templates/local/check-patch.sh "${aws_instance.sidecar.id}"
