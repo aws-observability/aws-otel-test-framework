@@ -115,8 +115,6 @@ aotutil ssm wait-patch i-1234356 --timeout 5m`,
 			instance := oneInstanceId(args)
 			if err := ssmWrapper.WaitPatchReported(ctx, instance, ssmWaitTimeout); err != nil {
 				logger.Fatal("WaitPatch failed", zap.Error(err))
-			} else {
-
 			}
 			logger.Info("WaitPatch done")
 		},
