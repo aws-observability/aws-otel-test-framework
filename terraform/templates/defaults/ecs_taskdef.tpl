@@ -15,7 +15,7 @@
       "environment": [
         {
           "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
-          "value": "127.0.0.1:${grpc_port}"
+          "value": "http://127.0.0.1:${grpc_port}"
         },
         {
            "name": "AWS_XRAY_DAEMON_ADDRESS",
