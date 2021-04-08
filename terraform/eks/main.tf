@@ -348,7 +348,7 @@ resource "kubernetes_deployment" "sample_app_deployment" {
 
           env {
             name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
-            value = "${kubernetes_service.aoc_grpc_service[0].metadata[0].name}:${module.common.grpc_port}"
+            value = "http://${kubernetes_service.aoc_grpc_service[0].metadata[0].name}:${module.common.grpc_port}"
           }
 
           env {
