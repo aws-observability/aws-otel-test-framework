@@ -293,7 +293,7 @@ resource "kubernetes_service" "aoc_tcp_service" {
   count = var.sample_app_mode == "push" ? 1 : 0
 
   metadata {
-    name      = "aoc-udp"
+    name      = "aoc-tcp"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
