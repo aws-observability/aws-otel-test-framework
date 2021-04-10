@@ -1,0 +1,58 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent k8s structured log",
+  "type": "object",
+  "properties": {
+    "ClusterName": {},
+    "Namespace": {},
+    "Service": {},
+    "TaskId": {},
+    "_aws": {
+      "properties": {
+        "CloudWatchMetrics": {},
+        "Timestamp": {}
+      },
+      "required": [
+        "CloudWatchMetrics",
+        "Timestamp"
+      ]
+    },
+    "kubernetes_node": {},
+    "prom_metric_type": {},
+    "pod_name": {},
+    "container_name": {},
+    "memcached_up": {},
+    "memcached_max_connections": {},
+    "memcached_malloced_bytes": {},
+    "memcached_limit_bytes": {},
+    "memcached_current_items": {},
+    "memcached_current_connections": {},
+    "go_goroutines": {},
+    "go_memstats_alloc_bytes": {},
+    "app_kubernetes_io_name": {},
+    "process_virtual_memory_bytes": {}
+  },
+  "required": [
+    "ClusterName",
+    "Namespace",
+    "Service",
+    "TaskId",
+    "_aws",
+    "kubernetes_node",
+    "prom_metric_type",
+    "pod_name",
+    "container_name",
+    "memcached_up",
+    "memcached_max_connections",
+    "memcached_malloced_bytes",
+    "memcached_limit_bytes",
+    "memcached_current_items",
+    "memcached_current_connections",
+    "go_goroutines",
+    "go_memstats_alloc_bytes",
+    "app_kubernetes_io_name",
+    "process_virtual_memory_bytes"
+  ],
+  "additionalProperties": true
+}
