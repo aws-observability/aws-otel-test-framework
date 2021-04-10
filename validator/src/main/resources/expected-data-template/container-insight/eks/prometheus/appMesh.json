@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent k8s structured log",
+  "type": "object",
+  "properties": {
+    "ClusterName": {},
+    "Namespace": {},
+    "TaskId": {},
+    "_aws": {
+      "properties": {
+        "CloudWatchMetrics": {},
+        "Timestamp": {}
+      },
+      "required": [
+        "CloudWatchMetrics",
+        "Timestamp"
+      ]
+    },
+    "instance": {},
+    "job": {},
+    "prom_metric_type": {},
+    "pod_name": {},
+    "container_name": {},
+    "app": {},
+    "envoy_http_conn_manager_prefix": {},
+    "envoy_http_downstream_rq_xx": {},
+    "envoy_response_code_class": {},
+    "pod_controller_kind": {},
+    "pod_controller_name": {},
+    "pod_phase": {}
+  },
+  "required": [
+    "ClusterName",
+    "Namespace",
+    "TaskId",
+    "_aws",
+    "instance",
+    "job",
+    "prom_metric_type",
+    "pod_name",
+    "container_name",
+    "app",
+    "envoy_http_conn_manager_prefix",
+    "envoy_http_downstream_rq_xx",
+    "envoy_response_code_class",
+    "pod_controller_kind",
+    "pod_controller_name",
+    "pod_phase"
+  ],
+  "additionalProperties": true
+}

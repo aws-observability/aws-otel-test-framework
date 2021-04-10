@@ -62,12 +62,12 @@ public class ValidatorFactory {
       case "performance":
         validator = new PerformanceValidator();
         break;
-      case "eks-container-insight-metrics":
+      case "container-insight-eks-prometheus-metrics":
         validator = new ContainerInsightMetricsValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
-      case "eks-container-insight-logs":
-        validator = new ContainerInsightStructuredLogValidator();
+      case "container-insight-eks-prometheus-logs":
+        validator = new ContainerInsightPrometheusStructuredLogValidator();
         expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;
       default:

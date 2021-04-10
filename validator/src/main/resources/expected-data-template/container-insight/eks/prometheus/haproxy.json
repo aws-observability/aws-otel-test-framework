@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent k8s structured log",
+  "type": "object",
+  "properties": {
+    "ClusterName": {},
+    "Namespace": {},
+    "Service": {},
+    "TaskId": {},
+    "_aws": {
+      "properties": {
+        "CloudWatchMetrics": {},
+        "Timestamp": {}
+      },
+      "required": [
+        "CloudWatchMetrics",
+        "Timestamp"
+      ]
+    },
+    "helm_sh_chart": {},
+    "app_kubernetes_io_instance": {},
+    "app_kubernetes_io_managed_by": {},
+    "app_kubernetes_io_name": {},
+    "app_kubernetes_io_version": {},
+    "controller_class": {},
+    "controller_namespace": {},
+    "controller_pod": {},
+    "kubernetes_node": {},
+    "prom_metric_type": {},
+    "pod_name": {},
+    "container_name": {}
+  },
+  "required": [
+    "ClusterName",
+    "Namespace",
+    "Service",
+    "TaskId",
+    "_aws",
+    "helm_sh_chart",
+    "app_kubernetes_io_instance",
+    "app_kubernetes_io_managed_by",
+    "app_kubernetes_io_name",
+    "app_kubernetes_io_version",
+    "kubernetes_node",
+    "prom_metric_type",
+    "pod_name",
+    "container_name",
+    "backend",
+    "code"
+  ],
+  "additionalProperties": true
+}
