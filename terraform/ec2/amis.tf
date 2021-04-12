@@ -225,6 +225,7 @@ EOF
       arch               = "amd64"
       user_data          = <<EOF
 #! /bin/bash
+sudo dnf install -y python3
 sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 EOF
     }
@@ -237,6 +238,7 @@ EOF
       arch               = "amd64"
       user_data          = <<EOF
 #! /bin/bash
+sudo yum install -y python3
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 EOF
     }
@@ -314,6 +316,7 @@ EOF
       instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
+sudo dnf install -y python3
 sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
 EOF
     }
@@ -328,6 +331,7 @@ EOF
       instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
+sudo yum install -y python3
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
 EOF
     }
