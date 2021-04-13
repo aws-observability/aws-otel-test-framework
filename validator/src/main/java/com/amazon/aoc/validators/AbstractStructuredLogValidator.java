@@ -34,7 +34,6 @@ import com.github.fge.jsonschema.util.JsonLoader;
 import lombok.extern.log4j.Log4j2;
 
 import java.time.Instant;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
@@ -88,7 +87,7 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
 
       for (String logStreamName : getValidatingLogStreamNames()) {
         List<OutputLogEvent> logEvents = cloudWatchService.getLogs(logGroupName, logStreamName,
-                startTime.getLong(ChronoField.MILLI_OF_SECOND), QUERY_LIMIT);
+                startTime.toEpochMilli(), QUERY_LIMIT);
         if (logEvents.isEmpty()) {
           throw new BaseException(
                   ExceptionCode.LOG_FORMAT_NOT_MATCHED,
