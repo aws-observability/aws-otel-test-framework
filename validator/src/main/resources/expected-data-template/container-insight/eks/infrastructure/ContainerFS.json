@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent k8s structured log",
+  "type": "object",
+  "properties": {
+    "ClusterName":{},
+    "Type":{},
+    "Sources":{},
+    "Timestamp":{},
+    "Version":{},
+    "AutoScalingGroupName":{},
+    "InstanceId":{},
+    "InstanceType":{},
+    "NodeName":{},
+    "EBSVolumeId":{},
+    "PodName":{},
+    "Namespace":{},
+    "device":{},
+    "fstype":{},
+    "container_filesystem_available":{},
+    "container_filesystem_capacity":{},
+    "container_filesystem_usage":{},
+    "container_filesystem_utilization":{},
+    "kubernetes":{
+      "type": "object",
+      "properties": {
+        "container_name": {},
+        "container_id": {},
+        "host": {},
+        "labels": {},
+        "namespace_name":{},
+        "pod_id":{},
+        "pod_name":{},
+        "pod_owners":{},
+        "service_name":{},
+        "docker":{
+          "title": "object",
+          "properties": {
+            "container_id":{}
+          },
+          "required": ["container_id"],
+          "additionalProperties": false
+        }
+      },
+      "oneOf": [
+        {
+          "required": ["host","namespace_name","pod_id","pod_name","container_name", "docker", "pod_owners"]
+        },
+        {
+          "required": ["host","namespace_name","pod_id","pod_name","container_name", "container_id", "pod_owners"]
+        }
+      ],
+      "additionalProperties": false
+    },
+    "Service":{},
+    "container_filesystem_inodes":{},
+    "container_filesystem_inodes_free":{}
+  },
+  "required": [
+    "ClusterName",
+    "Type",
+    "Sources",
+    "Timestamp",
+    "Version",
+    "AutoScalingGroupName",
+    "InstanceId",
+    "InstanceType",
+    "NodeName",
+    "PodName",
+    "Namespace",
+    "Service",
+    "device",
+    "fstype",
+    "kubernetes",
+    "container_filesystem_available",
+    "container_filesystem_capacity",
+    "container_filesystem_usage",
+    "container_filesystem_utilization"
+  ],
+  "additionalProperties": false
+}

@@ -43,7 +43,7 @@ public class ContainerInsightPrometheusStructuredLogValidator
   }
 
   @Override
-  Set<String> getValidatingLogStreamNames() {
+  protected Set<String> getValidatingLogStreamNames() {
     Set<String> logStreamNames = new HashSet<>();
     for (CloudWatchContext.App validateApp : validateApps) {
       logStreamNames.add(validateApp.getJob());

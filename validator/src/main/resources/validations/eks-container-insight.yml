@@ -1,8 +1,4 @@
 -
-  validationType: "container-insight-eks-prometheus-metrics"
+  validationType: "container-insight-eks-logs"
   shouldValidateMetricValue: false
-  expectedMetricTemplate: "CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC"
--
-  validationType: "container-insight-eks-prometheus-logs"
-  shouldValidateMetricValue: false
-  expectedLogStructureTemplate: "CONTAINER_INSIGHT_EKS_PROMETHEUS_LOG"
+  expectedLogStructureTemplate: "CONTAINER_INSIGHT_EKS_LOG"
