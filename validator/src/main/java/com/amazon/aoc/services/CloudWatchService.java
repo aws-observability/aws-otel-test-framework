@@ -33,9 +33,13 @@ import com.amazonaws.services.cloudwatch.model.PutMetricDataResult;
 import com.amazonaws.services.cloudwatch.model.StandardUnit;
 import com.amazonaws.services.logs.AWSLogs;
 import com.amazonaws.services.logs.AWSLogsClientBuilder;
+import com.amazonaws.services.logs.model.FilterLogEventsRequest;
+import com.amazonaws.services.logs.model.FilterLogEventsResult;
+import com.amazonaws.services.logs.model.FilteredLogEvent;
 import com.amazonaws.services.logs.model.GetLogEventsRequest;
 import com.amazonaws.services.logs.model.GetLogEventsResult;
 import com.amazonaws.services.logs.model.OutputLogEvent;
+import lombok.extern.log4j.Log4j2;
 
 import java.util.Date;
 import java.util.List;
@@ -43,6 +47,7 @@ import java.util.List;
 /**
  * a wrapper of cloudwatch client.
  */
+@Log4j2
 public class CloudWatchService {
   private static final int MAX_QUERY_PERIOD = 60;
   private static final String REQUESTER = "integrationTest";
@@ -142,6 +147,27 @@ public class CloudWatchService {
             .withLimit(limit);
     
     GetLogEventsResult result = awsLogs.getLogEvents(request);
+    return result.getEvents();
+  }
+
+
+  /**
+   * filterLogs filters log entries from CloudWatch.
+   * @param logGroupName the log group name
+   * @param filterPattern the filter pattern, see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html
+   * @param startFromTimestamp the start timestamp
+   * @param limit the maximum number of log events to be returned in a single query
+   * @return List of FilteredLogEvent
+   */
+  public List<FilteredLogEvent> filterLogs(String logGroupName, String filterPattern,
+                                      long startFromTimestamp, int limit) {
+    FilterLogEventsRequest request = new FilterLogEventsRequest()
+            .withLogGroupName(logGroupName)
+            .withStartTime(startFromTimestamp)
+            .withFilterPattern(filterPattern)
+            .withLimit(limit);
+    
+    FilterLogEventsResult result = awsLogs.filterLogEvents(request);
     return result.getEvents();
   }
 }

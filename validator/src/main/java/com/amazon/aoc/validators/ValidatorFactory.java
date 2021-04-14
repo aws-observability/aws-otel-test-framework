@@ -70,6 +70,10 @@ public class ValidatorFactory {
         validator = new ContainerInsightPrometheusStructuredLogValidator();
         expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;
+      case "container-insight-eks-logs":
+        validator = new ContainerInsightStructuredLogValidator();
+        expectedData = validationConfig.getExpectedLogStructureTemplate();
+        break;
       default:
         throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED);
     }

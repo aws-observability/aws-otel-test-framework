@@ -1,0 +1,65 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent k8s structured log",
+  "type": "object",
+
+  "properties": {
+    "kubernetes": {
+      "type": "object",
+      "properties": {
+        "host": {}
+      },
+      "required": ["host"],
+      "additionalProperties": false
+    },
+    "ClusterName": {},
+    "Type": {},
+    "Sources": {},
+    "Timestamp": {},
+    "Version": {},
+    "AutoScalingGroupName": {},
+    "InstanceId": {},
+    "InstanceType": {},
+    "NodeName": {},
+    "EBSVolumeId":{},
+    "device": {},
+    "fstype": {},
+    "node_filesystem_available": {},
+    "node_filesystem_capacity": {},
+    "node_filesystem_usage": {},
+    "node_filesystem_utilization":{},
+    "node_filesystem_inodes_free": {},
+    "node_filesystem_inodes": {},
+    "_aws": {
+      "properties": {
+        "CloudWatchMetrics": {},
+        "Timestamp": {}
+      },
+      "required": [
+        "CloudWatchMetrics",
+        "Timestamp"
+      ]
+    }
+  },
+  "required": [
+    "_aws",
+    "ClusterName",
+    "Type",
+    "Sources",
+    "Timestamp",
+    "Version",
+    "AutoScalingGroupName",
+    "InstanceId",
+    "InstanceType",
+    "NodeName",
+    "kubernetes",
+    "device",
+    "fstype",
+    "node_filesystem_available",
+    "node_filesystem_capacity",
+    "node_filesystem_usage",
+    "node_filesystem_utilization"
+  ],
+  "additionalProperties": false
+}
