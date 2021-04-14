@@ -10,9 +10,6 @@ enable_ssm_validate = true
 # disable mocked server
 disable_mocked_server = true
 
-# enable patch
-patch = true
-
 # enable SSM installation
 install_package_source = "ssm"
 
