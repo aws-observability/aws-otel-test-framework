@@ -16,14 +16,6 @@
 ## right now there's no good way to share variables across modules,
 ## so we have to define some of the common vars like region, otconfig_path in each module
 
-variable "aoc_vpc_name" {
-  default = "aoc-vpc"
-}
-
-variable "aoc_vpc_security_group" {
-  default = "aoc-vpc-security-group"
-}
-
 variable "package_s3_bucket" {
   default = "aws-otel-collector-test"
 }

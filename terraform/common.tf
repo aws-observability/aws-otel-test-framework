@@ -75,3 +75,11 @@ variable "cortex_instance_endpoint" {
 variable "aotutil" {
   default = "../../cmd/aotutil/aotutil"
 }
+
+variable "aoc_vpc_name" {
+  default = "aoc-vpc"
+}
+
+variable "aoc_vpc_security_group" {
+  default = "aoc-vpc-security-group"
+}
