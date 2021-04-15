@@ -193,7 +193,7 @@
     - name: Namespace
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
-      value: terraform-ingress-nginx-controller-metrics
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
 - metricName: nginx_ingress_controller_nginx_process_resident_memory_bytes
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -202,7 +202,7 @@
     - name: Namespace
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
-      value: terraform-ingress-nginx-controller-metrics
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
 - metricName: nginx_ingress_controller_nginx_process_cpu_seconds_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -211,7 +211,7 @@
     - name: Namespace
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
-      value: terraform-ingress-nginx-controller-metrics
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
 - metricName: nginx_ingress_controller_success
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -220,7 +220,7 @@
     - name: Namespace
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
-      value: terraform-ingress-nginx-controller-metrics
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
 - metricName: nginx_ingress_controller_config_last_reload_successful
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -229,7 +229,7 @@
     - name: Namespace
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
-      value: terraform-ingress-nginx-controller-metrics
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
 - metricName: nginx_ingress_controller_nginx_process_connections_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -238,7 +238,7 @@
     - name: Namespace
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
-      value: terraform-ingress-nginx-controller-metrics
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
 - metricName: nginx_ingress_controller_requests
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -247,7 +247,7 @@
     - name: Namespace
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
-      value: terraform-ingress-nginx-controller-metrics
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
 - metricName: nginx_ingress_controller_requests
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -256,7 +256,7 @@
     - name: Namespace
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
-      value: terraform-ingress-nginx-controller-metrics
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
     - name: status
       value: 200
 - metricName: nginx_ingress_controller_requests
@@ -267,7 +267,7 @@
     - name: Namespace
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
-      value: terraform-ingress-nginx-controller-metrics
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
     - name: ingress
       value: ingress-nginx-demo
 
@@ -519,7 +519,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_backend_bytes_in_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -528,7 +528,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_backend_bytes_out_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -537,7 +537,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_backend_connection_errors_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -546,7 +546,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_backend_current_sessions
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -555,7 +555,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_frontend_bytes_in_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -564,7 +564,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_frontend_bytes_out_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -573,7 +573,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_frontend_connections_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -582,7 +582,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_frontend_http_requests_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -591,7 +591,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_frontend_request_errors_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -600,7 +600,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_frontend_requests_denied_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -609,7 +609,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_frontend_current_sessions
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -618,7 +618,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
 - metricName: haproxy_backend_http_responses_total
   namespace: ContainerInsights/Prometheus
   dimensions:
@@ -627,7 +627,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
     - name: backend
       value: _default_backend
     - name: code
@@ -640,7 +640,7 @@
     - name: Namespace
       value: {{cloudWatchContext.haproxy.namespace}}
     - name: Service
-      value: terraform-haproxy-ingress-metrics
+      value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
     - name: frontend
       value: _front_http
     - name: code

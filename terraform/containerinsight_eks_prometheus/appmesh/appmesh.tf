@@ -91,7 +91,7 @@ resource "kubernetes_service_account" "appmesh_sa" {
 }
 
 resource "helm_release" "eks" {
-  name      = "eks"
+  name      = "eks-${var.testing_id}"
   namespace = kubernetes_namespace.appmesh_ns.metadata[0].name
 
   repository = "https://aws.github.io/eks-charts"
@@ -150,10 +150,8 @@ resource "null_resource" "delete_mesh" {
 resource "null_resource" "appmesh_readiness_check" {
   provisioner "local-exec" {
     when    = create
-    command = "kubectl --kubeconfig=${var.kubeconfig} rollout status deployment eks-appmesh-controller -n${kubernetes_namespace.appmesh_ns.metadata[0].name}"
+    command = "kubectl --kubeconfig=${var.kubeconfig} rollout status deployment ${helm_release.eks.name}-appmesh-controller -n${kubernetes_namespace.appmesh_ns.metadata[0].name}"
   }
-  depends_on = [
-  helm_release.eks]
 }
 
 data "template_file" "traffic_deployment_file" {
