@@ -56,15 +56,17 @@ module "ecs_cluster" {
   source  = "infrablocks/ecs-cluster/aws"
   version = "3.0.0"
 
-  cluster_name                  = module.common.testing_id
-  component                     = "aoc"
-  deployment_identifier         = "testing"
-  vpc_id                        = module.basic_components.aoc_vpc_id
-  subnet_ids                    = module.basic_components.aoc_private_subnet_ids
-  region                        = var.region
-  associate_public_ip_addresses = "yes"
-  security_groups               = [module.basic_components.aoc_security_group_id]
-  cluster_desired_capacity      = 1
+  cluster_name                         = module.common.testing_id
+  component                            = "aoc"
+  deployment_identifier                = "testing"
+  vpc_id                               = module.basic_components.aoc_vpc_id
+  subnet_ids                           = module.basic_components.aoc_private_subnet_ids
+  region                               = var.region
+  associate_public_ip_addresses        = "yes"
+  security_groups                      = [module.basic_components.aoc_security_group_id]
+  cluster_desired_capacity             = 1
+  cluster_instance_iam_policy_contents = file("instance-policy.json")
+  // TODO(pingleig): pass patch tag for canary and soaking (if any)
 }
 
 resource "aws_ssm_parameter" "otconfig" {
