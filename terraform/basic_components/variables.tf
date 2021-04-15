@@ -13,6 +13,14 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
+variable "aoc_vpc_name" {
+  default = "aoc-vpc"
+}
+
+variable "aoc_vpc_security_group" {
+  default = "aoc-vpc-security-group"
+}
+
 variable "region" {
   default = "us-west-2"
 }

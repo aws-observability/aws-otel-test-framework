@@ -15,6 +15,9 @@
 
 module "common" {
   source = "../common"
+
+  aoc_vpc_name        = var.aoc_vpc_name
+  security_group_name = var.aoc_vpc_security_group
 }
 
 data "aws_security_group" "aoc_security_group" {

@@ -16,13 +16,18 @@
 module "common" {
   source = "../common"
 
-  aoc_version = var.aoc_version
+  aoc_version         = var.aoc_version
+  aoc_vpc_name        = var.aoc_vpc_name
+  security_group_name = var.aoc_vpc_security_group
 }
 
 module "basic_components" {
   source = "../basic_components"
 
   region = var.region
+
+  aoc_vpc_name           = var.aoc_vpc_name
+  aoc_vpc_security_group = var.aoc_vpc_security_group
 
   testcase = var.testcase
 

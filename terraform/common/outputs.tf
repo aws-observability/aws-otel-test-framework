@@ -38,11 +38,11 @@ output "aoc_iam_role_name" {
 }
 
 output "aoc_vpc_name" {
-  value = "aoc-vpc"
+  value = var.aoc_vpc_name
 }
 
 output "aoc_vpc_security_group" {
-  value = "aoc-vpc-security-group"
+  value = var.security_group_name
 }
 
 output "sample_app_container_name" {
