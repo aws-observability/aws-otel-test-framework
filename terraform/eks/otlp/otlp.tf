@@ -13,16 +13,24 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-variable "eks_cluster_name" {
-  default = "aws-otel-testing-framework-eks"
+terraform {
+  required_providers {
+    kubernetes = {
+      version = "~> 1.13"
+    }
+  }
 }
 
-variable "mock_endpoint" {
-  default = "localhost/put-data"
+locals {
+  eks_pod_config = yamldecode(data.template_file.eksconfig.rendered)["sample_app"]
 }
 
-// aoc_base_scenario refers to the base scenario that the aoc is used for.
-// options: oltp, prometheus, infra
-variable "aoc_base_scenario" {
-  default = "oltp"
+# load eks pod config
+data "template_file" "eksconfig" {
+  template = file(var.eks_pod_config_path)
+
+  vars = {
+    data_emitter_image = var.sample_app.image
+    testing_id         = var.testing_id
+  }
 }

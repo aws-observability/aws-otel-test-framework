@@ -13,16 +13,36 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-variable "eks_cluster_name" {
-  default = "aws-otel-testing-framework-eks"
+variable "region" {
+  default = "us-west-2"
 }
 
-variable "mock_endpoint" {
-  default = "localhost/put-data"
+variable "testing_id" {
+  type = string
 }
 
-// aoc_base_scenario refers to the base scenario that the aoc is used for.
-// options: oltp, prometheus, infra
-variable "aoc_base_scenario" {
-  default = "oltp"
+variable "eks_pod_config_path" {
+  type = string
+}
+
+variable "sample_app" {
+  type = object({
+    image               = string
+    name                = string
+    metric_namespace    = string
+    mode                = string
+    listen_address_ip   = string
+    listen_address_port = string
+  })
+}
+
+variable "aoc_namespace" {}
+
+variable "aoc_service" {
+  type = object({
+    name      = string
+    grpc_port = string
+    udp_port  = string
+    http_port = string
+  })
 }
