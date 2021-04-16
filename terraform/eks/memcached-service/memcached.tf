@@ -17,48 +17,35 @@ variable "testing_id" {
   default = ""
 }
 
-variable "testcase" {
-  type    = string
-  default = "../testcases/container_insight"
-}
-
 output "metric_dimension_namespace" {
-  value = kubernetes_namespace.haproxy_ns.metadata[0].name
+  value = kubernetes_namespace.memcached_ns.metadata[0].name
 }
 
-resource "kubernetes_namespace" "haproxy_ns" {
+resource "kubernetes_namespace" "memcached_ns" {
   metadata {
-    name = "haproxy-${var.testing_id}"
+    name = "memcached-${var.testing_id}"
   }
 }
 
-resource "helm_release" "haproxy" {
-  name      = "haproxy-${var.testing_id}"
-  namespace = kubernetes_namespace.haproxy_ns.metadata[0].name
+resource "helm_release" "bitnami" {
+  name      = "memcached"
+  namespace = kubernetes_namespace.memcached_ns.metadata[0].name
 
-  repository = "https://haproxy-ingress.github.io/charts"
-  chart      = "haproxy-ingress"
-  version    = "0.11.4"
+  repository = "https://charts.bitnami.com/bitnami"
+  chart      = "memcached"
+  version    = "5.8.1"
 
   set {
-    name  = "defaultBackend.enabled"
+    name  = "metrics.enabled"
     value = "true"
   }
   set {
-    name  = "controller.stats.enabled"
-    value = "true"
-  }
-  set {
-    name  = "controller.metrics.enabled"
-    value = "true"
-  }
-  set {
-    name  = "controller.metrics.service.annotations.prometheus\\.io/port"
+    name  = "serviceAnnotations.prometheus\\.io/port"
     type  = "string"
-    value = "9101"
+    value = "9150"
   }
   set {
-    name  = "controller.metrics.service.annotations.prometheus\\.io/scrape"
+    name  = "serviceAnnotations.prometheus\\.io/scrape"
     type  = "string"
     value = "true"
   }

@@ -21,6 +21,15 @@ variable "mock_endpoint" {
   default = "localhost/put-data"
 }
 
+// The sample_app_image_repo is the image repo for traffic generator applications used by appmesh and jmx module.
+// To rebuild images, please follow the documents:
+// appmesh: https://github.com/aws/aws-app-mesh-examples/tree/master/walkthroughs/howto-k8s-http-headers
+// jmx: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights-Prometheus-Sample-Workloads-javajmx.html
+// Don't forget to re-tag the images to ${sample_app_image_repo}:(feapp|colorapp|tomcatapp) before pushing to remote.
+variable "sample_app_image_repo" {
+  default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/otel-test/container-insight-samples"
+}
+
 // aoc_base_scenario refers to the base scenario that the aoc is used for.
 // options: oltp, prometheus, infra
 variable "aoc_base_scenario" {
