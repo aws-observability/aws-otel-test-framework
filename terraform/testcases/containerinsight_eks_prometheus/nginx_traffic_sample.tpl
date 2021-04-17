@@ -1,23 +1,30 @@
-kind: Pod
-apiVersion: v1
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: banana-app
   namespace: ${NAMESPACE}
-  labels:
-    app: banana
 spec:
-  containers:
-    - name: banana-app
-      image: hashicorp/http-echo
-      args:
-        - "-text=banana"
-      resources:
-        limits:
-          cpu:  100m
-          memory: 100Mi
-        requests:
-          cpu: 50m
-          memory: 50Mi
+  replicas: 1
+  selector:
+    matchLabels:
+      app: banana
+  template:
+    metadata:
+      labels:
+        app: banana
+    spec:
+      containers:
+        - name: banana-app
+          image: hashicorp/http-echo
+          args:
+            - "-text=banana"
+          resources:
+            limits:
+              cpu:  100m
+              memory: 100Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
 ---
 
 kind: Service
@@ -32,27 +39,33 @@ spec:
     - port: 5678 # Default port for image
 
 ---
-
-kind: Pod
-apiVersion: v1
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: apple-app
   namespace: ${NAMESPACE}
-  labels:
-    app: apple
 spec:
-  containers:
-    - name: apple-app
-      image: hashicorp/http-echo
-      args:
-        - "-text=apple"
-      resources:
-        limits:
-          cpu:  100m
-          memory: 100Mi
-        requests:
-          cpu: 50m
-          memory: 50Mi
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apple
+  template:
+    metadata:
+      labels:
+        app: apple
+    spec:
+      containers:
+        - name: apple-app
+          image: hashicorp/http-echo
+          args:
+            - "-text=apple"
+          resources:
+            limits:
+              cpu:  100m
+              memory: 100Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi
 ---
 
 kind: Service
@@ -88,22 +101,30 @@ spec:
             servicePort: 5678
 
 ---
-
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: traffic-generator
   namespace: ${NAMESPACE}
 spec:
-  containers:
-    - name: traffic-generator
-      image: ellerbrock/alpine-bash-curl-ssl
-      command: ["/bin/bash"]
-      args: ["-c", "while :; do curl http://${EXTERNAL_IP}/apple > /dev/null 2>&1; curl http://${EXTERNAL_IP}/banana > /dev/null 2>&1; sleep 1; done"]
-      resources:
-        limits:
-          cpu:  100m
-          memory: 100Mi
-        requests:
-          cpu: 50m
-          memory: 50Mi
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traffic-generator
+  template:
+    metadata:
+      labels:
+        app: traffic-generator
+    spec:
+      containers:
+        - name: traffic-generator
+          image: ellerbrock/alpine-bash-curl-ssl
+          command: ["/bin/bash"]
+          args: ["-c", "while :; do curl http://${EXTERNAL_IP}/apple > /dev/null 2>&1; curl http://${EXTERNAL_IP}/banana > /dev/null 2>&1; sleep 1; done"]
+          resources:
+            limits:
+              cpu:  100m
+              memory: 100Mi
+            requests:
+              cpu: 50m
+              memory: 50Mi

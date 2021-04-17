@@ -33,7 +33,7 @@ resource "kubernetes_namespace" "haproxy_ns" {
 }
 
 resource "helm_release" "haproxy" {
-  name      = "terraform"
+  name      = "haproxy-${var.testing_id}"
   namespace = kubernetes_namespace.haproxy_ns.metadata[0].name
 
   repository = "https://haproxy-ingress.github.io/charts"

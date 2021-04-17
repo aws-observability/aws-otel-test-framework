@@ -33,7 +33,7 @@ output "metric_dimension_namespace" {
 
 resource "kubernetes_namespace" "nginx_ns" {
   metadata {
-    name = "nginx-system-${var.testing_id}"
+    name = "nginx-${var.testing_id}"
   }
 }
 
@@ -44,7 +44,7 @@ resource "kubernetes_namespace" "traffic_ns" {
 }
 
 resource "helm_release" "nginx_ingress" {
-  name      = "terraform"
+  name      = "nginx-${var.testing_id}"
   namespace = kubernetes_namespace.nginx_ns.metadata[0].name
 
   repository = "https://kubernetes.github.io/ingress-nginx"
