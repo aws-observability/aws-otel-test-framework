@@ -21,7 +21,7 @@ variable "ami_family" {
       instance_type            = "t2.micro"
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
-      install_command          = "sudo dpkg -i aws-otel-collector.deb"
+      install_command          = "while sudo fuser /var/lib/dpkg/lock-frontend; do echo 'Waiting for dpkg lock...' && sleep 1; done; echo 'No dpkg lock and install collector.' && sudo dpkg -i aws-otel-collector.deb"
       start_command            = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       status_command           = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a status"
       ssm_validate             = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a status | grep running"
@@ -126,6 +126,9 @@ EOF
 #! /bin/bash
 cd /tmp
 sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
+   echo 'Waiting for dpkg lock...' && sleep 1
+done
 sudo dpkg -i amazon-ssm-agent.deb
 sudo systemctl enable amazon-ssm-agent
 EOF
@@ -142,6 +145,9 @@ EOF
 #! /bin/bash
 cd /tmp
 sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
+   echo 'Waiting for dpkg lock...' && sleep 1
+done
 sudo dpkg -i amazon-ssm-agent.deb
 sudo systemctl enable amazon-ssm-agent
 EOF
