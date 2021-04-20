@@ -47,6 +47,7 @@ func ssmCmd(ctx context.Context, cmdCtx *CmdContext) *cobra.Command {
 	var (
 		ssmWrapper     *SSMWrapper
 		ssmWaitTimeout time.Duration
+		ignoreError    bool
 	)
 	root := cobra.Command{
 		Use:   "ssm",
@@ -56,7 +57,8 @@ func ssmCmd(ctx context.Context, cmdCtx *CmdContext) *cobra.Command {
 			ssmWrapper = NewSSM(cfg, logger)
 		},
 	}
-	root.Flags().DurationVar(&ssmWaitTimeout, "timeout", 15*time.Minute, "abort polling if timeout duration is exceeded")
+	root.PersistentFlags().DurationVar(&ssmWaitTimeout, "timeout", 15*time.Minute, "abort polling if timeout duration is exceeded")
+	root.PersistentFlags().BoolVar(&ignoreError, "ignore-error", false, "exit 0 when patch/report failed")
 
 	oneInstanceId := func(args []string) string {
 		if len(args) == 0 {
@@ -67,18 +69,30 @@ func ssmCmd(ctx context.Context, cmdCtx *CmdContext) *cobra.Command {
 		}
 		return args[0]
 	}
+
+	logOrIgnore := func(msg string, err error) {
+		if ignoreError {
+			logger.Warn(msg, zap.Error(err))
+		} else {
+			logger.Fatal(msg, zap.Error(err))
+		}
+	}
+
 	// Wait Patch
 	waitPatch := cobra.Command{
 		Use:   "wait-patch",
 		Short: "Wait until patch association is completed or timeout",
 		Example: `# Wait patch on ec2 instance i-123456 for 5 minutes
-aotutil ssm wait-patch i-1234356 --timeout 5m`,
+aotutil ssm wait-patch i-1234356 --timeout 5m
+# Wait but ignore error
+aotutil ssm wait-patch i-1234356 --ignore-error`,
 		Run: func(cmd *cobra.Command, args []string) {
 			instance := oneInstanceId(args)
 			if err := ssmWrapper.WaitPatch(ctx, instance, ssmWaitTimeout); err != nil {
-				logger.Fatal("WaitPatch failed", zap.Error(err))
+				logOrIgnore("WatPatch failed", err)
+			} else {
+				logger.Info("WaitPatch done")
 			}
-			logger.Info("WaitPatch done")
 		},
 	}
 
@@ -89,9 +103,10 @@ aotutil ssm wait-patch i-1234356 --timeout 5m`,
 		Run: func(cmd *cobra.Command, args []string) {
 			instance := oneInstanceId(args)
 			if err := ssmWrapper.WaitPatchReported(ctx, instance, ssmWaitTimeout); err != nil {
-				logger.Fatal("WaitPatch failed", zap.Error(err))
+				logOrIgnore("WaitPatchReport failed", err)
+			} else {
+				logger.Info("WaitPatch done")
 			}
-			logger.Info("WaitPatch done")
 		},
 	}
 
