@@ -21,7 +21,7 @@ variable "ami_family" {
       instance_type            = "t2.micro"
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
-      install_command          = "while sudo fuser /var/lib/dpkg/lock-frontend; do echo 'Waiting for dpkg lock...' && sleep 1; done; echo 'No dpkg lock and install collector.' && sudo dpkg -i aws-otel-collector.deb"
+      install_command          = "while sudo fuser /var/cache/apt/archives/lock /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend; do echo 'Waiting for dpkg lock...' && sleep 1; done; echo 'No dpkg lock and install collector.' && sudo dpkg -i aws-otel-collector.deb"
       start_command            = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a start"
       status_command           = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a status"
       ssm_validate             = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c /tmp/ot-default.yml -a status | grep running"
