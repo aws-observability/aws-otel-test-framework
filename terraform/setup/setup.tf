@@ -182,6 +182,14 @@ resource "aws_security_group" "aoc_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  # zipkin/jaeger
+  ingress {
+    from_port   = 9411
+    to_port     = 9411
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
