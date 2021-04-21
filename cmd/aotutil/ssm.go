@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/spf13/cobra"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ssm"
 	"github.com/aws/aws-sdk-go-v2/service/ssm/types"
@@ -30,15 +32,90 @@ const (
 	SSMReportDocument = "AWS-GatherSoftwareInventory"
 )
 
+const (
+	waitInterval                  = time.Minute
+	waitPatchReportMinimalTimeout = 30 * time.Minute // this is the minimal ssm association interval
+)
+
 type SSMWrapper struct {
 	logger *zap.Logger
 	client *ssm.Client
 }
 
-const (
-	waitInterval                  = time.Minute
-	waitPatchReportMinimalTimeout = 30 * time.Minute // this is the minimal ssm association interval
-)
+func ssmCmd(ctx context.Context, cmdCtx *CmdContext) *cobra.Command {
+	logger := cmdCtx.Logger.With(zap.String("Command", "ssm"))
+	var (
+		ssmWrapper     *SSMWrapper
+		ssmWaitTimeout time.Duration
+		ignoreError    bool
+	)
+	root := cobra.Command{
+		Use:   "ssm",
+		Short: "Wrapper for SSm (AWS Systems Manager)",
+		PersistentPreRun: func(cmd *cobra.Command, args []string) {
+			cfg := cmdCtx.AwsFlags.MustLoadConfig(ctx, logger)
+			ssmWrapper = NewSSM(cfg, logger)
+		},
+	}
+	root.PersistentFlags().DurationVar(&ssmWaitTimeout, "timeout", 15*time.Minute, "abort polling if timeout duration is exceeded")
+	root.PersistentFlags().BoolVar(&ignoreError, "ignore-error", false, "exit 0 when patch/report failed")
+
+	oneInstanceId := func(args []string) string {
+		if len(args) == 0 {
+			logger.Fatal("Instance ID is required as position arguments")
+		}
+		if len(args) > 1 {
+			logger.Warn("Only one instance ID is supported", zap.Int("Got", len(args)))
+		}
+		return args[0]
+	}
+
+	logOrIgnore := func(msg string, err error) {
+		if ignoreError {
+			logger.Warn(msg, zap.Error(err))
+		} else {
+			logger.Fatal(msg, zap.Error(err))
+		}
+	}
+
+	// Wait Patch
+	waitPatch := cobra.Command{
+		Use:   "wait-patch",
+		Short: "Wait until patch association is completed or timeout",
+		Example: `# Wait patch on ec2 instance i-123456 for 5 minutes
+aotutil ssm wait-patch i-1234356 --timeout 5m
+# Wait but ignore error
+aotutil ssm wait-patch i-1234356 --ignore-error`,
+		Run: func(cmd *cobra.Command, args []string) {
+			instance := oneInstanceId(args)
+			if err := ssmWrapper.WaitPatch(ctx, instance, ssmWaitTimeout); err != nil {
+				logOrIgnore("WatPatch failed", err)
+			} else {
+				logger.Info("WaitPatch done")
+			}
+		},
+	}
+
+	// Wait Patch Report
+	watchPatchReport := cobra.Command{
+		Use:   "wait-patch-report",
+		Short: "Wait until a patched instance is reported",
+		Run: func(cmd *cobra.Command, args []string) {
+			instance := oneInstanceId(args)
+			if err := ssmWrapper.WaitPatchReported(ctx, instance, ssmWaitTimeout); err != nil {
+				logOrIgnore("WaitPatchReport failed", err)
+			} else {
+				logger.Info("WaitPatch done")
+			}
+		},
+	}
+
+	root.AddCommand(
+		&waitPatch,
+		&watchPatchReport,
+	)
+	return &root
+}
 
 func NewSSM(cfg aws.Config, logger *zap.Logger) *SSMWrapper {
 	client := ssm.NewFromConfig(cfg)
