@@ -5,7 +5,7 @@ metadata:
   name: agent-role-binding-${NAMESPACE}
 subjects:
   - kind: ServiceAccount
-    name: sa-${NAMESPACE}
+    name: ${SERVICE_ACCOUNT}
     namespace: ${NAMESPACE}
 roleRef:
   kind: ClusterRole

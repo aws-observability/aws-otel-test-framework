@@ -87,4 +87,4 @@ spec:
         - name: devdisk
           hostPath:
             path: /dev/disk/
-      serviceAccountName: sa-${NAMESPACE}
+      serviceAccountName: ${SERVICE_ACCOUNT}
