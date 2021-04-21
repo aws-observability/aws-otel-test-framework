@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: aws-otel-collector
-          image: ${OTELIMAGE}
+          image: ${OTEL_IMAGE}
           env:
             - name: AWS_REGION
               value: ${REGION} 
@@ -87,4 +87,4 @@ spec:
         - name: devdisk
           hostPath:
             path: /dev/disk/
-      serviceAccountName: sa-${NAMESPACE}
+      serviceAccountName: ${SERVICE_ACCOUNT}

@@ -26,6 +26,10 @@ terraform {
     kubernetes = {
       version = "~> 1.13"
     }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = ">= 1.7.0"
+    }
   }
 }
 
@@ -51,6 +55,15 @@ data "aws_eks_cluster_auth" "testing_cluster" {
 
 # set up kubectl
 provider "kubernetes" {
+  host                   = data.aws_eks_cluster.testing_cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.testing_cluster.token
+  load_config_file       = false
+}
+
+provider "kubectl" {
+  // Note: copy from eks module. Please avoid use shorted-lived tokens when running locally.
+  // For more information: https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#exec-plugins
   host                   = data.aws_eks_cluster.testing_cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.testing_cluster.token
@@ -85,6 +98,7 @@ resource "kubernetes_namespace" "aoc_ns" {
     name = "aoc-ns-${module.common.testing_id}"
   }
 }
+
 resource "kubernetes_service_account" "aoc-role" {
   metadata {
     name      = "aoc-role-${module.common.testing_id}"
@@ -109,6 +123,16 @@ resource "kubernetes_cluster_role_binding" "aoc-role-binding" {
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
   }
 }
+
+resource "kubernetes_service_account" "aoc-agent-role" {
+  metadata {
+    name      = "aoc-agent-${module.common.testing_id}"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  }
+
+  automount_service_account_token = true
+}
+
 
 ##########################################
 # Validation
@@ -144,7 +168,9 @@ module "validator" {
       namespace : module.demo_haproxy.0.metric_dimension_namespace
       job : "kubernetes-service-endpoints"
     }
-  }) : "{}"
+    }) : jsonencode({
+    clusterName : var.eks_cluster_name
+  })
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
   aws_access_key_id     = var.aws_access_key_id
