@@ -18,8 +18,8 @@ for i in {1..30}; do
   then
     break
   else
-    echo "Wait 3s for EC2 become online in SSM...""$i"
-    sleep 3
+    echo "Wait 5s for EC2 become online in SSM...""$i"
+    sleep 5
   fi
 done
 
@@ -40,7 +40,7 @@ for j in {1..3}; do
   echo "Sleep 15s for SSM command execution."
   sleep 15
 
-  for i in {1..30}; do
+  for i in {1..60}; do
     output=$(aws ssm get-command-invocation \
         --command-id "$command_id" \
         --instance-id "$instance_id")
@@ -48,15 +48,15 @@ for j in {1..3}; do
     status=$(echo ${output} | python3 -c "import sys, json; print(json.load(sys.stdin)['Status'])")
     if [[ ${status} == "Success" ]]
     then
-      echo "Sleep 15s for ADOT Collector start..."
-      sleep 15
+      echo "Sleep 30s for ADOT Collector start..."
+      sleep 30
       exit 0
     elif [[ ${status} == "Failed" ]]
     then
       break
     else
-      echo "Wait 3s for SSM command complete...""$i"
-      sleep 3
+      echo "Wait 5s for SSM command complete...""$i"
+      sleep 5
     fi
   done
 
