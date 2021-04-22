@@ -1,0 +1,85 @@
+- metricName: nginx_ingress_controller_nginx_process_connections
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.nginx.namespace}}
+    - name: Service
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+- metricName: nginx_ingress_controller_nginx_process_resident_memory_bytes
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.nginx.namespace}}
+    - name: Service
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+- metricName: nginx_ingress_controller_nginx_process_cpu_seconds_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.nginx.namespace}}
+    - name: Service
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+- metricName: nginx_ingress_controller_success
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.nginx.namespace}}
+    - name: Service
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+- metricName: nginx_ingress_controller_config_last_reload_successful
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.nginx.namespace}}
+    - name: Service
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+- metricName: nginx_ingress_controller_nginx_process_connections_total
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.nginx.namespace}}
+    - name: Service
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+- metricName: nginx_ingress_controller_requests
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.nginx.namespace}}
+    - name: Service
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+- metricName: nginx_ingress_controller_requests
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.nginx.namespace}}
+    - name: Service
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+    - name: status
+      value: 200
+- metricName: nginx_ingress_controller_requests
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.nginx.namespace}}
+    - name: Service
+      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+    - name: ingress
+      value: ingress-nginx-demo

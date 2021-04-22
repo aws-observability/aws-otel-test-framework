@@ -1,0 +1,144 @@
+- metricName: jvm_threads_current
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: jvm_threads_daemon
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: jvm_classes_loaded
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: java_lang_operatingsystem_freephysicalmemorysize
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: java_lang_operatingsystem_totalphysicalmemorysize
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: java_lang_operatingsystem_freeswapspacesize
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: java_lang_operatingsystem_totalswapspacesize
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: java_lang_operatingsystem_systemcpuload
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: java_lang_operatingsystem_processcpuload
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: java_lang_operatingsystem_availableprocessors
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: java_lang_operatingsystem_openfiledescriptorcount
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: catalina_manager_activesessions
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: catalina_manager_rejectedsessions
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: catalina_globalrequestprocessor_bytesreceived
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: catalina_globalrequestprocessor_bytessent
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: catalina_globalrequestprocessor_requestcount
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: catalina_globalrequestprocessor_processingtime
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: catalina_globalrequestprocessor_errorcount
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+- metricName: jvm_memory_bytes_used
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+    - name: area
+      value: heap
+- metricName: jvm_memory_pool_bytes_used
+  namespace: ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: Namespace
+      value: {{cloudWatchContext.jmx.namespace}}
+    - name: pool
+      value: Metaspace

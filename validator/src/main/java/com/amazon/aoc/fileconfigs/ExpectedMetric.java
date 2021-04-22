@@ -24,8 +24,7 @@ public enum ExpectedMetric implements FileConfig {
   STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),
   ECS_CONTAINER_EXPECTED_METRIC("/expected-data-template/ecsContainerExpectedMetric.mustache"),
   CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC(
-          "/expected-data-template/container-insight/eks/prometheus/"
-                  + "eksContainerInsightExpectedMetrics.mustache"),
+          "/expected-data-template/container-insight/eks/prometheus"),
   ;
 
   private String path;
