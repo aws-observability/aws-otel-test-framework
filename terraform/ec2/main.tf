@@ -128,16 +128,16 @@ resource "null_resource" "check_patch" {
 
   provisioner "local-exec" {
     command = <<-EOT
-     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id} --ignore-error"
-     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id} --ignore-error"
+     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id}" --ignore-error
+     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}" --ignore-error
     EOT
   }
 
   provisioner "local-exec" {
     when    = destroy
     command = <<-EOT
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.sidecar_id} --ignore-error"
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.aoc_id} --ignore-error"
+      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.sidecar_id}" --ignore-error
+      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.aoc_id}" --ignore-error
     EOT
   }
 }
