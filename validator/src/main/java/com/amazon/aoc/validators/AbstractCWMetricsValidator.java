@@ -15,12 +15,10 @@
 
 package com.amazon.aoc.validators;
 
-import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.callers.ICaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
-import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
@@ -28,51 +26,38 @@ import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
 import com.amazonaws.services.cloudwatch.model.MetricDataResult;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.amazonaws.util.StringUtils;
 import lombok.extern.log4j.Log4j2;
 
-import java.nio.charset.StandardCharsets;
 import java.sql.Date;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ContainerInsightMetricsValidator is diverged from CWMetricValidator for container insight
+ * AbstractMetricsValidator is diverged from CWMetricValidator for container insight
  * metrics validation. In this validator, we exclude specific dimension checking, e.g. OTelLib
  * and metrics rolling up.
  */
 // TODO: We hope to merge it with CWMetricValidator when the validation process is finalized.
 @Log4j2
-public class ContainerInsightMetricsValidator implements IValidator {
+public abstract class AbstractCWMetricsValidator implements IValidator {
   private CloudWatchService cloudWatchService;
-  private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
   private List<Metric> expectedMetrics;
-  private Set<String> validateNamespaces;
 
   private static final int MAX_RETRY_COUNT = 6;
   private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
   private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
 
-
   @Override
   public void init(Context context, ValidationConfig validationConfig, ICaller caller,
                    FileConfig expectedDataTemplate) throws Exception {
     cloudWatchService = new CloudWatchService(context.getRegion());
-    validateNamespaces = getNamespacesToValidate(context.getCloudWatchContext());
-
-    MustacheHelper mustacheHelper = new MustacheHelper();
-    String templateInput = mustacheHelper.render(expectedDataTemplate, context);
-    expectedMetrics = mapper.readValue(templateInput.getBytes(StandardCharsets.UTF_8),
-          new TypeReference<List<Metric>>() {
-          });
+    expectedMetrics = getExpectedMetrics(context, expectedDataTemplate.getPath());
   }
+
+  abstract List<Metric> getExpectedMetrics(Context context, String templatePath) throws Exception;
 
   @Override
   public void validate() throws Exception {
@@ -86,53 +71,34 @@ public class ContainerInsightMetricsValidator implements IValidator {
       Instant endTime = startTime.plusSeconds(CHECK_DURATION_IN_SECONDS);
 
       for (Metric expectedMetric : expectedMetrics) {
-        String namespace = extractNamespaceDimension(expectedMetric);
-        if (validateNamespaces.contains(namespace)) {
-          List<MetricDataResult> batchResult = cloudWatchService.getMetricData(expectedMetric,
-                  Date.from(startTime), Date.from(endTime));
-          boolean found = false;
-          for (MetricDataResult result : batchResult) {
-            if (result.getValues().size() > 0) {
-              found = true;
-            }
+        List<MetricDataResult> batchResult = cloudWatchService.getMetricData(expectedMetric,
+                Date.from(startTime), Date.from(endTime));
+        boolean found = false;
+        for (MetricDataResult result : batchResult) {
+          if (result.getValues().size() > 0) {
+            found = true;
           }
-          if (!found) {
-            throw new BaseException(ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
-                    String.format("[ContainerInsight] metric %s not found under namespace %s",
-                            expectedMetric.getMetricName(), namespace));
-          }
+        }
+        if (!found) {
+          throw new BaseException(ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
+                  String.format("[ContainerInsight] metric %s not found with dimension %s",
+                          expectedMetric.getMetricName(), stringifyDimension(expectedMetric)));
         }
       }
     });
     log.info("[ContainerInsight] finish validation successfully");
   }
 
-  private static Set<String> getNamespacesToValidate(CloudWatchContext cwContext) {
-    Set<String> namespaces = new HashSet<>();
-    if (cwContext.getAppMesh() != null) {
-      namespaces.add(cwContext.getAppMesh().getNamespace());
+  private static String stringifyDimension(Metric metric) {
+    if (metric.getDimensions() == null) {
+      return "[]";
     }
-    if (cwContext.getNginx() != null) {
-      namespaces.add(cwContext.getNginx().getNamespace());
+    String[] dimensions = new String[metric.getDimensions().size()];
+    for (int i = 0; i < metric.getDimensions().size(); i++) {
+      Dimension dimension = metric.getDimensions().get(i);
+      dimensions[i] = String.format("%s: %s", dimension.getName(), dimension.getValue());
     }
-    if (cwContext.getHaproxy() != null) {
-      namespaces.add(cwContext.getHaproxy().getNamespace());
-    }
-    if (cwContext.getJmx() != null) {
-      namespaces.add(cwContext.getJmx().getNamespace());
-    }
-    if (cwContext.getMemcached() != null) {
-      namespaces.add(cwContext.getMemcached().getNamespace());
-    }
-    return namespaces;
-  }
+    return "[" + StringUtils.join(", ", dimensions) + "]";
 
-  private static String extractNamespaceDimension(Metric metric) {
-    for (Dimension dimension : metric.getDimensions()) {
-      if ("Namespace".equals(dimension.getName())) {
-        return dimension.getValue();
-      }
-    }
-    return null;
   }
 }
