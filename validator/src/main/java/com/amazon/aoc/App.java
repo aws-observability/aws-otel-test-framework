@@ -139,7 +139,7 @@ public class App implements Callable<Integer> {
     int maxValidationCycles = 1;
     ValidatorFactory validatorFactory = new ValidatorFactory(context);
     if (this.isCanary) {
-      maxValidationCycles = 30;
+      maxValidationCycles = 20;
     }
     for (int cycle = 0; cycle < maxValidationCycles; cycle++) {
       for (ValidationConfig validationConfigItem : validationConfigList) {

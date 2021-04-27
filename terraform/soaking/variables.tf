@@ -54,10 +54,6 @@ variable "soaking_data_rate" {
   default = "1000"
 }
 
-variable "soaking_data_type" {
-  default = "otlp"
-}
-
 variable "soaking_sample_app" {
   default = ""
 }
