@@ -77,7 +77,7 @@ locals {
   instance_subnet = var.testing_type == "e2e" ? tolist(module.basic_components.aoc_public_subnet_ids)[1] : tolist(module.basic_components.aoc_public_subnet_ids)[0]
 
   # get SSM package version, latest is the default version
-  ssm_package_version = var.aoc_version == "latest" ? "\"\"" : trimprefix(var.aoc_version, "v")
+  ssm_package_version = var.aoc_version == "latest" ? "\"\"" : var.aoc_version
 }
 
 ## launch a sidecar instance to install data emitter and the mocked server
