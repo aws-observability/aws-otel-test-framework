@@ -24,5 +24,5 @@ service:
     traces:
       receivers: [jaeger]
       processors: [batch]
-      exporters: [otlphttp]
+      exporters: [otlphttp, logging]
   extensions: [pprof]
