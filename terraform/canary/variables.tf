@@ -39,3 +39,25 @@ variable "install_cwagent" {
 variable "canary" {
   default = true
 }
+
+variable "install_package_source" {
+  default = "s3"
+}
+
+variable "ssm_package_name" {
+  default = "AWSDistroOTel-Collector"
+}
+
+variable "ssm_config" {
+  default = ""
+}
+
+variable "disable_mocked_server" {
+  type    = bool
+  default = false
+}
+
+variable "enable_ssm_validate" {
+  type    = bool
+  default = false
+}
