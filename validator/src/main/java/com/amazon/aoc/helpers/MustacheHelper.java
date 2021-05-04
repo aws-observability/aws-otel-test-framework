@@ -25,6 +25,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URL;
 
 @Log4j2
 public class MustacheHelper {
@@ -38,14 +39,14 @@ public class MustacheHelper {
    * @return generated content
    * @throws IOException when the template file is not existed
    */
-  public String render(FileConfig fileConfig, Object dataToInject) throws IOException {
+  public String render(FileConfig fileConfig, Object dataToInject) throws Exception {
     return render(fileConfig.getPath(), dataToInject);
   }
 
-  private String render(String path, Object dataToInject) throws IOException {
+  private String render(URL path, Object dataToInject) throws Exception {
     log.info("fetch config: {}", path);
-    String templateContent = IOUtils.toString(getClass().getResource(path));
-    Mustache mustache = mustacheFactory.compile(new StringReader(templateContent), path);
+    String templateContent = IOUtils.toString(path);
+    Mustache mustache = mustacheFactory.compile(new StringReader(templateContent), path.getPath());
     StringWriter stringWriter = new StringWriter();
     mustache.execute(stringWriter, dataToInject).flush();
     return stringWriter.getBuffer().toString();

@@ -19,6 +19,7 @@ import com.amazon.aoc.callers.ICaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
+import com.amazon.aoc.helpers.CWMetricHelper;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
@@ -26,15 +27,10 @@ import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import lombok.extern.log4j.Log4j2;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,19 +40,37 @@ import java.util.TreeSet;
 
 @Log4j2
 public class CWMetricValidator implements IValidator {
-  private static int MAX_RETRY_COUNT = 30;
-  private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
+  private static int DEFAULT_MAX_RETRY_COUNT = 30;
 
   private MustacheHelper mustacheHelper = new MustacheHelper();
   private ICaller caller;
   private Context context;
   private FileConfig expectedMetric;
 
+  private CloudWatchService cloudWatchService;
+  private CWMetricHelper cwMetricHelper;
+  private int maxRetryCount;
+
+  // for unit test
+  public void setCloudWatchService(CloudWatchService cloudWatchService) {
+    this.cloudWatchService = cloudWatchService;
+  }
+
+  // for unit test so that we lower the count to 1
+  public void setMaxRetryCount(int maxRetryCount) {
+    this.maxRetryCount = maxRetryCount;
+  }
+
   @Override
   public void validate() throws Exception {
     log.info("Start metric validating");
     // get expected metrics and remove the to be skipped dimensions
-    final List<Metric> expectedMetricList = this.getExpectedMetricList(context);
+    final List<Metric> expectedMetricList = cwMetricHelper.listExpectedMetrics(
+        context,
+        expectedMetric,
+        caller,
+        true
+    );
     Set<String> skippedDimensionNameList = new HashSet<>();
     for (Metric metric : expectedMetricList) {
       for (Dimension dimension : metric.getDimensions()) {
@@ -72,9 +86,8 @@ public class CWMetricValidator implements IValidator {
     }
 
     // get metric from cloudwatch
-    CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
     RetryHelper.retry(
-        MAX_RETRY_COUNT,
+        maxRetryCount,
         () -> {
           List<Metric> metricList =
               this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
@@ -145,25 +158,6 @@ public class CWMetricValidator implements IValidator {
     }
   }
 
-  private List<Metric> getExpectedMetricList(Context context) throws Exception {
-    // call endpoint
-    if (caller != null) {
-      caller.callSampleApp();
-    }
-
-    // get expected metrics as yaml from config
-    String yamlExpectedMetrics = mustacheHelper.render(this.expectedMetric, context);
-
-    // load metrics from yaml
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    List<Metric> expectedMetricList =
-        mapper.readValue(
-            yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
-            new TypeReference<List<Metric>>() {});
-
-    return rollupMetric(expectedMetricList);
-  }
-
   private List<Metric> listMetricFromCloudWatch(
       CloudWatchService cloudWatchService, List<Metric> expectedMetricList) throws IOException {
     // put namespace into the map key, so that we can use it to search metric
@@ -181,73 +175,6 @@ public class CWMetricValidator implements IValidator {
     return result;
   }
 
-  private List<Metric> rollupMetric(List<Metric> metricList) {
-    List<Metric> rollupMetricList = new ArrayList<>();
-    for (Metric metric : metricList) {
-      Dimension otellibDimension = new Dimension();
-      boolean otelLibDimensionExisted = false;
-
-      if (metric.getDimensions().size() > 0) {
-        // get otellib dimension out
-        // assuming the first dimension is otellib, if not the validation fails
-        otellibDimension = metric.getDimensions().get(0);
-        otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
-      }
-      
-      if (otelLibDimensionExisted) {
-        metric.getDimensions().remove(0);
-      }
-
-      // all dimension rollup
-      Metric allDimensionsMetric = new Metric();
-      allDimensionsMetric.setMetricName(metric.getMetricName());
-      allDimensionsMetric.setNamespace(metric.getNamespace());
-      allDimensionsMetric.setDimensions(metric.getDimensions());
-
-      if (otelLibDimensionExisted) {
-        allDimensionsMetric
-            .getDimensions()
-            .add(
-                new Dimension()
-                    .withName(otellibDimension.getName())
-                    .withValue(otellibDimension.getValue()));
-      }
-      rollupMetricList.add(allDimensionsMetric);
-
-      // zero dimension rollup
-      Metric zeroDimensionMetric = new Metric();
-      zeroDimensionMetric.setNamespace(metric.getNamespace());
-      zeroDimensionMetric.setMetricName(metric.getMetricName());
-
-      if (otelLibDimensionExisted) {
-        zeroDimensionMetric.setDimensions(
-            Arrays.asList(
-                new Dimension()
-                    .withName(otellibDimension.getName())
-                    .withValue(otellibDimension.getValue())));
-      }
-      rollupMetricList.add(zeroDimensionMetric);
-
-      // single dimension rollup
-      for (Dimension dimension : metric.getDimensions()) {
-        Metric singleDimensionMetric = new Metric();
-        singleDimensionMetric.setNamespace(metric.getNamespace());
-        singleDimensionMetric.setMetricName(metric.getMetricName());
-        if (otelLibDimensionExisted) {
-          singleDimensionMetric.setDimensions(
-              Arrays.asList(
-                  new Dimension()
-                      .withName(otellibDimension.getName())
-                      .withValue(otellibDimension.getValue())));
-        }
-        singleDimensionMetric.getDimensions().add(dimension);
-        rollupMetricList.add(singleDimensionMetric);
-      }
-    }
-
-    return rollupMetricList;
-  }
-
   @Override
   public void init(
       Context context,
@@ -258,5 +185,8 @@ public class CWMetricValidator implements IValidator {
     this.context = context;
     this.caller = caller;
     this.expectedMetric = expectedMetricTemplate;
+    this.cloudWatchService = new CloudWatchService(context.getRegion());
+    this.cwMetricHelper = new CWMetricHelper();
+    this.maxRetryCount = DEFAULT_MAX_RETRY_COUNT;
   }
 }

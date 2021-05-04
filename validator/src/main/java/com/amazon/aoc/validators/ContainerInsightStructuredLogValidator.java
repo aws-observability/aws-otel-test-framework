@@ -1,8 +1,9 @@
 package com.amazon.aoc.validators;
 
+import com.amazon.aoc.fileconfigs.FileConfig;
+import com.amazon.aoc.fileconfigs.LocalPathExpectedTemplate;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.models.Context;
-import com.amazon.aoc.models.JsonSchemaFileConfig;
 import com.amazonaws.services.logs.model.FilteredLogEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.log4j.Log4j2;
@@ -37,13 +38,15 @@ public class ContainerInsightStructuredLogValidator
   private static final int QUERY_LIMIT = 100;
 
   @Override
-  void init(Context context, String templatePath) throws Exception {
+  void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     logGroupName = String.format("/aws/containerinsights/%s/performance",
             context.getCloudWatchContext().getClusterName());
     MustacheHelper mustacheHelper = new MustacheHelper();
     for (String logType : LOG_TYPE_TO_VALIDATE) {
-      String templateInput = mustacheHelper.render(new JsonSchemaFileConfig(
-              FilenameUtils.concat(templatePath, logType + ".json")), context);
+      FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
+          expectedDataTemplate.getPath().getPath(),
+          logType + ".json"));
+      String templateInput = mustacheHelper.render(fileConfig, context);
       schemasToValidate.put(logType, parseJsonSchema(templateInput));
     }
   }

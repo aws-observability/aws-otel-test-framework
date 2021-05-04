@@ -46,26 +46,35 @@ public abstract class AbstractCWMetricsValidator implements IValidator {
   private CloudWatchService cloudWatchService;
   private List<Metric> expectedMetrics;
 
-  private static final int MAX_RETRY_COUNT = 10;
+  private static final int DEFAULT_MAX_RETRY_COUNT = 10;
+  private static final int DEFAULT_INITIAL_SLEEP_TIME = 60;
   private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
   private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
+
+  private int maxRetryCount;
+  private int initialSleepTime;
 
   @Override
   public void init(Context context, ValidationConfig validationConfig, ICaller caller,
                    FileConfig expectedDataTemplate) throws Exception {
     cloudWatchService = new CloudWatchService(context.getRegion());
-    expectedMetrics = getExpectedMetrics(context, expectedDataTemplate.getPath());
+    expectedMetrics = getExpectedMetrics(context, expectedDataTemplate);
+    this.maxRetryCount = DEFAULT_MAX_RETRY_COUNT;
+    this.initialSleepTime = DEFAULT_INITIAL_SLEEP_TIME;
   }
 
-  abstract List<Metric> getExpectedMetrics(Context context, String templatePath) throws Exception;
+  abstract List<Metric> getExpectedMetrics(
+      Context context,
+      FileConfig expectedDataTemplate
+  ) throws Exception;
 
   @Override
   public void validate() throws Exception {
     log.info("[ContainerInsight] start validating metrics, pause 60s for metric collection");
-    TimeUnit.SECONDS.sleep(60);
+    TimeUnit.SECONDS.sleep(initialSleepTime);
     log.info("[ContainerInsight] resume validation");
 
-    RetryHelper.retry(MAX_RETRY_COUNT, CHECK_INTERVAL_IN_MILLI, true, () -> {
+    RetryHelper.retry(maxRetryCount, CHECK_INTERVAL_IN_MILLI, true, () -> {
       Instant startTime = Instant.now().minusSeconds(CHECK_DURATION_IN_SECONDS)
               .truncatedTo(ChronoUnit.MINUTES);
       Instant endTime = startTime.plusSeconds(CHECK_DURATION_IN_SECONDS);
@@ -100,5 +109,17 @@ public abstract class AbstractCWMetricsValidator implements IValidator {
     }
     return "[" + StringUtils.join(", ", dimensions) + "]";
 
+  }
+
+  public void setCloudWatchService(CloudWatchService cloudWatchService) {
+    this.cloudWatchService = cloudWatchService;
+  }
+
+  public void setMaxRetryCount(int maxRetryCount) {
+    this.maxRetryCount = maxRetryCount;
+  }
+
+  public void setInitialSleepTime(int initialSleepTime) {
+    this.initialSleepTime = initialSleepTime;
   }
 }

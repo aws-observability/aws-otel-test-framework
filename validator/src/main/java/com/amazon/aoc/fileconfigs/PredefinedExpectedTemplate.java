@@ -15,10 +15,26 @@
 
 package com.amazon.aoc.fileconfigs;
 
-import lombok.Getter;
+import java.net.URL;
 
-@Getter
-public enum ExpectedTrace implements FileConfig {
+/**
+ * ExpectedTemplate includes all the built-in expected data templates,
+ * which are under resources/expected-data-templates.
+ */
+public enum PredefinedExpectedTemplate implements FileConfig {
+  /**
+   * metric template, defined in resources.
+   */
+  DEFAULT_EXPECTED_METRIC("/expected-data-template/defaultExpectedMetric.mustache"),
+  ENHANCED_EXPECTED_METRIC("/expected-data-template/enhancedExpectedMetric.mustache"),
+  STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),
+  ECS_CONTAINER_EXPECTED_METRIC("/expected-data-template/ecsContainerExpectedMetric.mustache"),
+  CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC(
+    "/expected-data-template/container-insight/eks/prometheus"),
+
+  /**
+   * trace template, defined in resources.
+   */
   DEFAULT_EXPECTED_TRACE("/expected-data-template/defaultExpectedTrace.mustache"),
   OTEL_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/otelSDKexpectedAWSSDKTrace.mustache"),
   OTEL_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/otelSDKexpectedHTTPTrace.mustache"),
@@ -26,7 +42,7 @@ public enum ExpectedTrace implements FileConfig {
   XRAY_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedHTTPTrace.mustache"),
   SPARK_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedHTTPTrace.mustache"),
   SPARK_SDK_AWSSDK_EXPECTED_TRACE(
-          "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache"),
+    "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache"),
   LAMBDA_EXPECTED_TRACE("/expected-data-template/lambdaExpectedTrace.mustache"),
   SPRINGBOOT_SDK_HTTP_EXPECTED_TRACE(
     "/expected-data-template/springboot/springbootAppExpectedHTTPTrace.mustache"),
@@ -43,12 +59,27 @@ public enum ExpectedTrace implements FileConfig {
   ),
   JS_SDK_AWSSDK_EXPECTED_TRACE(
     "/expected-data-template/js/jsAppExpectedAWSSDKTrace.mustache"
-  )
+  ),
+
+  /**
+   * Log structure template, defined in resources.
+   */
+  CONTAINER_INSIGHT_EKS_PROMETHEUS_LOG(
+    "/expected-data-template/container-insight/eks/prometheus"),
+  CONTAINER_INSIGHT_EKS_LOG(
+    "/expected-data-template/container-insight/eks/infrastructure"),
+
   ;
 
   private String path;
 
-  ExpectedTrace(String path) {
+  PredefinedExpectedTemplate(String path) {
     this.path = path;
   }
+
+  @Override
+  public URL getPath() {
+    return getClass().getResource(path);
+  }
+
 }

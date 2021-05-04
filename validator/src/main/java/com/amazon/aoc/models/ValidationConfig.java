@@ -15,9 +15,9 @@
 
 package com.amazon.aoc.models;
 
-import com.amazon.aoc.fileconfigs.ExpectedLogStructure;
-import com.amazon.aoc.fileconfigs.ExpectedMetric;
-import com.amazon.aoc.fileconfigs.ExpectedTrace;
+import com.amazon.aoc.fileconfigs.LocalPathExpectedTemplate;
+import com.amazon.aoc.fileconfigs.PredefinedExpectedTemplate;
+import com.amazon.aoc.fileconfigs.FileConfig;
 import lombok.Data;
 
 @Data
@@ -31,9 +31,9 @@ public class ValidationConfig {
   String expectedResultPath;
   Boolean shouldValidateMetricValue;
 
-  ExpectedMetric expectedMetricTemplate;
-  ExpectedTrace expectedTraceTemplate;
-  ExpectedLogStructure expectedLogStructureTemplate;
+  String expectedMetricTemplate;
+  String expectedTraceTemplate;
+  String expectedLogStructureTemplate;
 
   /**
    * alarm related.
@@ -65,4 +65,31 @@ public class ValidationConfig {
   String processName;
   String testingAmi;
   String negativeSoaking;
+
+
+  public FileConfig getExpectedMetricTemplate() {
+    return this.getTemplate(this.expectedMetricTemplate);
+  }
+
+  public FileConfig getExpectedTraceTemplate() {
+    return this.getTemplate(this.expectedTraceTemplate);
+  }
+
+  public FileConfig getExpectedLogStructureTemplate() {
+    return this.getTemplate(this.expectedLogStructureTemplate);
+  }
+
+  /**
+   * get expected template
+   * 1. if the path starts with "file://", we assume it's a local path.
+   * 2. if not, we assume it's a ENUM name which we defined in the framework.
+   * @return ExpectedMetric
+   */
+  private FileConfig getTemplate(String templatePath) {
+    if (templatePath.startsWith("file://")) {
+      return new LocalPathExpectedTemplate(templatePath);
+    }
+
+    return PredefinedExpectedTemplate.valueOf(templatePath);
+  }
 }

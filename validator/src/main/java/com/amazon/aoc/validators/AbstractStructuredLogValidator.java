@@ -62,7 +62,7 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
   public void init(Context context, ValidationConfig validationConfig, ICaller caller,
                    FileConfig expectedDataTemplate) throws Exception {
     cloudWatchService = new CloudWatchService(context.getRegion());
-    init(context, expectedDataTemplate.getPath());
+    init(context, expectedDataTemplate);
 
     if (StringUtils.isNullOrEmpty(logGroupName)) {
       throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED,
@@ -74,7 +74,7 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
     }
   }
 
-  abstract void init(Context context, String templatePath) throws Exception;
+  abstract void init(Context context, FileConfig expectedDataTemplate) throws Exception;
 
   abstract String getJsonSchemaMappingKey(JsonNode jsonNode);
 
