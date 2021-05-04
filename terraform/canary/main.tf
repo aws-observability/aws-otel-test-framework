@@ -56,4 +56,10 @@ module "ec2_setup" {
   aws_secret_access_key = var.aws_secret_access_key
 
   patch = true
+
+  ssm_package_name       = "AWSDistroOTel-Collector"
+  install_package_source = var.install_package_source
+  ssm_config             = var.ssm_config
+  disable_mocked_server  = var.disable_mocked_server
+  enable_ssm_validate    = var.enable_ssm_validate
 }
