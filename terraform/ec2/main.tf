@@ -78,6 +78,7 @@ locals {
 
   # get SSM package version, latest is the default version
   ssm_package_version = var.aoc_version == "latest" ? "\"\"" : var.aoc_version
+  testcase_name       = split("/", var.testcase)[2]
 }
 
 ## launch a sidecar instance to install data emitter and the mocked server
@@ -474,6 +475,17 @@ resource "null_resource" "ssm_validation" {
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
       host        = aws_instance.aoc.public_ip
     }
+  }
+}
+
+resource "null_resource" "ssm_canary_metrics" {
+  depends_on = [null_resource.ssm_validation]
+  count      = !var.skip_validation && var.enable_ssm_validate && var.canary ? 1 : 0
+
+  provisioner "local-exec" {
+    command = <<-EOT
+        aws cloudwatch put-metric-data --metric-name Success --dimensions testcase=${local.testcase_name} --namespace "Otel/Canary" --value 1.0
+    EOT
   }
 }
 
