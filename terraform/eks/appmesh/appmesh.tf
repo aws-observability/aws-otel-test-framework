@@ -33,11 +33,6 @@ variable "region" {
   default = "us-west-2"
 }
 
-variable "testcase" {
-  type    = string
-  default = "../testcases/container_insight"
-}
-
 variable "kubeconfig" {
   type    = string
   default = "kubeconfig"
@@ -155,7 +150,7 @@ resource "null_resource" "appmesh_readiness_check" {
 }
 
 data "template_file" "traffic_deployment_file" {
-  template = file("${var.testcase}/appmesh_traffic_sample.tpl")
+  template = file("./appmesh/appmesh_traffic_sample.tpl")
   vars = {
     APP_NAMESPACE   = kubernetes_namespace.traffic_ns.metadata[0].name
     MESH_NAME       = local.mesh_name
