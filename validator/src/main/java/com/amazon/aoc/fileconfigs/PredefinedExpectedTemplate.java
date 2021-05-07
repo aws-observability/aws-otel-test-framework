@@ -35,7 +35,8 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   /**
    * trace template, defined in resources.
    */
-  DEFAULT_EXPECTED_TRACE("/expected-data-template/defaultExpectedTrace.mustache"),
+  // not use default expected trace any more
+  // DEFAULT_EXPECTED_TRACE("/expected-data-template/defaultExpectedTrace.mustache"),
   OTEL_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/otelSDKexpectedAWSSDKTrace.mustache"),
   OTEL_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/otelSDKexpectedHTTPTrace.mustache"),
   XRAY_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedAWSSDKTrace.mustache"),

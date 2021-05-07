@@ -28,9 +28,7 @@ public class ContainerInsightPrometheusMetricsValidator extends AbstractCWMetric
     MustacheHelper mustacheHelper = new MustacheHelper();
     for (CloudWatchContext.App app : validateApps) {
       FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
-          expectedDataTemplate.getPath().getProtocol()
-            + "://"
-            + expectedDataTemplate.getPath().getPath(),
+            expectedDataTemplate.getPath().toString(),
           app.getName() + "_metrics.mustache"));
       String templateInput = mustacheHelper.render(fileConfig, context);
       List<Metric> appMetrics = mapper.readValue(templateInput.getBytes(StandardCharsets.UTF_8),

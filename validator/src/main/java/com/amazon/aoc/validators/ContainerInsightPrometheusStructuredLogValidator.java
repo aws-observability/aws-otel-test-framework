@@ -27,7 +27,7 @@ public class ContainerInsightPrometheusStructuredLogValidator
 
     for (CloudWatchContext.App app : validateApps) {
       FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
-          expectedDataTemplate.getPath().getPath(),
+          expectedDataTemplate.getPath().toString(),
           app.getName() + ".json"));
       String templateInput = mustacheHelper.render(fileConfig, context);
       schemasToValidate.put(app.getNamespace(), parseJsonSchema(templateInput));

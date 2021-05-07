@@ -44,7 +44,7 @@ public class ContainerInsightStructuredLogValidator
     MustacheHelper mustacheHelper = new MustacheHelper();
     for (String logType : LOG_TYPE_TO_VALIDATE) {
       FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
-          expectedDataTemplate.getPath().getPath(),
+          expectedDataTemplate.getPath().toString(),
           logType + ".json"));
       String templateInput = mustacheHelper.render(fileConfig, context);
       schemasToValidate.put(logType, parseJsonSchema(templateInput));

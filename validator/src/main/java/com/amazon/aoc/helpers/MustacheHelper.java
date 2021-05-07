@@ -39,11 +39,11 @@ public class MustacheHelper {
    * @return generated content
    * @throws IOException when the template file is not existed
    */
-  public String render(FileConfig fileConfig, Object dataToInject) throws Exception {
+  public String render(FileConfig fileConfig, Object dataToInject) throws IOException {
     return render(fileConfig.getPath(), dataToInject);
   }
 
-  private String render(URL path, Object dataToInject) throws Exception {
+  private String render(URL path, Object dataToInject) throws IOException {
     log.info("fetch config: {}", path);
     String templateContent = IOUtils.toString(path);
     Mustache mustache = mustacheFactory.compile(new StringReader(templateContent), path.getPath());

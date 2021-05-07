@@ -15,6 +15,7 @@
 
 package com.amazon.aoc.fileconfigs;
 
+import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -27,5 +28,5 @@ public interface FileConfig {
    *
    * @return file path
    */
-  URL getPath() throws Exception;
+  URL getPath() throws IOException;
 }

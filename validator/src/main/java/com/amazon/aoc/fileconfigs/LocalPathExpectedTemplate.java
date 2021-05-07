@@ -15,6 +15,7 @@
 
 package com.amazon.aoc.fileconfigs;
 
+import java.io.IOException;
 import java.net.URL;
 
 /**
@@ -30,7 +31,7 @@ public class LocalPathExpectedTemplate implements FileConfig {
   private String path;
 
   @Override
-  public URL getPath() throws Exception {
+  public URL getPath() throws IOException {
     return new URL(path);
   }
 }
