@@ -46,6 +46,8 @@ resource "kubectl_manifest" "config_map" {
 }
 
 resource "kubectl_manifest" "daemonset" {
+  count = var.aoc_base_scenario == "infra" ? 1 : 0
+
   yaml_body = data.template_file.daemonset_file.rendered
   depends_on = [
     kubectl_manifest.config_map

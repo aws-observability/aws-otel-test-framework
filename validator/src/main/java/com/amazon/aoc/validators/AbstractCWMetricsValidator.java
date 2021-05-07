@@ -46,7 +46,7 @@ public abstract class AbstractCWMetricsValidator implements IValidator {
   private CloudWatchService cloudWatchService;
   private List<Metric> expectedMetrics;
 
-  private static final int MAX_RETRY_COUNT = 6;
+  private static final int MAX_RETRY_COUNT = 10;
   private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
   private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
 

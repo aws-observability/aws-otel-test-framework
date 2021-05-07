@@ -36,7 +36,7 @@ module "aoc_oltp" {
   testing_id          = module.common.testing_id
   eks_pod_config_path = fileexists("${var.testcase}/eks_pod_config.tpl") ? "${var.testcase}/eks_pod_config.tpl" : module.common.default_eks_pod_config_path
   sample_app = {
-    image               = var.sample_app_image != "" ? var.sample_app.image : module.basic_components.0.sample_app_image
+    image               = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.0.sample_app_image
     name                = var.sample_app
     mode                = var.sample_app_mode
     metric_namespace    = module.common.otel_service_namespace
