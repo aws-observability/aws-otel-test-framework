@@ -18,7 +18,7 @@ package com.amazon.aoc.fileconfigs;
 import java.net.URL;
 
 /**
- * ExpectedTemplate includes all the built-in expected data templates,
+ * PredefinedExpectedTemplate includes all the built-in expected data templates,
  * which are under resources/expected-data-templates.
  */
 public enum PredefinedExpectedTemplate implements FileConfig {
