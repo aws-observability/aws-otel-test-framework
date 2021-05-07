@@ -15,21 +15,23 @@
 
 package com.amazon.aoc.fileconfigs;
 
-import lombok.Getter;
+import java.io.IOException;
+import java.net.URL;
 
-@Getter
-public enum ExpectedMetric implements FileConfig {
-  DEFAULT_EXPECTED_METRIC("/expected-data-template/defaultExpectedMetric.mustache"),
-  ENHANCED_EXPECTED_METRIC("/expected-data-template/enhancedExpectedMetric.mustache"),
-  STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),
-  ECS_CONTAINER_EXPECTED_METRIC("/expected-data-template/ecsContainerExpectedMetric.mustache"),
-  CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC(
-          "/expected-data-template/container-insight/eks/prometheus"),
-  ;
+/**
+ * LocalPathExpectedTemplate represents the template which comes from outside of
+ * testing framework but at the same file system with terraform runtime.
+ * todo, we can probably support remote templates which come from s3.
+ */
+public class LocalPathExpectedTemplate implements FileConfig {
+  public LocalPathExpectedTemplate(String path) {
+    this.path = path;
+  }
 
   private String path;
 
-  ExpectedMetric(String path) {
-    this.path = path;
+  @Override
+  public URL getPath() throws IOException {
+    return new URL(path);
   }
 }
