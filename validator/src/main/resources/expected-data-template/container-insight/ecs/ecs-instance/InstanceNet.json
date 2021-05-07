@@ -1,0 +1,57 @@
+{
+  "title": "structured log schema",
+  "description": "json schema for the container insights receiver ECS EC2 structured log",
+  "type": "object",
+
+  "properties": {
+    "ClusterName":{},
+    "Type":{},
+    "Sources":{},
+    "Timestamp":{},
+    "Version":{},
+    "AutoScalingGroupName":{},
+    "InstanceId":{},
+    "InstanceType":{},
+    "interface":{},
+    "ContainerInstanceId": {},
+    "instance_interface_network_rx_bytes":{},
+    "instance_interface_network_rx_dropped":{},
+    "instance_interface_network_rx_errors":{},
+    "instance_interface_network_rx_packets":{},
+    "instance_interface_network_total_bytes":{},
+    "instance_interface_network_tx_bytes":{},
+    "instance_interface_network_tx_dropped":{},
+    "instance_interface_network_tx_errors":{},
+    "instance_interface_network_tx_packets":{},
+    "kubernetes": {
+      "type": "object",
+      "properties": {
+        "host": {}
+      },
+      "required": ["host"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "ClusterName",
+    "Type",
+    "Sources",
+    "Timestamp",
+    "Version",
+    "AutoScalingGroupName",
+    "InstanceId",
+    "InstanceType",
+    "interface",
+    "ContainerInstanceId",
+    "instance_interface_network_rx_bytes",
+    "instance_interface_network_rx_dropped",
+    "instance_interface_network_rx_errors",
+    "instance_interface_network_rx_packets",
+    "instance_interface_network_total_bytes",
+    "instance_interface_network_tx_bytes",
+    "instance_interface_network_tx_dropped",
+    "instance_interface_network_tx_errors",
+    "instance_interface_network_tx_packets"
+  ],
+  "additionalProperties": false
+}

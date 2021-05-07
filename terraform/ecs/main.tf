@@ -107,9 +107,11 @@ output "rendered" {
 }
 
 resource "aws_ecs_task_definition" "aoc" {
-  family                   = "taskdef-${module.common.testing_id}"
-  container_definitions    = data.template_file.task_def.rendered
-  network_mode             = "awsvpc"
+  count                 = var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
+  family                = "taskdef-${module.common.testing_id}"
+  container_definitions = data.template_file.task_def.rendered
+  network_mode          = var.ecs_taskdef_network_mode
+
   requires_compatibilities = ["EC2", "FARGATE"]
   cpu                      = 256
   memory                   = 512
@@ -129,7 +131,55 @@ resource "aws_ecs_task_definition" "aoc" {
       root_directory = "/"
     }
   }
+  depends_on = [null_resource.mount_efs]
+}
 
+resource "aws_ecs_task_definition" "aoc_bridge" {
+  count                 = var.ecs_taskdef_network_mode == "bridge" ? 1 : 0
+  family                = "taskdef-${module.common.testing_id}"
+  container_definitions = data.template_file.task_def.rendered
+  network_mode          = var.ecs_taskdef_network_mode
+
+  requires_compatibilities = ["EC2"]
+  cpu                      = 256
+  memory                   = 512
+
+  # simply use one role for task role and execution role,
+  # we could separate them in the future if
+  # we want to limit the permissions of the roles
+  task_role_arn      = module.basic_components.aoc_iam_role_arn
+  execution_role_arn = module.basic_components.aoc_iam_role_arn
+
+  # mount proc
+  volume {
+    name      = "proc"
+    host_path = "/proc"
+  }
+  # mount dev
+  volume {
+    name      = "dev"
+    host_path = "/dev"
+  }
+  # mount al1_cgroup
+  volume {
+    name      = "al1_cgroup"
+    host_path = "/cgroup"
+  }
+  # mount al2_cgroup
+  volume {
+    name      = "al2_cgroup"
+    host_path = "/sys/fs/cgroup"
+  }
+
+  # mount efs
+  volume {
+    name = "efs"
+
+    efs_volume_configuration {
+      file_system_id = aws_efs_file_system.collector_efs.id
+      root_directory = "/"
+    }
+  }
   depends_on = [null_resource.mount_efs]
 }
 
@@ -185,7 +235,7 @@ resource "aws_ecs_service" "aoc" {
   count            = var.sample_app_callable ? 1 : 0
   name             = "aocservice-${module.common.testing_id}"
   cluster          = module.ecs_cluster.cluster_id
-  task_definition  = "${aws_ecs_task_definition.aoc.family}:1"
+  task_definition  = "${aws_ecs_task_definition.aoc[0].family}:1"
   desired_count    = 1
   launch_type      = var.ecs_launch_type
   platform_version = var.ecs_launch_type == "FARGATE" ? "1.4.0" : null
@@ -206,14 +256,15 @@ resource "aws_ecs_service" "aoc" {
     subnets         = module.basic_components.aoc_private_subnet_ids
     security_groups = [module.basic_components.aoc_security_group_id]
   }
+  depends_on = [aws_ecs_task_definition.aoc]
 }
 
 # remove lb since there's no callable sample app, some test cases will drop in here, for example, ecsmetadata receiver test
 resource "aws_ecs_service" "aoc_without_sample_app" {
-  count            = !var.sample_app_callable ? 1 : 0
+  count            = ! var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
   name             = "aocservice-${module.common.testing_id}"
   cluster          = module.ecs_cluster.cluster_id
-  task_definition  = "${aws_ecs_task_definition.aoc.family}:1"
+  task_definition  = "${aws_ecs_task_definition.aoc[0].family}:1"
   desired_count    = 1
   launch_type      = var.ecs_launch_type
   platform_version = var.ecs_launch_type == "FARGATE" ? "1.4.0" : null
@@ -222,7 +273,17 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
     subnets         = module.basic_components.aoc_private_subnet_ids
     security_groups = [module.basic_components.aoc_security_group_id]
   }
+  depends_on = [aws_ecs_task_definition.aoc]
+}
 
+resource "aws_ecs_service" "aoc_without_sample_app_for_bridge" {
+  count           = ! var.sample_app_callable && var.ecs_taskdef_network_mode == "bridge" ? 1 : 0
+  name            = "aocservice-${module.common.testing_id}"
+  cluster         = module.ecs_cluster.cluster_id
+  task_definition = "${aws_ecs_task_definition.aoc_bridge[0].family}:1"
+  desired_count   = 1
+  launch_type     = "EC2"
+  depends_on      = [aws_ecs_task_definition.aoc_bridge]
 }
 
 ##########################################
@@ -247,7 +308,7 @@ module "validator" {
 }
 
 module "validator_without_sample_app" {
-  count  = !var.sample_app_callable ? 1 : 0
+  count  = ! var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
   source = "../validation"
 
   validation_config            = var.validation_config
@@ -257,9 +318,9 @@ module "validator_without_sample_app" {
   mocked_server_validating_url = "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
 
   ecs_cluster_name    = module.ecs_cluster.cluster_name
-  ecs_task_arn        = aws_ecs_task_definition.aoc.arn
-  ecs_taskdef_family  = aws_ecs_task_definition.aoc.family
-  ecs_taskdef_version = aws_ecs_task_definition.aoc.revision
+  ecs_task_arn        = aws_ecs_task_definition.aoc[0].arn
+  ecs_taskdef_family  = aws_ecs_task_definition.aoc[0].family
+  ecs_taskdef_version = aws_ecs_task_definition.aoc[0].revision
 
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
@@ -267,7 +328,25 @@ module "validator_without_sample_app" {
   depends_on = [aws_ecs_service.aoc_without_sample_app]
 }
 
+module "validator_without_sample_app_for_bridge" {
+  count  = ! var.sample_app_callable && var.ecs_taskdef_network_mode == "bridge" ? 1 : 0
+  source = "../validation"
 
+  validation_config            = var.validation_config
+  region                       = var.region
+  testing_id                   = module.common.testing_id
+  metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+  mocked_server_validating_url = "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
+  cloudwatch_context_json = jsonencode({
+    clusterName : module.ecs_cluster.cluster_name
+  })
+  ecs_cluster_name    = module.ecs_cluster.cluster_name
+  ecs_task_arn        = aws_ecs_task_definition.aoc_bridge[0].arn
+  ecs_taskdef_family  = aws_ecs_task_definition.aoc_bridge[0].family
+  ecs_taskdef_version = aws_ecs_task_definition.aoc_bridge[0].revision
 
+  aws_access_key_id     = var.aws_access_key_id
+  aws_secret_access_key = var.aws_secret_access_key
 
-
+  depends_on = [aws_ecs_service.aoc_without_sample_app_for_bridge]
+}

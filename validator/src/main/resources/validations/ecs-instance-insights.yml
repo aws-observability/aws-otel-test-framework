@@ -1,0 +1,4 @@
+-
+  validationType: "container-insight-ecs-logs"
+  shouldValidateMetricValue: false
+  expectedLogStructureTemplate: "CONTAINER_INSIGHT_ECS_LOG"

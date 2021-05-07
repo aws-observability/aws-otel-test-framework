@@ -1,0 +1,55 @@
+{
+  "title": "structured log schema",
+  "description": "json schema for the container insights receiver ECS EC2 structured log",
+  "type": "object",
+
+  "properties": {
+    "ClusterName": {},
+    "Type": {},
+    "Sources": {},
+    "Timestamp": {},
+    "Version": {},
+    "AutoScalingGroupName": {},
+    "InstanceId": {},
+    "InstanceType": {},
+    "EBSVolumeId":{},
+    "device": {},
+    "ContainerInstanceId": {},
+    "fstype": {},
+    "instance_filesystem_available": {},
+    "instance_filesystem_capacity": {},
+    "instance_filesystem_usage": {},
+    "instance_filesystem_utilization":{},
+    "instance_filesystem_inodes_free": {},
+    "instance_filesystem_inodes": {},
+    "_aws": {
+      "properties": {
+        "CloudWatchMetrics": {},
+        "Timestamp": {}
+      },
+      "required": [
+        "CloudWatchMetrics",
+        "Timestamp"
+      ]
+    }
+  },
+  "required": [
+    "_aws",
+    "ClusterName",
+    "Type",
+    "Sources",
+    "Timestamp",
+    "Version",
+    "AutoScalingGroupName",
+    "InstanceId",
+    "InstanceType",
+    "device",
+    "ContainerInstanceId",
+    "fstype",
+    "instance_filesystem_available",
+    "instance_filesystem_capacity",
+    "instance_filesystem_usage",
+    "instance_filesystem_utilization"
+  ],
+  "additionalProperties": false
+}

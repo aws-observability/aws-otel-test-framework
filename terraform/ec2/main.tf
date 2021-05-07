@@ -438,7 +438,7 @@ resource "null_resource" "install_cwagent" {
 # Validation
 ##########################################
 module "validator" {
-  count  = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
+  count  = ! var.skip_validation && ! var.enable_ssm_validate ? 1 : 0
   source = "../validation"
 
   validation_config            = var.validation_config
@@ -460,7 +460,7 @@ module "validator" {
 
 resource "null_resource" "ssm_validation" {
   depends_on = [null_resource.install_collector_from_ssm]
-  count      = !var.skip_validation && var.enable_ssm_validate ? 1 : 0
+  count      = ! var.skip_validation && var.enable_ssm_validate ? 1 : 0
 
   provisioner "remote-exec" {
     inline = [
@@ -480,7 +480,7 @@ resource "null_resource" "ssm_validation" {
 
 resource "null_resource" "ssm_canary_metrics" {
   depends_on = [null_resource.ssm_validation]
-  count      = !var.skip_validation && var.enable_ssm_validate && var.canary ? 1 : 0
+  count      = ! var.skip_validation && var.enable_ssm_validate && var.canary ? 1 : 0
 
   provisioner "local-exec" {
     command = <<-EOT
