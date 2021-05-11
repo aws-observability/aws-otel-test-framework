@@ -261,7 +261,7 @@ resource "aws_ecs_service" "aoc" {
 
 # remove lb since there's no callable sample app, some test cases will drop in here, for example, ecsmetadata receiver test
 resource "aws_ecs_service" "aoc_without_sample_app" {
-  count            = ! var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
+  count            = !var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
   name             = "aocservice-${module.common.testing_id}"
   cluster          = module.ecs_cluster.cluster_id
   task_definition  = "${aws_ecs_task_definition.aoc[0].family}:1"
@@ -277,7 +277,7 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
 }
 
 resource "aws_ecs_service" "aoc_without_sample_app_for_bridge" {
-  count           = ! var.sample_app_callable && var.ecs_taskdef_network_mode == "bridge" ? 1 : 0
+  count           = !var.sample_app_callable && var.ecs_taskdef_network_mode == "bridge" ? 1 : 0
   name            = "aocservice-${module.common.testing_id}"
   cluster         = module.ecs_cluster.cluster_id
   task_definition = "${aws_ecs_task_definition.aoc_bridge[0].family}:1"
@@ -308,7 +308,7 @@ module "validator" {
 }
 
 module "validator_without_sample_app" {
-  count  = ! var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
+  count  = !var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
   source = "../validation"
 
   validation_config            = var.validation_config
@@ -329,7 +329,7 @@ module "validator_without_sample_app" {
 }
 
 module "validator_without_sample_app_for_bridge" {
-  count  = ! var.sample_app_callable && var.ecs_taskdef_network_mode == "bridge" ? 1 : 0
+  count  = !var.sample_app_callable && var.ecs_taskdef_network_mode == "bridge" ? 1 : 0
   source = "../validation"
 
   validation_config            = var.validation_config
