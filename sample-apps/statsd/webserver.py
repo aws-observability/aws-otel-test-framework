@@ -26,7 +26,7 @@ def send_statsd_metrics():
     logging.warning(INSTANCE_ID)
     logging.warning(RECEIVER_ADDRESS)
     if INSTANCE_ID is not None and RECEIVER_ADDRESS is not None:
-        statsD_metric = bytes('statsdTestMetric1g_%s:1|g|#mykey1:myvalue1,mykey2:myvalue2\nstatsdTestMetric1c_%s:1|c|#mykey3:myvalue3' % (INSTANCE_ID, INSTANCE_ID),'utf-8')
+        statsD_metric = bytes('statsdTestMetric1g_%s:1|g|#mykey1:myvalue1,mykey2:myvalue2\nstatsdTestMetric1c_%s:1|c|#mykey3:myvalue3\nstatsdTestMetric1ms_%s:1|ms|#mykey4:myvalue4\nstatsdTestMetric1h_%s:1|h|#mykey5:myvalue5' % (INSTANCE_ID, INSTANCE_ID,  INSTANCE_ID,  INSTANCE_ID),'utf-8')
         opened_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         opened_socket.sendto(statsD_metric, (RECEIVER_ADDRESS.split(':')[0], int(RECEIVER_ADDRESS.split(':')[1])))
     return
