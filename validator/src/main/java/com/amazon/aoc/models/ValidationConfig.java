@@ -18,6 +18,7 @@ package com.amazon.aoc.models;
 import com.amazon.aoc.fileconfigs.LocalPathExpectedTemplate;
 import com.amazon.aoc.fileconfigs.PredefinedExpectedTemplate;
 import com.amazon.aoc.fileconfigs.FileConfig;
+import com.amazonaws.util.StringUtils;
 import lombok.Data;
 
 @Data
@@ -86,6 +87,12 @@ public class ValidationConfig {
    * @return ExpectedMetric
    */
   private FileConfig getTemplate(String templatePath) {
+    // allow templatePath to be empty or null
+    // return a empty FileConfig in this case.
+    if (StringUtils.isNullOrEmpty(templatePath)) {
+      return new LocalPathExpectedTemplate(templatePath);
+    }
+
     if (templatePath.startsWith("file://")) {
       return new LocalPathExpectedTemplate(templatePath);
     }
