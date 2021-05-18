@@ -10,6 +10,8 @@ receivers:
 exporters:
   awsprometheusremotewrite:
     endpoint: "https://${mock_endpoint}"
+    aws_auth:
+      region: "us-west-2"
 service:
   pipelines:
     metrics:
