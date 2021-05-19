@@ -1,0 +1,43 @@
+{
+  "AutoScalingGroupName": "asg-aoc-testing-bb8b409570942b90-20210516072056019100000006",
+  "ClusterName": "aoc-testing-bb8b409570942b90",
+  "ContainerInstanceId": "8471eea1fc384344a473b708c62d4c4f",
+  "InstanceId": "i-06535226c39fa333a",
+  "InstanceType": "t2.medium",
+  "Sources": [
+    "cadvisor",
+    "calculated"
+  ],
+  "Timestamp": "1621149819757",
+  "Type": "InstanceFS",
+  "Version": "0",
+  "_aws": {
+    "CloudWatchMetrics": [
+      {
+        "Namespace": "ContainerInsightsEC2Instance",
+        "Dimensions": [
+          [
+            "ClusterName",
+            "ContainerInstanceId",
+            "InstanceId"
+          ]
+        ],
+        "Metrics": [
+          {
+            "Name": "instance_filesystem_utilization",
+            "Unit": "Percent"
+          }
+        ]
+      }
+    ],
+    "Timestamp": 1621149819757
+  },
+  "device": "m",
+  "fstype": "vfs",
+  "instance_filesystem_available": 67108864,
+  "instance_filesystem_capacity": 67108864,
+  "instance_filesystem_inodes": 504692,
+  "instance_filesystem_inodes_free": 504691,
+  "instance_filesystem_usage": 0,
+  "instance_filesystem_utilization": 0
+}

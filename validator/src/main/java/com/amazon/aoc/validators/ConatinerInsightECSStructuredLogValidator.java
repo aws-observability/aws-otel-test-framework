@@ -4,6 +4,7 @@ import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.fileconfigs.LocalPathExpectedTemplate;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.models.Context;
+import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.logs.model.FilteredLogEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.log4j.Log4j2;
@@ -32,6 +33,11 @@ public class ConatinerInsightECSStructuredLogValidator
   private static final String LOGGROUPPATH = "/aws/ecs/containerinsights/%s/performance";
   private static final String FORMATPATTERN = "{ $.Type = \"%s\"}";
   private static final String TYPE = "Type";
+
+  // for unit test
+  public void setCloudWatchService(CloudWatchService cloudWatchService) {
+    this.cloudWatchService = cloudWatchService;
+  }
 
   @Override
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
