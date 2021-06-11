@@ -20,5 +20,5 @@ rules:
     verbs: ["create", "get"]
   - apiGroups: [""]
     resources: ["configmaps"]
-    resourceNames: ["aoc-clusterleader"]
+    resourceNames: ["otel-container-insight-clusterleader"]
     verbs: ["get","update"]

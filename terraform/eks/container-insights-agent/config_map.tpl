@@ -15,7 +15,6 @@ data:
       awscontainerinsightreceiver:
 
     processors:
-      awscontainerinsightprocessor:
       batch/metrics:
         timeout: 60s
 
@@ -95,7 +94,7 @@ data:
       pipelines:
         metrics:
           receivers: [awscontainerinsightreceiver]
-          processors: [awscontainerinsightprocessor, batch/metrics]
+          processors: [batch/metrics]
           exporters: [awsemf]
 
       extensions: [health_check]
