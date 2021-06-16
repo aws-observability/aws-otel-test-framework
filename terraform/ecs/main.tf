@@ -43,9 +43,11 @@ module "basic_components" {
 }
 
 locals {
-  ecs_taskdef_path    = "../templates/${var.ecs_taskdef_directory}/ecs_taskdef.tpl"
-  sample_app_image    = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
-  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
+  ecs_taskdef_path        = fileexists("${var.testcase}/ecs_taskdef.tpl") ? "${var.testcase}/ecs_taskdef.tpl" : "../templates/${var.ecs_taskdef_directory}/ecs_taskdef.tpl"
+  sample_app_image        = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  mocked_server_image     = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
+  extra_app_image_repo    = var.ecs_extra_apps_image_repo != "" ? var.ecs_extra_apps_image_repo : module.basic_components.sample_app_image_repo
+  cloudwatch_context_path = fileexists("${var.testcase}/cloudwatch_context.json") ? "${var.testcase}/cloudwatch_context.json" : "../templates/${var.ecs_taskdef_directory}/cloudwatch_context.json"
 }
 
 provider "aws" {
@@ -73,6 +75,7 @@ resource "aws_ssm_parameter" "otconfig" {
   name  = "otconfig-${module.common.testing_id}"
   type  = "String"
   value = module.basic_components.otconfig_content
+  tier  = "Advanced" // need advanced for a long list of prometheus relabel config
 }
 
 ## create task def
@@ -261,13 +264,22 @@ module "validator_without_sample_app" {
   ecs_taskdef_family  = aws_ecs_task_definition.aoc.family
   ecs_taskdef_version = aws_ecs_task_definition.aoc.revision
 
+  cloudwatch_context_json = data.template_file.cloudwatch_context.rendered
+
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [aws_ecs_service.aoc_without_sample_app]
 }
 
-
-
+data "template_file" "cloudwatch_context" {
+  # default is just empty json, each test case can set its own override under its own folder.
+  # See containerinsight_ecs_prometheus as example.
+  template = file(local.cloudwatch_context_path)
+  vars = {
+    testing_id   = module.common.testing_id
+    cluster_name = module.ecs_cluster.cluster_name
+  }
+}
 
 

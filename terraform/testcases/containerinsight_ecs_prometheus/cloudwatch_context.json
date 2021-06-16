@@ -1,0 +1,12 @@
+{
+  "clusterName": "${cluster_name}",
+  "jmx": {
+    "job": "ecssd",
+    "taskDefinitionFamily": "taskdef-${testing_id}-jmx"
+  },
+  "nginx": {
+    "job": "ecssd",
+    "taskDefinitionFamily": "taskdef-${testing_id}-nginx-service",
+    "serviceName": "aocservice-${testing_id}-nginx-service"
+  }
+}

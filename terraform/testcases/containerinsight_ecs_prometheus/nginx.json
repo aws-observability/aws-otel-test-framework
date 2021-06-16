@@ -1,0 +1,66 @@
+[
+  {
+    "name": "nginx",
+    "image": "${ecs_extra_apps_image_repo}:nginx-cwagent-latest",
+    "essential": true,
+    "portMappings": [
+      {
+        "containerPort": 80,
+        "protocol": "tcp"
+      }
+    ],
+    "links": [
+      "app"
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "True",
+        "awslogs-group": "/aoc/ecssd",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "nginx-cwagent"
+      }
+    }
+  },
+  {
+    "name": "app",
+    "image": "${ecs_extra_apps_image_repo}:nginx-app-latest",
+    "essential": true,
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "True",
+        "awslogs-group": "/aoc/ecssdd",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "nginx-app"
+      }
+    }
+  },
+  {
+    "name": "nginx-prometheus-exporter",
+    "image": "${ecs_extra_apps_image_repo}:nginx-prometheus-exporter-0.8.0",
+    "essential": true,
+    "command": [
+      "-nginx.scrape-uri",
+      "http://nginx:8080/stub_status"
+    ],
+    "links": [
+      "nginx"
+    ],
+    "portMappings": [
+      {
+        "containerPort": 9113,
+        "protocol": "tcp"
+      }
+    ],
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "True",
+        "awslogs-group": "/aoc/ecssd",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "nginx-prometheus-exporter"
+      }
+    }
+  }
+]
