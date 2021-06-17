@@ -1,5 +1,5 @@
 # this file is defined in validator/src/main/resources/validations
-validation_config = "ecs-container-insight.yml"
+validation_config = "ecs-container-insight-prometheus.yml"
 # no need for any lb
 sample_app_callable = false
 # sample apps that emit ecs metrics

@@ -1,0 +1,9 @@
+- metricName: nginx_up
+  namespace: ECS/ContainerInsights/Prometheus
+  dimensions:
+    - name: ClusterName
+      value: {{cloudWatchContext.clusterName}}
+    - name: TaskDefinitionFamily
+      value: {{cloudWatchContext.nginx.taskDefinitionFamily}}
+    - name: ServiceName
+      value: {{cloudWatchContext.nginx.serviceName}}

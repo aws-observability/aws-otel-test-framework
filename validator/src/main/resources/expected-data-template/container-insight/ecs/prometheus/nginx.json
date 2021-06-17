@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent ECS structured log",
+  "type": "object",
+  "properties": {
+    "ClusterName": {},
+    "Timestamp": {},
+    "Version": {},
+    "instance": {},
+    "job": {},
+    "prom_metric_type": {},
+    "container_name": {},
+    "TaskDefinitionFamily": {},
+    "TaskRevision": {},
+    "TaskGroup": {},
+    "LaunchType": {},
+    "ServiceName": {},
+    "InstanceType": {},
+    "VpcId": {},
+    "SubnetId": {},
+    "nginx_connections_accepted": {},
+    "nginx_connections_handled": {},
+    "nginx_http_requests_total": {},
+    "nginx_connections_active": {},
+    "nginx_connections_reading": {},
+    "nginx_connections_waiting": {},
+    "nginx_connections_writing": {},
+    "nginx_up": {},
+    "nginxexporter_build_info": {}
+  },
+  "required": [
+    "ClusterName",
+    "container_name",
+    "TaskDefinitionFamily",
+    "ServiceName",
+    "nginx_up"
+  ],
+  "additionalProperties": true
+}

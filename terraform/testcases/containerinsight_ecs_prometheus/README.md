@@ -9,9 +9,10 @@ for [extension/ecsobserver](https://github.com/open-telemetry/opentelemetry-coll
 
 - [ ] [cloudwatch_context.json](cloudwatch_context.json)
     - [ ] we need to update java code to include `taskDefinitionFamily` and `serviceName`
+    - [ ] cluster name is used by other tests, need to pass it when rendering the template, could do this for the
+      default template, it's empty
 - [x] app image repo is hardcoded and not used
 - [ ] log group name for sample applications' container log
-- [ ] why I created a new `ecs_taskdef.tpl` is it used?
 
 ## Usage
 
@@ -47,3 +48,21 @@ terraform apply \
 ### Build and push sample app image
 
 There are multiple sample applications
+
+### Validation
+
+```bash
+# Run at project root to make sure the validator code pass style check and compiles
+./gradlew :validator:build 
+```
+
+- validation config file name is specified
+  in [parameters.tfvars](parameters.tfvars) `ecs-container-insight-prometheus.yml`
+- the actual validation config is located
+  in [validator/src/main/resources/validations](../../../validator/src/main/resources/validations/ecs-container-insight-prometheus.yml)
+- path to log and metrics validation templates is
+  in [PredefinedExpectedTemplate](../../../validator/src/main/java/com/amazon/aoc/fileconfigs/PredefinedExpectedTemplate.java)
+  while the actual files are
+  in [expected-data-template/container-insight/ecs/prometheus](../../../validator/src/main/resources/expected-data-template/container-insight/ecs/prometheus)
+- `validationType: "container-insight-ecs-prometheus-logs"` in config
+  triggers [ValidatorFactory](../../../validator/src/main/java/com/amazon/aoc/validators/ValidatorFactory.java)
