@@ -30,7 +30,7 @@
       "logDriver": "awslogs",
       "options": {
         "awslogs-create-group": "True",
-        "awslogs-group": "/aoc/ecssdd",
+        "awslogs-group": "/aoc/ecssd",
         "awslogs-region": "${region}",
         "awslogs-stream-prefix": "nginx-app"
       }

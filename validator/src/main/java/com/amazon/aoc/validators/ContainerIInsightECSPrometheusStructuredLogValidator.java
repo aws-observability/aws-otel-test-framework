@@ -7,6 +7,7 @@ import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.models.Context;
 import com.fasterxml.jackson.databind.JsonNode;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import java.util.List;
  * @see ContainerInsightPrometheusMetricsValidator for ECS Proemtheus Metrics
  * @see ContainerInsightPrometheusStructuredLogValidator for EKS
  */
+@Log4j2
 public class ContainerIInsightECSPrometheusStructuredLogValidator
     extends AbstractStructuredLogValidator {
 
@@ -28,8 +30,9 @@ public class ContainerIInsightECSPrometheusStructuredLogValidator
     // /aws/ecs/containerinsights/aoc-prometheus-dashboard-1/prometheus
     logGroupName = String.format("/aws/ecs/containerinsights/%s/%s",
         context.getCloudWatchContext().getClusterName(), "prometheus");
+    log.info("log group name is {}", logGroupName);
 
-    // TODO: it's same as eks prometheus
+    // It's almost same as EKS prometheus but we use different key to find schema.
     validateApps = getAppsToValidate(context.getCloudWatchContext());
     MustacheHelper mustacheHelper = new MustacheHelper();
 
@@ -38,23 +41,17 @@ public class ContainerIInsightECSPrometheusStructuredLogValidator
           expectedDataTemplate.getPath().toString(),
           app.getName() + ".json"));
       String templateInput = mustacheHelper.render(fileConfig, context);
-      schemasToValidate.put(app.getNamespace(), parseJsonSchema(templateInput));
+      // NOTE: EKS use namespace, we use task family for matching log event to schema.
+      schemasToValidate.put(app.getTaskDefinitionFamily(), parseJsonSchema(templateInput));
       logStreamNames.add(app.getJob());
     }
+    log.info("apps to validate {}", validateApps.size());
   }
 
   @Override
   String getJsonSchemaMappingKey(JsonNode logEventNode) {
     // We use TaskDefinitionFamily to check because ServiceName is optional in EMF log.
-    String taskFamily = logEventNode.get("TaskDefinitionFamily").asText();
-    // When registering schema in schemasToValidate we
-    if (taskFamily.contains("jmx")) {
-      return "jmx";
-    }
-    if (taskFamily.contains("nginx")) {
-      return "nginx";
-    }
-    return null;
+    return logEventNode.get("TaskDefinitionFamily").asText();
   }
 
   private static List<CloudWatchContext.App> getAppsToValidate(CloudWatchContext cwContext) {
