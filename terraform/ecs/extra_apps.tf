@@ -1,3 +1,7 @@
+locals {
+  extra_app_image_repo = var.ecs_extra_apps_image_repo != "" ? var.ecs_extra_apps_image_repo : module.basic_components.sample_app_image_repo
+}
+
 data "template_file" "extra_apps_defs" {
   for_each = var.ecs_extra_apps
   template = file("${var.testcase}/${each.value.definition}")

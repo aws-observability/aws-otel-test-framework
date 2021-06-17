@@ -26,9 +26,9 @@ Non default image `123456.dkr.ecr.us-west-2.amazonaws.com/aoc:myfeature-0.2`
   e.g. `123456.dkr.ecr.us-west-2.amazonaws.com/prometheus-samples:tomcat-jmx-latest`
 
 ```bash
+cd $PROJECT/terraform/ecs
 terraform apply \
   -var="ecs_launch_type=FARGATE" \
-  -var="disable_efs=true" \
   -var="disable_mocked_server=true" \
   -var="aoc_version=myfeature-0.2" \
   -var="aoc_image_repo=123456.dkr.ecr.us-west-2.amazonaws.com/aoc" \
@@ -66,3 +66,9 @@ There are multiple sample applications
   in [expected-data-template/container-insight/ecs/prometheus](../../../validator/src/main/resources/expected-data-template/container-insight/ecs/prometheus)
 - `validationType: "container-insight-ecs-prometheus-logs"` in config
   triggers [ValidatorFactory](../../../validator/src/main/java/com/amazon/aoc/validators/ValidatorFactory.java)
+
+## Problems
+
+`Unknown variable; There is no variable named`
+
+- used wrong variable name in template file

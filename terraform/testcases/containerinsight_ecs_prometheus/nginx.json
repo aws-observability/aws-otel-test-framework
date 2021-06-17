@@ -1,7 +1,7 @@
 [
   {
     "name": "nginx",
-    "image": "${ecs_extra_apps_image_repo}:nginx-cwagent-latest",
+    "image": "${image_repo}:nginx-cwagent-latest",
     "essential": true,
     "portMappings": [
       {
@@ -24,7 +24,7 @@
   },
   {
     "name": "app",
-    "image": "${ecs_extra_apps_image_repo}:nginx-app-latest",
+    "image": "${image_repo}:nginx-app-latest",
     "essential": true,
     "logConfiguration": {
       "logDriver": "awslogs",
@@ -38,7 +38,7 @@
   },
   {
     "name": "nginx-prometheus-exporter",
-    "image": "${ecs_extra_apps_image_repo}:nginx-prometheus-exporter-0.8.0",
+    "image": "${image_repo}:nginx-prometheus-exporter-0.8.0",
     "essential": true,
     "command": [
       "-nginx.scrape-uri",

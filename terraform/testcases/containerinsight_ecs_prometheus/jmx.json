@@ -1,7 +1,7 @@
 [
   {
     "name": "tomcat-prometheus-workload-java-ec2-bridge-dynamic-port",
-    "image": "${ecs_extra_apps_image_repo}:tomcat-jmx-0.1",
+    "image": "${image_repo}:tomcat-jmx-0.1",
     "portMappings": [
       {
         "protocol": "tcp",

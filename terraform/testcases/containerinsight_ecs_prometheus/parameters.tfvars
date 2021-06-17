@@ -6,7 +6,7 @@ sample_app_callable = false
 ecs_extra_apps = {
   # TODO: need both host network, awspvc and fargate
   jmx = {
-    definition   = "jmx.tpl"
+    definition   = "jmx.json"
     service_name = "jmx"
     service_type = "replica"
     replicas     = 1
@@ -17,7 +17,7 @@ ecs_extra_apps = {
   }
 
   nginx = {
-    definition   = "nginx.tpl"
+    definition   = "nginx.json"
     service_name = "nginx-service"
     service_type = "replica"
     replicas     = 1
