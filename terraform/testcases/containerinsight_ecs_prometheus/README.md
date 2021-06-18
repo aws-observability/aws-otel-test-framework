@@ -5,20 +5,13 @@
 This is e2e test
 for [extension/ecsobserver](https://github.com/open-telemetry/opentelemetry-collector-contrib/tree/main/extension/observer/ecsobserver)
 
-## TODO
-
-- [ ] [cloudwatch_context.json](cloudwatch_context.json)
-    - [ ] we need to update java code to include `taskDefinitionFamily` and `serviceName`
-    - [ ] cluster name is used by other tests, need to pass it when rendering the template, could do this for the
-      default template, it's empty
-- [x] app image repo is hardcoded and not used
-- [ ] log group name for sample applications' container log
-
 ## Usage
 
-Non default image `123456.dkr.ecr.us-west-2.amazonaws.com/aoc:myfeature-0.2`
+If your AWS account is `123456` and you want to run your own image
+`123456.dkr.ecr.us-west-2.amazonaws.com/aoc:myfeature-0.2`.
 
-- `ecs_launch_type` is the launch type for aoc itself, launch type for extra apps are defined in TODO(where?)
+- `ecs_launch_type` is the launch type for aoc itself, launch type for extra apps are defined
+  in [parameters.tfvars](parameters.tfvars)
 - `aoc_image_repo` is repo for aoc without tag
 - `aoc_version` is the image tag for aoc
 - `ecs_extra_apps_image_repo` is the repo for all the extra apps, remaining part of image name and version are defined
@@ -53,7 +46,9 @@ There are multiple sample applications
 
 ```bash
 # Run at project root to make sure the validator code pass style check and compiles
-./gradlew :validator:build 
+./gradlew :validator:build
+# Run at terraform/ecs to run validation without spinning up new infra
+make validate
 ```
 
 - validation config file name is specified
@@ -69,6 +64,12 @@ There are multiple sample applications
 
 ## Problems
 
-`Unknown variable; There is no variable named`
+List of common problems you may encounter.
 
-- used wrong variable name in template file
+### Unknown variable
+
+You are using wrong variable name in template files, or you didn't define the var when rendering template.
+
+```
+Unknown variable; There is no variable named
+```

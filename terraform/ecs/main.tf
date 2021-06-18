@@ -289,7 +289,7 @@ module "validator_without_sample_app" {
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
-  depends_on = [aws_ecs_service.aoc_without_sample_app]
+  depends_on = [aws_ecs_service.aoc_without_sample_app, aws_ecs_service.extra_apps]
 }
 
 data "template_file" "cloudwatch_context" {

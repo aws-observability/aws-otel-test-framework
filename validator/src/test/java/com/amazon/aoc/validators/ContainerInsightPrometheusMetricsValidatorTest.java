@@ -7,7 +7,6 @@ import static org.mockito.Mockito.when;
 import com.amazon.aoc.fileconfigs.PredefinedExpectedTemplate;
 import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.models.Context;
-import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.MetricDataResult;
 import org.junit.Test;
@@ -23,12 +22,6 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
 
   @Test
   public void testValidationSucceed() throws Exception {
-    // fake a validation config
-    ValidationConfig validationConfig = new ValidationConfig();
-    validationConfig.setCallingType("http");
-    validationConfig.setExpectedMetricTemplate(
-        PredefinedExpectedTemplate.CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC.name());
-
     // mock cloudwatch service
     CloudWatchService cloudWatchService = mock(CloudWatchService.class);
     List<MetricDataResult> metricDataResults = new ArrayList<>();
@@ -39,10 +32,27 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
     ContainerInsightPrometheusMetricsValidator validator =
         new ContainerInsightPrometheusMetricsValidator();
     validator.init(
-        getContext(),
-        validationConfig,
-        null,
+        getContext(), null, null,
         PredefinedExpectedTemplate.CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC
+    );
+    validator.setCloudWatchService(cloudWatchService);
+    validator.setMaxRetryCount(1);
+    validator.setInitialSleepTime(0);
+    validator.validate();
+  }
+
+  @Test
+  public void tesECS() throws Exception {
+    CloudWatchService cloudWatchService = mock(CloudWatchService.class);
+    List<MetricDataResult> metricDataResults = new ArrayList<>();
+    metricDataResults.add(new MetricDataResult().withStatusCode("200").withValues(1.0));
+    when(cloudWatchService.getMetricData(any(), any(), any())).thenReturn(metricDataResults);
+
+    ContainerInsightPrometheusMetricsValidator validator =
+        new ContainerInsightPrometheusMetricsValidator();
+    validator.init(
+        getECSContext(), null, null,
+        PredefinedExpectedTemplate.CONTAINER_INSIGHT_ECS_PROMETHEUS_METRIC
     );
     validator.setCloudWatchService(cloudWatchService);
     validator.setMaxRetryCount(1);
@@ -71,6 +81,19 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
     cloudWatchContext.setNginx(app);
     cloudWatchContext.setClusterName(this.clusterName);
 
+    context.setCloudWatchContext(cloudWatchContext);
+    return context;
+  }
+
+  private Context getECSContext() {
+    CloudWatchContext.App jmx = new CloudWatchContext.App();
+    jmx.setJob("jmx");
+    jmx.setTaskDefinitionFamilies(new String[]{"jmxawsvpc", "jmxfargate"});
+    CloudWatchContext cloudWatchContext = new CloudWatchContext();
+    cloudWatchContext.setJmx(jmx);
+    cloudWatchContext.setClusterName(this.clusterName);
+
+    Context context = getContext();
     context.setCloudWatchContext(cloudWatchContext);
     return context;
   }

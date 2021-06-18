@@ -58,7 +58,7 @@ public class CloudWatchContext {
     private String namespace;
     private String job;
     // For ECS
-    private String taskDefinitionFamily;
+    private String[] taskDefinitionFamilies;
     private String serviceName;
   }
 }

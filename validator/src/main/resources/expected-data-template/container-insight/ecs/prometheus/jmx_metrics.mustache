@@ -1,17 +1,20 @@
+# https://stackoverflow.com/questions/4067093/mustache-read-variables-from-parent-section-in-child-section
+# https://stackoverflow.com/questions/3954913/iterating-over-arrays-with-mustache
+{{#cloudWatchContext.jmx.taskDefinitionFamilies}}
 - metricName: jvm_classes_loaded
   namespace: ECS/ContainerInsights/Prometheus
   dimensions:
     - name: ClusterName
       value: {{cloudWatchContext.clusterName}}
     - name: TaskDefinitionFamily
-      value: {{cloudWatchContext.jmx.taskDefinitionFamily}}
+      value: {{.}}
 - metricName: jvm_memory_pool_bytes_used
   namespace: ECS/ContainerInsights/Prometheus
   dimensions:
     - name: ClusterName
       value: {{cloudWatchContext.clusterName}}
     - name: TaskDefinitionFamily
-      value: {{cloudWatchContext.jmx.taskDefinitionFamily}}
+      value: {{.}}
     - name: pool
       value: Metaspace
 - metricName: jvm_memory_bytes_used
@@ -20,6 +23,7 @@
     - name: ClusterName
       value: {{cloudWatchContext.clusterName}}
     - name: TaskDefinitionFamily
-      value: {{cloudWatchContext.jmx.taskDefinitionFamily}}
+      value: {{.}}
     - name: area
       value: heap
+{{/cloudWatchContext.jmx.taskDefinitionFamilies}}

@@ -56,10 +56,15 @@ public class ContainerIInsightECSPrometheusStructuredLogValidator
           app.getName() + ".json"));
       String templateInput = mustacheHelper.render(fileConfig, context);
       // NOTE: EKS use namespace, we use task family for matching log event to schema.
-      schemasToValidate.put(app.getTaskDefinitionFamily(), parseJsonSchema(templateInput));
+      for (String taskDefinitionFamily : app.getTaskDefinitionFamilies()) {
+        // We can deploy one workload in different ways (EC2, fargate etc.)
+        // so we have a list of task definition families.
+        schemasToValidate.put(taskDefinitionFamily, parseJsonSchema(templateInput));
+      }
       logStreamNames.add(app.getJob());
     }
-    log.info("apps to validate {}", validateApps.size());
+    log.info("apps to validate {} schema to validate {}", validateApps.size(),
+        schemasToValidate.keySet());
   }
 
   @Override
