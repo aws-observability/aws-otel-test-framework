@@ -70,6 +70,24 @@ module "ecs_cluster" {
   // TODO(pingleig): pass patch tag for canary and soaking (if any)
 }
 
+# This is a hack for known issue https://github.com/hashicorp/terraform-provider-aws/issues/4852
+# We always create ECS cluster with active EC2 instances, so when destroy we need to scale down
+# the asg so the cluster can be destroyed.
+resource "null_resource" "scale_down_asg" {
+  # https://discuss.hashicorp.com/t/how-to-rewrite-null-resource-with-local-exec-provisioner-when-destroy-to-prepare-for-deprecation-after-0-12-8/4580/2
+  triggers = {
+    asg_name = module.ecs_cluster.autoscaling_group_name
+  }
+
+  # Only run during destroy, do nothing for apply.
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+    aws autoscaling update-auto-scaling-group --auto-scaling-group-name "${self.triggers.asg_name}" --min-size 0 --desired-capacity 0
+EOT
+  }
+}
+
 resource "aws_ssm_parameter" "otconfig" {
   name  = "otconfig-${module.common.testing_id}"
   type  = "String"
@@ -208,6 +226,8 @@ resource "aws_ecs_service" "aoc" {
     subnets         = module.basic_components.aoc_private_subnet_ids
     security_groups = [module.basic_components.aoc_security_group_id]
   }
+
+  depends_on = [null_resource.scale_down_asg]
 }
 
 # remove lb since there's no callable sample app, some test cases will drop in here, for example, ecsmetadata receiver test
@@ -225,6 +245,7 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
     security_groups = [module.basic_components.aoc_security_group_id]
   }
 
+  depends_on = [null_resource.scale_down_asg]
 }
 
 ##########################################
