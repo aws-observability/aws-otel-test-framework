@@ -9,12 +9,14 @@ import com.amazonaws.services.cloudwatch.model.Metric;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
+@Log4j2
 public class ContainerInsightPrometheusMetricsValidator extends AbstractCWMetricsValidator {
   private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
@@ -31,6 +33,7 @@ public class ContainerInsightPrometheusMetricsValidator extends AbstractCWMetric
             expectedDataTemplate.getPath().toString(),
           app.getName() + "_metrics.mustache"));
       String templateInput = mustacheHelper.render(fileConfig, context);
+      // log.info("Rendered template {}", templateInput);
       List<Metric> appMetrics = mapper.readValue(templateInput.getBytes(StandardCharsets.UTF_8),
             new TypeReference<List<Metric>>() {
             });

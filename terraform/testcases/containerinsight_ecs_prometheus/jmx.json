@@ -1,0 +1,25 @@
+[
+  {
+    "name": "tomcat-prometheus-workload-java-ec2-bridge-dynamic-port",
+    "image": "${image_repo}:tomcat-jmx-0.1",
+    "portMappings": [
+      {
+        "protocol": "tcp",
+        "containerPort": 9404
+      }
+    ],
+    "dockerLabels": {
+      "ECS_PROMETHEUS_EXPORTER_PORT": "9404",
+      "Java_EMF_Metrics": "true"
+    },
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "True",
+        "awslogs-group": "/aoc/ecssd",
+        "awslogs-region": "${region}",
+        "awslogs-stream-prefix": "prometheus-tomcat-jmx"
+      }
+    }
+  }
+]

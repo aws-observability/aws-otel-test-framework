@@ -97,6 +97,15 @@ resource "aws_security_group" "aoc_sg" {
   name   = module.common.aoc_vpc_security_group
   vpc_id = module.vpc.vpc_id
 
+  # Allow all TCP ingress within the VPC so prometheus scrape can work with private IP.
+  # https://stackoverflow.com/questions/49995417/self-reference-not-allowed-in-security-group-definition
+  ingress {
+    from_port = 0
+    to_port   = 65535
+    protocol  = "tcp"
+    self      = true
+  }
+
   ingress {
     from_port   = 22
     to_port     = 22

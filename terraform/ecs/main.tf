@@ -43,9 +43,10 @@ module "basic_components" {
 }
 
 locals {
-  ecs_taskdef_path    = "../templates/${var.ecs_taskdef_directory}/ecs_taskdef.tpl"
-  sample_app_image    = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
-  mocked_server_image = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
+  ecs_taskdef_path        = fileexists("${var.testcase}/ecs_taskdef.tpl") ? "${var.testcase}/ecs_taskdef.tpl" : "../templates/${var.ecs_taskdef_directory}/ecs_taskdef.tpl"
+  sample_app_image        = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
+  mocked_server_image     = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
+  cloudwatch_context_path = fileexists("${var.testcase}/cloudwatch_context.json") ? "${var.testcase}/cloudwatch_context.json" : "../templates/${var.ecs_taskdef_directory}/cloudwatch_context.json"
 }
 
 provider "aws" {
@@ -54,7 +55,7 @@ provider "aws" {
 
 module "ecs_cluster" {
   source  = "infrablocks/ecs-cluster/aws"
-  version = "3.0.0"
+  version = "4.0.0"
 
   cluster_name                         = module.common.testing_id
   component                            = "aoc"
@@ -69,10 +70,29 @@ module "ecs_cluster" {
   // TODO(pingleig): pass patch tag for canary and soaking (if any)
 }
 
+# This is a hack for known issue https://github.com/hashicorp/terraform-provider-aws/issues/4852
+# We always create ECS cluster with active EC2 instances, so when destroy we need to scale down
+# the asg so the cluster can be destroyed.
+resource "null_resource" "scale_down_asg" {
+  # https://discuss.hashicorp.com/t/how-to-rewrite-null-resource-with-local-exec-provisioner-when-destroy-to-prepare-for-deprecation-after-0-12-8/4580/2
+  triggers = {
+    asg_name = module.ecs_cluster.autoscaling_group_name
+  }
+
+  # Only run during destroy, do nothing for apply.
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+    aws autoscaling update-auto-scaling-group --auto-scaling-group-name "${self.triggers.asg_name}" --min-size 0 --desired-capacity 0
+EOT
+  }
+}
+
 resource "aws_ssm_parameter" "otconfig" {
   name  = "otconfig-${module.common.testing_id}"
   type  = "String"
   value = module.basic_components.otconfig_content
+  tier  = "Advanced" // need advanced for a long list of prometheus relabel config
 }
 
 ## create task def
@@ -197,7 +217,7 @@ resource "aws_ecs_service" "aoc" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.mocked_server_lb_tg.arn
+    target_group_arn = aws_lb_target_group.mocked_server_lb_tg[0].arn
     container_name   = "mocked-server"
     container_port   = module.common.mocked_server_http_port
   }
@@ -206,6 +226,8 @@ resource "aws_ecs_service" "aoc" {
     subnets         = module.basic_components.aoc_private_subnet_ids
     security_groups = [module.basic_components.aoc_security_group_id]
   }
+
+  depends_on = [null_resource.scale_down_asg]
 }
 
 # remove lb since there's no callable sample app, some test cases will drop in here, for example, ecsmetadata receiver test
@@ -223,6 +245,7 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
     security_groups = [module.basic_components.aoc_security_group_id]
   }
 
+  depends_on = [null_resource.scale_down_asg]
 }
 
 ##########################################
@@ -237,7 +260,7 @@ module "validator" {
   testing_id                   = module.common.testing_id
   metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   sample_app_endpoint          = "http://${aws_lb.aoc_lb[0].dns_name}:${module.common.sample_app_lb_port}"
-  mocked_server_validating_url = "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
+  mocked_server_validating_url = "http://${aws_lb.mocked_server_lb[0].dns_name}:${module.common.mocked_server_lb_port}/check-data"
   cortex_instance_endpoint     = var.cortex_instance_endpoint
 
   aws_access_key_id     = var.aws_access_key_id
@@ -254,20 +277,29 @@ module "validator_without_sample_app" {
   region                       = var.region
   testing_id                   = module.common.testing_id
   metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-  mocked_server_validating_url = "http://${aws_lb.mocked_server_lb.dns_name}:${module.common.mocked_server_lb_port}/check-data"
+  mocked_server_validating_url = var.disable_mocked_server ? "" : "http://${aws_lb.mocked_server_lb[0].dns_name}:${module.common.mocked_server_lb_port}/check-data"
 
   ecs_cluster_name    = module.ecs_cluster.cluster_name
   ecs_task_arn        = aws_ecs_task_definition.aoc.arn
   ecs_taskdef_family  = aws_ecs_task_definition.aoc.family
   ecs_taskdef_version = aws_ecs_task_definition.aoc.revision
 
+  cloudwatch_context_json = data.template_file.cloudwatch_context.rendered
+
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
-  depends_on = [aws_ecs_service.aoc_without_sample_app]
+  depends_on = [aws_ecs_service.aoc_without_sample_app, aws_ecs_service.extra_apps]
 }
 
-
-
+data "template_file" "cloudwatch_context" {
+  # default is just empty json, each test case can set its own override under its own folder.
+  # See containerinsight_ecs_prometheus as example.
+  template = file(local.cloudwatch_context_path)
+  vars = {
+    testing_id   = module.common.testing_id
+    cluster_name = module.ecs_cluster.cluster_name
+  }
+}
 
 
