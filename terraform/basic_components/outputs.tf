@@ -41,6 +41,10 @@ output "mocked_server_cert_content" {
   value = data.template_file.mocked_server_cert.rendered
 }
 
+output "sample_app_image_repo" {
+  value = data.aws_ecr_repository.sample_apps.repository_url
+}
+
 output "sample_app_image" {
   value = "${data.aws_ecr_repository.sample_apps.repository_url}:${var.sample_app}-latest"
 }

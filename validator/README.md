@@ -7,7 +7,7 @@ validator is one of the component of the testing framework, and can be run indep
 run this command in the root dir of the testing framework
 
 ```shell
-./gradlew :validator:run --args='-c default-validation.yml --endpoint "the endpoint to test(Ex. 127.0.0.1:4567)'
+./gradlew :validator:run --args='-c default-otel-trace-validation.yml --endpoint http://127.0.0.1:4567'
 ```
 
 help
@@ -22,7 +22,7 @@ help
 uses: aws-observability/aws-otel-collector-test-framework@terraform
 with:
     running_type: validator
-    opts: "-c default-validation.yml --endpoint "the endpoint to test(Ex. 127.0.0.1:4567)"
+    opts: "-c default-otel-trace-validation.yml --endpoint 'the endpoint to test(Ex. 127.0.0.1:4567)'"
 ```
 
 ## Add a validation suite

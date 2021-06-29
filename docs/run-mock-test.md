@@ -33,7 +33,7 @@ Install Docker compose: https://docs.docker.com/compose/install/
 ```
 cd aws-otel-test-framework/terraform/mock
 terraform init
-terraform apply -var="testcase=../testcases/otlp_mock -var-file=../testcases/otlp_mock/parameters.tfvars" 
+terraform apply -var="testcase=../testcases/otlp_mock" -var-file=../testcases/otlp_mock/parameters.tfvars
 terraform destroy
 ```
 

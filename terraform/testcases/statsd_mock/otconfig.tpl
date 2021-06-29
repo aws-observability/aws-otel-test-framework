@@ -1,7 +1,7 @@
 receivers:
   statsd:
     endpoint: 0.0.0.0:${udp_port}
-    aggregation_interval: 60s
+    aggregation_interval: 20s
 exporters:
   logging:
     loglevel: debug

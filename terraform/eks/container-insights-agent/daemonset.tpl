@@ -17,8 +17,6 @@ spec:
         - name: aws-otel-collector
           image: ${OTELIMAGE}
           env:
-            - name: AWS_REGION
-              value: ${REGION} 
             - name: K8S_NODE_NAME
               valueFrom:
                 fieldRef:

@@ -63,6 +63,7 @@ public class ValidatorFactory {
         validator = new PerformanceValidator();
         break;
       case "container-insight-eks-prometheus-metrics":
+      case "container-insight-ecs-prometheus-metrics":
         validator = new ContainerInsightPrometheusMetricsValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
@@ -76,6 +77,10 @@ public class ValidatorFactory {
         break;
       case "container-insight-ecs-logs":
         validator = new ConatinerInsightECSStructuredLogValidator();
+        expectedData = validationConfig.getExpectedLogStructureTemplate();
+        break;
+      case "container-insight-ecs-prometheus-logs":
+        validator = new ContainerIInsightECSPrometheusStructuredLogValidator();
         expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;
       default:
