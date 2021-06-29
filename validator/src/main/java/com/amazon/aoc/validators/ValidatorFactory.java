@@ -75,6 +75,10 @@ public class ValidatorFactory {
         validator = new ContainerInsightStructuredLogValidator();
         expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;
+      case "container-insight-ecs-logs":
+        validator = new ConatinerInsightECSStructuredLogValidator();
+        expectedData = validationConfig.getExpectedLogStructureTemplate();
+        break;
       case "container-insight-ecs-prometheus-logs":
         validator = new ContainerIInsightECSPrometheusStructuredLogValidator();
         expectedData = validationConfig.getExpectedLogStructureTemplate();

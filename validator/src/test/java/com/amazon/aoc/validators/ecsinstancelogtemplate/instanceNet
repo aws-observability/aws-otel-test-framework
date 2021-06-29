@@ -1,0 +1,24 @@
+{
+  "AutoScalingGroupName": "asg-aoc-testing-bb8b409570942b90-20210516072056019100000006",
+  "ClusterName": "aoc-testing-bb8b409570942b90",
+  "ContainerInstanceId": "8471eea1fc384344a473b708c62d4c4f",
+  "InstanceId": "i-06535226c39fa333a",
+  "InstanceType": "t2.medium",
+  "Sources": [
+    "cadvisor",
+    "calculated"
+  ],
+  "Timestamp": "1621149831324",
+  "Type": "InstanceNet",
+  "Version": "0",
+  "instance_interface_network_rx_bytes": 2529.6445,
+  "instance_interface_network_rx_dropped": 0,
+  "instance_interface_network_rx_errors": 0,
+  "instance_interface_network_rx_packets": 9.509617,
+  "instance_interface_network_total_bytes": 7818.8936,
+  "instance_interface_network_tx_bytes": 5289.249,
+  "instance_interface_network_tx_dropped": 0,
+  "instance_interface_network_tx_errors": 0,
+  "instance_interface_network_tx_packets": 8.818008,
+  "interface": "eth0"
+}

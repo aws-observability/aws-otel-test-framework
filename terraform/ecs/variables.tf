@@ -34,6 +34,11 @@ variable "ecs_taskdef_directory" {
   default = "defaults"
 }
 
+
+variable "ecs_taskdef_network_mode" {
+  default = "awsvpc"
+}
+
 variable "ecs_extra_apps_image_repo" {
   # When empty will use sample image repo
   default = ""
