@@ -92,7 +92,7 @@ variable "amis" {
       ami_owner          = "099720109477"
       ami_product_code   = []
       family             = "debian"
-      arch               = "amd64"
+      arch               = "x86_64"
       login_user         = "ubuntu"
       user_data          = <<EOF
 #! /bin/bash
@@ -105,7 +105,7 @@ EOF
       ami_owner          = "099720109477"
       ami_product_code   = []
       family             = "debian"
-      arch               = "amd64"
+      arch               = "x86_64"
       login_user         = "ubuntu"
       user_data          = <<EOF
 #! /bin/bash
@@ -120,7 +120,7 @@ EOF
       ami_product_code = [
       "auhljmclkudu651zy27rih2x2"]
       family     = "debian"
-      arch       = "amd64"
+      arch       = "x86_64"
       login_user = "admin"
       user_data  = <<EOF
 #! /bin/bash
@@ -139,7 +139,7 @@ EOF
       ami_owner          = "679593333241"
       ami_product_code   = []
       family             = "debian"
-      arch               = "amd64"
+      arch               = "x86_64"
       login_user         = "admin"
       user_data          = <<EOF
 #! /bin/bash
@@ -158,7 +158,7 @@ EOF
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
-      arch               = "amd64"
+      arch               = "x86_64"
       login_user         = "ec2-user"
       user_data          = <<EOF
 #! /bin/bash
@@ -171,7 +171,7 @@ EOF
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "windows"
-      arch               = "amd64"
+      arch               = "x86_64"
       login_user         = "Administrator"
     }
     amazonlinux = {
@@ -180,7 +180,7 @@ EOF
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
-      arch               = "amd64"
+      arch               = "x86_64"
       login_user         = "ec2-user"
       user_data          = <<EOF
 #! /bin/bash
@@ -195,7 +195,7 @@ EOF
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
-      arch               = "amd64"
+      arch               = "x86_64"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
@@ -212,7 +212,7 @@ EOF
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
-      arch               = "amd64"
+      arch               = "x86_64"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
@@ -228,7 +228,7 @@ EOF
       ami_owner          = "309956199498"
       ami_product_code   = []
       family             = "linux"
-      arch               = "amd64"
+      arch               = "x86_64"
       user_data          = <<EOF
 #! /bin/bash
 sudo dnf install -y python3
@@ -241,7 +241,7 @@ EOF
       ami_owner          = "309956199498"
       ami_product_code   = []
       family             = "linux"
-      arch               = "amd64"
+      arch               = "x86_64"
       user_data          = <<EOF
 #! /bin/bash
 sudo yum install -y python3
@@ -255,7 +255,7 @@ EOF
       ami_owner          = "679593333241"
       ami_product_code   = []
       family             = "linux"
-      arch               = "amd64"
+      arch               = "x86_64"
       user_data          = <<EOF
 #! /bin/bash
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
@@ -268,7 +268,7 @@ EOF
       ami_owner          = "679593333241"
       ami_product_code   = []
       family             = "linux"
-      arch               = "amd64"
+      arch               = "x86_64"
       user_data          = <<EOF
 #! /bin/bash
 sudo iptables -I INPUT -p tcp -m tcp --dport 4317 -j ACCEPT
@@ -379,6 +379,11 @@ data "aws_ami" "selected" {
     name = "name"
     values = [
     var.amis[var.testing_ami]["ami_search_pattern"]]
+  }
+
+  filter {
+    name   = "architecture"
+    values = [var.amis[var.testing_ami]["arch"]]
   }
 
   filter {
