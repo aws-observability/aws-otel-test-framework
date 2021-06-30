@@ -66,6 +66,20 @@ make validate
 
 List of common problems you may encounter.
 
+### CloudWatch Context
+
+Some tests have a different `ecs_taskdef_directory` e.g. [prometheus_mock](../prometheus_mock/parameters.tfvars). And
+you need to put a dummy `cloudwatch_context.json` in that directory.
+
+```text
+Error: Invalid function argument
+
+  on main.tf line 378, in data "template_file" "cloudwatch_context":
+ 378:   template = file(local.cloudwatch_context_path)
+    |----------------
+    | local.cloudwatch_context_path is "../templates/prometheus/cloudwatch_context.json"
+```
+
 ### Unknown variable
 
 You are using wrong variable name in template files, or you didn't define the var when rendering template.
