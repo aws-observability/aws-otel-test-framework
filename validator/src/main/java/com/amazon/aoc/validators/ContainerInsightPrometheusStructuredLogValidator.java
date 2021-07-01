@@ -14,14 +14,20 @@ import java.util.List;
 
 @Log4j2
 public class ContainerInsightPrometheusStructuredLogValidator
-        extends AbstractStructuredLogValidator {
+    extends AbstractStructuredLogValidator {
 
+  /**
+   * We need a bigger retry (12 instead of 6) because we have multiple tasks
+   * running on a single EC2 instance. It takes a while for the EC2 instance
+   * to register itself as ECS container instance.
+   */
+  private static final int MAX_RETRY_COUNT = 12;
   private List<CloudWatchContext.App> validateApps;
 
   @Override
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     logGroupName = String.format("/aws/containerinsights/%s/prometheus",
-            context.getCloudWatchContext().getClusterName());
+        context.getCloudWatchContext().getClusterName());
     validateApps = getAppsToValidate(context.getCloudWatchContext());
     MustacheHelper mustacheHelper = new MustacheHelper();
 
@@ -33,6 +39,11 @@ public class ContainerInsightPrometheusStructuredLogValidator
       schemasToValidate.put(app.getNamespace(), parseJsonSchema(templateInput));
       logStreamNames.add(app.getJob());
     }
+  }
+
+  @Override
+  public int getMaxRetryCount() {
+    return MAX_RETRY_COUNT;
   }
 
   @Override
