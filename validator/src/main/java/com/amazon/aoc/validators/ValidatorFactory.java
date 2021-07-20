@@ -49,6 +49,9 @@ public class ValidatorFactory {
         validator = new CWMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
+      case "amp-metric":
+        validator = new AMPMetricValidator();
+        expectedData = validationConfig.getExpectedMetricTemplate();
       case "prom-metric":
         validator = new PrometheusMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
