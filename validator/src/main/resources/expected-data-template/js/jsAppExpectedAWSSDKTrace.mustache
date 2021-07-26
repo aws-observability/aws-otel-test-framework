@@ -5,6 +5,12 @@
       "method": "GET"
     },
     "response": {
+      "status": 200
+    }
+  },
+  "aws": {
+    "xray": {
+      "sdk": "opentelemetry for nodejs"
     }
   },
   "metadata": {
@@ -14,11 +20,7 @@
   },
   "subsegments": [
     {
-      "name": "aws.s3.listBuckets",
-      "http": {
-        "response": {
-        }
-      },
+      "name": "s3",
       "metadata": {
         "default": {
           "aws.service.api": "S3"
