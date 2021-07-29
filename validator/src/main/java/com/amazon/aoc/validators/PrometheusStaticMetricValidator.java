@@ -25,7 +25,7 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.models.prometheus.PrometheusMetric;
 import com.amazon.aoc.services.CortexService;
-import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
@@ -35,10 +35,11 @@ import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Log4j2
 public class PrometheusStaticMetricValidator implements IValidator {
-  private static final int MAX_RETRY_COUNT = 30;
+  private static final int MAX_RETRY_COUNT = 5;
 
   private final MustacheHelper mustacheHelper = new MustacheHelper();
   private Context context;
@@ -48,13 +49,11 @@ public class PrometheusStaticMetricValidator implements IValidator {
 
   public void validate() throws Exception {
     log.info("Start prometheus metric validating");
+    log.info("test");
 
     // get expected metrics
-    final List<PrometheusMetric> expectedMetricList = this.listExpectedMetrics(
-      context,
-      expectedMetric,
-      caller,
-      true);
+    final List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(
+      context);
 
     // get metrics from prometheus
     RetryHelper.retry(
@@ -129,14 +128,14 @@ public class PrometheusStaticMetricValidator implements IValidator {
           CortexService cortexService, List<PrometheusMetric> expectedMetricList)
           throws IOException, URISyntaxException, BaseException {
     // put metric name to search metric
-    HashMap<String, String> metricNameSet = new HashSet<>();
+    List<String> metricNameList = new ArrayList<>();
     for (PrometheusMetric metric : expectedMetricList) {
-      metricNameSet.add(metric.getMetricName());
+      metricNameList.add(metric.getMetricName());
     }
-    // search by metric name
+    // query by metric name
     List<PrometheusMetric> result = new ArrayList<>();
-    for (PrometheusMetric metricName : metricNameSet) {
-      result.addAll(cortexService.listMetricsLastHour(expectedMetric.getMetricName());
+    for (String metricName : metricNameList) {
+      result.addAll(cortexService.listMetricsLastHour(metricName));
     }
     return removeSkippedMetrics(result);
   }
