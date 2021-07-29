@@ -25,6 +25,7 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   /**
    * metric template, defined in resources.
    */
+  AMP_EXPECTED_METRIC("/expected-data-template/ampExpectedMetric.mustache")
   DEFAULT_EXPECTED_METRIC("/expected-data-template/defaultExpectedMetric.mustache"),
   ENHANCED_EXPECTED_METRIC("/expected-data-template/enhancedExpectedMetric.mustache"),
   STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),

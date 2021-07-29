@@ -55,6 +55,17 @@ public class CortexService {
     return listMetrics(query, newTimestamp.toPlainString());
   }
 
+    /**
+   * listMetrics fetches metrics from cortex instance.
+   *
+   * @param query the Prometheus expression query string
+   * @return List of PrometheusMetrics
+   */
+  public List<PrometheusMetric> listMetricsWithNameOnly(final String query)
+          throws IOException, URISyntaxException, BaseException {
+    return new CortexClient(context).queryMetricNameOnly(query);
+  }
+
   /**
    * listMetrics fetches metrics from cortex instance.
    *

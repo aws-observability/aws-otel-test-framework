@@ -77,6 +77,27 @@ public class CortexClient {
     return execute(request);
   }
 
+  /**
+   * list metrics from the cortex instance via the query endpoint.
+   *
+   * @param query the Prometheus expression query string
+   */
+  public List<PrometheusMetric> queryMetricNameOnly(String query)
+          throws IOException, URISyntaxException, BaseException {
+    HttpUrl rawUrl = HttpUrl.parse(cortexInstanceEndpoint);
+    URI uri = new URIBuilder()
+            .setScheme(Objects.requireNonNull(rawUrl).scheme())
+            .setHost(rawUrl.host())
+            .setPort(rawUrl.port())
+            .setPath(rawUrl.encodedPath() + "/api/v1/query")
+            .addParameter("query", query)
+            .addParameter("time", 1627582605)
+            .build();
+
+    HttpGet request = new HttpGet(uri);
+    return execute(request);
+  }
+
   private List<PrometheusMetric> execute(HttpGet request) throws IOException, BaseException {
     HttpResponse response = httpClient.execute(request);
 
