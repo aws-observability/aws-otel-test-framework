@@ -136,7 +136,7 @@ public class PrometheusStaticMetricValidator implements IValidator {
     // search by metric name
     List<PrometheusMetric> result = new ArrayList<>();
     for (PrometheusMetric metricName : metricNameSet) {
-      result.addAll(cortexService.listMetricsWithNameOnly(expectedMetric.getMetricName());
+      result.addAll(cortexService.listMetricsLastHour(expectedMetric.getMetricName());
     }
     return removeSkippedMetrics(result);
   }

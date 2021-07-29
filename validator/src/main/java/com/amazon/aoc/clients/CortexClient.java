@@ -25,6 +25,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
+import java.lang.System;
 
 @Log4j2
 public class CortexClient {
@@ -82,16 +83,18 @@ public class CortexClient {
    *
    * @param query the Prometheus expression query string
    */
-  public List<PrometheusMetric> queryMetricNameOnly(String query)
+  public List<PrometheusMetric> queryMetricLastHour(String query)
           throws IOException, URISyntaxException, BaseException {
     HttpUrl rawUrl = HttpUrl.parse(cortexInstanceEndpoint);
+    int currentTime = System.currentTimeMillis() / 1000;
     URI uri = new URIBuilder()
             .setScheme(Objects.requireNonNull(rawUrl).scheme())
             .setHost(rawUrl.host())
             .setPort(rawUrl.port())
-            .setPath(rawUrl.encodedPath() + "/api/v1/query")
+            .setPath(rawUrl.encodedPath() + "/api/v1/query_range")
             .addParameter("query", query)
-            .addParameter("time", 1627582605)
+            .addParameter("start", currentTime - 3600)
+            .addParameter("end", currentTime)
             .build();
 
     HttpGet request = new HttpGet(uri);
