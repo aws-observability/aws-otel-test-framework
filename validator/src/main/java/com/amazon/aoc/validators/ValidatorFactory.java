@@ -52,6 +52,7 @@ public class ValidatorFactory {
       case "prom-static-metric":
         validator = new PrometheusStaticMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
+        break;
       case "prom-metric":
         validator = new PrometheusMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();

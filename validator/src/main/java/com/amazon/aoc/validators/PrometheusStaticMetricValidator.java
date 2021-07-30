@@ -49,7 +49,8 @@ public class PrometheusStaticMetricValidator implements IValidator {
 
   public void validate() throws Exception {
     log.info("Start prometheus metric validating");
-
+    log.info("allow lambda function to finish running and propagate");
+    TimeUnit.SECONDS.sleep(60);
     // get expected metrics
     final List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(
       context);
@@ -60,7 +61,7 @@ public class PrometheusStaticMetricValidator implements IValidator {
         () -> {
           List<PrometheusMetric> metricList =
                   this.listMetricFromPrometheus(cortexService, expectedMetricList);
-
+          
           log.info("check if all the expected metrics are found");
           compareMetricLists(expectedMetricList, metricList);
 
@@ -81,7 +82,7 @@ public class PrometheusStaticMetricValidator implements IValidator {
                                   List<PrometheusMetric> baseMetricList)
           throws BaseException {
     // load metrics into a tree set
-    Comparator<PrometheusMetric> comparator = PrometheusMetric::staticPrometheusMetricCompare;
+    Comparator<PrometheusMetric> comparator = PrometheusMetric::comparePrometheusMetricLabels;
 
     if (validationConfig.getShouldValidateMetricValue()) {
       comparator = PrometheusMetric::staticPrometheusMetricCompare;
@@ -148,6 +149,7 @@ public class PrometheusStaticMetricValidator implements IValidator {
           throws Exception {
     this.context = context;
     this.cortexService = new CortexService(context);
+    this.validationConfig = validationConfig;
     this.expectedMetric = expectedMetricTemplate;
   }
 }
