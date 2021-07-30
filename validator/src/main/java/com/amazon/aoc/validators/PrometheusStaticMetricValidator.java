@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 public class PrometheusStaticMetricValidator implements IValidator {
-  private static final int MAX_RETRY_COUNT = 3;
+  private static final int MAX_RETRY_COUNT = 30;
 
   private final MustacheHelper mustacheHelper = new MustacheHelper();
   private Context context;
