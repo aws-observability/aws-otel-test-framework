@@ -25,7 +25,7 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.models.prometheus.PrometheusMetric;
 import com.amazon.aoc.services.CortexService;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 
 @Log4j2
 public class PrometheusStaticMetricValidator implements IValidator {
-  private static final int MAX_RETRY_COUNT = 5;
+  private static final int MAX_RETRY_COUNT = 3;
 
   private final MustacheHelper mustacheHelper = new MustacheHelper();
   private Context context;
@@ -49,7 +49,6 @@ public class PrometheusStaticMetricValidator implements IValidator {
 
   public void validate() throws Exception {
     log.info("Start prometheus metric validating");
-    log.info("test");
 
     // get expected metrics
     final List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(
@@ -104,14 +103,14 @@ public class PrometheusStaticMetricValidator implements IValidator {
 
   private List<PrometheusMetric> getExpectedMetricList(Context context) throws Exception {
     log.info("getting expected metrics");
-    // get expected metrics as yaml from config
-    String yamlExpectedMetrics =  mustacheHelper.render(this.expectedMetric, context);
+    // get expected metrics as json from config
+    String jsonExpectedMetrics =  mustacheHelper.render(this.expectedMetric, context);
 
-    // load metrics from yaml
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    // load metrics from json
+    ObjectMapper mapper = new ObjectMapper(new JsonFactory());
     List<PrometheusMetric> expectedMetricList =
         mapper.readValue(
-          yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
+          jsonExpectedMetrics.getBytes(StandardCharsets.UTF_8),
             new TypeReference<List<PrometheusMetric>>() {
             });
 
