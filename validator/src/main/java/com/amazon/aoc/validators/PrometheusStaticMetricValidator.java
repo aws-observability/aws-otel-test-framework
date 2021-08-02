@@ -47,13 +47,14 @@ public class PrometheusStaticMetricValidator implements IValidator {
   private ValidationConfig validationConfig;
   private CortexService cortexService;
 
+  @Override
   public void validate() throws Exception {
     log.info("Start prometheus metric validating");
     log.info("allow lambda function to finish running and propagate");
     TimeUnit.SECONDS.sleep(60);
     // get expected metrics
     final List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(
-      context);
+        context);
 
     // get metrics from prometheus
     RetryHelper.retry(
