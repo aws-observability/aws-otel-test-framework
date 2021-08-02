@@ -55,7 +55,7 @@ public class CortexService {
     return listMetrics(query, newTimestamp.toPlainString());
   }
 
-    /**
+  /**
    * listMetricsLastHour fetches metrics from the last hour from cortex instance.
    *
    * @param query the Prometheus expression query string
