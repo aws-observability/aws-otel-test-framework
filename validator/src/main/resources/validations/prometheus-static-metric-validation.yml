@@ -1,0 +1,4 @@
+-
+  validationType: "prom-static-metric"
+  shouldValidateMetricValue: false
+  expectedMetricTemplate: "AMP_EXPECTED_METRIC"

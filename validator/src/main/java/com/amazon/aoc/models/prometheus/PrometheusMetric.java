@@ -23,6 +23,9 @@ public class PrometheusMetric {
   @JsonProperty("value")
   private List<String> rawValue;
 
+  @JsonProperty("values")
+  private List<List<String>> rawValues;
+
   public String getMetricName() {
     return labels.get(NAME_FIELD);
   }
