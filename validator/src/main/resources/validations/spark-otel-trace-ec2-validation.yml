@@ -1,0 +1,7 @@
+-
+  validationType: "trace"
+  httpPath: "/outgoing-http-call"
+  httpMethod: "get"
+  callingType: "http"
+  expectedTraceTemplate: "SPARK_SDK_EC2_EXPECTED_TRACE"
+

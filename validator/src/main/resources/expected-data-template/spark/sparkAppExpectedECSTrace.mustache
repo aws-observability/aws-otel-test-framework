@@ -1,0 +1,31 @@
+[{
+  "name": "aws-otel-integ-test",
+  "http": {
+    "request": {
+      "url": "{{endpoint}}/outgoing-http-call",
+      "method": "GET"
+    },
+    "response": {
+      "status": 200
+    }
+  },
+  "metadata": {
+    "default": {
+        "otel.resource.cloud.provider": "aws",
+        "otel.resource.cloud.platform": "aws_ecs",
+        "otel.resource.cloud.account.id": ".*",
+        "otel.resource.cloud.region": "{{region}}",
+        "otel.resource.cloud.availability_zone": ".*",
+        "otel.resource.aws.ecs.cluster.arn": ".*",
+        "otel.resource.aws.ecs.task.arn": ".*",
+        "otel.resource.aws.ecs.task.family": ".*",
+        "otel.resource.aws.ecs.task.revision": ".*",
+        "otel.resource.aws.ecs.launchtype": ".*",
+        "otel.resource.aws.log.group.names": [".*"],
+        "otel.resource.aws.log.group.arns": [".*"],
+        "otel.resource.aws.log.stream.names": [".*"],
+        "otel.resource.aws.log.stream.arns": [".*"]
+    }
+  }
+}]
+

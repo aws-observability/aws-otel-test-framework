@@ -1,0 +1,20 @@
+[{
+  "name": "aws-otel-integ-test",
+  "http": {
+    "request": {
+      "url": "{{endpoint}}/outgoing-http-call",
+      "method": "GET"
+    },
+    "response": {
+      "status": 200
+    }
+  },
+  "metadata": {
+    "default": {
+        "otel.resource.cloud.provider": "aws",
+        "otel.resource.cloud.platform": "aws_eks",
+        "k8s.cluster.name": "{{cloudWatchContext.clusterName}}"
+    }
+  }
+}]
+
