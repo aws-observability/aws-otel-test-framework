@@ -58,7 +58,7 @@ locals {
 }
 
 resource "kubernetes_config_map" "aoc_config_map" {
-  count = var.aoc_base_scenario == "oltp" ? 1 : 0
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
 
   metadata {
     name      = "otel-config"
@@ -86,7 +86,7 @@ resource "kubernetes_config_map" "mocked_server_cert" {
 
 # deploy aoc and mocked server
 resource "kubernetes_deployment" "aoc_deployment" {
-  count = var.aoc_base_scenario == "oltp" ? 1 : 0
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
 
   metadata {
     name      = "aoc"
@@ -177,7 +177,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
 # create service upon the mocked server
 resource "kubernetes_service" "mocked_server_service" {
-  count = var.aoc_base_scenario == "oltp" ? 1 : 0
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
 
   metadata {
     name      = "mocked-server"
@@ -193,6 +193,42 @@ resource "kubernetes_service" "mocked_server_service" {
       target_port = 8080
     }
   }
+}
+
+data "template_file" "adot_collector_config_file" {
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase ? 1 : 0
+
+  template = file("./adot-operator/adot_collector_deployment.tpl")
+
+  vars = {
+    AOC_NAMESPACE = kubernetes_namespace.aoc_ns.metadata[0].name
+    AOC_SERVICEACCOUNT = "aoc-role-${module.common.testing_id}"
+    AOC_CONFIG = module.basic_components.0.otconfig_content
+    AOC_LABEL_SELECTOR = local.aoc_label_selector
+    MOCKED_SERVER_CONFIG_MAP = kubernetes_config_map.mocked_server_cert.0.metadata[0].name
+    MOCKED_SERVER_IMAGE = local.mocked_server_image
+  }
+
+  depends_on = [module.demo_adot_operator]
+}
+
+resource "local_file" "adot_collector_deployment" {
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase ? 1 : 0
+
+  filename = "adot_collector.yaml"
+  content = data.template_file.adot_collector_config_file.0.rendered
+
+  depends_on = [module.demo_adot_operator]
+}
+
+resource "null_resource" "aoc_deployment_adot_operator" {
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase ? 1 : 0
+
+  provisioner "local-exec" {
+    command = "kubectl apply -f ${local_file.adot_collector_deployment.0.filename}"
+  }
+
+  depends_on = [module.demo_adot_operator]
 }
 
 resource "kubernetes_service" "sample_app_service" {
