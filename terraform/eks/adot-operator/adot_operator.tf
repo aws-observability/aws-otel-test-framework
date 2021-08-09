@@ -24,12 +24,12 @@ resource "helm_release" "adot-operator-cert-manager" {
 
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version = "v1.4.0"
+  version    = "v1.4.0"
 
   create_namespace = true
 
   set {
-    name = "installCRDs"
+    name  = "installCRDs"
     value = "true"
   }
 
@@ -42,7 +42,7 @@ resource "helm_release" "adot-operator-cert-manager" {
 }
 
 resource "helm_release" "adot-operator" {
-  name      = "adot-operator-${var.testing_id}"
+  name = "adot-operator-${var.testing_id}"
 
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart      = "opentelemetry-operator"

@@ -134,7 +134,7 @@ resource "kubernetes_service_account" "aoc-agent-role" {
 }
 
 module "demo_adot_operator" {
-  count = replace(var.testcase, "_adot_operator", "") == var.testcase ? 0 : 1
+  count  = replace(var.testcase, "_adot_operator", "") == var.testcase ? 0 : 1
   source = "./adot-operator"
 
   testing_id = module.common.testing_id
@@ -184,6 +184,6 @@ module "validator" {
   aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [
-  module.aoc_oltp,
+    module.aoc_oltp,
   module.demo_adot_operator]
 }
