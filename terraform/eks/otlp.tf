@@ -202,6 +202,7 @@ data "template_file" "adot_collector_config_file" {
 
   vars = {
     AOC_NAMESPACE            = kubernetes_namespace.aoc_ns.metadata[0].name
+    AOC_DEPLOY_MODE          = var.aoc_deploy_mode
     AOC_SERVICEACCOUNT       = "aoc-role-${module.common.testing_id}"
     AOC_CONFIG               = module.basic_components.0.otconfig_content
     AOC_LABEL_SELECTOR       = local.aoc_label_selector

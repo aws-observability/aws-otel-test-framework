@@ -6,4 +6,4 @@ manager:
 kubeRBACProxy:
   image:
     repository: public.ecr.aws/aws-observability/mirror-kube-rbac-proxy
-    tag: "v0.5.0"
+    tag: "v0.8.0"
