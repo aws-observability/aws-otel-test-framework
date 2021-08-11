@@ -133,7 +133,7 @@ resource "kubernetes_service_account" "aoc-agent-role" {
   automount_service_account_token = true
 }
 
-module "demo_adot_operator" {
+module "adot_operator" {
   count  = replace(var.testcase, "_adot_operator", "") == var.testcase ? 0 : 1
   source = "./adot-operator"
 
@@ -185,5 +185,5 @@ module "validator" {
 
   depends_on = [
     module.aoc_oltp,
-  module.demo_adot_operator]
+  module.adot_operator]
 }

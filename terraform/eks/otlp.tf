@@ -201,16 +201,13 @@ data "template_file" "adot_collector_config_file" {
   template = file("./adot-operator/adot_collector_deployment.tpl")
 
   vars = {
-    AOC_NAMESPACE            = kubernetes_namespace.aoc_ns.metadata[0].name
-    AOC_DEPLOY_MODE          = var.aoc_deploy_mode
-    AOC_SERVICEACCOUNT       = "aoc-role-${module.common.testing_id}"
-    AOC_CONFIG               = module.basic_components.0.otconfig_content
-    AOC_LABEL_SELECTOR       = local.aoc_label_selector
-    MOCKED_SERVER_CONFIG_MAP = kubernetes_config_map.mocked_server_cert.0.metadata[0].name
-    MOCKED_SERVER_IMAGE      = local.mocked_server_image
+    AOC_NAMESPACE      = kubernetes_namespace.aoc_ns.metadata[0].name
+    AOC_DEPLOY_MODE    = var.aoc_deploy_mode
+    AOC_SERVICEACCOUNT = "aoc-role-${module.common.testing_id}"
+    AOC_CONFIG         = module.basic_components.0.otconfig_content
   }
 
-  depends_on = [module.demo_adot_operator]
+  depends_on = [module.adot_operator]
 }
 
 resource "local_file" "adot_collector_deployment" {
@@ -219,7 +216,7 @@ resource "local_file" "adot_collector_deployment" {
   filename = "adot_collector.yaml"
   content  = data.template_file.adot_collector_config_file.0.rendered
 
-  depends_on = [module.demo_adot_operator]
+  depends_on = [module.adot_operator]
 }
 
 resource "null_resource" "aoc_deployment_adot_operator" {
@@ -229,7 +226,7 @@ resource "null_resource" "aoc_deployment_adot_operator" {
     command = "kubectl apply -f ${local_file.adot_collector_deployment.0.filename}"
   }
 
-  depends_on = [module.demo_adot_operator]
+  depends_on = [module.adot_operator]
 }
 
 resource "kubernetes_service" "sample_app_service" {
