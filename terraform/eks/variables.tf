@@ -35,3 +35,9 @@ variable "sample_app_image_repo" {
 variable "aoc_base_scenario" {
   default = "oltp"
 }
+
+// aoc_deploy_mode refers to the mode to deploy the Collector CR. This is only used when we test the Operator.
+// options: deployment, daemonset, statefulset, sidecar
+variable "aoc_deploy_mode" {
+  default = "deployment"
+}
