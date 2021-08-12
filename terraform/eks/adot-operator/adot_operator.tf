@@ -18,13 +18,18 @@ variable "testing_id" {
   default = ""
 }
 
+variable "kubeconfig" {
+  type    = string
+  default = "kubeconfig"
+}
+
 resource "helm_release" "adot-operator-cert-manager" {
   name      = "cert-manager"
   namespace = "cert-manager"
 
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = "v1.4.0"
+  version    = "v1.4.3"
 
   create_namespace = true
 
@@ -34,9 +39,11 @@ resource "helm_release" "adot-operator-cert-manager" {
   }
 
   provisioner "local-exec" {
+    # We need to set up a 20 seconds sleep to avoid the certificate signed by unknown authority issue which appears occasionally.
     command = <<-EOT
-      kubectl wait --timeout=5m --for=condition=available deployment cert-manager -n cert-manager
-      kubectl wait --timeout=5m --for=condition=available deployment cert-manager-webhook -n cert-manager
+      kubectl wait --kubeconfig=${var.kubeconfig} --timeout=5m --for=condition=available deployment cert-manager -n cert-manager
+      kubectl wait --kubeconfig=${var.kubeconfig} --timeout=5m --for=condition=available deployment cert-manager-webhook -n cert-manager
+      sleep 20s
     EOT
   }
 }
@@ -52,7 +59,7 @@ resource "helm_release" "adot-operator" {
   ]
 
   provisioner "local-exec" {
-    command = "kubectl wait --timeout=5m --for=condition=available deployment opentelemetry-operator-controller-manager -n opentelemetry-operator-system"
+    command = "kubectl wait --kubeconfig=${var.kubeconfig} --timeout=5m --for=condition=available deployment opentelemetry-operator-controller-manager -n opentelemetry-operator-system"
   }
 
   depends_on = [helm_release.adot-operator-cert-manager]

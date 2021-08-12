@@ -50,6 +50,7 @@ module "aoc_oltp" {
     udp_port  = module.common.udp_port
     http_port = module.common.http_port
   }
+  is_adot_operator = replace(var.testcase, "_adot_operator", "") != var.testcase
 }
 
 locals {
@@ -72,7 +73,7 @@ resource "kubernetes_config_map" "aoc_config_map" {
 
 # load the faked cert for mocked server
 resource "kubernetes_config_map" "mocked_server_cert" {
-  count = var.aoc_base_scenario == "oltp" ? 1 : 0
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
 
   metadata {
     name      = "mocked-server-cert"
@@ -223,7 +224,7 @@ resource "null_resource" "aoc_deployment_adot_operator" {
   count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase ? 1 : 0
 
   provisioner "local-exec" {
-    command = "kubectl apply -f ${local_file.adot_collector_deployment.0.filename}"
+    command = "kubectl apply --kubeconfig=${local_file.kubeconfig.filename} -f ${local_file.adot_collector_deployment.0.filename}"
   }
 
   depends_on = [module.adot_operator]

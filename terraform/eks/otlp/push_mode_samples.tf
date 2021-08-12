@@ -17,6 +17,12 @@
 # Push mode deployments
 ##########################################
 
+# is_adot_operator is true if the current test case is testing ADOT Operator.
+variable "is_adot_operator" {
+  type = bool
+  default = false
+}
+
 locals {
   aoc_label_selector        = "aoc"
   sample_app_label_selector = "sample-app"
@@ -60,7 +66,7 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
 
           env {
             name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
-            value = "http://${kubernetes_service.aoc_grpc_service[0].metadata[0].name}:${var.aoc_service.grpc_port}"
+            value = var.is_adot_operator ? "http://aoc-collector:${var.aoc_service.grpc_port}" : "http://${kubernetes_service.aoc_grpc_service[0].metadata[0].name}:${var.aoc_service.grpc_port}"
           }
 
           env {
