@@ -138,6 +138,7 @@ module "adot_operator" {
   source = "./adot-operator"
 
   testing_id = module.common.testing_id
+  kubeconfig = local_file.kubeconfig.filename
 }
 
 
