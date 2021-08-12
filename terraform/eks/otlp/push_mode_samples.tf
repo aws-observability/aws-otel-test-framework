@@ -19,7 +19,7 @@
 
 # is_adot_operator is true if the current test case is testing ADOT Operator.
 variable "is_adot_operator" {
-  type = bool
+  type    = bool
   default = false
 }
 
