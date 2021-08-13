@@ -38,19 +38,19 @@ dependencies {
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:1.0.1-alpha"
 
-    compile "com.amazonaws:aws-xray-recorder-sdk-core:2.7.0"
-    compile "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.7.0"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.7.0"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.7.0"
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.12'
 
     // Command cli
-    compile 'info.picocli:picocli:4.3.2'
+    implementation 'info.picocli:picocli:4.3.2'
     compileOnly 'info.picocli:picocli-codegen:4.3.2'
 
     // log
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.7'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.7'
 
     // local project can't be referenced in Dockerfile
     // the workaround is build fat jar and copy it in Dockerfile for building docker image
