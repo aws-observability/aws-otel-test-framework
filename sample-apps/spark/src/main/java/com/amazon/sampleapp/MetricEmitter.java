@@ -18,7 +18,7 @@
 
 package com.amazon.sampleapp;
 
-import io.opentelemetry.api.metrics.GlobalMeterProvider;
+import io.opentelemetry.api.metrics.GlobalMetricsProvider;
 import io.opentelemetry.api.metrics.common.Labels;
 import io.opentelemetry.api.metrics.LongCounter;
 import io.opentelemetry.api.metrics.LongSumObserver;
@@ -58,7 +58,7 @@ public class MetricEmitter {
   String latencyMetricName;
 
   public MetricEmitter() {
-    Meter meter = GlobalMeterProvider.getMeter("aws-otel", "1.0");
+    Meter meter = GlobalMetricsProvider.getMeter("aws-otel", "1.0");
 
     // give a instanceId appending to the metricname so that we can check the metric for each round
     // of integ-test
