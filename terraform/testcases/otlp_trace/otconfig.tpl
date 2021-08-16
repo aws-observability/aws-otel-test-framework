@@ -22,5 +22,5 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [awsxray]
+      exporters: [logging,awsxray]
   extensions: [pprof]

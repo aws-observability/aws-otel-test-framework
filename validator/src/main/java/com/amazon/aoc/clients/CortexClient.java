@@ -77,6 +77,31 @@ public class CortexClient {
     return execute(request);
   }
 
+  /**
+   * list metrics for the last one hour interval
+   * from the cortex instance via the query endpoint.
+   *
+   * @param query the Prometheus expression query string
+   */
+  public List<PrometheusMetric> queryMetricLastHour(String query)
+          throws IOException, URISyntaxException, BaseException {
+    HttpUrl rawUrl = HttpUrl.parse(cortexInstanceEndpoint);
+    long endEpochTime = (System.currentTimeMillis() / 1000);
+
+    URI uri = new URIBuilder()
+            .setScheme(Objects.requireNonNull(rawUrl).scheme())
+            .setHost(rawUrl.host())
+            .setPath(rawUrl.encodedPath() + "/api/v1/query_range")
+            .addParameter("query", query)
+            .addParameter("start", Long.toString(endEpochTime - 3600))
+            .addParameter("end", Long.toString(endEpochTime))
+            .addParameter("step", "15")
+            .build();
+
+    HttpGet request = new HttpGet(uri);
+    return execute(request);
+  }
+
   private List<PrometheusMetric> execute(HttpGet request) throws IOException, BaseException {
     HttpResponse response = httpClient.execute(request);
 

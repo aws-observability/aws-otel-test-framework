@@ -56,6 +56,17 @@ public class CortexService {
   }
 
   /**
+   * listMetricsLastHour fetches metrics from the last hour from cortex instance.
+   *
+   * @param query the Prometheus expression query string
+   * @return List of PrometheusMetrics
+   */
+  public List<PrometheusMetric> listMetricsLastHour(final String query)
+          throws IOException, URISyntaxException, BaseException {
+    return new CortexClient(context).queryMetricLastHour(query);
+  }
+
+  /**
    * listMetrics fetches metrics from cortex instance.
    *
    * @param query the Prometheus expression query string

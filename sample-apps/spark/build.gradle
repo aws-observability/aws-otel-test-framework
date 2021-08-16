@@ -43,7 +43,7 @@ dependencies {
     implementation "io.opentelemetry:opentelemetry-sdk-metrics:1.4.1-alpha"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
     
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
 
 application {
