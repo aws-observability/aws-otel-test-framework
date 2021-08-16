@@ -13,13 +13,13 @@
     "default": {
         "otel.resource.cloud.provider": "aws",
         "otel.resource.cloud.platform": "aws_ec2",
-        "otel.resource.cloud.account.id": ".*",
+        "otel.resource.cloud.account.id": "{{accountId}}",
         "otel.resource.cloud.region": "{{region}}",
-        "otel.resource.cloud.availability_zone": ".*",
-        "otel.resource.host.id": ".*",
-        "otel.resource.host.image.id": ".*",
-        "otel.resource.host.name": ".*",
-        "otel.resource.host.type": ".*"
+        "otel.resource.cloud.availability_zone": "{{availabilityZone}}",
+        "otel.resource.host.id": "{{ec2Context.hostId}}",
+        "otel.resource.host.image.id": "{{ec2Context.ami}}",
+        "otel.resource.host.name": "{{ec2Context.name}}",
+        "otel.resource.host.type": "{{ec2Context.instanceType}}"
     }
   }
 }]

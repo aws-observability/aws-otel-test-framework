@@ -25,8 +25,12 @@ public class Context {
   @NonNull
   private String testingId;
 
+  private String accountId;
+
   @NonNull
   private String region;
+
+  private String availabilityZone;
 
   @NonNull
   private boolean isCanary;
@@ -38,6 +42,8 @@ public class Context {
   private ECSContext ecsContext;
 
   private CloudWatchContext cloudWatchContext;
+
+  private EC2Context ec2Context;
 
   /* testcase name */
   private String testcase;

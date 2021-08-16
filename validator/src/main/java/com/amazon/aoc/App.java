@@ -16,10 +16,7 @@
 package com.amazon.aoc;
 
 import com.amazon.aoc.helpers.ConfigLoadHelper;
-import com.amazon.aoc.models.CloudWatchContext;
-import com.amazon.aoc.models.Context;
-import com.amazon.aoc.models.ECSContext;
-import com.amazon.aoc.models.ValidationConfig;
+import com.amazon.aoc.models.*;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazon.aoc.validators.ValidatorFactory;
 import com.amazonaws.services.cloudwatch.model.Dimension;
@@ -48,6 +45,10 @@ public class App implements Callable<Integer> {
   private String testingId;
 
   @CommandLine.Option(
+          names = {"--account-id"})
+  private String accountId;
+
+  @CommandLine.Option(
       names = {"--metric-namespace"},
       defaultValue = "AWSObservability/CloudWatchOTService")
   private String metricNamespace;
@@ -61,9 +62,16 @@ public class App implements Callable<Integer> {
   private String region;
 
   @CommandLine.Option(
-      names = {"--ecs-context"},
-      description = "eg, --ecs-context ecsCluster=xxx --ecs-context ecsTaskArn=xxxx")
-  private Map<String, String> ecsContexts;
+          names = {"--availability-zone"})
+  private String availabilityZone;
+
+  @CommandLine.Option(
+      names = {"--ecs-context"})
+  private String ecsContext;
+
+  @CommandLine.Option(
+          names = {"--ec2-context"})
+  private String ec2Context;
 
   @CommandLine.Option(
           names = {"--cloudwatch-context"})
@@ -108,9 +116,12 @@ public class App implements Callable<Integer> {
     final Instant startTime = Instant.now();
     // build context
     Context context = new Context(this.testingId, this.region, this.isCanary);
+    context.setAccountId(this.accountId);
+    context.setAvailabilityZone(this.availabilityZone);
     context.setMetricNamespace(this.metricNamespace);
     context.setEndpoint(this.endpoint);
-    context.setEcsContext(buildECSContext(ecsContexts));
+    context.setEcsContext(buildJsonContext(ecsContext, ECSContext.class));
+    context.setEc2Context(buildJsonContext(ec2Context, EC2Context.class));
     context.setCloudWatchContext(buildJsonContext(cloudWatchContext, CloudWatchContext.class));
     context.setAlarmNameList(alarmNameList);
     context.setMockedServerValidatingUrl(mockedServerValidatingUrl);
