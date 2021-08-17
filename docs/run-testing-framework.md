@@ -89,7 +89,7 @@ cd terraform/eks && terraform init && terraform apply \
  
 Don't forget to clean up your resources:
 ````
-terraform destroy
+terraform destroy -var="eks_cluster_name={the eks cluster name in your account}"
 ````
  
 #### 2.4 Run in EC2

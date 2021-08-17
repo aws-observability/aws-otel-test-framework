@@ -50,6 +50,9 @@ provider "aws" {
   region = var.region
 }
 
+data "aws_caller_identity" "current" {
+}
+
 data "aws_ecr_repository" "sample_app" {
   name = module.common.sample_app_ecr_repo_name
 }
@@ -449,8 +452,17 @@ module "validator" {
   mocked_server_validating_url = "http://${aws_instance.sidecar.public_ip}/check-data"
   canary                       = var.canary
   testcase                     = split("/", var.testcase)[2]
+  cortex_instance_endpoint     = var.cortex_instance_endpoint
 
-  cortex_instance_endpoint = var.cortex_instance_endpoint
+  account_id        = data.aws_caller_identity.current.account_id
+  availability_zone = aws_instance.sidecar.availability_zone
+
+  ec2_context_json = jsonencode({
+    hostId : aws_instance.sidecar.id
+    ami : aws_instance.sidecar.ami
+    name : aws_instance.sidecar.private_dns
+    instanceType : aws_instance.sidecar.instance_type
+  })
 
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key

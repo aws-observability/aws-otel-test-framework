@@ -19,7 +19,15 @@ variable "validation_config" {
 
 variable "testing_id" {}
 
+variable "account_id" {
+  default = ""
+}
+
 variable "region" {
+}
+
+variable "availability_zone" {
+  default = ""
 }
 
 variable "sample_app_endpoint" {
@@ -42,22 +50,6 @@ variable "metric_namespace" {
   default = ""
 }
 
-variable "ecs_cluster_name" {
-  default = ""
-}
-
-variable "ecs_task_arn" {
-  default = ""
-}
-
-variable "ecs_taskdef_family" {
-  default = ""
-}
-
-variable "ecs_taskdef_version" {
-  default = ""
-}
-
 variable "cpu_alarm" {
   default = ""
 }
@@ -71,6 +63,14 @@ variable "incoming_packets_alarm" {
 }
 
 variable "cloudwatch_context_json" {
+  default = "{}"
+}
+
+variable "ecs_context_json" {
+  default = "{}"
+}
+
+variable "ec2_context_json" {
   default = "{}"
 }
 

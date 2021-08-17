@@ -28,21 +28,19 @@ data "template_file" "docker_compose" {
   vars = {
     validation_config            = var.validation_config
     testing_id                   = var.testing_id
+    account_id                   = var.account_id
     region                       = var.region
+    availability_zone            = var.availability_zone
     sample_app_endpoint          = var.sample_app_endpoint
     mocked_server_validating_url = var.mocked_server_validating_url
     metric_namespace             = var.metric_namespace
     canary                       = var.canary
     testcase                     = var.testcase
 
-    # ecs related context
-    ecs_cluster_name    = var.ecs_cluster_name
-    ecs_task_arn        = var.ecs_task_arn
-    ecs_taskdef_family  = var.ecs_taskdef_family
-    ecs_taskdef_version = var.ecs_taskdef_version
-
     # Escaping (") in the JSON when using as a terraform string variable.
     # For more information: https://www.terraform.io/docs/configuration-0-11/interpolation.html#built-in-functions
+    ec2_context_json        = replace(var.ec2_context_json, "\"", "\\\"")
+    ecs_context_json        = replace(var.ecs_context_json, "\"", "\\\"")
     cloudwatch_context_json = replace(var.cloudwatch_context_json, "\"", "\\\"")
 
     # alarm related

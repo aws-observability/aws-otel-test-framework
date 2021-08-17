@@ -53,6 +53,9 @@ provider "aws" {
   region = var.region
 }
 
+data "aws_caller_identity" "current" {
+}
+
 module "ecs_cluster" {
   source  = "infrablocks/ecs-cluster/aws"
   version = "4.0.0"
@@ -322,6 +325,15 @@ module "validator" {
   mocked_server_validating_url = "http://${aws_lb.mocked_server_lb[0].dns_name}:${module.common.mocked_server_lb_port}/check-data"
   cortex_instance_endpoint     = var.cortex_instance_endpoint
 
+  account_id = data.aws_caller_identity.current.account_id
+
+  ecs_context_json = jsonencode({
+    ecsClusterArn : module.ecs_cluster.cluster_arn
+    ecsTaskDefFamily : aws_ecs_task_definition.aoc[0].family
+    ecsTaskDefVersion : aws_ecs_task_definition.aoc[0].revision
+    ecsLaunchType : aws_ecs_service.aoc[0].launch_type
+  })
+
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 
@@ -338,10 +350,12 @@ module "validator_without_sample_app" {
   metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   mocked_server_validating_url = var.disable_mocked_server ? "" : "http://${aws_lb.mocked_server_lb[0].dns_name}:${module.common.mocked_server_lb_port}/check-data"
 
-  ecs_cluster_name    = module.ecs_cluster.cluster_name
-  ecs_task_arn        = aws_ecs_task_definition.aoc[0].arn
-  ecs_taskdef_family  = aws_ecs_task_definition.aoc[0].family
-  ecs_taskdef_version = aws_ecs_task_definition.aoc[0].revision
+  ecs_context_json = jsonencode({
+    ecsClusterName : module.ecs_cluster.cluster_name
+    ecsTaskArn : aws_ecs_task_definition.aoc[0].arn
+    ecsTaskDefFamily : aws_ecs_task_definition.aoc[0].family
+    ecsTaskDefVersion : aws_ecs_task_definition.aoc[0].revision
+  })
 
   cloudwatch_context_json = data.template_file.cloudwatch_context.rendered
 
@@ -361,10 +375,13 @@ module "validator_without_sample_app_for_bridge" {
   metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   mocked_server_validating_url = var.disable_mocked_server ? "" : "http://${aws_lb.mocked_server_lb[0].dns_name}:${module.common.mocked_server_lb_port}/check-data"
   cloudwatch_context_json      = data.template_file.cloudwatch_context.rendered
-  ecs_cluster_name             = module.ecs_cluster.cluster_name
-  ecs_task_arn                 = aws_ecs_task_definition.aoc_bridge[0].arn
-  ecs_taskdef_family           = aws_ecs_task_definition.aoc_bridge[0].family
-  ecs_taskdef_version          = aws_ecs_task_definition.aoc_bridge[0].revision
+
+  ecs_context_json = jsonencode({
+    ecsClusterName : module.ecs_cluster.cluster_name
+    ecsTaskArn : aws_ecs_task_definition.aoc_bridge[0].arn
+    ecsTaskDefFamily : aws_ecs_task_definition.aoc_bridge[0].family
+    ecsTaskDefVersion : aws_ecs_task_definition.aoc_bridge[0].revision
+  })
 
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key

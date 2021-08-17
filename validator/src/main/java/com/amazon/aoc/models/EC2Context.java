@@ -18,12 +18,10 @@ package com.amazon.aoc.models;
 import lombok.Data;
 
 @Data
-public class ECSContext {
-  // ecs related context
-  private String ecsClusterName;
-  private String ecsClusterArn;
-  private String ecsTaskArn;
-  private String ecsTaskDefFamily;
-  private String ecsTaskDefVersion;
-  private String ecsLaunchType;
+public class EC2Context {
+  // ec2 related context
+  private String hostId;
+  private String ami;
+  private String name;
+  private String instanceType;
 }
