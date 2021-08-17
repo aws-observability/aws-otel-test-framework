@@ -20,11 +20,7 @@
         "otel.resource.aws.ecs.task.arn": ".*",
         "otel.resource.aws.ecs.task.family": "{{ecsContext.ecsTaskDefFamily}}",
         "otel.resource.aws.ecs.task.revision": "{{ecsContext.ecsTaskDefVersion}}",
-        "otel.resource.aws.ecs.launchtype": "{{ecsContext.ecsLaunchType}}",
-        "otel.resource.aws.log.group.names": [".*"],
-        "otel.resource.aws.log.group.arns": [".*"],
-        "otel.resource.aws.log.stream.names": [".*"],
-        "otel.resource.aws.log.stream.arns": [".*"]
+        "otel.resource.aws.ecs.launchtype": "{{ecsContext.ecsLaunchType}}"
     }
   }
 }]
