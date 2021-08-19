@@ -15,21 +15,9 @@
 
 package com.amazon.opentelemetry.load.generator.emitter;
 
-import com.amazon.opentelemetry.load.generator.factory.AwsTracerConfigurer;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
 import com.amazon.opentelemetry.trace.client.JaegerTraceEmitClient;
 import com.amazon.opentelemetry.trace.client.TraceClient;
-import io.grpc.ManagedChannelBuilder;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanKind;
-import io.opentelemetry.api.trace.Tracer;
-import io.opentelemetry.api.trace.TracerProvider;
-import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
-import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
-import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
-import java.time.Duration;
-import java.util.UUID;
 
 public class JaegerTraceEmitter extends TraceEmitter {
 

@@ -17,7 +17,7 @@ package com.amazon.opentelemetry.load.generator.emitter;
 
 import com.amazon.opentelemetry.load.generator.model.Parameter;
 import io.grpc.ManagedChannelBuilder;
-import io.opentelemetry.api.metrics.GlobalMetricsProvider;
+import io.opentelemetry.api.metrics.GlobalMeterProvider;
 import io.opentelemetry.api.metrics.common.Labels;
 import io.opentelemetry.api.metrics.LongCounter;
 import io.opentelemetry.api.metrics.LongValueRecorder;
@@ -69,7 +69,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
         .setMetricExporter(metricExporter)
         .build();
 
-    Meter meter = GlobalMetricsProvider.getMeter("aws-otel-load-generator-metric", "0.1.0");
+    Meter meter = GlobalMeterProvider.getMeter("aws-otel-load-generator-metric", "0.1.0");
 
 
     apiBytesSentCounter = meter
