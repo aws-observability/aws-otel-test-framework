@@ -12,7 +12,7 @@ processors:
   resourcedetection:
       detectors: [env, ec2]
       timeout: 2s
-      override: false
+      override: true
       ec2:
         tags:
           - ^tag1$

@@ -455,13 +455,13 @@ module "validator" {
   cortex_instance_endpoint     = var.cortex_instance_endpoint
 
   account_id        = data.aws_caller_identity.current.account_id
-  availability_zone = aws_instance.sidecar.availability_zone
+  availability_zone = aws_instance.aoc.availability_zone
 
   ec2_context_json = jsonencode({
-    hostId : aws_instance.sidecar.id
-    ami : aws_instance.sidecar.ami
-    name : aws_instance.sidecar.private_dns
-    instanceType : aws_instance.sidecar.instance_type
+    hostId : aws_instance.aoc.id
+    ami : aws_instance.aoc.ami
+    name : aws_instance.aoc.private_dns
+    instanceType : aws_instance.aoc.instance_type
   })
 
   aws_access_key_id     = var.aws_access_key_id
