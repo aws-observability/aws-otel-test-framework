@@ -14,6 +14,8 @@ RUN gradle build
 RUN tar -xvf build/distributions/load-generator-${VER}.tar
 
 FROM amazoncorretto:11
+ARG VER=1.0
+
 WORKDIR /app
 COPY --from=builder /app/load-generator-${VER} .
 
