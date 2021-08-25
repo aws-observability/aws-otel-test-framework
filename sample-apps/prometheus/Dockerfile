@@ -2,6 +2,7 @@ FROM golang:1.15 AS mod
 WORKDIR $GOPATH/main
 COPY go.mod .
 COPY go.sum .
+RUN go env -w GOPROXY=direct
 RUN GO111MODULE=on go mod download
 
 FROM golang:1.15 as build
