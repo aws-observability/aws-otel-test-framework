@@ -28,7 +28,6 @@
     "controller_class": {},
     "controller_namespace": {},
     "controller_pod": {},
-    "nginx_ingress_controller_nginx_process_connections_total": {},
     "state": {}
   },
   "required": [
@@ -47,7 +46,6 @@
     "controller_class",
     "controller_namespace",
     "controller_pod",
-    "nginx_ingress_controller_nginx_process_connections_total",
     "state"
   ],
   "additionalProperties": true

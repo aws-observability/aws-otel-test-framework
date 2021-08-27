@@ -43,15 +43,16 @@
       value: {{cloudWatchContext.nginx.namespace}}
     - name: Service
       value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
-- metricName: nginx_ingress_controller_nginx_process_connections_total
-  namespace: ContainerInsights/Prometheus
-  dimensions:
-    - name: ClusterName
-      value: {{cloudWatchContext.clusterName}}
-    - name: Namespace
-      value: {{cloudWatchContext.nginx.namespace}}
-    - name: Service
-      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
+# Commenting this metric, https://github.com/aws-observability/aws-otel-test-framework/issues/334
+# - metricName: nginx_ingress_controller_nginx_process_connections_total
+#  namespace: ContainerInsights/Prometheus
+#  dimensions:
+#    - name: ClusterName
+#      value: {{cloudWatchContext.clusterName}}
+#    - name: Namespace
+#      value: {{cloudWatchContext.nginx.namespace}}
+#    - name: Service
+#      value: {{cloudWatchContext.nginx.namespace}}-ingress-nginx-controller-metrics
 - metricName: nginx_ingress_controller_requests
   namespace: ContainerInsights/Prometheus
   dimensions:
