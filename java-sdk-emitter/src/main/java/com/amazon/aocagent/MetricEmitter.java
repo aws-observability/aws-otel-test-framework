@@ -14,12 +14,6 @@
  */
 package com.amazon.aocagent;
 
-import io.opentelemetry.OpenTelemetry;
-import io.opentelemetry.common.Labels;
-import io.opentelemetry.metrics.LongCounter;
-import io.opentelemetry.metrics.LongValueRecorder;
-import io.opentelemetry.metrics.Meter;
-
 public class MetricEmitter {
 
   static final String DIMENSION_API_NAME = "apiName";
@@ -28,12 +22,12 @@ public class MetricEmitter {
   static String API_COUNTER_METRIC = "apiBytesSent";
   static String API_LATENCY_METRIC = "latency";
 
-  LongCounter apiBytesSentCounter;
-  LongValueRecorder apiLatencyRecorder;
+  //LongCounter apiBytesSentCounter;
+  //LongValueRecorder apiLatencyRecorder;
 
 
   public MetricEmitter(String otlpEndpoint){
-    Meter meter = OpenTelemetry.getMeter("cloudwatch-otel", "1.0");
+    /*Meter meter = OpenTelemetry.getMeter("cloudwatch-otel", "1.0");
 
     // give a instanceId appending to the metricname so that we can check the metric for each round of integ-test
 
@@ -56,7 +50,7 @@ public class MetricEmitter {
             .longValueRecorderBuilder(latencyMetricName)
             .setDescription("API latency time")
             .setUnit("ms")
-            .build();
+            .build();*/
   }
 
   /**
@@ -67,7 +61,7 @@ public class MetricEmitter {
    */
   public void emitReturnTimeMetric(Long returnTime, String apiName, String statusCode){
     System.out.println("emit metric with return time " + returnTime + "," + apiName + "," + statusCode);
-    apiLatencyRecorder.record(returnTime, Labels.of(DIMENSION_API_NAME, apiName, DIMENSION_STATUS_CODE, statusCode));
+    //apiLatencyRecorder.record(returnTime, Labels.of(DIMENSION_API_NAME, apiName, DIMENSION_STATUS_CODE, statusCode));
   }
 
   /**
@@ -78,6 +72,6 @@ public class MetricEmitter {
    */
   public void emitBytesSentMetric(int bytes, String apiName, String statusCode) {
     System.out.println("emit metric with http request size " + bytes + " byte, " + apiName);
-    apiBytesSentCounter.add(bytes, Labels.of(DIMENSION_API_NAME, apiName, DIMENSION_STATUS_CODE, statusCode));
+    //apiBytesSentCounter.add(bytes, Labels.of(DIMENSION_API_NAME, apiName, DIMENSION_STATUS_CODE, statusCode));
   }
 }

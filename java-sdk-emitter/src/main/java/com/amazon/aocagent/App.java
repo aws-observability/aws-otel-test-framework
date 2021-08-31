@@ -14,8 +14,6 @@
  */
 package com.amazon.aocagent;
 
-import io.opentelemetry.trace.Span;
-import io.opentelemetry.trace.TracingContextUtils;
 import java.util.Random;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -50,7 +48,7 @@ public class App {
   }
 
   private static S3Service buildS3Service(){
-    String s3Region = System.getenv(ENV_S3_REGION);
+    /*String s3Region = System.getenv(ENV_S3_REGION);
     if(s3Region == null || s3Region.trim().equals("")){
       throw new RuntimeException("s3region is empty");
     }
@@ -102,9 +100,8 @@ public class App {
       return TracingContextUtils.getCurrentSpan().getContext().getSpanIdAsHexString();
     });
 
-    /**
      * record a start time for each request
-     */
+
     before((req, res) -> {
       req.attribute(REQUEST_START_TIME, System.currentTimeMillis());
     });
@@ -129,7 +126,8 @@ public class App {
     exception(Exception.class, (exception, request, response) -> {
       // Handle the exception here
       exception.printStackTrace();
-    });
+    });*/
+    return null;
   }
 
   private static String makeHttpCall(String url) throws IOException {
