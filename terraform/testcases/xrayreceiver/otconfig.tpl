@@ -23,3 +23,6 @@ service:
       processors: [batch]
       exporters: [awsxray]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug

@@ -28,3 +28,6 @@ service:
       processors: [resourcedetection, batch]
       exporters: [awsxray]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug

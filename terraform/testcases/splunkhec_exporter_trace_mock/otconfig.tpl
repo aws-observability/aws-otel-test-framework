@@ -24,3 +24,6 @@ service:
       processors: [batch]
       exporters: [splunk_hec]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug

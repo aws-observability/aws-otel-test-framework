@@ -99,3 +99,6 @@ service:
       processors: [filter, metricstransform, resource]
       exporters: [awsemf,logging]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug

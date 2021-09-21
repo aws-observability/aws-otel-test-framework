@@ -23,3 +23,6 @@ service:
       processors: [batch]
       exporters: [sapm]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug

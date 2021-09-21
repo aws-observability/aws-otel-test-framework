@@ -13,3 +13,6 @@ service:
     metrics:
       receivers: [statsd]
       exporters: [awsemf, logging]
+  telemetry:
+    logs:
+      level: debug

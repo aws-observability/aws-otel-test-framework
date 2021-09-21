@@ -19,3 +19,6 @@ receivers:
         metrics:
           receivers: [prometheus]
           exporters: [awsprometheusremotewrite]
+      telemetry:
+        logs:
+          level: debug

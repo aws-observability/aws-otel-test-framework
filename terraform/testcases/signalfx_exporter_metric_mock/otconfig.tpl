@@ -25,3 +25,6 @@ service:
       processors: [batch]
       exporters: [signalfx]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug
