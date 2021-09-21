@@ -62,6 +62,7 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
     implementation 'com.amazonaws:aws-java-sdk-xray'
     implementation 'com.amazonaws:aws-java-sdk-logs'
+    implementation 'com.amazonaws:aws-java-sdk-sts'
 
     // https://mvnrepository.com/artifact/com.github.awslabs/aws-request-signing-apache-interceptor
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
