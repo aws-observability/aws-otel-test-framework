@@ -15,7 +15,8 @@ exporters:
     loglevel: debug
   otlphttp:
     metrics_endpoint: "https://${mock_endpoint}"
-    insecure: true
+    tls:
+      insecure: true
 
 service:
   pipelines:

@@ -15,7 +15,8 @@ exporters:
     loglevel: debug
   otlp:
     endpoint: ${mock_endpoint}
-    insecure: true
+    tls:
+      insecure: true
 
 service:
   pipelines:
