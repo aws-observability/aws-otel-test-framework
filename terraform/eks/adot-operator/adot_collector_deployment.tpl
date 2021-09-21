@@ -4,7 +4,7 @@ metadata:
   name: aoc
   namespace: ${AOC_NAMESPACE}
 spec:
-  image: public.ecr.aws/aws-observability/aws-otel-collector:latest
+  image: ${AOC_IMAGE}
   mode: ${AOC_DEPLOY_MODE}
   serviceAccount: ${AOC_SERVICEACCOUNT}
   config: |
