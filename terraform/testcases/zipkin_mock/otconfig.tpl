@@ -13,7 +13,8 @@ exporters:
     loglevel: debug
   otlphttp:
     traces_endpoint: "https://${mock_endpoint}"
-    insecure: true
+    tls:
+      insecure: true
 
 
 service:
