@@ -24,3 +24,6 @@ service:
       processors: [batch]
       exporters: [logzio]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug

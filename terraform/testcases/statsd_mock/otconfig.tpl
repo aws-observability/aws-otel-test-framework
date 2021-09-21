@@ -13,3 +13,6 @@ service:
     metrics:
       receivers: [statsd]
       exporters: [otlphttp]
+  telemetry:
+    logs:
+      level: debug

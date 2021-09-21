@@ -24,3 +24,6 @@ service:
       processors: [batch]
       exporters: [otlphttp]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug

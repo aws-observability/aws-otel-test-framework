@@ -158,6 +158,9 @@ exporters:
     loglevel: debug
 
 service:
+  telemetry:
+    logs:
+      level: debug
   extensions: [ ecs_observer ]
   pipelines:
     metrics:

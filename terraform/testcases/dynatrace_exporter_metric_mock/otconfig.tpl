@@ -24,4 +24,7 @@ service:
       processors: [batch]
       exporters: [dynatrace]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug
 

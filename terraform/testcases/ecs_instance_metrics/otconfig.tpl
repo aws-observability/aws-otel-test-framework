@@ -47,3 +47,6 @@ service:
       receivers: [awscontainerinsightreceiver]
       processors: [batch/metrics]
       exporters: [awsemf,logging]
+  telemetry:
+    logs:
+      level: debug

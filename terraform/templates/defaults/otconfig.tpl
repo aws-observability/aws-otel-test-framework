@@ -38,3 +38,6 @@ service:
       receivers: [otlp]
       processors: [batch/metrics]
       exporters: [logging, awsemf]
+  telemetry:
+    logs:
+      level: debug

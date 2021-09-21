@@ -23,3 +23,6 @@ extensions:
           processors: [batch]
           exporters: [logging,awsemf]
       extensions: [pprof]
+      telemetry:
+        logs:
+          level: debug

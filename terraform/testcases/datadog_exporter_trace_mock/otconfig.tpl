@@ -28,3 +28,6 @@ service:
       processors: [batch]
       exporters: [datadog]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug

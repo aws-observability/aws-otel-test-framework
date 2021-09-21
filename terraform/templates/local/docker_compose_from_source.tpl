@@ -12,7 +12,7 @@ services:
       context: ../../../aws-otel-collector
       dockerfile: cmd/awscollector/Dockerfile
 
-    command: ["--config=/tmp/otconfig.yaml", "--log-level=DEBUG"]
+    command: ["--config=/tmp/otconfig.yaml"]
     volumes:
       - ./otconfig.yml:/tmp/otconfig.yaml
       - "../../mocked_servers/https/certificates/ssl/certificate.crt:/etc/ssl/certs/ca-certificates.crt"

@@ -27,3 +27,6 @@ service:
       processors: [batch]
       exporters: [logging, newrelic]
   extensions: [pprof]
+  telemetry:
+    logs:
+      level: debug

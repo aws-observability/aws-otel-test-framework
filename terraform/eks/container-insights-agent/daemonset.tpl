@@ -36,7 +36,6 @@ spec:
           imagePullPolicy: Always
           command:
             - "/awscollector"
-              #- "--log-level=DEBUG"
             - "--config=/conf/otel-agent-config.yaml"
           volumeMounts:
             - name: rootfs
