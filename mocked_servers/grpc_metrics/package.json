@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "@grpc/grpc-js": "^1.1.0",
-    "@grpc/proto-loader": "^0.5.0",
+    "@grpc/proto-loader": "^0.6.6",
     "async": "^1.5.2",
     "express": "^4.17.1",
     "google-protobuf": "^3.0.0"
