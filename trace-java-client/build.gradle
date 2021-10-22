@@ -14,7 +14,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
 
     implementation 'com.google.code.gson:gson:2.8.2'
     implementation group: 'io.opentracing.brave', name: 'brave-opentracing', version: '0.33.9'
