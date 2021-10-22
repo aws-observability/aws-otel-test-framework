@@ -38,7 +38,7 @@ dependencies {
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:1.4.1-alpha"
 
-    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.7.0"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.10.0"
     implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.7.0"
 
     // Use JUnit test framework
