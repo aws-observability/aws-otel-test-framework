@@ -16,7 +16,7 @@ repositories {
 dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 
-    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'com.google.code.gson:gson:2.8.9'
     implementation group: 'io.opentracing.brave', name: 'brave-opentracing', version: '0.33.9'
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
     implementation group: 'io.jaegertracing', name: 'jaeger-core', version: '0.28.0'
