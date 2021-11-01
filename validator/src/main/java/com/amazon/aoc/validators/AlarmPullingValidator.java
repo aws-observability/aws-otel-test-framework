@@ -60,7 +60,7 @@ public class AlarmPullingValidator implements IValidator {
           alarmList.sort(Comparator.comparing(MetricAlarm::getAlarmName));
           for (int i = 0; i != context.getAlarmNameList().size(); ++i) {
             if (!context.getAlarmNameList().get(i).equals(alarmList.get(i).getAlarmName())) {
-              log.error("alarm {} can not be found", context.getAlarmNameList().get(i));
+              log.error("alarm {} cannot be found", context.getAlarmNameList().get(i));
               //emit soaking validation metric
               cloudWatchService.putMetricData(SOAKING_NAMESPACE, METRIC_NAME, 0.0, dimension);
               System.exit(1);
