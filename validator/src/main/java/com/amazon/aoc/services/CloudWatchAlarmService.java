@@ -21,8 +21,8 @@ public class CloudWatchAlarmService {
    * @return the list of MetricAlarm Object
    */
   public List<MetricAlarm> listAlarms(List<String> alarmNameList) {
-    DescribeAlarmsResult describeALarmsResult =
+    DescribeAlarmsResult describeAlarmsResult =
         amazonCloudWatch.describeAlarms(new DescribeAlarmsRequest().withAlarmNames(alarmNameList));
-    return describeALarmsResult.getMetricAlarms();
+    return describeAlarmsResult.getMetricAlarms();
   }
 }
