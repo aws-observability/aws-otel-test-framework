@@ -54,7 +54,7 @@ data "aws_subnet_ids" "aoc_public_subnet_ids" {
   filter {
     name = "tag:Name"
     values = [
-      "${module.common.aoc_vpc_name}-public-${var.region}a",
+      "${module.common.aoc_vpc_name}-public-${var.region}a-1",
       "${module.common.aoc_vpc_name}-public-${var.region}b",
       "${module.common.aoc_vpc_name}-public-${var.region}c",
     ]
