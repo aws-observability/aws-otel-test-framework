@@ -21,8 +21,12 @@
           "status": 200
         }
       },
+      "aws": {
+        "operation": "ListBuckets",
+      }
       "metadata": {
         "default": {
+          "aws.service": "s3",
           "rpc.service": "S3",
           "rpc.method": "ListBuckets",
           "rpc.system": "aws-api"
@@ -31,4 +35,12 @@
       "namespace": "aws"
     }
   ]
+},
+{
+  "name": "S3",
+  "inferred":true,
+  "aws": {
+      "operation": "ListBuckets"
+  },
+  "origin": "AWS::S3"
 }]
