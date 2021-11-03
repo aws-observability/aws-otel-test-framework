@@ -33,7 +33,7 @@ public class Context {
   private String availabilityZone;
 
   @NonNull
-  private boolean isCanary;
+  private Boolean isCanary;
 
   private String metricNamespace;
 
