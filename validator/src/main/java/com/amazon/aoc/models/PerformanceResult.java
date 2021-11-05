@@ -36,6 +36,10 @@ public class PerformanceResult implements Serializable {
   @NonNull private Double avgCpu;
   @NonNull private Double avgMem;
 
+  // Max statistics
+  @NonNull private Double maxCpu;
+  @NonNull private Double maxMem;
+
   // Metadata
   @NonNull private String commitId;
   @NonNull private Integer collectionPeriod;
