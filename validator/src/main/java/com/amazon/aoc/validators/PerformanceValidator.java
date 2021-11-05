@@ -21,6 +21,7 @@ import java.util.Arrays;
 
 @Log4j2
 public class PerformanceValidator implements IValidator {
+  private static final int BYTES_IN_MEGABYTES = 1000000;
   private static String outputFileName = "performance.json";
   private static int MAX_RETRY_COUNT = 30;
   private Context context;
@@ -59,6 +60,22 @@ public class PerformanceValidator implements IValidator {
     return sum / datapoints.size();
   }
 
+  // Get max stat over all datapoints
+  private Double getMaxStats(List<Datapoint> datapoints) {
+    Double max = 0.0;
+    if (datapoints == null || datapoints.isEmpty()) {
+      return max;
+    }
+
+    for (Datapoint dp : datapoints) {
+      if (dp.getMaximum().compareTo(max) > 0) {
+        max = dp.getMaximum();
+      }
+    }
+
+    return max;
+  }
+
   @Override
   public void validate() throws Exception {
     final Date endTime = new Date();
@@ -88,7 +105,7 @@ public class PerformanceValidator implements IValidator {
         .withStartTime(startTime)
         .withEndTime(endTime)
         .withDimensions(dimensions)
-        .withStatistics(Statistic.Average);
+        .withStatistics(Statistic.Average, Statistic.Maximum);
     final GetMetricStatisticsRequest cpuStatsRequest = request
         .clone()
         .withMetricName(validationConfig.getCpuMetricName());
@@ -103,9 +120,11 @@ public class PerformanceValidator implements IValidator {
           log.info("retrieving cpu statistics");
           List<Datapoint> cpuDatapoints = cloudWatchService.getDatapoints(cpuStatsRequest);
           Double avgCpu = getAverageStats(cpuDatapoints);
+          Double maxCpu = getMaxStats(cpuDatapoints);
           log.info("retrieving memory statistics");
           List<Datapoint> memoryDatapoints = cloudWatchService.getDatapoints(memoryStatsRequest);
-          Double avgMemory = getAverageStats(memoryDatapoints) / 1000000;
+          Double avgMemory = getAverageStats(memoryDatapoints) / BYTES_IN_MEGABYTES;
+          Double maxMemory = getMaxStats(memoryDatapoints) / BYTES_IN_MEGABYTES;
 
           final PerformanceResult result = new PerformanceResult(
               validationConfig.getTestcase(),
@@ -118,6 +137,8 @@ public class PerformanceValidator implements IValidator {
               validationConfig.getDataRate(),
               avgCpu,
               avgMemory,
+              maxCpu,
+              maxMemory,
               validationConfig.getCommitId(),
               validationConfig.getCollectionPeriod(),
               validationConfig.getTestingAmi()
