@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package opentelemetry.proto.collector.trace.v1;
 
+option go_package = "github.com/aws-observability/aws-otel-test-framework/mockedservers/grpctrace/proto";
+
 // The Trace Handler service definition.
 service TraceService {
     // Export data

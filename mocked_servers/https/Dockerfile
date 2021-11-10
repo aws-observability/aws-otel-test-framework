@@ -1,11 +1,8 @@
-FROM node:14
+FROM golang:1.17 as build
+WORKDIR $GOPATH/main
+COPY . .
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -o=/bin/main .
 
-WORKDIR /app
-
-COPY certificates ./certificates
-COPY *.js ./
-COPY package.json ./
-
-RUN npm install
-
-CMD ["node", "index.js"]
+FROM scratch
+COPY --from=build /bin/main /bin/main
+ENTRYPOINT ["/bin/main"]

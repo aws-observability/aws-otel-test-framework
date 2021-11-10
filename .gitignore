@@ -8,7 +8,6 @@ out
 **/*.jar
 
 # Ignore Intellij Idea generated files
-.idea
 *.iml
 lombok.config
 
@@ -59,4 +58,6 @@ terraform.rc
 !gradle/wrapper/gradle-wrapper.jar
 
 # Ignore nodejs builds
-node_modules 
+node_modules
+
+mocked_servers/bin
