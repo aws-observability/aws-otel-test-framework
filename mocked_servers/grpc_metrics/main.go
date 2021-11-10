@@ -36,6 +36,7 @@ type server struct {
 // Export Implements the RPC method.
 func (s *server) Export(_ context.Context, _ *pb.Request) (*pb.ExportMetricsResponse, error) {
 	data = "success"
+	// Built-in latency
 	time.Sleep(15 * time.Millisecond)
 	return &pb.ExportMetricsResponse{Message: "Export Data!"}, nil
 }

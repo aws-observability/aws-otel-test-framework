@@ -56,6 +56,7 @@ func main() {
 		data = "success"
 		transactions++
 
+		// Built-in latency
 		time.Sleep(15 * time.Millisecond)
 		w.WriteHeader(http.StatusOK)
 	})

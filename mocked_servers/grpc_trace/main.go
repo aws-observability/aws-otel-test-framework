@@ -19,6 +19,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"time"
 
 	pb "github.com/aws-observability/aws-otel-test-framework/mockedservers/grpctrace/proto"
 	"google.golang.org/grpc"
@@ -35,6 +36,8 @@ type server struct {
 // Export Implements the RPC method.
 func (s *server) Export(_ context.Context, _ *pb.Request) (*pb.ExportTraceServiceResponse, error) {
 	data = "success"
+	// Built-in latency
+	time.Sleep(15 * time.Millisecond)
 	return &pb.ExportTraceServiceResponse{Message: "Export Data!"}, nil
 }
 
