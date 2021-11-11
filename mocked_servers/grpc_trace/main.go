@@ -21,45 +21,60 @@ import (
 	"net/http"
 	"time"
 
-	pb "github.com/aws-observability/aws-otel-test-framework/mockedservers/grpctrace/proto"
+	pb "go.opentelemetry.io/proto/otlp/collector/trace/v1"
 	"google.golang.org/grpc"
 )
 
-var (
-	data = ""
+const (
+	HealthCheckMessage = "healthcheck"
+	SuccessMessage     = "success"
 )
 
 type server struct {
+	data *string
 	pb.UnimplementedTraceServiceServer
 }
 
+type checkDataHandler struct {
+	data *string
+}
+
+func healthCheck(w http.ResponseWriter, _ *http.Request) {
+	if _, err := w.Write([]byte(HealthCheckMessage)); err != nil {
+		log.Printf("Unable to write response: %v", err)
+	}
+}
+
+func (h *checkDataHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
+	if _, err := w.Write([]byte(*h.data)); err != nil {
+		log.Printf("Unable to write response: %v", err)
+	}
+}
+
 // Export Implements the RPC method.
-func (s *server) Export(_ context.Context, _ *pb.Request) (*pb.ExportTraceServiceResponse, error) {
-	data = "success"
+func (s *server) Export(_ context.Context, _ *pb.ExportTraceServiceRequest) (*pb.ExportTraceServiceResponse, error) {
+	*s.data = SuccessMessage
 	// Built-in latency
 	time.Sleep(15 * time.Millisecond)
-	return &pb.ExportTraceServiceResponse{Message: "Export Data!"}, nil
+	return &pb.ExportTraceServiceResponse{}, nil
 }
 
 // Starts an RPC server that receives requests for the data handler service at the sample server port
 // Starts an HTTP server that receives request from validator only to verify the data ingestion
 func main() {
+	data := ""
 	listener, err := net.Listen("tcp", ":55671")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterTraceServiceServer(s, &server{})
+	pb.RegisterTraceServiceServer(s, &server{data: &data})
 	log.Printf("GRPC server listening at %v", listener.Addr())
 	go log.Fatal(s.Serve(listener))
 
 	app := http.NewServeMux()
-	app.HandleFunc("/", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte("healthcheck"))
-	})
+	app.HandleFunc("/", healthCheck)
 	// Implements check-data for validator.
-	app.HandleFunc("/check-data", func(w http.ResponseWriter, _ *http.Request) {
-		w.Write([]byte(data))
-	})
+	app.Handle("/check-data", &checkDataHandler{data: &data})
 	log.Fatal(http.ListenAndServe(":8080", app))
 }
