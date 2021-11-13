@@ -16,9 +16,11 @@ package main
 
 import (
 	"context"
+	"io"
 	"log"
 	"net"
 	"net/http"
+	"sync"
 	"time"
 
 	pb "go.opentelemetry.io/proto/otlp/collector/metrics/v1"
@@ -30,30 +32,33 @@ const (
 	SuccessMessage     = "success"
 )
 
-type server struct {
-	data *string
+type metricsServiceServer struct {
+	mu   sync.Mutex // guards data
+	data string
 	pb.UnimplementedMetricsServiceServer
 }
 
-type checkDataHandler struct {
-	data *string
-}
-
 func healthCheck(w http.ResponseWriter, _ *http.Request) {
-	if _, err := w.Write([]byte(HealthCheckMessage)); err != nil {
+	if _, err := io.WriteString(w, HealthCheckMessage); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
 }
 
-func (h *checkDataHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
-	if _, err := w.Write([]byte(*h.data)); err != nil {
+func (mss *metricsServiceServer) checkData(w http.ResponseWriter, _ *http.Request) {
+	mss.mu.Lock()
+	defer mss.mu.Unlock()
+
+	if _, err := io.WriteString(w, mss.data); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
 }
 
 // Export Implements the RPC method.
-func (s *server) Export(_ context.Context, _ *pb.ExportMetricsServiceRequest) (*pb.ExportMetricsServiceResponse, error) {
-	*s.data = SuccessMessage
+func (mss *metricsServiceServer) Export(_ context.Context, _ *pb.ExportMetricsServiceRequest) (*pb.ExportMetricsServiceResponse, error) {
+	mss.mu.Lock()
+	defer mss.mu.Unlock()
+
+	mss.data = SuccessMessage
 	// Built-in latency
 	time.Sleep(15 * time.Millisecond)
 	return &pb.ExportMetricsServiceResponse{}, nil
@@ -62,19 +67,36 @@ func (s *server) Export(_ context.Context, _ *pb.ExportMetricsServiceRequest) (*
 // Starts an RPC server that receives requests for the data handler service at the sample server port
 // Starts an HTTP server that receives request from validator only to verify the data ingestion
 func main() {
-	data := ""
-	listener, err := net.Listen("tcp", ":55671")
-	if err != nil {
-		log.Fatalf("Failed to listen: %v", err)
-	}
-	s := grpc.NewServer()
-	pb.RegisterMetricsServiceServer(s, &server{data: &data})
-	log.Printf("GRPC server listening at %v", listener.Addr())
-	go log.Fatal(s.Serve(listener))
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-	app := http.NewServeMux()
-	app.HandleFunc("/", healthCheck)
-	// Implements check-data for validator.
-	app.Handle("/check-data", &checkDataHandler{data: &data})
-	log.Fatal(http.ListenAndServe(":8080", app))
+	server := metricsServiceServer{data: ""}
+
+	go func(mss *metricsServiceServer) {
+		defer wg.Done()
+
+		listener, err := net.Listen("tcp", ":55671")
+		if err != nil {
+			log.Fatalf("Failed to listen: %v", err)
+		}
+		dataApp := grpc.NewServer()
+		pb.RegisterMetricsServiceServer(dataApp, mss)
+		log.Printf("GRPC metrics server listening at %v", listener.Addr())
+		if err = dataApp.Serve(listener); err != nil {
+			log.Fatalf("GRPC metrics server error: %v", err)
+		}
+	}(&server)
+
+	go func(mss *metricsServiceServer) {
+		defer wg.Done()
+
+		verifyApp := http.NewServeMux()
+		verifyApp.HandleFunc("/", healthCheck)
+		verifyApp.HandleFunc("/check-data", mss.checkData)
+		if err := http.ListenAndServe(":8080", verifyApp); err != nil {
+			log.Fatalf("Verification server error: %v", err)
+		}
+	}(&server)
+
+	wg.Wait()
 }

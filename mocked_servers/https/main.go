@@ -16,50 +16,52 @@ package main
 
 import (
 	"encoding/json"
+	"io"
 	"log"
 	"net/http"
+	"sync"
 	"time"
 )
 
 const (
 	HealthCheckMessage = "healthcheck"
 	SuccessMessage     = "success"
+	CertFilePath       = "./certificates/ssl/certificate.crt"
+	KeyFilePath        = "./certificates/private.key"
 )
 
-type checkDataHandler struct {
-	data *string
-}
-
-type dataReceivedHandler struct {
-	data         *string
-	transactions *int
-}
-
-type tpmHandler struct {
+type transactionStore struct {
+	mu           sync.Mutex // guards data and transactions
+	transactions int
 	startTime    time.Time
-	transactions *int
+	data         string
 }
 
-type tpmPayload struct {
+type transactionPayload struct {
 	tpm int
 }
 
 func healthCheck(w http.ResponseWriter, _ *http.Request) {
-	if _, err := w.Write([]byte(HealthCheckMessage)); err != nil {
+	if _, err := io.WriteString(w, HealthCheckMessage); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
 }
 
-func (h *checkDataHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
-	if _, err := w.Write([]byte(*h.data)); err != nil {
+func (h *transactionStore) checkData(w http.ResponseWriter, _ *http.Request) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	if _, err := io.WriteString(w, h.data); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
 }
 
-// Separate data app from management app to be path agnostic
-func (h *dataReceivedHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
-	*h.data = SuccessMessage
-	*h.transactions++
+func (h *transactionStore) dataReceived(w http.ResponseWriter, _ *http.Request) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	h.data = SuccessMessage
+	h.transactions++
 
 	// Built-in latency
 	time.Sleep(15 * time.Millisecond)
@@ -67,33 +69,55 @@ func (h *dataReceivedHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) 
 }
 
 // Retrieve number of transactions per minute
-func (h *tpmHandler) ServeHTTP(w http.ResponseWriter, _ *http.Request) {
+func (h *transactionStore) tpm(w http.ResponseWriter, _ *http.Request) {
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
 	// Calculate duration in minutes
 	now := time.Now()
 	duration := now.Sub(h.startTime)
-	tpm := *h.transactions / int(duration.Minutes())
+	tpm := h.transactions / int(duration.Minutes())
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(tpmPayload{tpm}); err != nil {
+	if err := json.NewEncoder(w).Encode(transactionPayload{tpm}); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
 }
 
+// Starts an HTTPS server that receives requests for the data handler service at the sample server port
+// Starts an HTTP server that receives request from validator only to verify the data ingestion
 func main() {
-	data := ""
-	transactions := 0
-	startTime := time.Now()
-	app := http.NewServeMux()
-	dataApp := http.NewServeMux()
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-	app.HandleFunc("/", healthCheck)
-	app.Handle("/check-data", &checkDataHandler{data: &data})
-	app.Handle("/tpm", &tpmHandler{startTime: startTime, transactions: &transactions})
+	store := transactionStore{
+		data:         "",
+		transactions: 0,
+		startTime:    time.Now(),
+	}
 
-	dataApp.Handle("/put-data*", &dataReceivedHandler{data: &data, transactions: &transactions})
-	dataApp.Handle("/trace/v1", &dataReceivedHandler{data: &data, transactions: &transactions})
-	dataApp.Handle("/metric/v1", &dataReceivedHandler{data: &data, transactions: &transactions})
+	go func(s *transactionStore) {
+		defer wg.Done()
 
-	go log.Fatal(http.ListenAndServeTLS(":443", "./certificates/ssl/certificate.crt", "./certificates/private.key", dataApp))
+		dataApp := http.NewServeMux()
+		dataApp.HandleFunc("/put-data/", s.dataReceived)
+		dataApp.HandleFunc("/trace/v1", s.dataReceived)
+		dataApp.HandleFunc("/metric/v1", s.dataReceived)
+		if err := http.ListenAndServeTLS(":443", CertFilePath, KeyFilePath, dataApp); err != nil {
+			log.Fatalf("HTTPS server error: %v", err)
+		}
+	}(&store)
 
-	log.Fatal(http.ListenAndServe(":8080", app))
+	go func(s *transactionStore) {
+		defer wg.Done()
+
+		verifyApp := http.NewServeMux()
+		verifyApp.HandleFunc("/", healthCheck)
+		verifyApp.HandleFunc("/check-data", s.checkData)
+		verifyApp.HandleFunc("/tpm", s.tpm)
+		if err := http.ListenAndServe(":8080", verifyApp); err != nil {
+			log.Fatalf("Verification server error: %v", err)
+		}
+	}(&store)
+
+	wg.Wait()
 }
