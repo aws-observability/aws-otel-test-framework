@@ -33,8 +33,8 @@ const (
 )
 
 type metricsServiceServer struct {
-	mu   sync.Mutex // guards data
-	data string
+	mu         sync.Mutex // guards isReceived
+	isReceived bool
 	pb.UnimplementedMetricsServiceServer
 }
 
@@ -45,10 +45,14 @@ func healthCheck(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (mss *metricsServiceServer) checkData(w http.ResponseWriter, _ *http.Request) {
+	var message string
 	mss.mu.Lock()
-	defer mss.mu.Unlock()
+	if mss.isReceived {
+		message = SuccessMessage
+	}
+	mss.mu.Unlock()
 
-	if _, err := io.WriteString(w, mss.data); err != nil {
+	if _, err := io.WriteString(w, message); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
 }
@@ -56,7 +60,7 @@ func (mss *metricsServiceServer) checkData(w http.ResponseWriter, _ *http.Reques
 // Export Implements the RPC method.
 func (mss *metricsServiceServer) Export(_ context.Context, _ *pb.ExportMetricsServiceRequest) (*pb.ExportMetricsServiceResponse, error) {
 	mss.mu.Lock()
-	mss.data = SuccessMessage
+	mss.isReceived = true
 	mss.mu.Unlock()
 
 	// Built-in latency
@@ -70,7 +74,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	server := metricsServiceServer{data: ""}
+	server := metricsServiceServer{}
 
 	go func(mss *metricsServiceServer) {
 		defer wg.Done()

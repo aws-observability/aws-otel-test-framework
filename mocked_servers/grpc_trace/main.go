@@ -33,8 +33,8 @@ const (
 )
 
 type traceServiceServer struct {
-	mu   sync.Mutex // guards data
-	data string
+	mu         sync.Mutex // guards isReceived
+	isReceived bool
 	pb.UnimplementedTraceServiceServer
 }
 
@@ -45,10 +45,14 @@ func healthCheck(w http.ResponseWriter, _ *http.Request) {
 }
 
 func (tss *traceServiceServer) checkData(w http.ResponseWriter, _ *http.Request) {
+	var message string
 	tss.mu.Lock()
-	defer tss.mu.Unlock()
+	if tss.isReceived {
+		message = SuccessMessage
+	}
+	tss.mu.Unlock()
 
-	if _, err := io.WriteString(w, tss.data); err != nil {
+	if _, err := io.WriteString(w, message); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
 }
@@ -56,7 +60,7 @@ func (tss *traceServiceServer) checkData(w http.ResponseWriter, _ *http.Request)
 // Export Implements the RPC method.
 func (tss *traceServiceServer) Export(_ context.Context, _ *pb.ExportTraceServiceRequest) (*pb.ExportTraceServiceResponse, error) {
 	tss.mu.Lock()
-	tss.data = SuccessMessage
+	tss.isReceived = true
 	tss.mu.Unlock()
 
 	// Built-in latency
@@ -70,7 +74,7 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	server := traceServiceServer{data: ""}
+	server := traceServiceServer{}
 
 	go func(tss *traceServiceServer) {
 		defer wg.Done()
