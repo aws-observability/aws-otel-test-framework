@@ -13,20 +13,20 @@ updates:
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "npm"
-    # package.json stored in `/mocked_servers/grpc_metrics` directory
+  - package-ecosystem: "gomod"
+    # Files stored in `/mocked_servers/grpc_metrics` directory
     directory: "/mocked_servers/grpc_metrics"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "npm"
-    # package.json stored in `/mocked_servers/grpc_trace` directory
+  - package-ecosystem: "gomod"
+    # Files stored in `/mocked_servers/grpc_trace` directory
     directory: "/mocked_servers/grpc_trace"
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "npm"
-    # package.json stored in `/mocked_servers/https` directory
+  - package-ecosystem: "gomod"
+    # Files stored in `/mocked_servers/https` directory
     directory: "/mocked_servers/https"
     schedule:
       interval: "weekly"

@@ -8,7 +8,6 @@ out
 **/*.jar
 
 # Ignore Intellij Idea generated files
-.idea
 *.iml
 lombok.config
 
@@ -25,6 +24,8 @@ sshkey.pem
 **/.terraform/*
 terraform/**/.terraform.lock.hcl
 terraform/**/creds.env
+terraform/**/docker_compose.yml
+terraform/**/otconfig.yml
 terraform/**/validator_docker_compose.yml
 
 # Local output directories
@@ -57,6 +58,3 @@ override.tf.json
 terraform.rc
 
 !gradle/wrapper/gradle-wrapper.jar
-
-# Ignore nodejs builds
-node_modules 

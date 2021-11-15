@@ -1,11 +1,10 @@
-FROM node:14
+FROM golang:1.17 AS build
+WORKDIR $GOPATH/main
+COPY . .
+RUN go env -w GOPROXY=direct
+RUN GO111MODULE=on go mod download
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -o=/bin/main .
 
-WORKDIR /app
-
-COPY *.js ./
-COPY package.json ./
-COPY metrichandler.proto ./
-
-RUN npm install
-
-CMD ["node", "metrics_handler_server.js"]
+FROM scratch
+COPY --from=build /bin/main /bin/main
+ENTRYPOINT ["/bin/main"]
