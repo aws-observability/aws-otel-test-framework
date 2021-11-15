@@ -56,9 +56,9 @@ func (tss *traceServiceServer) checkData(w http.ResponseWriter, _ *http.Request)
 // Export Implements the RPC method.
 func (tss *traceServiceServer) Export(_ context.Context, _ *pb.ExportTraceServiceRequest) (*pb.ExportTraceServiceResponse, error) {
 	tss.mu.Lock()
-	defer tss.mu.Unlock()
-
 	tss.data = SuccessMessage
+	tss.mu.Unlock()
+
 	// Built-in latency
 	time.Sleep(15 * time.Millisecond)
 	return &pb.ExportTraceServiceResponse{}, nil

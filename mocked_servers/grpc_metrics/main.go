@@ -56,9 +56,9 @@ func (mss *metricsServiceServer) checkData(w http.ResponseWriter, _ *http.Reques
 // Export Implements the RPC method.
 func (mss *metricsServiceServer) Export(_ context.Context, _ *pb.ExportMetricsServiceRequest) (*pb.ExportMetricsServiceResponse, error) {
 	mss.mu.Lock()
-	defer mss.mu.Unlock()
-
 	mss.data = SuccessMessage
+	mss.mu.Unlock()
+
 	// Built-in latency
 	time.Sleep(15 * time.Millisecond)
 	return &pb.ExportMetricsServiceResponse{}, nil

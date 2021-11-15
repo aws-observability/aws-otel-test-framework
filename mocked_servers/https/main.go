@@ -20,6 +20,7 @@ import (
 	"log"
 	"net/http"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -31,14 +32,12 @@ const (
 )
 
 type transactionStore struct {
-	mu           sync.Mutex // guards data and transactions
-	transactions int
+	transactions uint32
 	startTime    time.Time
-	data         string
 }
 
-type transactionPayload struct {
-	tpm int
+type TransactionPayload struct {
+	TransactionsPerMinute float64 `json:"tpm"`
 }
 
 func healthCheck(w http.ResponseWriter, _ *http.Request) {
@@ -47,21 +46,19 @@ func healthCheck(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func (h *transactionStore) checkData(w http.ResponseWriter, _ *http.Request) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
+func (ts *transactionStore) checkData(w http.ResponseWriter, _ *http.Request) {
+	var message string
+	if atomic.LoadUint32(&ts.transactions) > 0 {
+		message = SuccessMessage
+	}
 
-	if _, err := io.WriteString(w, h.data); err != nil {
+	if _, err := io.WriteString(w, message); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
 }
 
-func (h *transactionStore) dataReceived(w http.ResponseWriter, _ *http.Request) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-
-	h.data = SuccessMessage
-	h.transactions++
+func (ts *transactionStore) dataReceived(w http.ResponseWriter, _ *http.Request) {
+	atomic.AddUint32(&ts.transactions, 1)
 
 	// Built-in latency
 	time.Sleep(15 * time.Millisecond)
@@ -69,16 +66,14 @@ func (h *transactionStore) dataReceived(w http.ResponseWriter, _ *http.Request) 
 }
 
 // Retrieve number of transactions per minute
-func (h *transactionStore) tpm(w http.ResponseWriter, _ *http.Request) {
-	h.mu.Lock()
-	defer h.mu.Unlock()
-
+func (ts *transactionStore) tpm(w http.ResponseWriter, _ *http.Request) {
 	// Calculate duration in minutes
-	now := time.Now()
-	duration := now.Sub(h.startTime)
-	tpm := h.transactions / int(duration.Minutes())
+	duration := time.Now().Sub(ts.startTime)
+	transactions := float64(atomic.LoadUint32(&ts.transactions))
+	tpm := transactions / duration.Minutes()
+
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(transactionPayload{tpm}); err != nil {
+	if err := json.NewEncoder(w).Encode(TransactionPayload{tpm}); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
 }
@@ -89,31 +84,27 @@ func main() {
 	var wg sync.WaitGroup
 	wg.Add(2)
 
-	store := transactionStore{
-		data:         "",
-		transactions: 0,
-		startTime:    time.Now(),
-	}
+	store := transactionStore{startTime: time.Now()}
 
-	go func(s *transactionStore) {
+	go func(ts *transactionStore) {
 		defer wg.Done()
 
 		dataApp := http.NewServeMux()
-		dataApp.HandleFunc("/put-data/", s.dataReceived)
-		dataApp.HandleFunc("/trace/v1", s.dataReceived)
-		dataApp.HandleFunc("/metric/v1", s.dataReceived)
+		dataApp.HandleFunc("/put-data/", ts.dataReceived)
+		dataApp.HandleFunc("/trace/v1", ts.dataReceived)
+		dataApp.HandleFunc("/metric/v1", ts.dataReceived)
 		if err := http.ListenAndServeTLS(":443", CertFilePath, KeyFilePath, dataApp); err != nil {
 			log.Fatalf("HTTPS server error: %v", err)
 		}
 	}(&store)
 
-	go func(s *transactionStore) {
+	go func(ts *transactionStore) {
 		defer wg.Done()
 
 		verifyApp := http.NewServeMux()
 		verifyApp.HandleFunc("/", healthCheck)
-		verifyApp.HandleFunc("/check-data", s.checkData)
-		verifyApp.HandleFunc("/tpm", s.tpm)
+		verifyApp.HandleFunc("/check-data", ts.checkData)
+		verifyApp.HandleFunc("/tpm", ts.tpm)
 		if err := http.ListenAndServe(":8080", verifyApp); err != nil {
 			log.Fatalf("Verification server error: %v", err)
 		}
