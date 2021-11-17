@@ -22,6 +22,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 const (
@@ -89,8 +91,8 @@ func main() {
 	go func(ts *transactionStore) {
 		defer wg.Done()
 
-		dataApp := http.NewServeMux()
-		dataApp.HandleFunc("/put-data/", ts.dataReceived)
+		dataApp := mux.NewRouter()
+		dataApp.PathPrefix("/put-data").HandlerFunc(ts.dataReceived)
 		dataApp.HandleFunc("/trace/v1", ts.dataReceived)
 		dataApp.HandleFunc("/metric/v1", ts.dataReceived)
 		if err := http.ListenAndServeTLS(":443", CertFilePath, KeyFilePath, dataApp); err != nil {
