@@ -46,9 +46,15 @@ public class PrometheusStaticMetricValidator implements IValidator {
   private FileConfig expectedMetric;
   private ValidationConfig validationConfig;
   private CortexService cortexService;
+  private ICaller caller;
 
   @Override
   public void validate() throws Exception {
+    // hit the endpoint to generate data if need be
+    if (caller != null) {
+      log.info("Calling : {}", caller.getCallingPath());
+      caller.callSampleApp();
+    }
     log.info("Start prometheus metric validating");
     log.info("allow lambda function to finish running and propagate");
     TimeUnit.SECONDS.sleep(60);
@@ -152,5 +158,6 @@ public class PrometheusStaticMetricValidator implements IValidator {
     this.cortexService = new CortexService(context);
     this.validationConfig = validationConfig;
     this.expectedMetric = expectedMetricTemplate;
+    this.caller = caller;
   }
 }

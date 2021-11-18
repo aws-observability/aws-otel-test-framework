@@ -1,0 +1,7 @@
+-
+  validationType: "prom-static-metric"
+  httpPath: "/outgoing-http-call"
+  httpMethod: "get"
+  callingType: "http"
+  shouldValidateMetricValue: false
+  expectedMetricTemplate: "OTLP_TO_AMP_EXPECTED_METRIC"
