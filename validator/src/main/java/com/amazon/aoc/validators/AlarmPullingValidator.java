@@ -72,10 +72,14 @@ public class AlarmPullingValidator implements IValidator {
             log.info(metricAlarm.getStateValue());
             if (!metricAlarm.getStateValue().equals("OK")) {
               log.error(
-                  "alarm {} is alarming, status is {}, metric is {}, failing to bake",
+                  "alarm {} is alarming, status is {}, " 
+                  + "metric is {}, " 
+                  + "matric error : {}, " 
+                  + "failing to bake",
                   metricAlarm.getAlarmName(),
                   metricAlarm.getStateValue(),
-                  metricAlarm.getMetrics());
+                  metricAlarm.getMetrics(),
+                  metricAlarm.getStateReason());
               cloudWatchService.putMetricData(SOAKING_NAMESPACE, METRIC_NAME, 0.0, dimension);
               System.exit(1);
             }
