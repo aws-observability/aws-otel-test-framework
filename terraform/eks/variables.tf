@@ -41,3 +41,8 @@ variable "aoc_base_scenario" {
 variable "aoc_deploy_mode" {
   default = "deployment"
 }
+
+variable "deployment_type" {
+  default     = "ec2"
+  description = "ec2 or fargate"
+}
