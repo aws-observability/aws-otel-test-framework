@@ -71,14 +71,19 @@ public class CWMetricValidator implements IValidator {
         caller,
         true
     );
+    log.info(expectedMetricList);
     Set<String> skippedDimensionNameList = new HashSet<>();
+    log.info("hhhhhh");
+
     for (Metric metric : expectedMetricList) {
       for (Dimension dimension : metric.getDimensions()) {
+        log.info(metric.getMetricName(),dimension.getValue())
         if (dimension.getValue().equals("SKIP")) {
           skippedDimensionNameList.add(dimension.getName());
         }
       }
     }
+    log.info('hehehe')
     for (Metric metric : expectedMetricList) {
       metric
           .getDimensions()
