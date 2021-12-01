@@ -93,27 +93,12 @@ terraform destroy -var="eks_cluster_name={the eks cluster name in your account}"
 ````
 
 ### 2.3.1 Run in EKS Fargate
-#### Set Up
-* Install kubectl and eksctl
-  * https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
-  * https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html
-* Create eks fargate cluster
+#### Create a new fargate cluster (optional in integ test account required in person account)
+
 ```
-eksctl create cluster --name <cluster_name> --region <region> --fargate
+cd terraform/eks_fargate_setup && terraform apply -auto-approve -var="eks_cluster_name=<your_cluster>"
 ```
-* Create a oicd 
-```
-eksctl utils associate-iam-oidc-provider --cluster <cluster_name> --approve
-```
-* Create web identity role (ServiceAccount-eks-test-aoc-role)
-  * Identity provider is the openId connect on your eks cluster
-  * Add required permissions for the collector for your test
-* Create Ingress controller fargate
-  * https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-fargate/
-  * To test that ingress set up
-    * Download config https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/examples/2048/2048_full.yaml and replace all instances of namespace game-2048 with default.
-    * Check for external url after a couple of minutes
-      * ````kubectl get ingress````
+
 #### How to run fargate tests
 Add -var="deployment_type=fargate" to the eks creation statement
 Supported tests
