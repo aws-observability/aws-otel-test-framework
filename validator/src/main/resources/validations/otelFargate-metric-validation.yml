@@ -1,0 +1,4 @@
+-
+  validationType: "cw-metric"
+  callingType: "none"
+  expectedMetricTemplate: "FARGATE_EXPECTED_METRIC"

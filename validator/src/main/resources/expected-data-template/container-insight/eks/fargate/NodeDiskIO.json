@@ -1,0 +1,63 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent k8s structured log",
+  "type": "object",
+
+  "properties": {
+    "ClusterName":{},
+    "Type":{},
+    "Sources":{},
+    "Timestamp":{},
+    "Version":{},
+    "AutoScalingGroupName":{},
+    "InstanceId":{},
+    "InstanceType":{},
+    "NodeName":{},
+    "EBSVolumeId":{},
+    "device":{},
+    "node_diskio_io_serviced_async":{},
+    "node_diskio_io_serviced_read":{},
+    "node_diskio_io_serviced_sync":{},
+    "node_diskio_io_serviced_total":{},
+    "node_diskio_io_serviced_write":{},
+    "node_diskio_io_service_bytes_async":{},
+    "node_diskio_io_service_bytes_read":{},
+    "node_diskio_io_service_bytes_sync":{},
+    "node_diskio_io_service_bytes_total":{},
+    "node_diskio_io_service_bytes_write":{},
+    "kubernetes": {
+      "type": "object",
+      "properties": {
+        "host": {}
+      },
+      "required": ["host"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "ClusterName",
+    "Type",
+    "Sources",
+    "Timestamp",
+    "Version",
+    "AutoScalingGroupName",
+    "InstanceId",
+    "InstanceType",
+    "EBSVolumeId",
+    "NodeName",
+    "kubernetes",
+    "device",
+    "node_diskio_io_serviced_async",
+    "node_diskio_io_serviced_read",
+    "node_diskio_io_serviced_sync",
+    "node_diskio_io_serviced_total",
+    "node_diskio_io_serviced_write",
+    "node_diskio_io_service_bytes_async",
+    "node_diskio_io_service_bytes_read",
+    "node_diskio_io_service_bytes_sync",
+    "node_diskio_io_service_bytes_total",
+    "node_diskio_io_service_bytes_write"
+  ],
+  "additionalProperties": false
+}
