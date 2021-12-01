@@ -65,10 +65,7 @@ public class CWMetricHelper {
     List<Metric> expectedMetricList = mapper.readValue(
           yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
           new TypeReference<List<Metric>>() {});
-
-    if (rollup) {
-      return this.rollupMetric(expectedMetricList);
-    }
+    
     return expectedMetricList;
   }
 

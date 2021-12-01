@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent k8s structured log",
+  "type": "object",
+
+  "properties": {
+    "ClusterName":{},
+    "Type":{},
+    "Sources":{},
+    "Timestamp":{},
+    "Version":{},
+    "AutoScalingGroupName":{},
+    "InstanceId":{},
+    "InstanceType":{},
+    "NodeName":{},
+    "interface":{},
+    "node_interface_network_rx_bytes":{},
+    "node_interface_network_rx_dropped":{},
+    "node_interface_network_rx_errors":{},
+    "node_interface_network_rx_packets":{},
+    "node_interface_network_total_bytes":{},
+    "node_interface_network_tx_bytes":{},
+    "node_interface_network_tx_dropped":{},
+    "node_interface_network_tx_errors":{},
+    "node_interface_network_tx_packets":{},
+    "kubernetes": {
+      "type": "object",
+      "properties": {
+        "host": {}
+      },
+      "required": ["host"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "ClusterName",
+    "Type",
+    "Sources",
+    "Timestamp",
+    "Version",
+    "AutoScalingGroupName",
+    "InstanceId",
+    "InstanceType",
+    "NodeName",
+    "kubernetes",
+    "interface",
+    "node_interface_network_rx_bytes",
+    "node_interface_network_rx_dropped",
+    "node_interface_network_rx_errors",
+    "node_interface_network_rx_packets",
+    "node_interface_network_total_bytes",
+    "node_interface_network_tx_bytes",
+    "node_interface_network_tx_dropped",
+    "node_interface_network_tx_errors",
+    "node_interface_network_tx_packets"
+  ],
+  "additionalProperties": false
+}

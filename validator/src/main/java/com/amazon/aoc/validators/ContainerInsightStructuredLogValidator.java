@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -31,7 +32,7 @@ public class ContainerInsightStructuredLogValidator
           "NodeFS",
           "NodeNet",
           "Pod",
-          "PodNet"
+         "PodNet"
   );
 
   private static final int MAX_RETRY_COUNT = 15;
@@ -41,13 +42,18 @@ public class ContainerInsightStructuredLogValidator
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     logGroupName = String.format("/aws/containerinsights/%s/performance",
             context.getCloudWatchContext().getClusterName());
+    log.info("loggroupname: " + logGroupName);
     MustacheHelper mustacheHelper = new MustacheHelper();
     for (String logType : LOG_TYPE_TO_VALIDATE) {
       FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
           expectedDataTemplate.getPath().toString(),
           logType + ".json"));
-      String templateInput = mustacheHelper.render(fileConfig, context);
-      schemasToValidate.put(logType, parseJsonSchema(templateInput));
+      try {
+        String templateInput = mustacheHelper.render(fileConfig, context);
+        schemasToValidate.put(logType, parseJsonSchema(templateInput));
+      } catch (IOException e) {
+        log.info("The " + logType + " was not found for this expected template path.");
+      }
     }
   }
 
@@ -63,7 +69,7 @@ public class ContainerInsightStructuredLogValidator
 
   @Override
   protected void fetchAndValidateLogs(Instant startTime) throws Exception {
-    Set<String> logTypes = new HashSet<>(LOG_TYPE_TO_VALIDATE);
+    Set<String> logTypes = new HashSet<>(schemasToValidate.keySet());
     log.info("Fetch and validate logs with types: " + String.join(", ", logTypes));
     for (String logType : logTypes) {
       String filterPattern = String.format("{ $.Type = \"%s\"}", logType);
