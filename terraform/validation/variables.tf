@@ -85,3 +85,8 @@ variable "aws_secret_access_key" {
 variable "cortex_instance_endpoint" {
   default = ""
 }
+
+variable "rollup" {
+  type    = bool
+  default = true
+}

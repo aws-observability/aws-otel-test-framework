@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flblogproducer2eks
+  labels:
+    app: flblogproducer2eks
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: flblogproducer2eks
+  template:
+    metadata:
+      labels:
+        app: flblogproducer2eks
+    spec:
+      containers:
+        - name: flblogproducer2eks
+          #image: 803860917211.dkr.ecr.us-west-2.amazonaws.com/alpine-log-producer:latest
+          image: 803860917211.dkr.ecr.us-west-2.amazonaws.com/python-logger:300sec
+          command:
+            - /bin/sh
+            - "-c"
+            - "date; python3 generate.py; date; sleep 3600"
+            # - 'echo "start perftest: "`date +"%Y-%m-%dT%H:%M:%S%:z"`; i=0; while [ $i -lt 60 ]; do head -20000 fake_data.log >> flbinput.log; let i=i+1; sleep 1; done; echo "end perftest: "`date +"%Y-%m-%dT%H:%M:%S%:z"`; sleep 3600'
+          imagePullPolicy: IfNotPresent
+          resources:
+            limits:
+              cpu: 500m
+              memory: 1000Mi
+            requests:
+              cpu: 200m
+              memory: 400Mi
