@@ -64,12 +64,12 @@ public class CWMetricValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("Start metric validating");
+    log.info("rollup: " + context.getIsRollup());
     // get expected metrics and remove the to be skipped dimensions
     final List<Metric> expectedMetricList = cwMetricHelper.listExpectedMetrics(
         context,
         expectedMetric,
-        caller,
-        true
+        caller
     );
     Set<String> skippedDimensionNameList = new HashSet<>();
     for (Metric metric : expectedMetricList) {

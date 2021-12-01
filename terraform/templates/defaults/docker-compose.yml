@@ -9,7 +9,7 @@ services:
       - ./output:/var/output
     environment:
       AWS_ACCESS_KEY_ID:
-      AWS_SECRET_ACCESS_KEY: 
+      AWS_SECRET_ACCESS_KEY:
       AWS_DEFAULT_REGION: us-west-1
     command:
       - "--config-path=otelFargate-metric-validation.yml"
