@@ -120,9 +120,8 @@ public class App implements Callable<Integer> {
   public Integer call() throws Exception {
     final Instant startTime = Instant.now();
     // build context
-    Context context = new Context(this.testingId, this.region, this.isCanary);
+    Context context = new Context(this.testingId, this.region, this.isCanary, this.isRollup);
     context.setAccountId(this.accountId);
-    context.setIsRollup(this.isRollup);
     context.setAvailabilityZone(this.availabilityZone);
     context.setMetricNamespace(this.metricNamespace);
     context.setEndpoint(this.endpoint);

@@ -35,6 +35,7 @@ public class Context {
   @NonNull
   private Boolean isCanary;
 
+  @NonNull
   private Boolean isRollup;
 
   private String metricNamespace;

@@ -69,7 +69,8 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
     Context context = new Context(
         testingId,
         region,
-        false
+        false,
+            true
     );
     context.setMetricNamespace(namespace);
 
