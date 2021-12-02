@@ -81,3 +81,11 @@ resource "kubectl_manifest" "aoc_fargate_deploy" {
     kubectl_manifest.aoc_service_deploy
   ]
 }
+
+resource "kubectl_manifest" "logs_sample_fargate_deploy" {
+  count     = var.aoc_base_scenario == "infra" && var.deployment_type == "fargate" ? 1 : 0
+  yaml_body = file("./container-insights-agent/logs_sample_fargate.yml")
+  depends_on = [
+    kubectl_manifest.aoc_fargate_deploy
+  ]
+}

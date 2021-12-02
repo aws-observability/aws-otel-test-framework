@@ -28,6 +28,9 @@ spec:
           command:
             - "/awscollector"
             - "--config=/conf/adot-collector-config.yaml"
+          env:
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: "ClusterName=Fargate-Integ-Test-Cluster"
           resources:
             limits:
               cpu: 2

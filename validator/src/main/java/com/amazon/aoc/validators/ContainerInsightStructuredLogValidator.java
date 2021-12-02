@@ -42,6 +42,7 @@ public class ContainerInsightStructuredLogValidator
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     logGroupName = String.format("/aws/containerinsights/%s/performance",
             context.getCloudWatchContext().getClusterName());
+    log.info("Log group name is : {}", logGroupName);
     log.info("loggroupname: " + logGroupName);
     MustacheHelper mustacheHelper = new MustacheHelper();
     for (String logType : LOG_TYPE_TO_VALIDATE) {
