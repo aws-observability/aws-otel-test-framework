@@ -64,7 +64,6 @@ public class CWMetricValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("Start metric validating");
-    log.info("rollup: " + context.getIsRollup());
     // get expected metrics and remove the to be skipped dimensions
     final List<Metric> expectedMetricList = cwMetricHelper.listExpectedMetrics(
         context,
@@ -146,14 +145,8 @@ public class CWMetricValidator implements IValidator {
     for (Metric metric : baseMetricList) {
       metricSet.add(metric);
     }
-    log.info("baseMetricList: " + baseMetricList);
-    log.info("toBeCheckedMetricList" + toBeCheckedMetricList);
     for (Metric metric : toBeCheckedMetricList) {
-      log.info("INSIDE HERE");
-      log.info("inside: " + metric);
       if (!metricSet.contains(metric)) {
-        log.info("metricSet: " + metricSet);
-        log.info("metric:" + metric);
         throw new BaseException(
             ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
             String.format(

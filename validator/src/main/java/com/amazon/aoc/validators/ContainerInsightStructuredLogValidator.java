@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 
-import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -21,6 +20,9 @@ import java.util.Set;
 public class ContainerInsightStructuredLogValidator
         extends AbstractStructuredLogValidator {
 
+  private static final List<String> LOG_TYPE_TO_VALIDATE_FARGATE = Arrays.asList(
+          "Pod"
+  );
   private static final List<String> LOG_TYPE_TO_VALIDATE = Arrays.asList(
           "Cluster",
           "ClusterNamespace",
@@ -32,7 +34,7 @@ public class ContainerInsightStructuredLogValidator
           "NodeFS",
           "NodeNet",
           "Pod",
-         "PodNet"
+          "PodNet"
   );
 
   private static final int MAX_RETRY_COUNT = 15;
@@ -42,18 +44,16 @@ public class ContainerInsightStructuredLogValidator
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     logGroupName = String.format("/aws/containerinsights/%s/performance",
             context.getCloudWatchContext().getClusterName());
-    log.info("loggroupname: " + logGroupName);
     MustacheHelper mustacheHelper = new MustacheHelper();
-    for (String logType : LOG_TYPE_TO_VALIDATE) {
+    String[] logTypeParse = expectedDataTemplate.getPath().toString().split("/");
+    String logTypeExpected = logTypeParse[logTypeParse.length - 1];
+    for (String logType : logTypeExpected.equals("fargate-test")
+            ? LOG_TYPE_TO_VALIDATE_FARGATE : LOG_TYPE_TO_VALIDATE) {
       FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
           expectedDataTemplate.getPath().toString(),
           logType + ".json"));
-      try {
-        String templateInput = mustacheHelper.render(fileConfig, context);
-        schemasToValidate.put(logType, parseJsonSchema(templateInput));
-      } catch (IOException e) {
-        log.info("The " + logType + " was not found for this expected template path.");
-      }
+      String templateInput = mustacheHelper.render(fileConfig, context);
+      schemasToValidate.put(logType, parseJsonSchema(templateInput));
     }
   }
 
