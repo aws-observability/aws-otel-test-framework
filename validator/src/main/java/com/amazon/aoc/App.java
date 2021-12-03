@@ -104,7 +104,7 @@ public class App implements Callable<Integer> {
 
   @CommandLine.Option(
           names = {"--rollup"},
-          defaultValue = "false")
+          defaultValue = "true")
   private boolean isRollup;
 
   private static final String TEST_CASE_DIM_KEY = "testcase";
