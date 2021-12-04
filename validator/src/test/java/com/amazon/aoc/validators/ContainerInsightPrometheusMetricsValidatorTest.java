@@ -70,7 +70,7 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
         testingId,
         region,
         false,
-            true
+        true
     );
     context.setMetricNamespace(namespace);
 

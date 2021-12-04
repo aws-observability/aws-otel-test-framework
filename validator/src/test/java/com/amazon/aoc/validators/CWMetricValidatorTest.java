@@ -77,7 +77,7 @@ public class CWMetricValidatorTest {
         testingId,
         region,
         false,
-            true
+        true
     );
     context.setMetricNamespace(namespace);
     return context;

@@ -65,7 +65,7 @@ public class ContainerInsightECSStructuredLogValidatorTest {
         testingId,
         region,
         false,
-            true
+        true
     );
     context.setMetricNamespace(namespace);
     CloudWatchContext cloudWatchContext = new CloudWatchContext();
