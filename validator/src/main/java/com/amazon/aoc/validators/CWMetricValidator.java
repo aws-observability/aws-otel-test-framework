@@ -92,7 +92,7 @@ public class CWMetricValidator implements IValidator {
               this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
 
           // remove the skip dimensions
-          log.info("dimensions to be skipped in validation: {}", metricList);
+          log.info("dimensions to be skipped in validation: {}", skippedDimensionNameList);
           for (Metric metric : metricList) {
             metric
                 .getDimensions()

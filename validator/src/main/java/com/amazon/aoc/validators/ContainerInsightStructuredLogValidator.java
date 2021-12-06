@@ -51,7 +51,7 @@ public class ContainerInsightStructuredLogValidator
         String templateInput = mustacheHelper.render(fileConfig, context);
         schemasToValidate.put(logType, parseJsonSchema(templateInput));
       } catch (IOException e) {
-        log.info("The " + logType + " was not found for this expected template path.");
+        log.debug("The " + logType + " was not found for this expected template path.");
       }
     }
   }
