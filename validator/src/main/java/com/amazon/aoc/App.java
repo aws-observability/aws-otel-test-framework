@@ -102,6 +102,11 @@ public class App implements Callable<Integer> {
       description = "cortex instance validating url")
   private String cortexInstanceEndpoint;
 
+  @CommandLine.Option(
+          names = {"--rollup"},
+          defaultValue = "true")
+  private boolean isRollup;
+
   private static final String TEST_CASE_DIM_KEY = "testcase";
   private static final String CANARY_NAMESPACE = "Otel/Canary";
   private static final String CANARY_METRIC_NAME = "Success";
@@ -115,7 +120,7 @@ public class App implements Callable<Integer> {
   public Integer call() throws Exception {
     final Instant startTime = Instant.now();
     // build context
-    Context context = new Context(this.testingId, this.region, this.isCanary);
+    Context context = new Context(this.testingId, this.region, this.isCanary, this.isRollup);
     context.setAccountId(this.accountId);
     context.setAvailabilityZone(this.availabilityZone);
     context.setMetricNamespace(this.metricNamespace);

@@ -42,15 +42,13 @@ public class CWMetricHelper {
    * @param context        testing context
    * @param expectedMetric expected template
    * @param caller         http caller, none caller, could be null
-   * @param rollup         true then rollup metrics
    * @return list of metrics
    * @throws Exception when caller throws exception or template can not be found
    */
   public List<Metric> listExpectedMetrics(
       Context context,
       FileConfig expectedMetric,
-      ICaller caller,
-      boolean rollup
+      ICaller caller
   ) throws Exception {
     // call endpoint
     if (caller != null) {
@@ -66,9 +64,10 @@ public class CWMetricHelper {
           yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
           new TypeReference<List<Metric>>() {});
 
-    if (rollup) {
+    if (context.getIsRollup()) {
       return this.rollupMetric(expectedMetricList);
     }
+
     return expectedMetricList;
   }
 
