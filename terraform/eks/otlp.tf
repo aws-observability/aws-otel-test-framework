@@ -43,7 +43,7 @@ module "aoc_oltp" {
     listen_address_ip   = module.common.sample_app_listen_address_ip
     listen_address_port = module.common.sample_app_listen_address_port
   }
-  aoc_namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  aoc_namespace = var.deployment_type == "fargate" ? "default" : kubernetes_namespace.aoc_ns.metadata[0].name
   aoc_service = {
     name      = module.common.otel_service_name
     grpc_port = module.common.grpc_port
@@ -63,7 +63,7 @@ resource "kubernetes_config_map" "aoc_config_map" {
 
   metadata {
     name      = "otel-config"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? "default" : kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
   data = {
@@ -77,7 +77,7 @@ resource "kubernetes_config_map" "mocked_server_cert" {
 
   metadata {
     name      = "mocked-server-cert"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? "default" : kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
   data = {
@@ -91,7 +91,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
   metadata {
     name      = "aoc"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? "default" : kubernetes_namespace.aoc_ns.metadata[0].name
     labels = {
       app = "aoc"
     }
@@ -182,7 +182,7 @@ resource "kubernetes_service" "mocked_server_service" {
 
   metadata {
     name      = "mocked-server"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? "default" : kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
@@ -202,7 +202,7 @@ data "template_file" "adot_collector_config_file" {
   template = file("./adot-operator/adot_collector_deployment.tpl")
 
   vars = {
-    AOC_NAMESPACE      = kubernetes_namespace.aoc_ns.metadata[0].name
+    AOC_NAMESPACE      = var.deployment_type == "fargate" ? "default" : kubernetes_namespace.aoc_ns.metadata[0].name
     AOC_IMAGE          = module.common.aoc_image
     AOC_DEPLOY_MODE    = var.aoc_deploy_mode
     AOC_SERVICEACCOUNT = "aoc-role-${module.common.testing_id}"
@@ -236,19 +236,52 @@ resource "kubernetes_service" "sample_app_service" {
 
   metadata {
     name      = "sample-app"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? "default" : kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
       app = "sample-app"
     }
 
-    type = "LoadBalancer"
+    type = var.deployment_type == "fargate" ? "NodePort" : "LoadBalancer"
 
     port {
       port        = module.common.sample_app_lb_port
       target_port = module.common.sample_app_listen_address_port
     }
   }
+}
+
+resource "kubernetes_ingress" "app" {
+  count                  = var.deployment_type == "fargate" && var.aoc_base_scenario == "oltp" ? 1 : 0
+  wait_for_load_balancer = true
+  metadata {
+    name      = "sample-app-ingress"
+    namespace = "default"
+    annotations = {
+      "kubernetes.io/ingress.class"           = "alb"
+      "alb.ingress.kubernetes.io/scheme"      = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type" = "ip"
+    }
+    labels = {
+      "app" = "sample-app"
+    }
+  }
+
+  spec {
+    rule {
+      http {
+        path {
+          path = "/*"
+          backend {
+            service_name = kubernetes_service.sample_app_service[count.index].metadata[0].name
+            service_port = kubernetes_service.sample_app_service[count.index].spec[0].port[0].port
+          }
+        }
+      }
+    }
+  }
+
+  depends_on = [kubernetes_service.sample_app_service]
 }
 

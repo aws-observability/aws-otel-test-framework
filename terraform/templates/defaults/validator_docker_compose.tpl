@@ -27,3 +27,4 @@ services:
       - "--alarm-names=${mem_alarm}"
       - "--alarm-names=${incoming_packets_alarm}"
       - "--cortex-instance-endpoint=${cortex_instance_endpoint}"
+      - "--rollup=${rollup}"
