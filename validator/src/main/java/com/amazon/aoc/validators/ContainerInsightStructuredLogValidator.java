@@ -68,9 +68,8 @@ public class ContainerInsightStructuredLogValidator
 
   @Override
   protected void fetchAndValidateLogs(Instant startTime) throws Exception {
-    Set<String> logTypes = new HashSet<>(schemasToValidate.keySet());
-    log.info("Fetch and validate logs with types: " + String.join(", ", logTypes));
-    for (String logType : logTypes) {
+    log.info("Fetch and validate logs with types: " + String.join(", ", schemasToValidate.keySet()));
+    for (String logType : schemasToValidate.keySet()) {
       String filterPattern = String.format("{ $.Type = \"%s\"}", logType);
       List<FilteredLogEvent> logEvents = cloudWatchService.filterLogs(logGroupName, filterPattern,
               startTime.toEpochMilli(), QUERY_LIMIT);
