@@ -4,4 +4,4 @@ metadata:
   name: adot-collector-service-account
   namespace: default
   annotations:
-    eks.amazonaws.com/role-arn: arn:aws:iam::611364707713:role/ServiceAccount-eks-test-aoc-role
+    eks.amazonaws.com/role-arn: ${RoleArn}
