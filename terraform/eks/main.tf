@@ -116,11 +116,28 @@ resource "kubernetes_service_account" "aoc-fargate-role" {
     name      = "aoc-fargate-role-${module.common.testing_id}"
     namespace = "default"
     annotations = {
-      "eks.amazonaws.com/role-arn" : "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/ServiceAccount-eks-test-aoc-role"
+      "eks.amazonaws.com/role-arn" : module.iam_assumable_role_admin.iam_role_arn
     }
   }
 
   automount_service_account_token = true
+  depends_on                      = [module.iam_assumable_role_admin]
+}
+
+module "iam_assumable_role_admin" {
+  create_role = true
+
+  role_name = "aoc-eks-assume-role-${module.common.testing_id}"
+
+  provider_url = trimprefix(data.aws_eks_cluster.testing_cluster.identity[0].oidc[0].issuer, "https://")
+
+  role_policy_arns = [
+    "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
+    "arn:aws:iam::aws:policy/AWSXrayFullAccess",
+    "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+  ]
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+  version = "4.7.0"
 }
 
 resource "kubernetes_cluster_role_binding" "aoc-role-binding" {

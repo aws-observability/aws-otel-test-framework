@@ -31,8 +31,14 @@ data "template_file" "daemonset_file" {
 }
 
 resource "kubectl_manifest" "service_account" {
-  count     = var.aoc_base_scenario == "infra" && var.deployment_type == "fargate" ? 1 : 0
-  yaml_body = file("./container-insights-agent/service_account_fargate.yml")
+  count = var.aoc_base_scenario == "infra" && var.deployment_type == "fargate" ? 1 : 0
+  yaml_body = templatefile("./container-insights-agent/service_account_fargate.tpl",
+    {
+      RoleArn : module.iam_assumable_role_admin.iam_role_arn
+  })
+  depends_on = [
+    module.iam_assumable_role_admin
+  ]
 }
 
 resource "kubectl_manifest" "cluster_role" {
