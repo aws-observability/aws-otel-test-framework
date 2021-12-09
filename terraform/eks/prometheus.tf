@@ -2,7 +2,7 @@ resource "kubernetes_deployment" "standalone_aoc_deployment" {
   count = var.aoc_base_scenario == "prometheus" ? 1 : 0
   metadata {
     name      = "aoc"
-    namespace = var.deployment_type == "fargate" ? "default" : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
     labels = {
       app = "aoc"
     }

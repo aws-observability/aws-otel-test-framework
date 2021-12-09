@@ -5,7 +5,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: adot-collector-service-account
-    namespace: default
+    namespace: ${Namespace}
 roleRef:
   kind: ClusterRole
   name: adotcol-admin-role
