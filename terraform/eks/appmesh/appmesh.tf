@@ -169,11 +169,11 @@ resource "local_file" "appmesh_deployment" {
   helm_release.eks]
 }
 
-resource "null_resource" "traffic_deployment" {
-  triggers = {
-    config_contents = md5(local_file.appmesh_deployment.content)
-  }
-  provisioner "local-exec" {
-    command = "kubectl --kubeconfig=${var.kubeconfig} apply -f ${local_file.appmesh_deployment.filename}"
-  }
-}
+#resource "null_resource" "traffic_deployment" {
+#  triggers = {
+#    config_contents = md5(local_file.appmesh_deployment.content)
+#  }
+#  provisioner "local-exec" {
+#    command = "kubectl --kubeconfig=${var.kubeconfig} apply -f ${local_file.appmesh_deployment.filename}"
+#  }
+#}

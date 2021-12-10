@@ -191,10 +191,10 @@ module "validator" {
   mocked_server_validating_url = length(kubernetes_service.mocked_server_service) > 0 ? "http://${kubernetes_service.mocked_server_service.0.load_balancer_ingress.0.hostname}/check-data" : ""
   cloudwatch_context_json = var.aoc_base_scenario == "prometheus" ? jsonencode({
     clusterName : var.eks_cluster_name
-    appMesh : {
-      namespace : module.demo_appmesh.0.metric_dimension_namespace
-      job : "kubernetes-pod-appmesh-envoy"
-    }
+    #    appMesh : {
+    #      namespace : module.demo_appmesh.0.metric_dimension_namespace
+    #      job : "kubernetes-pod-appmesh-envoy"
+    #    }
     nginx : {
       namespace : module.demo_nginx.0.metric_dimension_namespace
       job : "kubernetes-service-endpoints"
