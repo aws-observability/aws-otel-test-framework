@@ -4,7 +4,7 @@ metadata:
   name: flblogproducer2eks
   labels:
     app: flblogproducer2eks
-  namespace: default
+  namespace: ${Namespace}
 spec:
   replicas: 1
   selector:

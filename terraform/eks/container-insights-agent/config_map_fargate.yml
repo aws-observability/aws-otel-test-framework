@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: adot-collector-config
-  namespace: default
+  namespace: ${Namespace}
   labels:
     app: aws-adot
     component: adot-collector-config
@@ -39,19 +39,19 @@ data:
                 regex: (.+)
                 target_label: __metrics_path__
                 # Changes the default metrics path to kubelet's proxy cadvdisor metrics endpoint
-                replacement: /api/v1/nodes/$${1}/proxy/metrics/cadvisor
+                replacement: /api/v1/nodes/$$${1}/proxy/metrics/cadvisor
             metric_relabel_configs:
               # extract readable container/pod name from id field
               - action: replace
                 source_labels: [id]
                 regex: '^/machine\.slice/machine-rkt\\x2d([^\\]+)\\.+/([^/]+)\.service$'
                 target_label: rkt_container_name
-                replacement: '$${2}-$${1}'
+                replacement: '$$${2}-$$${1}'
               - action: replace
                 source_labels: [id]
                 regex: '^/system\.slice/(.+)\.service$'
                 target_label: systemd_service_name
-                replacement: '$${1}'
+                replacement: '$$${1}'
     processors:
       # rename labels which apply to all metrics and are used in metricstransform/rename processor
       metricstransform/label_1:
