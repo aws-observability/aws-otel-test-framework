@@ -66,8 +66,12 @@ resource "kubectl_manifest" "cluster_role_binding" {
 }
 
 resource "kubectl_manifest" "config_map" {
-  count      = 1
-  yaml_body  = var.deployment_type == "fargate" ? templatefile("./container-insights-agent/config_map_fargate.yml", { Namespace : tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace }) : data.template_file.config_map_file[count.index].rendered
+  count = 1
+  yaml_body = var.deployment_type == "fargate" ? templatefile("./container-insights-agent/config_map_fargate.yml",
+    {
+      Namespace : tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace,
+      TestingId : module.common.testing_id
+  }) : data.template_file.config_map_file[count.index].rendered
   depends_on = [aws_eks_fargate_profile.test_profile]
 }
 
