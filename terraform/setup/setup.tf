@@ -214,3 +214,37 @@ resource "aws_ecr_repository" "sample_app_ecr_repo" {
 resource "aws_ecr_repository" "mocked_server_ecr_repo" {
   name = module.common.mocked_server_ecr_repo_name
 }
+
+#Create S3 bucket to record terraform state in order for us to easier destroy or easier in managing what resources have been created during
+#the integration test
+#Document: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
+resource "aws_s3_bucket" "terrafrom-state" {
+  bucket = module.common.terraform_state_s3_bucket_name
+
+
+  #Allow multiple upload
+  versioning {
+    enabled = true
+  }
+
+  #To encrypt the content
+  server_side_encryption_configuration {
+    rule {
+      apply_server_side_encryption_by_default {
+        sse_algorithm = "AES256"
+      }
+    }
+  }
+}
+
+
+resource "aws_dynamodb_table" "terraform-state-locks" {
+  name         = module.common.terraform_lock_state_dynamodb_name
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "LockID"
+
+  attribute {
+    name = "LockID"
+    type = "S"
+  }
+}

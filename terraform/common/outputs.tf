@@ -105,3 +105,11 @@ output "sample_app_ecr_repo_name" {
 output "mocked_server_ecr_repo_name" {
   value = "otel-test/mocked-server"
 }
+
+output "terraform_state_s3_bucket_name" {
+  value = "terraform-state-integration-test"
+}
+
+output "terraform_lock_state_dynamodb_name" {
+  value = "terraform-state-integration-test"
+}
