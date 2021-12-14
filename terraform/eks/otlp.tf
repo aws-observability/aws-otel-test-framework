@@ -43,7 +43,7 @@ module "aoc_oltp" {
     listen_address_ip   = module.common.sample_app_listen_address_ip
     listen_address_port = module.common.sample_app_listen_address_port
   }
-  aoc_namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+  aoc_namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   aoc_service = {
     name      = module.common.otel_service_name
     grpc_port = module.common.grpc_port
@@ -64,7 +64,7 @@ resource "kubernetes_config_map" "aoc_config_map" {
 
   metadata {
     name      = "otel-config"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
   data = {
@@ -79,7 +79,7 @@ resource "kubernetes_config_map" "mocked_server_cert" {
 
   metadata {
     name      = "mocked-server-cert"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
   data = {
@@ -94,7 +94,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
   metadata {
     name      = "aoc"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
     labels = {
       app = "aoc"
     }
@@ -186,7 +186,7 @@ resource "kubernetes_service" "mocked_server_service" {
 
   metadata {
     name      = "mocked-server"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
@@ -207,7 +207,7 @@ data "template_file" "adot_collector_config_file" {
   template = file("./adot-operator/adot_collector_deployment.tpl")
 
   vars = {
-    AOC_NAMESPACE      = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    AOC_NAMESPACE      = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
     AOC_IMAGE          = module.common.aoc_image
     AOC_DEPLOY_MODE    = var.aoc_deploy_mode
     AOC_SERVICEACCOUNT = "aoc-role-${module.common.testing_id}"
@@ -241,7 +241,7 @@ resource "kubernetes_service" "sample_app_service" {
 
   metadata {
     name      = "sample-app"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
@@ -263,7 +263,7 @@ resource "kubernetes_ingress" "app" {
   wait_for_load_balancer = true
   metadata {
     name      = "sample-app-ingress"
-    namespace = tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace
+    namespace = tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace
     annotations = {
       "kubernetes.io/ingress.class"           = "alb"
       "alb.ingress.kubernetes.io/scheme"      = "internet-facing"
