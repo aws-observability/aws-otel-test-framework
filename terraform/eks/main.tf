@@ -138,6 +138,7 @@ data "aws_subnet_ids" "private_subnets" {
 }
 
 resource "aws_eks_fargate_profile" "test_profile" {
+  count                  = var.deployment_type == "fargate" ? 1 : 0
   cluster_name           = var.eks_cluster_name
   fargate_profile_name   = "fp-aoc-${module.common.testing_id}"
   pod_execution_role_arn = aws_iam_role.fargate_profile_file.arn
@@ -160,9 +161,10 @@ resource "kubernetes_service_account" "aoc-role" {
 }
 
 resource "kubernetes_service_account" "aoc-fargate-role" {
+  count = var.deployment_type == "fargate" ? 1 : 0
   metadata {
     name      = "aoc-fargate-role-${module.common.testing_id}"
-    namespace = tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace
+    namespace = tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace
     annotations = {
       "eks.amazonaws.com/role-arn" : module.iam_assumable_role_admin.iam_role_arn
     }
@@ -189,6 +191,7 @@ module "iam_assumable_role_admin" {
 }
 
 resource "kubernetes_cluster_role_binding" "aoc-role-binding" {
+  count = 1
   metadata {
     name = "aoc-role-binding-${module.common.testing_id}"
   }
@@ -200,15 +203,16 @@ resource "kubernetes_cluster_role_binding" "aoc-role-binding" {
   subject {
     kind      = "ServiceAccount"
     name      = var.deployment_type == "fargate" ? "aoc-fargate-role-${module.common.testing_id}" : "aoc-role-${module.common.testing_id}"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
   depends_on = [aws_eks_fargate_profile.test_profile]
 }
 
 resource "kubernetes_service_account" "aoc-agent-role" {
+  count = 1
   metadata {
     name      = "aoc-agent-${module.common.testing_id}"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile.selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
   automount_service_account_token = true
