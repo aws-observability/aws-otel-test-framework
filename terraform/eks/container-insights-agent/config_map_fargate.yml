@@ -337,7 +337,7 @@ data:
             metric1: pod_network_rx_bytes
             metric2: pod_network_tx_bytes
             operation: add
-          - name: pod_memory_utilization_over_pod_limit
+          - name: pod_memory_utilization_over_pod_limit_${TestingId}
             unit: Percent
             type: calculate
             metric1: pod_memory_working_set
@@ -360,7 +360,7 @@ data:
 
       experimental_metricsgeneration/2:
         rules:
-          - name: pod_cpu_utilization_over_pod_limit
+          - name: pod_cpu_utilization_over_pod_limit_${TestingId}
             type: calculate
             unit: Percent
             metric1: pod_cpu_usage_total
@@ -420,8 +420,8 @@ data:
         metric_declarations:
           - dimensions: [ [ClusterName, LaunchType], [ClusterName, Namespace, LaunchType], [ClusterName, Namespace, PodName, LaunchType]]
             metric_name_selectors:
-              - pod_cpu_utilization_over_pod_limit
-              - pod_memory_utilization_over_pod_limit
+              - pod_cpu_utilization_over_pod_limit_${TestingId}
+              - pod_memory_utilization_over_pod_limit_${TestingId}
               - pod_memory_working_set
               - pod_memory_limit
               - pod_network_rx_bytes

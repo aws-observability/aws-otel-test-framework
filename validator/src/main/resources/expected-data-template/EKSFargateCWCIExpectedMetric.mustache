@@ -1,5 +1,5 @@
 -
-  metricName: pod_cpu_utilization_over_pod_limit
+  metricName: pod_cpu_utilization_over_pod_limit_{{testingId}}
   namespace: ContainerInsightsFargate
   dimensions:
     -
@@ -29,7 +29,7 @@
       name: LaunchType
       value: fargate
 -
-  metricName: pod_memory_utilization_over_pod_limit
+  metricName: pod_memory_utilization_over_pod_limit_{{testingId}}
   namespace: ContainerInsightsFargate
   dimensions:
     -
@@ -98,7 +98,7 @@
       name: Namespace
       value: SKIP
 -
-  metricName: pod_memory_utilization_over_pod_limit
+  metricName: pod_memory_utilization_over_pod_limit_{{testingId}}
   namespace: ContainerInsightsFargate
   dimensions:
     -
@@ -185,7 +185,7 @@
       name: PodName
       value: SKIP
 -
-  metricName: pod_memory_utilization_over_pod_limit
+  metricName: pod_memory_utilization_over_pod_limit_{{testingId}}
   namespace: ContainerInsightsFargate
   dimensions:
     -
