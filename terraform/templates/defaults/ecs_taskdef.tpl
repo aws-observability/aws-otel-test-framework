@@ -5,11 +5,11 @@
       "cpu": 10,
       "memory": 256,
       "portMappings": [
-        {
-          "containerPort": 4567,
-          "hostPort": 4567,
-          "protocol": "tcp"
-        }
+          {
+            "containerPort": 4567,
+            "hostPort": 4567,
+            "protocol": "tcp"
+          }
       ],
       "command": [],
       "environment": [
@@ -38,8 +38,8 @@
         "value": "service.namespace=${otel_service_namespace},service.name=${otel_service_name}"
         },
         {
-          "name": "LISTEN_ADDRESS",
-          "value": "${sample_app_listen_address}"
+            "name": "LISTEN_ADDRESS",
+            "value": "${sample_app_listen_address}"
         },
         {
         "name": "JAEGER_RECEIVER_ENDPOINT",
@@ -78,8 +78,8 @@
           "protocol": "tcp"
         },
         {
-            "containerPort": 2000,
-            "hostPort": 2000
+           "containerPort": 2000,
+           "hostPort": 2000
         }
       ],
       "secrets": [
@@ -116,11 +116,11 @@
       "cpu": 10,
       "memory": 256,
       "portMappings": [
-            {
-              "containerPort": 8080,
-              "hostPort": 8080,
-              "protocol": "tcp"
-            }
+           {
+             "containerPort": 8080,
+             "hostPort": 8080,
+             "protocol": "tcp"
+           }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
