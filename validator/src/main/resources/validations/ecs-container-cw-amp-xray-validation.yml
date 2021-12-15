@@ -4,3 +4,10 @@
   httpMethod: "get"
   callingType: "http"
   expectedTraceTemplate: "SPARK_SDK_ECS_EXPECTED_TRACE"
+-
+  validationType: "cw-metric"
+  callingType: "none"
+  expectedMetricTemplate: "ECS_CONTAINER_EXPECTED_METRIC"
+
+
+

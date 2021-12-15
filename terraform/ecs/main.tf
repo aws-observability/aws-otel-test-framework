@@ -328,6 +328,7 @@ module "validator" {
   account_id = data.aws_caller_identity.current.account_id
 
   ecs_context_json = jsonencode({
+    ecsClusterName : module.ecs_cluster.cluster_name
     ecsClusterArn : module.ecs_cluster.cluster_arn
     ecsTaskDefFamily : aws_ecs_task_definition.aoc[0].family
     ecsTaskDefVersion : aws_ecs_task_definition.aoc[0].revision

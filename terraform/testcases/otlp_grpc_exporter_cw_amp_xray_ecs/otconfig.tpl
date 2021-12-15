@@ -3,7 +3,6 @@ extensions:
     endpoint: 0.0.0.0:1777
 receivers:
   awsecscontainermetrics:
-    collection_interval: 10s
   otlp:
     protocols:
       grpc:
@@ -124,7 +123,7 @@ exporters:
 
 service:
   pipelines:
-    metrics/container/cw:
+    metrics:
       receivers: [awsecscontainermetrics]
       processors: [ filter, metricstransform, resource, batch]
       exporters: [awsemf,logging]
