@@ -78,28 +78,28 @@
           "protocol": "tcp"
         },
         {
-          "containerPort": 2000,
-          "hostPort": 2000
+           "containerPort": 2000,
+           "hostPort": 2000
         }
       ],
       "secrets": [
         {
-          "name": "AOT_CONFIG_CONTENT",
-          "valueFrom": "${ssm_parameter_arn}"
+           "name": "AOT_CONFIG_CONTENT",
+           "valueFrom": "${ssm_parameter_arn}"
         }
       ],
       "mountPoints": [
         {
-          "sourceVolume": "efs",
-          "containerPath": "/etc/pki/tls/certs"
+           "sourceVolume": "efs",
+           "containerPath": "/etc/pki/tls/certs"
         }
       ],
       "essential": true,
-      "entryPoint": [ ],
-      "command": [ ],
-      "environment": [ ],
-      "environmentFiles": [ ],
-      "dependsOn": [ ],
+      "entryPoint": [],
+      "command": [],
+      "environment": [],
+      "environmentFiles": [],
+      "dependsOn": [],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {

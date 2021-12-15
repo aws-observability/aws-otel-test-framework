@@ -56,12 +56,12 @@ public class CWMetricHelper {
     if (caller != null) {
       caller.callSampleApp();
     }
+
     // get expected metrics as yaml from config
     String yamlExpectedMetrics = mustacheHelper.render(expectedMetric, context);
 
     // load metrics from yaml
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-
     List<Metric> expectedMetricList = mapper.readValue(
           yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
           new TypeReference<List<Metric>>() {});
