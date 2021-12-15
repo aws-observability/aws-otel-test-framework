@@ -61,6 +61,7 @@ public class CWMetricHelper {
 
     // load metrics from yaml
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+
     List<Metric> expectedMetricList = mapper.readValue(
           yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
           new TypeReference<List<Metric>>() {});
