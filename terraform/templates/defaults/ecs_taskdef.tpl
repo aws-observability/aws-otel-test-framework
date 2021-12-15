@@ -5,11 +5,11 @@
       "cpu": 10,
       "memory": 256,
       "portMappings": [
-          {
-            "containerPort": 4567,
-            "hostPort": 4567,
-            "protocol": "tcp"
-          }
+        {
+          "containerPort": 4567,
+          "hostPort": 4567,
+          "protocol": "tcp"
+        }
       ],
       "command": [],
       "environment": [
@@ -18,42 +18,42 @@
           "value": "http://127.0.0.1:${grpc_port}"
         },
         {
-           "name": "AWS_XRAY_DAEMON_ADDRESS",
-           "value": "127.0.0.1:${udp_port}"
+          "name": "AWS_XRAY_DAEMON_ADDRESS",
+          "value": "127.0.0.1:${udp_port}"
         },
         {
-           "name": "COLLECTOR_UDP_ADDRESS",
-           "value": "127.0.0.1:${udp_port}"
+          "name": "COLLECTOR_UDP_ADDRESS",
+          "value": "127.0.0.1:${udp_port}"
         },
         {
-            "name": "AWS_REGION",
-            "value": "${region}"
+          "name": "AWS_REGION",
+          "value": "${region}"
         },
         {
           "name": "INSTANCE_ID",
           "value": "${testing_id}"
         },
         {
-        "name": "OTEL_RESOURCE_ATTRIBUTES",
-        "value": "service.namespace=${otel_service_namespace},service.name=${otel_service_name}"
+          "name": "OTEL_RESOURCE_ATTRIBUTES",
+          "value": "service.namespace=${otel_service_namespace},service.name=${otel_service_name}"
         },
         {
-            "name": "LISTEN_ADDRESS",
-            "value": "${sample_app_listen_address}"
+          "name": "LISTEN_ADDRESS",
+          "value": "${sample_app_listen_address}"
         },
         {
-        "name": "JAEGER_RECEIVER_ENDPOINT",
-        "value": "127.0.0.1:${http_port}"
+          "name": "JAEGER_RECEIVER_ENDPOINT",
+          "value": "127.0.0.1:${http_port}"
         },
         {
-        "name": "ZIPKIN_RECEIVER_ENDPOINT",
-        "value": "127.0.0.1:${http_port}"
+          "name": "ZIPKIN_RECEIVER_ENDPOINT",
+          "value": "127.0.0.1:${http_port}"
         }
       ],
       "dependsOn": [
         {
-            "containerName": "aoc-collector",
-            "condition": "START"
+          "containerName": "aoc-collector",
+          "condition": "START"
         }
       ],
       "logConfiguration": {
@@ -78,28 +78,28 @@
           "protocol": "tcp"
         },
         {
-           "containerPort": 2000,
-           "hostPort": 2000
+          "containerPort": 2000,
+          "hostPort": 2000
         }
       ],
       "secrets": [
         {
-           "name": "AOT_CONFIG_CONTENT",
-           "valueFrom": "${ssm_parameter_arn}"
+          "name": "AOT_CONFIG_CONTENT",
+          "valueFrom": "${ssm_parameter_arn}"
         }
       ],
       "mountPoints": [
         {
-           "sourceVolume": "efs",
-           "containerPath": "/etc/pki/tls/certs"
+          "sourceVolume": "efs",
+          "containerPath": "/etc/pki/tls/certs"
         }
       ],
       "essential": true,
-      "entryPoint": [],
-      "command": [],
-      "environment": [],
-      "environmentFiles": [],
-      "dependsOn": [],
+      "entryPoint": [ ],
+      "command": [ ],
+      "environment": [ ],
+      "environmentFiles": [ ],
+      "dependsOn": [ ],
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -116,11 +116,11 @@
       "cpu": 10,
       "memory": 256,
       "portMappings": [
-           {
-             "containerPort": 8080,
-             "hostPort": 8080,
-             "protocol": "tcp"
-           }
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
