@@ -74,7 +74,7 @@ public class CWMetricValidator implements IValidator {
     for (Metric metric : expectedMetricList) {
       for (Dimension dimension : metric.getDimensions()) {
 
-        if (Object.equals(dimension.getValue(), null) || dimension.getValue().equals("")) {
+        if (dimension.getValue() == null || dimension.getValue().equals("")) {
           continue;
         }
 
