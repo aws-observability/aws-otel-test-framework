@@ -76,7 +76,8 @@ public class CWMetricValidatorTest {
     Context context = new Context(
         testingId,
         region,
-        false
+        false,
+        true
     );
     context.setMetricNamespace(namespace);
     return context;
@@ -96,8 +97,8 @@ public class CWMetricValidatorTest {
     List<Metric> metrics = cwMetricHelper.listExpectedMetrics(
         context,
         validationConfig.getExpectedMetricTemplate(),
-        httpCaller,
-        true);
+        httpCaller
+        );
     CloudWatchService cloudWatchService = mock(CloudWatchService.class);
 
     // mock listMetrics

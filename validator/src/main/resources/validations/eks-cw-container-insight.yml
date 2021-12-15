@@ -1,0 +1,4 @@
+-
+  validationType: "container-insight-eks-logs"
+  shouldValidateMetricValue: false
+  expectedLogStructureTemplate: "CONTAINER_INSIGHT_FARGATE_EKS_LOG"

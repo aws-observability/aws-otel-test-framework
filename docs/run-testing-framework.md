@@ -86,10 +86,51 @@ cd terraform/eks && terraform init && terraform apply \
     -var="testcase=../testcases/{{your test case folder name}}" \
     -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
 ````
- 
+
 Don't forget to clean up your resources:
 ````
 terraform destroy -var="eks_cluster_name={the eks cluster name in your account}"
+````
+
+### 2.3.1 Run in EKS Fargate
+#### Set Up
+* Install kubectl and eksctl
+  * https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
+  * https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html
+* Create eks fargate cluster
+```
+eksctl create cluster --name <cluster_name> --region <region> --fargate
+```
+* Create a oicd 
+```
+eksctl utils associate-iam-oidc-provider --cluster <cluster_name> --approve
+```
+* Create web identity role (ServiceAccount-eks-test-aoc-role)
+  * Identity provider is the openId connect on your eks cluster
+  * Add required permissions for the collector for your test
+* Create Ingress controller fargate
+  * https://aws.amazon.com/premiumsupport/knowledge-center/eks-alb-ingress-controller-fargate/
+  * To test that ingress set up
+    * Download config https://github.com/kubernetes-sigs/aws-load-balancer-controller/blob/main/docs/examples/2048/2048_full.yaml and replace all instances of namespace game-2048 with default.
+    * Check for external url after a couple of minutes
+      * ````kubectl get ingress````
+#### How to run fargate tests
+Add -var="deployment_type=fargate" to the eks creation statement
+Supported tests
+* otlp_mock
+
+Not supported tests
+* otlp_trace
+  * This is because no sts role given to the sample app. 
+
+Test
+```
+cd terraform/eks && terraform apply -auto-approve -var-file="../testcases/<your_testcase>/parameters.tfvars" -var="aoc_image_repo=<your_image_repo>" -var="testcase=../testcases/<your_testcase>" -var="eks_cluster_name=<your_cluster>" -var="deployment_type=fargate"
+```
+
+Don't forget to clean up your resources:
+````
+terraform destroy -var="cluster_name=<you_cluster_name>" -var="deployment_type=fargate"
 ````
  
 #### 2.4 Run in EC2

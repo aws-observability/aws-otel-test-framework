@@ -41,3 +41,17 @@ variable "aoc_base_scenario" {
 variable "aoc_deploy_mode" {
   default = "deployment"
 }
+
+variable "deployment_type" {
+  default     = "ec2"
+  description = "ec2 or fargate"
+}
+
+variable "rollup" {
+  type    = bool
+  default = true
+}
+
+variable "fargate_sample_app_lb_port" {
+  default = "80"
+}
