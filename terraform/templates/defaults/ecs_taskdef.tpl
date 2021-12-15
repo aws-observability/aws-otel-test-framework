@@ -18,12 +18,12 @@
           "value": "http://127.0.0.1:${grpc_port}"
         },
         {
-            "name": "AWS_XRAY_DAEMON_ADDRESS",
-            "value": "127.0.0.1:${udp_port}"
+           "name": "AWS_XRAY_DAEMON_ADDRESS",
+           "value": "127.0.0.1:${udp_port}"
         },
         {
-            "name": "COLLECTOR_UDP_ADDRESS",
-            "value": "127.0.0.1:${udp_port}"
+           "name": "COLLECTOR_UDP_ADDRESS",
+           "value": "127.0.0.1:${udp_port}"
         },
         {
             "name": "AWS_REGION",
