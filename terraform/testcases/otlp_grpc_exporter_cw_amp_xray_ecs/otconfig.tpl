@@ -123,7 +123,7 @@ exporters:
 
 service:
   pipelines:
-    metrics:
+    metrics/container/cw:
       receivers: [awsecscontainermetrics]
       processors: [ filter, metricstransform, resource, batch]
       exporters: [awsemf,logging]
