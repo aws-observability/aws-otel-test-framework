@@ -73,6 +73,11 @@ public class CWMetricValidator implements IValidator {
     Set<String> skippedDimensionNameList = new HashSet<>();
     for (Metric metric : expectedMetricList) {
       for (Dimension dimension : metric.getDimensions()) {
+
+        if (dimension.getValue() == null || dimension.getValue().equals("")) {
+          continue;
+        }
+
         if (dimension.getValue().equals("SKIP")) {
           skippedDimensionNameList.add(dimension.getName());
         }
