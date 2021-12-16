@@ -46,12 +46,12 @@ Setup only needs to be run once, it creates:
  
 Run 
 ````
-cd terraform/setup && terraform init && terraform apply
+cd terraform/setup && terraform init && terraform apply -auto-approve
 ````
  
 And Run
 ````
-cd terraform/imagebuild && terraform init && terraform apply
+cd terraform/imagebuild && terraform init && terraform apply -auto-approve
 ````
 this task will build and push the sample apps and mocked server images to the ecr repos,
  so that the following test could use them.
@@ -64,7 +64,7 @@ Please follow https://github.com/aws-observability/aws-otel-collector/blob/main/
 #### 2.2 Run in EC2
 ````
 cd terraform/ec2 && terraform init && terraform apply -auto-approve \
-    -var="aoc_image_repo=<your_image_repo>" \
+    -var="aoc_image_repo={{the docker image repo name you just pushed}}" \
     -var="aoc_version={{the aoc binary version}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
     -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
@@ -94,11 +94,11 @@ terraform destroy -auto-approve
 Prerequisite: you are required to create an EKS cluster in your account
 ````
 cd terraform/eks && terraform init && terraform apply -auto-approve \
-    -var="aoc_version={{ the docker image tag name}}" \
     -var="aoc_image_repo={{the docker image you just pushed}}" \
+    -var="aoc_version={{ the docker image tag name}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
     -var-file="../testcases/{{your test case folder name}}/parameters.tfvars" \
-    -var="eks_cluster_name={the eks cluster name in your account}" 
+    -var="eks_cluster_name={{the eks cluster name in your account}}" 
 ````
 
 Don't forget to clean up your resources:
@@ -141,26 +141,26 @@ Not supported tests
 Test
 ```
 cd terraform/eks && terraform apply -auto-approve \
-  -var="aoc_image_repo=<your_image_repo>" \
+  -var="aoc_image_repo={{the docker image you just pushed}}" \
   -var="aoc_version={{ the docker image tag name}}" \
-  -var="testcase=../testcases/<your_testcase>" \
-  -var-file="../testcases/<your_testcase>/parameters.tfvars" \
-  -var="eks_cluster_name=<your_cluster>" \
+  -var="testcase=../testcases/{{your test case folder name}}" \
+  -var-file="../testcases/{{your test case folder name}}/parameters.tfvars" \
+  -var="eks_cluster_name={{the eks cluster name in your account}}" \
   -var="deployment_type=fargate"
 ```
 
 Don't forget to clean up your resources:
 ````
 terraform destroy -auto-approve \
-    -var="cluster_name=<you_cluster_name>" \
+    -var="eks_cluster_name={{the eks cluster name in your account}}" \
     -var="deployment_type=fargate"
 ````
 
 #### 2.5 Run in canary
 ````
 cd terraform/canary && terraform init && terraform apply -auto-approve \
-    -var="aoc_image_repo=<your_image_repo>" \
-    -var="aoc_version={{ the aoc binary version}}" \
+    -var="aoc_image_repo={{the docker image you just pushed}}" \
+    -var="aoc_version={{ the docker image tag name}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
     -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
 ````
