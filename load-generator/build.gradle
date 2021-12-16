@@ -46,7 +46,7 @@ dependencies {
 
     // Command cli
     implementation 'info.picocli:picocli:4.3.2'
-    compileOnly 'info.picocli:picocli-codegen:4.3.2'
+    compileOnly 'info.picocli:picocli-codegen:4.6.2'
 
     // log
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.16.0'
