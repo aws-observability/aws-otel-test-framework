@@ -60,11 +60,25 @@ Remember, if you have changes on sample apps or the mocked server, you need to r
  
 #### 2.1.3 Build Image
 Please follow https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md to build your image with the new component, and push this image to dockerhub, record the image link, which will be used in your testing.
- 
-### 2.2 Run in ECS
+
+#### 2.2 Run in EC2
+````
+cd terraform/ec2 && terraform init && terraform apply -auto-approve \
+    -var="aoc_image_repo=<your_image_repo>" \
+    -var="aoc_version={{the aoc binary version}}" \
+    -var="testcase=../testcases/{{your test case folder name}}" \
+    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
+````
+
+Don't forget to clean up your resources:
+````
+terraform destroy -auto-approve
+````
+
+### 2.3 Run in ECS
  
 ````
-cd terraform/ecs && terraform init && terraform apply \
+cd terraform/ecs && terraform init && terraform apply -auto-approve \
     -var="aoc_image_repo={{the docker image repo name you just pushed}}" \
     -var="aoc_version={{ the docker image tag name}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
@@ -73,26 +87,27 @@ cd terraform/ecs && terraform init && terraform apply \
  
 Don't forget to clean up your resources:
 ````
-terraform destroy
+terraform destroy -auto-approve
 ````
  
-### 2.3 Run in EKS
+### 2.4 Run in EKS
 Prerequisite: you are required to create an EKS cluster in your account
 ````
-cd terraform/eks && terraform init && terraform apply \
-    -var="eks_cluster_name={the eks cluster name in your account}" \
+cd terraform/eks && terraform init && terraform apply -auto-approve \
     -var="aoc_version={{ the docker image tag name}}" \
     -var="aoc_image_repo={{the docker image you just pushed}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
-    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
+    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars" \
+    -var="eks_cluster_name={the eks cluster name in your account}" 
 ````
 
 Don't forget to clean up your resources:
 ````
-terraform destroy -var="eks_cluster_name={the eks cluster name in your account}"
+terraform destroy -auto-approve \
+    -var="eks_cluster_name={the eks cluster name in your account}"
 ````
 
-### 2.3.1 Run in EKS Fargate
+### 2.4.1 Run in EKS Fargate
 #### Set Up
 * Install kubectl and eksctl
   * https://docs.aws.amazon.com/eks/latest/userguide/install-kubectl.html
@@ -125,30 +140,26 @@ Not supported tests
 
 Test
 ```
-cd terraform/eks && terraform apply -auto-approve -var-file="../testcases/<your_testcase>/parameters.tfvars" -var="aoc_image_repo=<your_image_repo>" -var="testcase=../testcases/<your_testcase>" -var="eks_cluster_name=<your_cluster>" -var="deployment_type=fargate"
+cd terraform/eks && terraform apply -auto-approve \
+  -var="aoc_image_repo=<your_image_repo>" \
+  -var="aoc_version={{ the docker image tag name}}" \
+  -var="testcase=../testcases/<your_testcase>" \
+  -var-file="../testcases/<your_testcase>/parameters.tfvars" \
+  -var="eks_cluster_name=<your_cluster>" \
+  -var="deployment_type=fargate"
 ```
 
 Don't forget to clean up your resources:
 ````
-terraform destroy -var="cluster_name=<you_cluster_name>" -var="deployment_type=fargate"
-````
- 
-#### 2.4 Run in EC2
-````
-cd terraform/ec2 && terraform init && terraform apply \
-    -var="aoc_version={{the aoc binary version}}" \
-    -var="testcase=../testcases/{{your test case folder name}}" \
-    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
-````
- 
-Don't forget to clean up your resources:
-````
-terraform destroy
+terraform destroy -auto-approve \
+    -var="cluster_name=<you_cluster_name>" \
+    -var="deployment_type=fargate"
 ````
 
 #### 2.5 Run in canary
 ````
-cd terraform/canary && terraform init && terraform apply \
+cd terraform/canary && terraform init && terraform apply -auto-approve \
+    -var="aoc_image_repo=<your_image_repo>" \
     -var="aoc_version={{ the aoc binary version}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
     -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
@@ -156,5 +167,5 @@ cd terraform/canary && terraform init && terraform apply \
  
 Don't forget to clean up your resources:
 ````
-terraform destroy
+terraform destroy -auto-approve
 ````
