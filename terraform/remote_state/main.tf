@@ -21,12 +21,18 @@ module "common" {
   source = "../common"
 }
 
+module "basic_components" {
+  source   = "../basic_components"
+  region   = var.region
+  testcase = var.testcase
+}
+
 provider "aws" {
   region = var.region
 }
 
 locals {
-  testcase_name       = split("/", var.testcase)[2]
+  testcase_name = split("/", var.testcase)[2]
 }
 
 resource "aws_s3_bucket_object" "object" {
