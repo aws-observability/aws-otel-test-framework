@@ -117,3 +117,14 @@ Don't forget to clean up your resources:
 ````
 terraform destroy
 ````
+
+##3. Optional actions
+####3.1. Upload test case state to remote storage s3 
+Prerequisite: you are required to run the test case before uploading any terraform state to s3
+
+````
+cd terraform/remote_state && terraform init && terraform apply \
+   -var="testcase=../testcases/{{your test case folder name}}" \
+   -var="testing_id={{test case unique id}}" \
+   -var="platform={{platform running (ec2, ecs, eks, canary,...)"\
+````
