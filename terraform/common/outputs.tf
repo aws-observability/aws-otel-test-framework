@@ -110,6 +110,3 @@ output "terraform_state_s3_bucket_name" {
   value = "terraform-state-integration-test"
 }
 
-output "terraform_lock_state_dynamodb_name" {
-  value = "terraform-state-integration-test"
-}
