@@ -46,6 +46,10 @@ module "basic_components" {
   sample_app_listen_address_port = module.common.sample_app_lb_port
 }
 
+provider "aws" {
+  region = var.region
+}
+
 data "aws_caller_identity" "current" {
 }
 
