@@ -142,6 +142,10 @@ terraform destroy -auto-approve \
     -var="deployment_type=fargate"
 ````
 ### 2.5 Run in soaking
+Prerequisite: you are required to build aotutil for checking patch status
+```
+make build-aotutil
+```
 ### 2.5.1 Run in soaking test
 ````
 cd terraform/soaking && terraform init && terraform apply -auto-approve \
