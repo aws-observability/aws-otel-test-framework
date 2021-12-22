@@ -1,2 +1,4 @@
+CMD_DIR := $(abspath ./cmd)
+
 build-aotutil:
-	cd cmd/aotutil && go build
+	cd ${CMD_DIR}/aotutil && go build
