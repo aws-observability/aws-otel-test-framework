@@ -84,9 +84,9 @@ If a certain test case is failed in the github workflow of AWS Otel Collector, y
 * [run the ec2 test](docs/run-testing-framework.md#22-run-in-ec2)
 * [run the ecs test](docs/run-testing-framework.md#23-run-in-ecs)
 * [run the eks test](docs/run-testing-framework.md#24-run-in-eks)
-* [run the soaking test](docs/run-testing-framework.md)
-* [run the negative soaking test](docs/run-testing-framework.md)
-* [run the canary test](docs/run-testing-framework.md#25-run-in-canary)
+* [run the soaking test](docs/run-testing-framework.md#251-run-in-soaking-test)
+* [run the negative soaking test](docs/run-testing-framework.md#252-run-in-negative-soaking-test)
+* [run the canary test](docs/run-testing-framework.md#26-run-in-canary)
 
 
 ## 3. Contributing
