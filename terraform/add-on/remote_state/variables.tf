@@ -22,7 +22,7 @@ variable "testing_id" {
 }
 
 variable "testcase" {
-  default = "../testcases/otlp_mock"
+  default = "../../testcases/otlp_mock"
 }
 
 variable "platform" {

@@ -21,12 +21,6 @@ module "common" {
   source = "../../common"
 }
 
-module "basic_components" {
-  source = "../../basic_components"
-  region = var.region
-
-}
-
 provider "aws" {
   region = var.region
 }
@@ -38,7 +32,7 @@ locals {
 resource "aws_s3_bucket_object" "object" {
   bucket = module.common.terraform_state_s3_bucket_name
   key    = "${formatdate("YYYY-MM-DD", timestamp())}/${local.testcase_name}/${var.platform}/terraform-${var.testing_id}.tfstate"
-  source = "../${var.platform}/terraform.tfstate"
+  source = "../../${var.platform}/terraform.tfstate"
 }
 
 
