@@ -110,7 +110,6 @@ terraform destroy -auto-approve \
 ### 2.4.1 Run in EKS Fargate
 #### Create a new fargate cluster (optional in integ test account required in person account)
 
->>>>>>> terraform
 ```
 cd terraform/eks_fargate_setup && terraform apply -auto-approve -var="eks_cluster_name=<your_cluster>"
 ```
