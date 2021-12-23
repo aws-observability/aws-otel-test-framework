@@ -18,13 +18,13 @@
 #terraform destroy does not work out.
 
 module "common" {
-  source = "../common"
+  source = "../../common"
 }
 
 module "basic_components" {
-  source   = "../basic_components"
-  region   = var.region
-  testcase = var.testcase
+  source = "../../basic_components"
+  region = var.region
+
 }
 
 provider "aws" {
@@ -32,7 +32,7 @@ provider "aws" {
 }
 
 locals {
-  testcase_name = split("/", var.testcase)[2]
+  testcase_name = split("/", var.testcase)[3]
 }
 
 resource "aws_s3_bucket_object" "object" {
