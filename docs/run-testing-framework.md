@@ -123,8 +123,9 @@ terraform destroy
 Prerequisite: you are required to run the test case before uploading any terraform state to s3
 
 ````
-cd terraform/add-on/remote_state && terraform init && terraform apply \
+cd terraform/add_on/remote_state && terraform init && terraform apply \
    -var="testcase=../../testcases/{{your test case folder name}}" \
    -var="testing_id={{test case unique id}}" \
+   -var="folder_name={{folder name when uploading to s3}} \
    -var="platform={{platform running (ec2, ecs, eks, canary,...)"\
 ````

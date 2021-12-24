@@ -28,3 +28,7 @@ variable "testcase" {
 variable "platform" {
   default = ""
 }
+
+variable "folder_name" {
+  default = "normal_test"
+}

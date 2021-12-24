@@ -31,7 +31,7 @@ locals {
 
 resource "aws_s3_bucket_object" "object" {
   bucket = module.common.terraform_state_s3_bucket_name
-  key    = "${formatdate("YYYY-MM-DD", timestamp())}/${local.testcase_name}/${var.platform}/terraform-${var.testing_id}.tfstate"
+  key    = "${var.folder_name}/${formatdate("YYYY-MM-DD", timestamp())}/${local.testcase_name}/${var.platform}/terraform-${var.testing_id}.tfstate"
   source = "../../${var.platform}/terraform.tfstate"
 }
 
