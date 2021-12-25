@@ -1,7 +1,17 @@
-resource "aws_iam_policy" "appmesh_k8s_iam_policy" {
-  name = "AWSAppMeshK8sControllerIAMPolicy"
-  path = "/"
+data "external" "appmesh_k8s_iam_policy_exist" {
+  program = ["bash", "${path.root}/script/terraform-check-exist.sh"]
 
+  query = {
+    check_iam_policy= "true"
+    iam_policy_arn= "arn:aws:iam::${module.common.account_id}:policy/${module.common.appmesh_k8s_iam_policy}"
+  }
+}
+
+resource "aws_iam_policy" "appmesh_k8s_iam_policy" {
+  name = module.common.appmesh_k8s_iam_policy
+  path = "/"
+  count = data.external.appmesh_k8s_iam_policy_exist.result.iam_policy_exist == "false" ? 1 : 0
+  depends_on = [data.external.appmesh_k8s_iam_policy_exist]
   # Terraform's jsonencode function converts a
   # Terraform expression result to valid JSON syntax.
   policy = jsonencode({

@@ -17,6 +17,10 @@ output "testing_id" {
   value = random_id.testing_id.hex
 }
 
+output "account_id" {
+  value = local.account_id
+}
+
 output "aoc_image" {
   value = "${var.aoc_image_repo}:${var.aoc_version}"
 }
@@ -33,6 +37,9 @@ output "otel_service_name" {
   value = "aws-otel-integ-test"
 }
 
+output "appmesh_k8s_iam_policy" {
+  value = "AWSAppMeshK8sControllerIAMPolicy"
+}
 output "aoc_iam_role_name" {
   value = "aoc-e2e-iam-role"
 }

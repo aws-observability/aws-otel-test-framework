@@ -31,15 +31,28 @@ resource "tls_private_key" "ssh_key" {
 }
 
 ## create one iam role for all the tests
+
+data "external" "aoc_role_exist" {
+  program = ["bash", "${path.root}/script/terraform-check-exist.sh"]
+
+  query = {
+    check_iam_role= "true"
+    iam_role_name= "${module.common.aoc_iam_role_name}"
+  }
+}
+
 resource "aws_iam_instance_profile" "aoc_test_profile" {
   name = module.common.aoc_iam_role_name
-  role = aws_iam_role.aoc_role.name
+  role = aws_iam_role.aoc_role[count.index].name
+  count = data.external.aoc_role_exist.result.iam_role_exist == "false" ? 1 : 0
+  depends_on = [aws_iam_role.aoc_role]
 }
 
 resource "aws_iam_role" "aoc_role" {
   name = module.common.aoc_iam_role_name
   path = "/"
-
+  count = data.external.aoc_role_exist.result.iam_role_exist == "false" ? 1 : 0
+  depends_on = [data.external.aoc_role_exist]
   assume_role_policy = <<EOF
 {
     "Version": "2012-10-17",
@@ -66,8 +79,10 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "ec2-read-only-policy-attachment" {
-  role       = aws_iam_role.aoc_role.name
+  role       = aws_iam_role.aoc_role[count.index].name
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+  count = data.external.aoc_role_exist.result.iam_role_exist == "false" ? 1 : 0
+  depends_on = [aws_iam_role.aoc_role]
 }
 
 # create vpc with nat gateway so that we can use it to launch awsvpc ecs task in both ecs and fargate
@@ -208,9 +223,33 @@ resource "aws_security_group" "aoc_sg" {
 
 }
 
+data "external" "sample_app_ecr_repo_exist" {
+  program = ["bash", "${path.root}/script/terraform-check-exist.sh"]
+
+  query = {
+    check_ecr_repo= "true"
+    ecr_repo_name= "${module.common.sample_app_ecr_repo_name}"
+  }
+}
+
 resource "aws_ecr_repository" "sample_app_ecr_repo" {
   name = module.common.sample_app_ecr_repo_name
+  count = data.external.sample_app_ecr_repo_exist.result.ecr_repo_exist == "false" ? 1 : 0
+  depends_on = [data.external.sample_app_ecr_repo_exist]
+
 }
+
+data "external" "mocked_server_ecr_repo_exist" {
+  program = ["bash", "${path.root}/script/terraform-check-exist.sh"]
+
+  query = {
+    check_ecr_repo= "true"
+    ecr_repo_name= "${module.common.mocked_server_ecr_repo_name}"
+  }
+}
+
 resource "aws_ecr_repository" "mocked_server_ecr_repo" {
   name = module.common.mocked_server_ecr_repo_name
+  count = data.external.mocked_server_ecr_repo_exist.result.ecr_repo_exist == "false" ? 1 : 0
+  depends_on = [data.external.mocked_server_ecr_repo_exist]
 }
