@@ -108,9 +108,19 @@ module "vpc" {
   }
 }
 
+data "external" "aoc_sg_exist" {
+  program = ["bash", "${path.root}/script/terraform-check-exist.sh"]
+
+  query = {
+    check_sg= "true"
+    sg_name= "${module.common.aoc_vpc_security_group}"
+  }
+}
+
 resource "aws_security_group" "aoc_sg" {
   name   = module.common.aoc_vpc_security_group
   vpc_id = module.vpc.vpc_id
+  count = data.external.aoc_sg_exist.result.sg_exist == "false" ? 1 : 0
 
   # Allow all TCP ingress within the VPC so prometheus scrape can work with private IP.
   # https://stackoverflow.com/questions/49995417/self-reference-not-allowed-in-security-group-definition
