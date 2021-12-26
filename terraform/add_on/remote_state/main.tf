@@ -20,6 +20,25 @@
 module "common" {
   source = "../../common"
 }
+module "ec2" {
+  source = "../../ec2"
+}
+
+module "ecs" {
+  source = "../../ecs"
+}
+
+module "eks" {
+  source = "../../eks"
+}
+
+module "soaking" {
+  source = "../../soaking"
+}
+
+module "canary" {
+  source = "../../canary"
+}
 
 provider "aws" {
   region = var.region
@@ -27,6 +46,7 @@ provider "aws" {
 
 locals {
   testcase_name = split("/", var.testcase)[3]
+  testcase_id = var.platform=="ec2" ? module.ec2.testing_id : var.platform==
 }
 
 resource "aws_s3_bucket_object" "object" {
