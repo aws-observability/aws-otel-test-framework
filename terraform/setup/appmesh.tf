@@ -1,5 +1,5 @@
 resource "aws_iam_policy" "appmesh_k8s_iam_policy" {
-  name = "AWSAppMeshK8sControllerIAMPolicy"
+  name = "${module.common.appmesh_k8s_iam_policy}"
   path = "/"
 
   # Terraform's jsonencode function converts a
