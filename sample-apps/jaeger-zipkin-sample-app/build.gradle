@@ -38,7 +38,7 @@ dependencies {
     implementation "com.sparkjava:spark-core:2.9.3"
     implementation "com.squareup.okhttp3:okhttp:3.14.8"
     implementation "software.amazon.awssdk:s3:2.14.26"
-    implementation "io.grpc:grpc-api:1.34.1"
+    implementation "io.grpc:grpc-api:1.43.1"
     implementation "io.grpc:grpc-netty-shaded:1.34.1"
 
     // local project can't be referenced in Dockerfile
