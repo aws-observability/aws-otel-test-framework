@@ -13,7 +13,10 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-#In this module, we are uploading
+#In this module, we are uploading setup's terraform state to s3 bucket for two reasons:
+#-Share the setup configuration with others dev
+#-Avoid creating duplicate resources when sharing the same account
+
 #terraform {
 #  backend "s3" {
 #    bucket           = "setup-remote-state-s3-bucket"
