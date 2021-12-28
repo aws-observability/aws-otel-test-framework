@@ -43,7 +43,7 @@ Setup only needs to be run once, it creates:
 2. one vpc
 3. one security group
 4. two ecr repos, one for sample apps, one for mocked server
- 
+5. one s3 bucket, one dynamodb table
 Run 
 ````
 cd terraform/setup && terraform init && terraform apply -auto-approve
@@ -60,6 +60,9 @@ Remember, if you have changes on sample apps or the mocked server, you need to r
  
 #### 2.1.3 Build Image
 Please follow https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md to build your image with the new component, and push this image to dockerhub, record the image link, which will be used in your testing.
+
+#### 2.1.4 Documentation
+- [Setup basic components in aws account](setup-basic-components-in-aws-account.md)
 
 ### 2.2 Run in EC2
 ````
