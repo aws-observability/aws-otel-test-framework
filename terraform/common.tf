@@ -31,7 +31,7 @@ variable "sample_app_image" {
 }
 
 variable "aoc_image_repo" {
-  default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/aws/aws-otel-collector"
+  default = "public.ecr.aws/aws-otel-test/adot-collector-integration-test"
 }
 
 variable "aoc_version" {
