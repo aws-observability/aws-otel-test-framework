@@ -3,7 +3,7 @@ variable "ami_family" {
     amazon_linux = {
       login_user                         = "ec2-user"
       install_package                    = "aws-otel-collector.rpm"
-      instance_type                      = "m5.2xlarge"
+      instance_type                      = "t2.micro"
       otconfig_destination               = "/tmp/ot-default.yml"
       download_command_pattern           = "wget %s"
       install_command                    = "sudo rpm -Uvh aws-otel-collector.rpm && sudo chmod 777 /opt/aws/aws-otel-collector/etc/.env && sudo echo 'GODEBUG=madvdontneed=1' >> /opt/aws/aws-otel-collector/etc/.env"
