@@ -17,6 +17,10 @@ output "testing_id" {
   value = random_id.testing_id.hex
 }
 
+output "aws_account_id" {
+  value = local.aws_account_id
+}
+
 output "aoc_image" {
   value = "${var.aoc_image_repo}:${var.aoc_version}"
 }
@@ -31,6 +35,10 @@ output "otel_service_namespace" {
 
 output "otel_service_name" {
   value = "aws-otel-integ-test"
+}
+
+output "appmesh_k8s_iam_policy" {
+  value = "AWSAppMeshK8sControllerIAMPolicy"
 }
 
 output "aoc_iam_role_name" {
@@ -109,3 +117,4 @@ output "mocked_server_ecr_repo_name" {
 output "amp_testing_framework" {
   value = "amp_testing_framework"
 }
+

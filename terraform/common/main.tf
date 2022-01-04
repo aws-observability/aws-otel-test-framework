@@ -20,3 +20,10 @@ resource "random_id" "testing_id" {
   byte_length = 8
 }
 
+# Get Account ID for user to easily get arn name from some resources on AWS such as the policy, name
+# Documentation: https://stackoverflow.com/a/68398082
+data "aws_caller_identity" "current" {}
+
+locals {
+  aws_account_id = data.aws_caller_identity.current.account_id
+}
