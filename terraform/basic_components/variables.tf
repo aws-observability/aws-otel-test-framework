@@ -41,7 +41,7 @@ variable "mocked_server" {
 }
 
 variable "cortex_instance_endpoint" {
-  default = "https://aps-workspaces.us-west-2.amazonaws.com/workspaces/ws-cd278045-1d6e-4550-a207-c5046a1b40b8"
+  default = ""
 }
 
 variable "sample_app_listen_address_host" {
