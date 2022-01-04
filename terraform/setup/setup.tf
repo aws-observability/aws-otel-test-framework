@@ -214,3 +214,7 @@ resource "aws_ecr_repository" "sample_app_ecr_repo" {
 resource "aws_ecr_repository" "mocked_server_ecr_repo" {
   name = module.common.mocked_server_ecr_repo_name
 }
+
+resource "aws_prometheus_workspace" "amp_testing_framework" {
+  alias = module.common.amp_testing_framework
+}

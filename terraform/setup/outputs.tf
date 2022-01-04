@@ -13,27 +13,6 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-variable "testing_id" {
-  type    = string
-  default = ""
-}
-
-variable "kubeconfig" {
-  type    = string
-  default = "kubeconfig"
-}
-
-resource "helm_release" "adot-operator" {
-  name = "adot-operator-${var.testing_id}"
-
-  repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
-  chart      = "opentelemetry-operator"
-
-  values = [
-    file("./adot-operator/adot-operator-values.yaml")
-  ]
-
-  provisioner "local-exec" {
-    command = "kubectl wait --kubeconfig=${var.kubeconfig} --timeout=5m --for=condition=available deployment opentelemetry-operator-controller-manager -n opentelemetry-operator-system"
-  }
+output "amp_testing_framework_endpoint" {
+  value = aws_prometheus_workspace.amp_testing_framework.prometheus_endpoint
 }

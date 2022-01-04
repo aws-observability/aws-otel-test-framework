@@ -43,7 +43,8 @@ Setup only needs to be run once, it creates:
 2. one vpc
 3. one security group
 4. two ecr repos, one for sample apps, one for mocked server
- 
+5. one amazon managed service for prometheus endpoint. 
+
 Run 
 ````
 cd terraform/setup && terraform init && terraform apply -auto-approve
@@ -110,7 +111,6 @@ terraform destroy -auto-approve \
 ### 2.4.1 Run in EKS Fargate
 #### Create a new fargate cluster (optional in integ test account required in person account)
 
->>>>>>> terraform
 ```
 cd terraform/eks_fargate_setup && terraform apply -auto-approve -var="eks_cluster_name=<your_cluster>"
 ```

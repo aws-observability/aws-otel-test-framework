@@ -114,4 +114,7 @@ output "mocked_server_ecr_repo_name" {
   value = "otel-test/mocked-server"
 }
 
+output "amp_testing_framework" {
+  value = "amp_testing_framework"
+}
 
