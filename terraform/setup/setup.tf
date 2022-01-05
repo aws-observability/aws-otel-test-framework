@@ -30,6 +30,9 @@ resource "tls_private_key" "ssh_key" {
   rsa_bits  = 4096
 }
 
+data "aws_caller_identity" "current" {
+}
+
 ## create one iam role for all the tests
 resource "aws_iam_instance_profile" "aoc_test_profile" {
   name = module.common.aoc_iam_role_name

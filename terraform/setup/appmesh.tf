@@ -14,7 +14,6 @@
 # -------------------------------------------------------------------------
 
 resource "aws_iam_policy" "appmesh_k8s_iam_policy" {
-
   name = module.common.appmesh_k8s_iam_policy
   path = "/"
 
@@ -69,7 +68,7 @@ resource "aws_iam_policy" "appmesh_k8s_iam_policy" {
         Action = [
           "iam:CreateServiceLinkedRole"
         ],
-        Resource = "arn:aws:iam::${module.common.aws_account_id}:role/aws-service-role/appmesh.amazonaws.com/AWSServiceRoleForAppMesh",
+        Resource = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/appmesh.amazonaws.com/AWSServiceRoleForAppMesh",
         Condition = {
           StringLike = {
             "iam:AWSServiceName" = [

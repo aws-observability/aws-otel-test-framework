@@ -17,10 +17,6 @@ output "testing_id" {
   value = random_id.testing_id.hex
 }
 
-output "aws_account_id" {
-  value = local.aws_account_id
-}
-
 output "aoc_image" {
   value = "${var.aoc_image_repo}:${var.aoc_version}"
 }
@@ -117,4 +113,3 @@ output "mocked_server_ecr_repo_name" {
 output "amp_testing_framework" {
   value = "amp_testing_framework"
 }
-
