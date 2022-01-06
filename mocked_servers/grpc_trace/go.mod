@@ -3,7 +3,7 @@ module github.com/aws-observability/aws-otel-test-framework/mockedservers/grpc/t
 go 1.17
 
 require (
-	go.opentelemetry.io/proto/otlp v0.7.0
+	go.opentelemetry.io/proto/otlp v0.11.0
 	google.golang.org/grpc v1.42.0
 )
 
