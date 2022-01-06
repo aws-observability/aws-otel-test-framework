@@ -101,6 +101,7 @@ resource "aws_iam_role" "eks_adot_operator_role" {
     "arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess",
     "arn:aws:iam::aws:policy/CloudWatchAgentAdminPolicy",
     "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+    "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess",
     "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
     "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
     "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
