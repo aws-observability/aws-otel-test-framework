@@ -51,6 +51,7 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
   private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
 
   protected Map<String, JsonSchema> schemasToValidate = new HashMap<>();
+  protected Set<String> validatedSchema = new HashSet<>();
   protected Set<String> logStreamNames = new HashSet<>();
   protected String logGroupName;
 
@@ -113,7 +114,7 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
   }
 
   private void checkResult() throws BaseException {
-    if (schemasToValidate.isEmpty()) {
+    if (schemasToValidate.isEmpty() || schemasToValidate.keySet().equals(validatedSchema)) {
       return;
     }
     String[] failedTargets = new String[schemasToValidate.size()];
@@ -131,12 +132,15 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
   protected void validateJsonSchema(String logEventMsg) throws Exception {
     JsonNode logEventNode = mapper.readTree(logEventMsg);
     String key = getJsonSchemaMappingKey(logEventNode);
+    if (validatedSchema.contains(key)) {
+      return;
+    }
     JsonSchema jsonSchema = schemasToValidate.get(key);
     if (jsonSchema != null) {
       ProcessingReport report = jsonSchema.validate(
               JsonLoader.fromString(logEventNode.toString()));
       if (report.isSuccess()) {
-        schemasToValidate.remove(key);
+        validatedSchema.add(key);
       }
     }
   }
