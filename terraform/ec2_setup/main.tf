@@ -31,14 +31,15 @@ data "aws_ecr_repository" "sample_apps" {
 module "ec2_setup" {
   source = "../ec2"
 
-  ami_family       = var.ami_family
-  amis             = var.amis
-  testing_ami      = var.testing_ami
-  aoc_version      = var.aoc_version
-  region           = var.region
-  testcase         = var.testcase
-  sample_app_image = var.soaking_sample_app != "" ? "${data.aws_ecr_repository.sample_apps.repository_url}:${var.soaking_sample_app}-latest" : var.soaking_sample_app_image
-  skip_validation  = true
+  ami_family            = var.ami_family
+  amis                  = var.amis
+  testing_ami           = var.testing_ami
+  aoc_version           = var.aoc_version
+  region                = var.region
+  testcase              = var.testcase
+  sample_app_image      = var.soaking_sample_app != "" ? "${data.aws_ecr_repository.sample_apps.repository_url}:${var.soaking_sample_app}-latest" : var.soaking_sample_app_image
+  sidecar_instance_type = var.sidecar_instance_type
+  skip_validation       = true
 
   # soaking test config
   # StatsD use its own docker compose for udp port

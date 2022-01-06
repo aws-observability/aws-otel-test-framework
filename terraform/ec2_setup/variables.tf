@@ -16,6 +16,10 @@
 variable "testing_ami" {
 }
 
+variable "sidecar_instance_type" {
+  default = "t3.medium"
+}
+
 variable "soaking_sample_app_image" {
   default = "public.ecr.aws/aws-otel-test/aws-otel-load-generator:v0.11.0"
 }
