@@ -87,7 +87,7 @@ locals {
 ## launch a sidecar instance to install data emitter and the mocked server
 resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.amazonlinux2.id
-  instance_type               = "m5.2xlarge"
+  instance_type               = "t2.micro"
   subnet_id                   = local.instance_subnet
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
