@@ -109,7 +109,7 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
   awsprometheusremotewrite:
-    endpoint: https://aps-workspaces.us-west-2.amazonaws.com/workspaces/ws-cd278045-1d6e-4550-a207-c5046a1b40b8/api/v1/remote_write
+    endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     resource_to_telemetry_conversion:
       enabled: true
     aws_auth:

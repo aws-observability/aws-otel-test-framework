@@ -91,7 +91,7 @@ public class CortexClient {
     URI uri = new URIBuilder()
             .setScheme(Objects.requireNonNull(rawUrl).scheme())
             .setHost(rawUrl.host())
-            .setPath(rawUrl.encodedPath() + "/api/v1/query_range")
+            .setPath(rawUrl.encodedPath() + "/api/v1/query")
             .addParameter("query", query)
             .addParameter("start", Long.toString(endEpochTime - 3600))
             .addParameter("end", Long.toString(endEpochTime))

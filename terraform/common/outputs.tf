@@ -33,6 +33,10 @@ output "otel_service_name" {
   value = "aws-otel-integ-test"
 }
 
+output "appmesh_k8s_iam_policy" {
+  value = "AWSAppMeshK8sControllerIAMPolicy"
+}
+
 output "aoc_iam_role_name" {
   value = "aoc-e2e-iam-role"
 }
@@ -104,4 +108,8 @@ output "sample_app_ecr_repo_name" {
 
 output "mocked_server_ecr_repo_name" {
   value = "otel-test/mocked-server"
+}
+
+output "amp_testing_framework" {
+  value = "amp_testing_framework"
 }

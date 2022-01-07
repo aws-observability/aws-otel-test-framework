@@ -13,9 +13,6 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-# this module is mainly to store the general constants
-
-# generate a testing_id whenever people want to use, for example, use it as a ecs cluster to prevent cluster name conflict
-resource "random_id" "testing_id" {
-  byte_length = 8
+output "amp_testing_framework_endpoint" {
+  value = aws_prometheus_workspace.amp_testing_framework.prometheus_endpoint
 }

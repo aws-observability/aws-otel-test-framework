@@ -24,6 +24,10 @@ variable "testing_ami" {
   default = "amazonlinux2"
 }
 
+variable "sidecar_instance_type" {
+  default = "t3.medium"
+}
+
 variable "soaking_compose_file" {
   default = ""
 }
@@ -110,7 +114,7 @@ variable "ssm_package_name" {
   default = "AWSDistroOTel-Collector"
 }
 
-# Base64 value of ADOT Collector YMAL configuration
+# Base64 value of ADOT Collector YAML configuration
 variable "ssm_config" {
   default = ""
 }
