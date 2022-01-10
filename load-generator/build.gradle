@@ -42,7 +42,7 @@ dependencies {
     implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.7.0"
 
     // Use JUnit test framework
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
 
     // Command cli
     implementation 'info.picocli:picocli:4.3.2'
