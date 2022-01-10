@@ -32,7 +32,7 @@ repositories {
 
 dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.13.2'
-    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
+    testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.22.0'
 
     // log
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.16.0'
