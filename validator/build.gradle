@@ -2,7 +2,7 @@ plugins {
     id 'java'
 
     id 'application'
-    id 'com.google.cloud.tools.jib' version "2.7.1"
+    id 'com.google.cloud.tools.jib' version "3.1.4"
 
     // lombok
     id "io.freefair.lombok" version "5.1.0"
@@ -31,7 +31,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'junit', name: 'junit', version: '4.12'
+    testImplementation group: 'junit', name: 'junit', version: '4.13.2'
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.16.1'
 
     // log
@@ -48,7 +48,7 @@ dependencies {
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.11.1'
 
     // json flattener
-    implementation group: 'com.github.wnameless', name: 'json-flattener', version: '0.1.0'
+    implementation group: 'com.github.wnameless', name: 'json-flattener', version: '0.7.1'
     implementation group: 'com.github.fge', name: 'json-schema-validator', version: '2.0.0'
 
     // command cli
