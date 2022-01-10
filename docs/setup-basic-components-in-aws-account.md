@@ -15,7 +15,8 @@ Setup only needs to be run once, it creates:
 2. one vpc
 3. one security group
 4. two ecr repos, one for sample apps, one for mocked server
-5. one s3 bucket, one dynamodb table
+5. one amazon managed service for prometheus endpoint.
+6. one s3 bucket, one dynamodb table
 
 ```shell
 cd aws-otel-test-framework/terraform/setup 
