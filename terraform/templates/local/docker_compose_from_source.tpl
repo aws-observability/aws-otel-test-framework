@@ -8,6 +8,7 @@ services:
       - 55671:55671
 
   aws-ot-collector:
+    platform: linux/amd64
     build:
       context: ../../../aws-otel-collector
       dockerfile: cmd/awscollector/Dockerfile
