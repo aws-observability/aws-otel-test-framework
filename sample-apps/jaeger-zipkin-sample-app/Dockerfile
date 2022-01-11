@@ -9,12 +9,13 @@ COPY ./build/ ./build/
 # default 1.0
 ARG VER=1.0
 
-RUN gradle build
+# assume app is already built since it will not build in docker container
 RUN tar -xvf build/distributions/jaeger-zipkin-sample-app-${VER}.tar
 
 FROM amazoncorretto:11
 
 WORKDIR /app
+ARG VER=1.0
 COPY --from=builder /app/jaeger-zipkin-sample-app-${VER} .
 
 ENV HOME=/root

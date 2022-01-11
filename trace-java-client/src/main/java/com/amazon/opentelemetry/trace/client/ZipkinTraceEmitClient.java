@@ -28,7 +28,7 @@ import brave.opentracing.BraveTracer;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapInjectAdapter;
+import io.opentracing.propagation.TextMapAdapter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -94,7 +94,7 @@ public class ZipkinTraceEmitClient implements TraceClient {
 
   private String extractTraceID(Tracer tracer, Span otSpan) {
     HashMap<String, String> baggage = new HashMap<>();
-    TextMapInjectAdapter map = new TextMapInjectAdapter(baggage);
+    TextMapAdapter map = new TextMapAdapter(baggage);
     tracer.inject(otSpan.context(), Format.Builtin.HTTP_HEADERS, map);
     try {
       String encodedTraceId = URLDecoder.decode(baggage.get("X-B3-TraceId"), "UTF-8");
