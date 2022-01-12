@@ -36,7 +36,7 @@ variable "platform" {
   description = "Platform to upload terraform state. Need to be in one of the platforms: ec2, eks, ecs, soaking, canary"
 }
 
-variable "folder_name" {
+variable "s3_folder_name" {
   type = string
   default = "dummy_test"
   description = "Folder name when uploading to s3"
