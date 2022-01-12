@@ -25,11 +25,12 @@ module "ec2_setup" {
   testcase    = var.testcase
   testing_ami = var.testing_ami
 
-  sample_app_mode    = var.sample_app_mode
-  soaking_sample_app = var.soaking_sample_app
-  soaking_data_rate  = var.data_rate
-  soaking_data_type  = var.soaking_data_type
-  soaking_data_mode  = var.soaking_data_mode
+  sample_app_mode       = var.sample_app_mode
+  soaking_sample_app    = var.soaking_sample_app
+  soaking_data_rate     = var.data_rate
+  soaking_data_type     = var.soaking_data_type
+  soaking_data_mode     = var.soaking_data_mode
+  sidecar_instance_type = var.sidecar_instance_type
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 

@@ -4,7 +4,7 @@ Before adding a new component into AWS Otel Collector, we require contributors t
 
 * Contributors won't need to run the test locally to provide the testing result, instead, just define it. The test case will be automatically picked by the github workflow in AWS Otel Collector repo to run integration test and soaking test on different platforms. We will notify contributors if a certain test case is failed.
 
-* Contributors won't need to build the validation logic for their own backends, no api keys or credentials are required. We use our own version of [mocked backend](mocked_servers/) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy. [The mechanism of testing framework](docs/mechanism-of-testing-framework.md)
+* Contributors won't need to build the validation logic for their own backends, no api keys or credentials are required. We use our own version of [mocked backend](mocked_servers/) in the integration and soaking test. Inside this mock server, we only validate if the data is received but not the data accuracy. [The mechanism of testing framework](docs/testing-framework-design.md)
 
 * Contributors won't need to define different test cases for different platforms. The point is, one test case for multiple types of tests including integration test and soaking test. 
 
@@ -81,12 +81,12 @@ You will need to add a block in the [testcases.json](https://github.com/aws-obse
 If a certain test case is failed in the github workflow of AWS Otel Collector, you might need to debug the test case locally. 
 
 * [run the local test](docs/run-mock-test.md)
-* [run the ec2 test](docs/run-testing-framework.md#24-run-in-ec2)
-* [run the ecs test](docs/run-testing-framework.md#22-run-in-ecs)
-* [run the eks test](docs/run-testing-framework.md#23-run-in-eks)
-* [run the soaking test](docs/run-testing-framework.md)
-* [run the negative soaking test](docs/run-testing-framework.md)
-* [run the canary test](docs/run-testing-framework.md#25-run-in-canary)
+* [run the ec2 test](docs/run-testing-framework.md#22-run-in-ec2)
+* [run the ecs test](docs/run-testing-framework.md#23-run-in-ecs)
+* [run the eks test](docs/run-testing-framework.md#24-run-in-eks)
+* [run the soaking test](docs/run-testing-framework.md#251-run-in-soaking-test)
+* [run the negative soaking test](docs/run-testing-framework.md#252-run-in-negative-soaking-test)
+* [run the canary test](docs/run-testing-framework.md#26-run-in-canary)
 
 
 ## 3. Contributing

@@ -33,6 +33,10 @@ output "otel_service_name" {
   value = "aws-otel-integ-test"
 }
 
+output "appmesh_k8s_iam_policy" {
+  value = "AWSAppMeshK8sControllerIAMPolicy"
+}
+
 output "aoc_iam_role_name" {
   value = "aoc-e2e-iam-role"
 }
@@ -108,5 +112,9 @@ output "mocked_server_ecr_repo_name" {
 
 output "terraform_state_s3_bucket_name" {
   value = "terraform-state-integration-test"
+}
+
+output "amp_testing_framework" {
+  value = "amp_testing_framework"
 }
 

@@ -35,6 +35,8 @@ public enum PredefinedExpectedTemplate implements FileConfig {
     "/expected-data-template/container-insight/eks/prometheus"),
   CONTAINER_INSIGHT_ECS_PROMETHEUS_METRIC(
       "/expected-data-template/container-insight/ecs/prometheus"),
+  FARGATE_EXPECTED_METRIC("/expected-data-template/EKSFargateCWCIExpectedMetric.mustache"),
+
 
   /**
    * trace template, defined in resources.
@@ -80,7 +82,10 @@ public enum PredefinedExpectedTemplate implements FileConfig {
     "/expected-data-template/container-insight/ecs/ecs-instance"),
   CONTAINER_INSIGHT_ECS_PROMETHEUS_LOG(
       "/expected-data-template/container-insight/ecs/prometheus"),
+  CONTAINER_INSIGHT_FARGATE_EKS_LOG(
+          "/expected-data-template/container-insight/eks/fargate"),
   ;
+
 
   private String path;
 

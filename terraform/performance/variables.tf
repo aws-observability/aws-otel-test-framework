@@ -62,3 +62,7 @@ variable "commit_id" {
 variable "soaking_sample_app" {
   default = ""
 }
+
+variable "sidecar_instance_type" {
+  default = "m5.2xlarge"
+}

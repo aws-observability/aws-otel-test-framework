@@ -68,12 +68,16 @@ public class CWMetricValidator implements IValidator {
     final List<Metric> expectedMetricList = cwMetricHelper.listExpectedMetrics(
         context,
         expectedMetric,
-        caller,
-        true
+        caller
     );
     Set<String> skippedDimensionNameList = new HashSet<>();
     for (Metric metric : expectedMetricList) {
       for (Dimension dimension : metric.getDimensions()) {
+
+        if (dimension.getValue() == null || dimension.getValue().equals("")) {
+          continue;
+        }
+
         if (dimension.getValue().equals("SKIP")) {
           skippedDimensionNameList.add(dimension.getName());
         }
@@ -146,7 +150,6 @@ public class CWMetricValidator implements IValidator {
     for (Metric metric : baseMetricList) {
       metricSet.add(metric);
     }
-
     for (Metric metric : toBeCheckedMetricList) {
       if (!metricSet.contains(metric)) {
         throw new BaseException(
@@ -171,7 +174,6 @@ public class CWMetricValidator implements IValidator {
     for (String metricName : metricNameMap.keySet()) {
       result.addAll(cloudWatchService.listMetrics(metricNameMap.get(metricName), metricName));
     }
-
     return result;
   }
 

@@ -9,11 +9,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.io.FilenameUtils;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 
 @Log4j2
@@ -46,8 +45,12 @@ public class ContainerInsightStructuredLogValidator
       FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
           expectedDataTemplate.getPath().toString(),
           logType + ".json"));
-      String templateInput = mustacheHelper.render(fileConfig, context);
-      schemasToValidate.put(logType, parseJsonSchema(templateInput));
+      try {
+        String templateInput = mustacheHelper.render(fileConfig, context);
+        schemasToValidate.put(logType, parseJsonSchema(templateInput));
+      } catch (IOException e) {
+        log.debug("The " + logType + " was not found for this expected template path.");
+      }
     }
   }
 
@@ -63,9 +66,9 @@ public class ContainerInsightStructuredLogValidator
 
   @Override
   protected void fetchAndValidateLogs(Instant startTime) throws Exception {
-    Set<String> logTypes = new HashSet<>(LOG_TYPE_TO_VALIDATE);
-    log.info("Fetch and validate logs with types: " + String.join(", ", logTypes));
-    for (String logType : logTypes) {
+    log.info("Fetch and validate logs with types: "
+            + String.join(", ", schemasToValidate.keySet()));
+    for (String logType : schemasToValidate.keySet()) {
       String filterPattern = String.format("{ $.Type = \"%s\"}", logType);
       List<FilteredLogEvent> logEvents = cloudWatchService.filterLogs(logGroupName, filterPattern,
               startTime.toEpochMilli(), QUERY_LIMIT);

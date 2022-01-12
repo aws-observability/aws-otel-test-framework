@@ -14,7 +14,7 @@
 # -------------------------------------------------------------------------
 
 variable "eks_cluster_name" {
-  default = "aws-otel-testing-framework-eks"
+  default = "aws-otel-testing-framework-eks-2"
 }
 
 variable "mock_endpoint" {
@@ -40,4 +40,18 @@ variable "aoc_base_scenario" {
 // options: deployment, daemonset, statefulset, sidecar
 variable "aoc_deploy_mode" {
   default = "deployment"
+}
+
+variable "deployment_type" {
+  default     = "ec2"
+  description = "ec2 or fargate"
+}
+
+variable "rollup" {
+  type    = bool
+  default = true
+}
+
+variable "fargate_sample_app_lb_port" {
+  default = "80"
 }

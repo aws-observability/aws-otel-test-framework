@@ -43,15 +43,16 @@ Setup only needs to be run once, it creates:
 2. one vpc
 3. one security group
 4. two ecr repos, one for sample apps, one for mocked server
- 
+5. one amazon managed service for prometheus endpoint. 
+
 Run 
 ````
-cd terraform/setup && terraform init && terraform apply
+cd terraform/setup && terraform init && terraform apply -auto-approve
 ````
  
 And Run
 ````
-cd terraform/imagebuild && terraform init && terraform apply
+cd terraform/imagebuild && terraform init && terraform apply -auto-approve
 ````
 this task will build and push the sample apps and mocked server images to the ecr repos,
  so that the following test could use them.
@@ -60,11 +61,25 @@ Remember, if you have changes on sample apps or the mocked server, you need to r
  
 #### 2.1.3 Build Image
 Please follow https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md to build your image with the new component, and push this image to dockerhub, record the image link, which will be used in your testing.
- 
-### 2.2 Run in ECS
+
+### 2.2 Run in EC2
+````
+cd terraform/ec2 && terraform init && terraform apply -auto-approve \
+    -var="aoc_image_repo={{the docker image repo name you just pushed}}" \
+    -var="aoc_version={{the aoc binary version}}" \
+    -var="testcase=../testcases/{{your test case folder name}}" \
+    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
+````
+
+Don't forget to clean up your resources:
+````
+terraform destroy -auto-approve
+````
+
+### 2.3 Run in ECS
  
 ````
-cd terraform/ecs && terraform init && terraform apply \
+cd terraform/ecs && terraform init && terraform apply -auto-approve \
     -var="aoc_image_repo={{the docker image repo name you just pushed}}" \
     -var="aoc_version={{ the docker image tag name}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
@@ -73,49 +88,107 @@ cd terraform/ecs && terraform init && terraform apply \
  
 Don't forget to clean up your resources:
 ````
-terraform destroy
+terraform destroy -auto-approve
 ````
  
-### 2.3 Run in EKS
+### 2.4 Run in EKS
 Prerequisite: you are required to create an EKS cluster in your account
 ````
-cd terraform/eks && terraform init && terraform apply \
-    -var="eks_cluster_name={the eks cluster name in your account}" \
-    -var="aoc_version={{ the docker image tag name}}" \
+cd terraform/eks && terraform init && terraform apply -auto-approve \
     -var="aoc_image_repo={{the docker image you just pushed}}" \
+    -var="aoc_version={{ the docker image tag name}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
-    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
-````
- 
-Don't forget to clean up your resources:
-````
-terraform destroy -var="eks_cluster_name={the eks cluster name in your account}"
-````
- 
-#### 2.4 Run in EC2
-````
-cd terraform/ec2 && terraform init && terraform apply \
-    -var="aoc_version={{the aoc binary version}}" \
-    -var="testcase=../testcases/{{your test case folder name}}" \
-    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
-````
- 
-Don't forget to clean up your resources:
-````
-terraform destroy
+    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars" \
+    -var="eks_cluster_name={{the eks cluster name in your account}}" 
 ````
 
-#### 2.5 Run in canary
+Don't forget to clean up your resources:
 ````
-cd terraform/canary && terraform init && terraform apply \
-    -var="aoc_version={{ the aoc binary version}}" \
+terraform destroy -auto-approve \
+    -var="eks_cluster_name={the eks cluster name in your account}"
+````
+
+### 2.4.1 Run in EKS Fargate
+#### Create a new fargate cluster (optional in integ test account required in person account)
+
+```
+cd terraform/eks_fargate_setup && terraform apply -auto-approve -var="eks_cluster_name=<your_cluster>"
+```
+
+#### How to run fargate tests
+Add -var="deployment_type=fargate" to the eks creation statement
+Supported tests
+* otlp_mock
+
+Not supported tests
+* otlp_trace
+  * This is because no sts role given to the sample app. 
+
+Test
+```
+cd terraform/eks && terraform apply -auto-approve \
+  -var="aoc_image_repo={{the docker image you just pushed}}" \
+  -var="aoc_version={{ the docker image tag name}}" \
+  -var="testcase=../testcases/{{your test case folder name}}" \
+  -var-file="../testcases/{{your test case folder name}}/parameters.tfvars" \
+  -var="eks_cluster_name={{the eks cluster name in your account}}" \
+  -var="deployment_type=fargate"
+```
+
+Don't forget to clean up your resources:
+````
+terraform destroy -auto-approve \
+    -var="eks_cluster_name={{the eks cluster name in your account}}" \
+    -var="deployment_type=fargate"
+````
+### 2.5 Run in soaking
+Prerequisite: you are required to build aotutil for checking patch status
+```
+make build-aotutil
+```
+### 2.5.1 Run in soaking test
+````
+cd terraform/soaking && terraform init && terraform apply -auto-approve \
+    -var="testing_ami={{ami need to test with such as soaking_window}}" \
+    -var="aoc_image_repo={{the docker image you just pushed}}" \
+    -var="aoc_version={{ the docker image tag name}}" \
+    -var="testcase=../testcases/{{your test case folder name}}" \
+    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars" \
+````
+
+Don't forget to clean up your resources:
+````
+terraform destroy -auto-approve
+````
+
+### 2.5.2 Run in negative soaking test
+````
+cd terraform/soaking && terraform init && terraform apply -auto-approve \
+    -var="negative_soaking=true" \
+    -var="testing_ami={{ami need to test with such as soaking_window}}" \
+    -var="aoc_image_repo={{the docker image you just pushed}}" \
+    -var="aoc_version={{ the docker image tag name}}" \
+    -var="testcase=../testcases/{{your test case folder name}}" \
+    -var-file="../testcases/{{your test case folder name}}/parameters.tfvars" \
+````
+
+Don't forget to clean up your resources:
+````
+terraform destroy -auto-approve
+````
+
+### 2.6 Run in canary
+````
+cd terraform/canary && terraform init && terraform apply -auto-approve \
+    -var="aoc_image_repo={{the docker image you just pushed}}" \
+    -var="aoc_version={{ the docker image tag name}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
     -var-file="../testcases/{{your test case folder name}}/parameters.tfvars"
 ````
  
 Don't forget to clean up your resources:
 ````
-terraform destroy
+terraform destroy -auto-approve
 ````
 
 ##3. Optional add-on

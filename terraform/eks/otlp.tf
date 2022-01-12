@@ -43,7 +43,7 @@ module "aoc_oltp" {
     listen_address_ip   = module.common.sample_app_listen_address_ip
     listen_address_port = module.common.sample_app_listen_address_port
   }
-  aoc_namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+  aoc_namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   aoc_service = {
     name      = module.common.otel_service_name
     grpc_port = module.common.grpc_port
@@ -51,6 +51,7 @@ module "aoc_oltp" {
     http_port = module.common.http_port
   }
   is_adot_operator = replace(var.testcase, "_adot_operator", "") != var.testcase
+  depends_on       = [aws_eks_fargate_profile.test_profile]
 }
 
 locals {
@@ -63,12 +64,13 @@ resource "kubernetes_config_map" "aoc_config_map" {
 
   metadata {
     name      = "otel-config"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
   data = {
     "aoc-config.yml" = module.basic_components.0.otconfig_content
   }
+  depends_on = [aws_eks_fargate_profile.test_profile]
 }
 
 # load the faked cert for mocked server
@@ -77,12 +79,13 @@ resource "kubernetes_config_map" "mocked_server_cert" {
 
   metadata {
     name      = "mocked-server-cert"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
   data = {
     "ca-bundle.crt" = module.basic_components.0.mocked_server_cert_content
   }
+  depends_on = [aws_eks_fargate_profile.test_profile]
 }
 
 # deploy aoc and mocked server
@@ -91,7 +94,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
   metadata {
     name      = "aoc"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
     labels = {
       app = "aoc"
     }
@@ -174,6 +177,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
       }
     }
   }
+  depends_on = [aws_eks_fargate_profile.test_profile]
 }
 
 # create service upon the mocked server
@@ -182,7 +186,7 @@ resource "kubernetes_service" "mocked_server_service" {
 
   metadata {
     name      = "mocked-server"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
@@ -194,6 +198,7 @@ resource "kubernetes_service" "mocked_server_service" {
       target_port = 8080
     }
   }
+  depends_on = [aws_eks_fargate_profile.test_profile]
 }
 
 data "template_file" "adot_collector_config_file" {
@@ -202,14 +207,14 @@ data "template_file" "adot_collector_config_file" {
   template = file("./adot-operator/adot_collector_deployment.tpl")
 
   vars = {
-    AOC_NAMESPACE      = kubernetes_namespace.aoc_ns.metadata[0].name
+    AOC_NAMESPACE      = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
     AOC_IMAGE          = module.common.aoc_image
     AOC_DEPLOY_MODE    = var.aoc_deploy_mode
     AOC_SERVICEACCOUNT = "aoc-role-${module.common.testing_id}"
     AOC_CONFIG         = module.basic_components.0.otconfig_content
   }
 
-  depends_on = [module.adot_operator]
+  depends_on = [module.adot_operator, aws_eks_fargate_profile.test_profile]
 }
 
 resource "local_file" "adot_collector_deployment" {
@@ -236,19 +241,53 @@ resource "kubernetes_service" "sample_app_service" {
 
   metadata {
     name      = "sample-app"
-    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
   }
   spec {
     selector = {
       app = "sample-app"
     }
 
-    type = "LoadBalancer"
+    type = var.deployment_type == "fargate" ? "NodePort" : "LoadBalancer"
 
     port {
       port        = module.common.sample_app_lb_port
       target_port = module.common.sample_app_listen_address_port
     }
   }
+  depends_on = [aws_eks_fargate_profile.test_profile]
+}
+
+resource "kubernetes_ingress" "app" {
+  count                  = var.deployment_type == "fargate" && var.aoc_base_scenario == "oltp" ? 1 : 0
+  wait_for_load_balancer = true
+  metadata {
+    name      = "sample-app-ingress"
+    namespace = tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace
+    annotations = {
+      "kubernetes.io/ingress.class"           = "alb"
+      "alb.ingress.kubernetes.io/scheme"      = "internet-facing"
+      "alb.ingress.kubernetes.io/target-type" = "ip"
+    }
+    labels = {
+      "app" = "sample-app"
+    }
+  }
+
+  spec {
+    rule {
+      http {
+        path {
+          path = "/*"
+          backend {
+            service_name = kubernetes_service.sample_app_service[count.index].metadata[0].name
+            service_port = kubernetes_service.sample_app_service[count.index].spec[0].port[0].port
+          }
+        }
+      }
+    }
+  }
+
+  depends_on = [kubernetes_service.sample_app_service]
 }
 

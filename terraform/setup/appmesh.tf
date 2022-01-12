@@ -1,5 +1,20 @@
+# ------------------------------------------------------------------------
+# Copyright 2020 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License").
+# You may not use this file except in compliance with the License.
+# A copy of the License is located at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# or in the "license" file accompanying this file. This file is distributed
+# on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+# express or implied. See the License for the specific language governing
+# permissions and limitations under the License.
+# -------------------------------------------------------------------------
+
 resource "aws_iam_policy" "appmesh_k8s_iam_policy" {
-  name = "AWSAppMeshK8sControllerIAMPolicy"
+  name = module.common.appmesh_k8s_iam_policy
   path = "/"
 
   # Terraform's jsonencode function converts a
@@ -53,7 +68,7 @@ resource "aws_iam_policy" "appmesh_k8s_iam_policy" {
         Action = [
           "iam:CreateServiceLinkedRole"
         ],
-        Resource = "arn:aws:iam::*:role/aws-service-role/appmesh.amazonaws.com/AWSServiceRoleForAppMesh",
+        Resource = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:role/aws-service-role/appmesh.amazonaws.com/AWSServiceRoleForAppMesh",
         Condition = {
           StringLike = {
             "iam:AWSServiceName" = [

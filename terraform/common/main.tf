@@ -19,4 +19,3 @@
 resource "random_id" "testing_id" {
   byte_length = 8
 }
-
