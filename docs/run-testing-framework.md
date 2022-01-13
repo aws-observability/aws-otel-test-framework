@@ -44,6 +44,7 @@ Setup only needs to be run once, it creates:
 3. one security group
 4. two ecr repos, one for sample apps, one for mocked server
 5. one amazon managed service for prometheus endpoint. 
+6. one s3 bucket, one dynamodb table
 
 Run 
 ````
@@ -58,9 +59,26 @@ this task will build and push the sample apps and mocked server images to the ec
  so that the following test could use them.
  
 Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
- 
-#### 2.1.3 Build Image
-Please follow https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md to build your image with the new component, and push this image to dockerhub, record the image link, which will be used in your testing.
+
+#### 2.1.3 Share Setup resources (Optional)
+**Prerequisite:**
+- you are required to run the [setup basic components](setup-basic-components-in-aws-account.md#2-setup-basic-components) once if you and other developers did not setup these components before.
+- Uncomment the [backend configuration](https://github.com/khanhntd/aws-otel-test-framework/blob/support_s3_bucket_setup/terraform/setup/backend.tf#L17-L25) to share the setup's terraform state
+
+**Advantage:**
+- Avoid creating duplicate resources on the same account and having duplicate-resources error when running test case such as VPC.
+- Sharing up-to-date resource with other developers instead of creating required resources from scratch.
+
+```shell
+cd aws-otel-test-framework/terraform/setup 
+terraform init
+terraform apply
+```
+#### 2.1.4 Build AES Otel Collector Docker Image
+Please [build your image with the new component](https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md), push this image to dockerhub, and record the image link, which will be used in your testing.
+
+#### 2.1.5 Documentation
+- [Setup basic components in aws account](setup-basic-components-in-aws-account.md)
 
 ### 2.2 Run in EC2
 ````
@@ -92,7 +110,7 @@ terraform destroy -auto-approve
 ````
  
 ### 2.4 Run in EKS
-Prerequisite: you are required to create an EKS cluster in your account
+**Prerequisite:** you are required to create an EKS cluster in your account
 ````
 cd terraform/eks && terraform init && terraform apply -auto-approve \
     -var="aoc_image_repo={{the docker image you just pushed}}" \
@@ -102,7 +120,7 @@ cd terraform/eks && terraform init && terraform apply -auto-approve \
     -var="eks_cluster_name={{the eks cluster name in your account}}" 
 ````
 
-Don't forget to clean up your resources:
+ Don't forget to clean up your resources:
 ````
 terraform destroy -auto-approve \
     -var="eks_cluster_name={the eks cluster name in your account}"
@@ -142,7 +160,7 @@ terraform destroy -auto-approve \
     -var="deployment_type=fargate"
 ````
 ### 2.5 Run in soaking
-Prerequisite: you are required to build aotutil for checking patch status
+**Prerequisite:** you are required to build aotutil for checking patch status
 ```
 make build-aotutil
 ```
