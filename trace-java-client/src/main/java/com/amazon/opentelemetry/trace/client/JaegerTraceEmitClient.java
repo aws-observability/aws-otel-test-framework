@@ -23,14 +23,14 @@ import com.amazon.opentelemetry.trace.model.trace.Trace;
 import com.amazon.opentelemetry.trace.utils.OpenTracingTraceConverter;
 import com.amazon.opentelemetry.trace.utils.TraceGenerator;
 import com.amazon.opentelemetry.trace.utils.TraceTraversal;
-import io.jaegertracing.reporters.RemoteReporter;
-import io.jaegertracing.reporters.Reporter;
-import io.jaegertracing.samplers.ConstSampler;
-import io.jaegertracing.senders.HttpSender;
-import io.jaegertracing.Tracer;
-import io.jaegertracing.Tracer.Builder;
+import io.jaegertracing.internal.JaegerTracer;
+import io.jaegertracing.internal.reporters.RemoteReporter;
+import io.jaegertracing.internal.samplers.ConstSampler;
+import io.jaegertracing.spi.Reporter;
+import io.jaegertracing.thrift.internal.senders.HttpSender;
+import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
-import io.opentracing.propagation.TextMapInjectAdapter;
+import io.opentracing.propagation.TextMapAdapter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.HashMap;
@@ -38,8 +38,10 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.mutable.MutableObject;
+import org.apache.thrift.transport.TTransportException;
 
 public class JaegerTraceEmitClient implements TraceClient {
 
@@ -89,13 +91,18 @@ public class JaegerTraceEmitClient implements TraceClient {
   }
 
   private static Tracer createJaegerTracer(String collectorUrl, Service svc, int flushIntervalMillis) {
-    HttpSender sender = new HttpSender.Builder(collectorUrl + "/api/traces").build();
+    HttpSender sender = null;
+    try {
+      sender = new HttpSender.Builder(collectorUrl + "/api/traces").build();
+    } catch (TTransportException e) {
+      throw new RuntimeException("Exception when trying to create sender " + e.getMessage());
+    }
     Reporter reporter = new RemoteReporter.Builder().withSender(sender)
-        .withMaxQueueSize(100000)
-        .withFlushInterval(flushIntervalMillis)
-        .build();
-    Builder bld = new Builder(svc.serviceName).withReporter(reporter)
-        .withSampler(new ConstSampler(true));
+            .withMaxQueueSize(100000)
+            .withFlushInterval(flushIntervalMillis)
+            .build();
+    JaegerTracer.Builder bld = new JaegerTracer.Builder(svc.serviceName).withReporter(reporter)
+            .withSampler(new ConstSampler(true));
     for (KeyValue kv : svc.tags) {
       bld.withTag(kv.key, kv.valueString);
     }
@@ -109,9 +116,9 @@ public class JaegerTraceEmitClient implements TraceClient {
    * @param otSpan span from which to extract the traceID
    * @return string traceID or null if could not decode
    */
-  private String extractTraceId(io.jaegertracing.Tracer tracer, io.opentracing.Span otSpan) {
+  private String extractTraceId(Tracer tracer, io.opentracing.Span otSpan) {
     HashMap<String, String> baggage = new HashMap<>();
-    TextMapInjectAdapter map = new TextMapInjectAdapter(baggage);
+    TextMapAdapter map = new TextMapAdapter(baggage);
     tracer.inject(otSpan.context(), Format.Builtin.HTTP_HEADERS, map);
     try {
       String encodedTraceId = URLDecoder.decode(baggage.get("uber-trace-id"), "UTF-8");
