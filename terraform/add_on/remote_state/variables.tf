@@ -14,30 +14,30 @@
 # -------------------------------------------------------------------------
 
 variable "region" {
-  type = string
+  type    = string
   default = "us-west-2"
 }
 
 variable "testing_id" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "Test case's unique id"
 }
 
 variable "testcase" {
-  type = string
-  default = "../../testcases/otlp_mock"
+  type        = string
+  default     = "../../testcases/otlp_mock"
   description = "Test case that runs with the platform"
 }
 
 variable "platform" {
-  type = string
-  default = ""
+  type        = string
+  default     = ""
   description = "Platform to upload terraform state. Need to be in one of the platforms: ec2, eks, ecs, soaking, canary"
 }
 
 variable "s3_folder_name" {
-  type = string
-  default = "dummy_test"
+  type        = string
+  default     = "dummy_test"
   description = "Folder name when uploading to s3"
 }

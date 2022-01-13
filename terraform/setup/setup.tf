@@ -239,6 +239,7 @@ resource "aws_s3_bucket" "terrafrom-state" {
       }
     }
   }
+}
 
 resource "aws_prometheus_workspace" "amp_testing_framework" {
   alias = module.common.amp_testing_framework
