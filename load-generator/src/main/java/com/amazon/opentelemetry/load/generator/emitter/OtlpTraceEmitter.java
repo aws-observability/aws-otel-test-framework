@@ -15,14 +15,13 @@
 
 package com.amazon.opentelemetry.load.generator.emitter;
 
-import com.amazon.opentelemetry.load.generator.factory.AwsTracerConfigurer;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
-import io.grpc.ManagedChannelBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.api.trace.TracerProvider;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.sdk.extension.aws.trace.AwsXrayIdGenerator;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
@@ -47,13 +46,12 @@ public class OtlpTraceEmitter extends TraceEmitter {
   @Override
   public void setupProvider() throws Exception {
     OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
-        .setChannel(
-            ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
+        .setEndpoint(param.getEndpoint())
         .setTimeout(Duration.ofMillis(10))
         .build();
 
     SdkTracerProviderBuilder builder = SdkTracerProvider.builder();
-    new AwsTracerConfigurer().configure(builder);
+    builder.setIdGenerator(AwsXrayIdGenerator.getInstance());
     builder.addSpanProcessor(SimpleSpanProcessor.create(spanExporter));
     TracerProvider tracerProvider = builder.build();
 

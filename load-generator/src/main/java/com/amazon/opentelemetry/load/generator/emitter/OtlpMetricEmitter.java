@@ -16,23 +16,23 @@
 package com.amazon.opentelemetry.load.generator.emitter;
 
 import com.amazon.opentelemetry.load.generator.model.Parameter;
-import io.grpc.ManagedChannelBuilder;
-import io.opentelemetry.api.metrics.GlobalMeterProvider;
-import io.opentelemetry.api.metrics.common.Labels;
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.metrics.LongCounter;
-import io.opentelemetry.api.metrics.LongValueRecorder;
+import io.opentelemetry.api.metrics.LongHistogram;
 import io.opentelemetry.api.metrics.Meter;
 import io.opentelemetry.exporter.otlp.metrics.OtlpGrpcMetricExporter;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
-import io.opentelemetry.sdk.metrics.export.IntervalMetricReader;
 import io.opentelemetry.sdk.metrics.export.MetricExporter;
-import java.util.Collections;
+import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
+
+import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class OtlpMetricEmitter extends MetricEmitter {
 
   private final static String API_NAME = "loadTest";
   LongCounter apiBytesSentCounter;
-  LongValueRecorder apiLatencyRecorder;
+  LongHistogram apiLatencyRecorder;
 
   public OtlpMetricEmitter(Parameter param) {
     super();
@@ -47,40 +47,38 @@ public class OtlpMetricEmitter extends MetricEmitter {
 
   @Override
   public void nextDataPoint() {
-    apiLatencyRecorder.record(200, Labels
-        .of(DIMENSION_API_NAME, API_NAME, DIMENSION_STATUS_CODE, "200"));
+    apiLatencyRecorder.record(200, Attributes.builder().put(DIMENSION_API_NAME, API_NAME).put(DIMENSION_STATUS_CODE, "200").build());
 
     apiBytesSentCounter
-        .add(100, Labels.of(DIMENSION_API_NAME, API_NAME, DIMENSION_STATUS_CODE, "200"));
+        .add(100, Attributes.builder().put(DIMENSION_API_NAME, API_NAME).put(DIMENSION_STATUS_CODE, "200").build());
   }
 
   @Override
   public void setupProvider() {
     MetricExporter metricExporter =
         OtlpGrpcMetricExporter.builder()
-            .setChannel(
-                ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
+                .setEndpoint(param.getEndpoint())
+                .setTimeout(Duration.ofMillis(10))
+                .build();
+
+    SdkMeterProvider sdkMeterProvider = SdkMeterProvider
+            .builder()
+            .registerMetricReader(PeriodicMetricReader.builder(metricExporter).setInterval(param.getFlushInterval(), TimeUnit.NANOSECONDS).newMetricReaderFactory())
+            .build();
+    Meter meter = sdkMeterProvider.meterBuilder("aws-otel-load-generator-metric")
+            .setInstrumentationVersion("0.1.0")
             .build();
 
-    IntervalMetricReader.builder()
-        .setMetricProducers(
-            Collections.singleton(SdkMeterProvider.builder().buildAndRegisterGlobal()))
-        .setExportIntervalMillis(param.getFlushInterval())
-        .setMetricExporter(metricExporter)
-        .build();
-
-    Meter meter = GlobalMeterProvider.getMeter("aws-otel-load-generator-metric", "0.1.0");
-
-
     apiBytesSentCounter = meter
-        .longCounterBuilder(API_COUNTER_METRIC)
+        .counterBuilder(API_COUNTER_METRIC)
         .setDescription("API request load sent in bytes")
         .setUnit("one")
         .build();
 
     apiLatencyRecorder =
         meter
-            .longValueRecorderBuilder(API_LATENCY_METRIC)
+            .histogramBuilder(API_LATENCY_METRIC)
+            .ofLongs()
             .setDescription("API latency time")
             .setUnit("ms")
             .build();

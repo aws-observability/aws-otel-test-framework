@@ -16,12 +16,12 @@
 
 ### OTLP Metrics Load Test Sample Command,
 ```
-./gradlew :load-generator:run --args="metric -r=10000 -u=localhost:4317 -d=otlp -f=10000"
+./gradlew :load-generator:run --args="metric -r=10000 -u=http://localhost:4317 -d=otlp -f=10000"
 ```
 
 ### OTLP Trace Load Test Sample Command,
 ```
-./gradlew :load-generator:run --args="trace -r=100 -u=localhost:4317 -d=otlp"
+./gradlew :load-generator:run --args="trace -r=100 -u=http://localhost:4317 -d=otlp"
 ```
 
 ### X-Ray Trace Load Test Sample Command,
