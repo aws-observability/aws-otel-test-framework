@@ -192,9 +192,10 @@ terraform destroy -auto-approve
 ````
 
 ##3. Optional add-on
-####3.1. Upload test case state to remote storage s3 
-Prerequisite: you are required to run the test case before uploading any terraform state to s3
-
+####3.1. Upload test case's terraform state to s3 bucket 
+**Prerequisite:** you are required to run the test case before uploading any terraform state to s3
+**Advantage:** Record what resources have been created by test case and easier in destroy those resources
+when ```terraform destroy``` failed.
 ````
 cd terraform/add_on/remote_state && terraform init && terraform apply \
    -var="testcase=../../testcases/{{your test case folder name}}" \
