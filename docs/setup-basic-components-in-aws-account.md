@@ -24,10 +24,14 @@ terraform init
 terraform apply
 ```
 
-###2.1 Upload setup's terraform state to s3 bucket
-Prerequisite: 
-- you are required to run the [setup basic components](setup-basic-components-in-aws-account.md#2-setup-basic-components) once if you did not setup those components before.
-- Uncomment the [backend configuration](https://github.com/khanhntd/aws-otel-test-framework/blob/support_s3_bucket_setup/terraform/setup/backend.tf#L17-L25)
+###2.1 Share Setup resources (Optional)
+**Prerequisite:** 
+- you are required to run the [setup basic components](setup-basic-components-in-aws-account.md#2-setup-basic-components) once if you and other developers did not setup these components before.
+- Uncomment the [backend configuration](https://github.com/khanhntd/aws-otel-test-framework/blob/support_s3_bucket_setup/terraform/setup/backend.tf#L17-L25) to share the setup's terraform state
+
+**Advantage:**
+- Avoid creating duplicate resources on the same account and having duplicate-resources error when running test case such as VPC.
+- Sharing up-to-date resource with other developers instead of creating required resources from scratch. 
 
 ```shell
 cd aws-otel-test-framework/terraform/setup 
