@@ -14,8 +14,8 @@
 # -------------------------------------------------------------------------
 
 variable "region" {
-  type    = string
-  default = "us-west-2"
+  type        = string
+  default     = "us-west-2"
 }
 
 variable "testing_id" {

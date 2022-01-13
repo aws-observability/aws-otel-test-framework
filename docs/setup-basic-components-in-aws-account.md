@@ -9,8 +9,14 @@ Refer to: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.h
 Please ensure the default profile in your ~/.aws/credentials has Admin permission.
 
 ## 2. Setup basic components
+Setup only needs to be run once, it creates:
 
-Setup only needs to be run once
+1. one iam role
+2. one vpc
+3. one security group
+4. two ecr repos, one for sample apps, one for mocked server
+5. one amazon managed service for prometheus endpoint.
+6. one s3 bucket, one dynamodb table
 
 ```shell
 cd aws-otel-test-framework/terraform/setup 
@@ -18,6 +24,20 @@ terraform init
 terraform apply
 ```
 
+###2.1 Share Setup resources (Optional)
+**Prerequisite:** 
+- you are required to run the [setup basic components](setup-basic-components-in-aws-account.md#2-setup-basic-components) once if you and other developers did not setup these components before.
+- Uncomment the [backend configuration](https://github.com/khanhntd/aws-otel-test-framework/blob/support_s3_bucket_setup/terraform/setup/backend.tf#L17-L25) to share the setup's terraform state
+
+**Advantage:**
+- Avoid creating duplicate resources on the same account and having duplicate-resources error when running test case such as VPC.
+- Sharing up-to-date resource with other developers instead of creating required resources from scratch. 
+
+```shell
+cd aws-otel-test-framework/terraform/setup 
+terraform init
+terraform apply
+```
 ## 3. Build sample app images
 
 this step might take 20 minutes, it builds and pushes the sample apps and mocked server images to the ecr repos, so that the following test could use them.
