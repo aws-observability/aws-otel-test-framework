@@ -208,3 +208,16 @@ Don't forget to clean up your resources:
 ````
 terraform destroy -auto-approve
 ````
+
+##3. Optional add-on
+####3.1. Upload test case's terraform state to s3 bucket 
+**Prerequisite:** you are required to run the test case before uploading any terraform state to s3
+**Advantage:** Record what resources were created by test case and back-up in destroying those resources
+when ```terraform destroy``` failed.
+````
+cd terraform/add_on/remote_state && terraform init && terraform apply \
+   -var="testcase=../../testcases/{{your test case folder name}}" \
+   -var="testing_id={{test case unique id}}" \
+   -var="folder_name={{folder name when uploading to s3}} \
+   -var="platform={{platform running (ec2, ecs, eks, canary,...)"\
+````

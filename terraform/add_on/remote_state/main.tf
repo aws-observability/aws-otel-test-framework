@@ -13,30 +13,27 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-output "collector_instance_public_ip" {
-  value = aws_instance.aoc.public_ip
+#Purpose of this is uploading terraform state to bucket s3 after applying an integration test case.
+#In this way,  we will able to destroy the resources created within terraform state if somehow
+#terraform destroy does not work out.
+
+module "common" {
+  source = "../../common"
 }
 
-output "collector_instance_type" {
-  value = aws_instance.aoc.instance_type
+provider "aws" {
+  region = var.region
 }
 
-output "collector_instance_id" {
-  value = aws_instance.aoc.id
+locals {
+  testcase_name = split("/", var.testcase)[3]
 }
 
-output "sample_app_instance_public_ip" {
-  value = aws_instance.sidecar.public_ip
+resource "aws_s3_bucket_object" "object" {
+  bucket = module.common.terraform_state_s3_bucket_name
+  key    = "${var.s3_folder_name}/${formatdate("YYYY-MM-DD", timestamp())}/${local.testcase_name}/${var.platform}/terraform-${var.testing_id}.tfstate"
+  source = "../../${var.platform}/terraform.tfstate"
 }
 
-output "sample_app_instance_id" {
-  value = aws_instance.sidecar.id
-}
 
-output "testing_id" {
-  value = module.common.testing_id
-}
 
-output "otconfig_content" {
-  value = module.basic_components.otconfig_content
-}

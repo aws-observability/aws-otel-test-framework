@@ -186,10 +186,4 @@ module "validator" {
   depends_on = [time_sleep.wait_until_metric_is_sufficient]
 }
 
-output "collector_instance" {
-  value = module.ec2_setup.collector_instance_public_ip
-}
 
-output "sample_app_instance" {
-  value = module.ec2_setup.sample_app_instance_public_ip
-}

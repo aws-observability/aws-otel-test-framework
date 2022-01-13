@@ -13,30 +13,31 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-output "collector_instance_public_ip" {
-  value = aws_instance.aoc.public_ip
+variable "region" {
+  type = string
+  default = "us-west-2"
 }
 
-output "collector_instance_type" {
-  value = aws_instance.aoc.instance_type
+variable "testing_id" {
+  type = string
+  default = ""
+  description = "Test case's unique id"
 }
 
-output "collector_instance_id" {
-  value = aws_instance.aoc.id
+variable "testcase" {
+  type = string
+  default = "../../testcases/otlp_mock"
+  description = "Test case that runs with the platform"
 }
 
-output "sample_app_instance_public_ip" {
-  value = aws_instance.sidecar.public_ip
+variable "platform" {
+  type = string
+  default = ""
+  description = "Platform to upload terraform state. Need to be in one of the platforms: ec2, eks, ecs, soaking, canary"
 }
 
-output "sample_app_instance_id" {
-  value = aws_instance.sidecar.id
-}
-
-output "testing_id" {
-  value = module.common.testing_id
-}
-
-output "otconfig_content" {
-  value = module.basic_components.otconfig_content
+variable "s3_folder_name" {
+  type = string
+  default = "dummy_test"
+  description = "Folder name when uploading to s3"
 }

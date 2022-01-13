@@ -110,6 +110,11 @@ output "mocked_server_ecr_repo_name" {
   value = "otel-test/mocked-server"
 }
 
+output "terraform_state_s3_bucket_name" {
+  value = "terraform-state-integration-test"
+}
+
 output "amp_testing_framework" {
   value = "amp_testing_framework"
 }
+
