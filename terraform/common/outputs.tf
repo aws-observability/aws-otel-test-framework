@@ -111,7 +111,7 @@ output "mocked_server_ecr_repo_name" {
 }
 
 output "terraform_state_s3_bucket_name" {
-  value = "terraform-state-integration-test"
+  value = "aws-otel-test-terraform-state"
 }
 
 output "amp_testing_framework" {
