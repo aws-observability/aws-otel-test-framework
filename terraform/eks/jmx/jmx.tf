@@ -34,7 +34,7 @@ output "metric_dimension_namespace" {
 
 locals {
   traffic_generator_image = "${var.sample_app_image_repo}:traffic-generator"
-  jmx_sample_app_image    = "${var.sample_app_image_repo}:tomcatapp"
+  jmx_sample_app_image    = "${var.sample_app_image_repo}:tomcatapp-latest"
 }
 
 resource "kubernetes_namespace" "jmx_ns" {
