@@ -70,6 +70,9 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   JS_SDK_AWSSDK_EXPECTED_TRACE(
     "/expected-data-template/js/jsAppExpectedAWSSDKTrace.mustache"
   ),
+  RAILS_SDK_AWSSDK_EXPECTED_TRACE(
+    "/expected-data-template/rails/railsAppExpectedAWSSDKTrace.mustache"
+  ),
 
   /**
    * Log structure template, defined in resources.

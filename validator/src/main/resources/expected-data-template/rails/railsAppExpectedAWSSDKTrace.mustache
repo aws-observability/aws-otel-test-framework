@@ -1,0 +1,34 @@
+[{
+  "http": {
+    "request": {
+      "url": "{{endpoint}}/aws-sdk-call",
+      "method": "GET"
+    },
+    "response": {
+      "status": 200
+    }
+  },
+  "metadata": {
+    "default": {
+      "otel.resource.telemetry.sdk.name": "opentelemetry",
+      "otel.resource.telemetry.sdk.language": "ruby"
+    }
+  },
+  "subsegments": [
+    {
+      "name": "S3",
+      "aws": {
+        "operation": "ListBuckets"
+      },
+      "namespace": "aws"
+    }
+  ]
+},
+{
+  "name": "S3",
+  "inferred":true,
+  "aws": {
+      "operation": "ListBuckets"
+  },
+  "origin": "AWS::S3"
+}]
