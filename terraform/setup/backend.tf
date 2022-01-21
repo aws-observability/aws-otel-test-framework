@@ -50,11 +50,9 @@ resource "aws_s3_bucket" "setup-remote-state-s3-bucket" {
 #Avoid multiple developers change the state at the same time since it would cause race condition
 #Document: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table
 resource "aws_dynamodb_table" "setup-remote-state-dynamodb-table" {
-  name           = "setup-remote-state-dynamodb-table"
-  hash_key       = "LockID"
-  billing_mode   = "PAY_PER_REQUEST"
-  read_capacity  = "8"
-  write_capacity = "8"
+  name         = "setup-remote-state-dynamodb-table"
+  hash_key     = "LockID"
+  billing_mode = "PAY_PER_REQUEST"
 
   attribute {
     name = "LockID"
