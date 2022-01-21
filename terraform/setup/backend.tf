@@ -53,8 +53,6 @@ resource "aws_dynamodb_table" "setup-remote-state-dynamodb-table" {
   name           = "setup-remote-state-dynamodb-table"
   hash_key       = "LockID"
   billing_mode   = "PAY_PER_REQUEST"
-  read_capacity  = "8"
-  write_capacity = "8"
 
   attribute {
     name = "LockID"
