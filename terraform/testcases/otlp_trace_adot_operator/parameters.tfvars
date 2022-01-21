@@ -4,3 +4,6 @@ validation_config = "spark-otel-trace-validation.yml"
 soaking_data_mode = "trace"
 
 eks_cluster_name = "adot-op-cluster"
+
+sample_app = "spark"
+

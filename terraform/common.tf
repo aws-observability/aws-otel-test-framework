@@ -11,7 +11,7 @@ variable "testcase" {
 }
 
 variable "sample_app" {
-  default = "spark"
+  default = ""
 }
 
 ## mocked server related
