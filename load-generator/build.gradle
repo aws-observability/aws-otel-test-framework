@@ -34,7 +34,7 @@ dependencies {
     implementation "io.opentelemetry:opentelemetry-api"
     implementation "io.opentelemetry:opentelemetry-sdk-metrics:1.4.1-alpha"
     implementation "io.opentelemetry:opentelemetry-exporter-otlp:1.10.0"
-    implementation "io.opentelemetry:opentelemetry-exporter-otlp-metrics:1.4.1-alpha"
+    implementation "io.opentelemetry:opentelemetry-exporter-otlp-metrics:1.10.1-alpha"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:1.4.1-alpha"
 
