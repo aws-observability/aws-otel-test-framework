@@ -16,6 +16,7 @@ services:
       OTEL_RESOURCE_ATTRIBUTES: ${otel_resource_attributes}
       INSTANCE_ID: ${testing_id}
       OTEL_EXPORTER_OTLP_ENDPOINT: http://${grpc_endpoint}
+      OTEL_METRICS_EXPORTER: otlp
       AWS_XRAY_DAEMON_ADDRESS: ${udp_endpoint}
       COLLECTOR_UDP_ADDRESS: ${udp_endpoint}
       AWS_REGION: ${region}
