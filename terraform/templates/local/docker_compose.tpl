@@ -12,6 +12,8 @@ services:
     build:
       context: ../../../aws-otel-collector
       dockerfile: cmd/awscollector/Dockerfile
+      args:
+        BUILDMODE: copy
 
     command: ["--config=/tmp/otconfig.yaml"]
     volumes:
