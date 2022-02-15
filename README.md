@@ -1,6 +1,6 @@
-# AOT Testing Framework
+# ADOT Testing Framework
 
-Before adding a new component into AWS Otel Collector, we require contributors to add related end-to-end test cases, this project is a testing framework which helps contributors to easily add testing into AWS Otel Collector. 
+Before adding a new component into ADOT Collector, we require contributors to add related end-to-end test cases, this project is a testing framework which helps contributors to easily add testing into AWS Otel Collector. 
 
 * Contributors won't need to run the test locally to provide the testing result, instead, just define it. The test case will be automatically picked by the github workflow in AWS Otel Collector repo to run integration test and soaking test on different platforms. We will notify contributors if a certain test case is failed.
 
@@ -10,9 +10,9 @@ Before adding a new component into AWS Otel Collector, we require contributors t
 
 Any questions could be asked on [gitter](https://gitter.im/aws-observability-aws-otel-test-framework/community)
 
-## 1. Two PRs to contribute your component to [AWS Otel Collector](https://github.com/aws-observability/aws-otel-collector)
+## 1. Two PRs to contribute your component to [ADOT Collector](https://github.com/aws-observability/aws-otel-collector)
 
-Below are the steps to add a new component to AWS Otel Collector. Before doing this, please ensure your component is already merged into [opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib)
+Below are the steps to add a new component to ADOT Collector. Before doing this, please ensure your component is already merged into [opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib)
 
 ### 1.1 Create a PR to Define test case in testing framework Repo
 
@@ -31,7 +31,7 @@ there're three placeholders could be used:
 
 * `${mocked_endpoint}`, which refers to the mocked_endpoint provided in the testing framework. [An example to use mock_endpoint to override the real backend](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_http_exporter_metric_mock/otconfig.tpl#L17)
 
-* `${grpc_port}`, which refers to the recevier grpc port allocated in the testing framework so that the throughput could be sent into the collector. [An example to use grpc_port](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_http_exporter_metric_mock/otconfig.tpl#L7)
+* `${grpc_port}`, which refers to the receiver grpc port allocated in the testing framework so that the throughput could be sent into the collector. [An example to use grpc_port](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_http_exporter_metric_mock/otconfig.tpl#L7)
 
 * `${region}`, which refers to the region where the test case will be running and validate. in normal case, region should be auto-detected so this placeholder might not be used in the config. [an example to use region](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_metric/otconfig.tpl#L17)
 
@@ -46,15 +46,15 @@ You will need to place a `parameters.tfvars` file under the test case folder to 
 * `soaking_data_mode`: which tells the testing framework to send which types of data to collector for soaking test, the optional values are: `metric`, `trace`. Default value is `metric`. [An example to configure the data mode](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/otlp_http_exporter_trace_mock/parameters.tfvars#L2)
 
 
-### 1.2 Create a PR to Link test case to AWS Otel Collector Repo
+### 1.2 Create a PR to Link test case to ADOT Collector Repo
 
 [Example PR for http exporter](https://github.com/aws-observability/aws-otel-collector/pull/124)
 
 Before creating the PR, please follow [get-performance-model](docs/get-performance-model.md) to get your performance model and put it into the PR description.
 
-Once the first PR get merged, you will need to create a PR to AWS Otel Collector Repo, this PR needs to build the component and link test cases in one shot, which includes
+Once the first PR get merged, you will need to create a PR to  [ADOT Collector](https://github.com/aws-observability/aws-otel-collector) repo, this PR needs to build the component and link test cases in one shot, which includes
 
-* the changes to build the new component into AWS Otel Collector. 
+* the changes to build the new component into ADOT collector. 
 * the changes to link the test cases. 
 
 You will need to add a block in the [testcases.json](https://github.com/aws-observability/aws-otel-collector/blob/main/e2etest/testcases.json)
@@ -78,7 +78,7 @@ You will need to add a block in the [testcases.json](https://github.com/aws-obse
 
 ## 2. Run testing framework
 
-If a certain test case is failed in the github workflow of AWS Otel Collector, you might need to debug the test case locally. 
+If a certain test case is failed in the github workflow of ADOT Collector, you might need to debug the test case locally. 
 
 * [run the local test](docs/run-mock-test.md)
 * [run the ec2 test](docs/run-testing-framework.md#22-run-in-ec2)

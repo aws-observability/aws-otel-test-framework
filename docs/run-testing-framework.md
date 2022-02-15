@@ -4,7 +4,7 @@
 ````
 git clone git@github.com:aws-observability/aws-otel-test-framework.git
 ````
-2. Clone the AWS OpenTelemetry Collector repo:
+2. Clone the ADOT Collector repo:
 ````
 git clone git@github.com:aws-observability/aws-otel-collector.git
 ````

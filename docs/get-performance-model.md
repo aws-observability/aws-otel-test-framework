@@ -1,7 +1,7 @@
 # How to get performance model with the real endpoint
 
 You can run testing framework upon your testcase to get its performance model as the testing result. 
-* the performance test with the mocked endpoint will be performed in the github workflow after your code is merged to aws otel collector repo. 
+* the performance test with the mocked endpoint will be performed in the github workflow after your code is merged to ADOT collector repository. 
 * you need to run the performance test locally with your `real endpoint` and provide the result, this doc is a guideline about how to use the testing framework to get the performance model upon the real endpoint.
 * you can also follow this document to reproduce the performance test with mock endpoint by just skipping step 3.
 
@@ -10,15 +10,15 @@ You can run testing framework upon your testcase to get its performance model as
 please follow [setup-basic-components-in-aws-account](setup-basic-components-in-aws-account.md)
 
 
-## Step 2. Build AWS Otel Collector Package. 
+## Step 2. Build ADOT Collector Package. 
 
-1. Checkout AWS Otel Collector in the same folder of the testing framework if you haven't done that.
+1. Checkout ADOT Collector in the same folder of the testing framework if you haven't done that.
 
 ```
 git clone git@github.com:aws-observability/aws-otel-collector.git
 ```
 
-2. Build RPM which will be used to install AWS Otel Collector in the performance test.
+2. Build RPM which will be used to install ADOT Collector in the performance test.
 
 ```
 cd aws-otel-collector && make package-rpm
@@ -71,7 +71,7 @@ cd output
 cat performance.json
 ```
 
-4. the performance model could be found under `aws-otel-test-framework/terraform/performance/output/performance.json`, and you can open an issue to [AWS Otel Collector Repo](https://github.com/aws-observability/aws-otel-collector) with the performance model file so we can gather it into the performance model readme. 
+4. the performance model could be found under `aws-otel-test-framework/terraform/performance/output/performance.json`, and you can open an issue at [ADOT Collector](https://github.com/aws-observability/aws-otel-collector) with the performance model file, so we can gather it into the performance model readme. 
 
 
 ## Step 5 [Optional only if you want to debug your test]  Debug
@@ -82,13 +82,13 @@ if you want to debug,  add a parameter in the `apply` command: `-var="debug=true
 terraform apply -var="debug=true" -var="data_rate=1000" -var="testcase=../testcases/{{testcase name}}" -var="install_package_source=local" -var-file="../testcases/{{testcase name}}/parameters.tfvars"
 ```
 
-to do so, a private key will be dump to disk so that you can use it to login instances.
+to do so, a private key will be dumped to disk so that you can use it to login instances.
 
 please note don't run `terraform destroy` before you finish debugging, otherwise the resources will be clean up.
 
 Basically, performance test launches two ec2 instance:
 
-1. An `collector instance` to install AWS Otel Collector, and CloudWatch Agent to collect the cpu/mem metrics.
+1. An `collector instance` to install ADOT Collector, and CloudWatch Agent to collect the cpu/mem metrics.
 2. An `sample-app instance` to launch the sample app container and the mocked server containers, which sends and receives data, if you are sending data to the real endpoint, you can ignore the mock server container. 
 
 ### Log into the collector instance
