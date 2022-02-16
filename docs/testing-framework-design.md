@@ -1,4 +1,4 @@
-## AWS Otel Testing Framework HLD
+## ADOT Testing Framework HLD
 
 ### 1. Background
 
@@ -6,9 +6,9 @@ This doc elaborates the high level design of the testing framework.
 
 #### 1.1 Goals
 
-* Support test cases for both AWS Otel Collector and Otel SDKs, test cases include end to end test, performance/soaking test and canary test. 
+* Support test cases for both ADOT Collector and Otel SDKs, test cases include end to end test, performance/soaking test and canary test. 
 * Support multiple platforms: EC2, ECS/FARGATE, EKS/FARGATE
-* Support multiple backends to validate: CloudWatch, XRay, Managed Prometheus.
+* Support multiple backends to validate: Amazon CloudWatch, AWS X-Ray, Amazon Managed Prometheus.
 * Be able to integrate with Github Workflow, but shouldn't be coupled.
 * Be able to run locally for debugging.
 
@@ -22,31 +22,31 @@ Below diagram outlines all the components in this framework and how they are int
 There are two logic paths in the diagram,
 
 1. Provisioning Path[Red], In this path, Terraform load configuration from a test case, launch platform (Ex. EC2), and install Sample App as well collector in the platform, then launch validator.
-2. Validation Path[Green], Once Validator starts, it sends requests to Sample App to generate metrics/traces, Sample App send those data to Collector, Collector send data to backend (Ex. CloudWatch), Validator calls backend to fetch data back for validation.
+2. Validation Path[Green], Once Validator starts, it sends requests to Sample App to generate metrics/traces, Sample App send those data to Collector, Collector send data to backend (Eg. CloudWatch), Validator calls backend to fetch data back for validation.
 
 #### 2.1 Sample App (https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/sample-apps)
 
-A Sample App is an application built with metrics/traces SDK, it runs as a container for purpose of supporting multiple computing platforms. Sample App generates metrics/trace data, sends them to AWS Otel Collector. There are two types of Sample App in general, 
+A Sample App is an application built with metrics/traces SDK, it runs as a container for purpose of supporting multiple computing platforms. Sample App generates metrics/trace data, sends them to ADOT Collector. There are two types of Sample App in general, 
 1. A web application which serves some APIs, Validator call those APIs and then the web application generates metrics or trace data. Ex, [StatsD Sample App](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/sample-apps/statsd)
 2. Self Emitting application which generates metrics or trace data once it starts. Ex, [Performance Load Generator](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/load-generator)
 
-Sample app can be ignored for some test cases where the plugins in AWS Otel Collector generates metrics/traces automatically. Ex, [ECS Metric test](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases/ecsmetrics)
+Sample app can be ignored for some test cases where the plugins in ADOT Collector generates metrics/traces automatically. Ex, [ECS Metric test](https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/terraform/testcases/ecsmetrics)
 
 #### 2.2 Collector
 
-A software which is running alongside with Sample App, receive data from Sample App and send to backends. The supported collector is AWS Otel Collector.
+A software which is running alongside with Sample App, receive data from Sample App and send to backends. The supported collector is ADOT Collector.
 
 #### 2.3 Validator (https://github.com/aws-observability/aws-otel-test-framework/tree/terraform/validator)
 
-A Validator is a java application which calls Sample App to generate metrics/traces, fetch the metrics/traces from backend endpoints such as CloudWatch, XRay and Prometheus, thereby conducts validation on data schema and values. The supported backends for validation are 
+A Validator is a java application which calls Sample App to generate metrics/traces, fetch the metrics/traces from backend endpoints such as CloudWatch, X-Ray and Prometheus, thereby conducts validation on data schema and values. The supported backends for validation are 
 
-1. CloudWatch
-2. XRay
-3. Managed Prometheus Endpoint
+1. Amazon CloudWatch
+2. AWS X-Ray
+3. Amazon Managed Prometheus Endpoint
 
 #### 2.4 Platform
 
-A Platform is a place where Sample App and AWS Otel Collector are running, right now the supported platforms are
+A Platform is a place where Sample App and ADOT Collector are running, right now the supported platforms are
 
 * EC2
 * EC2 Based ECS
@@ -60,7 +60,7 @@ see [here](https://github.com/aws-observability/aws-otel-test-framework/tree/ter
 #### 2.5 Test Case
 
 A Test Case is the entrypoint of the framework, it defines which Sample App and which Validator to use. A test case runs on all the platforms by default.
-Ex. the Statsd Sample App and CloudWatch Metric Validator are configured to test a case where Statsd receiver and EmfExporter are enabled in AWS Otel Collector.
+Ex. the Statsd Sample App and CloudWatch Metric Validator are configured to test a case where Statsd receiver and EmfExporter are enabled in ADOT Collector.
 [An example of test case definition](https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/terraform/testcases/xrayreceiver/parameters.tfvars)
 
 #### 2.6 Mock Server
@@ -73,7 +73,7 @@ The supported mock servers are
 
 ### 3. Integration with Github Workflow.
 
-This section elaborates the general process of workflows in AWS Otel Collector and how testing framework integrate with it. 
+This section elaborates the general process of workflows in ADOT Collector and how testing framework integrate with it. 
 
 #### 3.1 PR Build (https://github.com/aws-observability/aws-otel-collector/blob/main/.github/workflows/PR-build.yml)
 
@@ -124,7 +124,7 @@ The general workflow is,
 
 #### 4.1 Github Workflow can't retry a single job/test case
 
-Workflows in AWS Otel Collector has 200+ test cases and sometimes those test cases are not stable due to network or environment issues,
+Workflows in ADOT Collector has 200+ test cases and sometimes those test cases are not stable due to network or environment issues,
 the pain point is that it takes 1 hour to finish all the test cases but Github workflow does not support retry on a specific test case, this prevents us from effectively developing and testing. 
 To resolve this issue, We invented a cache mechanism which stores the test case running status so that the next time the whole workflow retries, it skips the test cases which succeed in the last run. 
 

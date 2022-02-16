@@ -1,7 +1,7 @@
 # Setup basic components in aws account
 
 To run any types of test rather than the `mock folder`, the testing framework will need to create resources in your aws account. 
-there're some basic components needed before run the tests.
+there are some basic components needed to run the tests.
 
 ## 1. Setup your aws credentials
 Refer to: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
@@ -48,4 +48,4 @@ terraform init
 terraform apply
 ```
 
-Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
+Remember, if you have made any changes on sample apps or the mocked server, you need to rerun this imagebuild task.
