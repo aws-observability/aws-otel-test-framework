@@ -54,7 +54,7 @@ Before creating the PR, please follow [get-performance-model](docs/get-performan
 
 Once the first PR get merged, you will need to create a PR to  [ADOT Collector](https://github.com/aws-observability/aws-otel-collector) repo, this PR needs to build the component and link test cases in one shot, which includes
 
-* the changes to build the new component into ADOT collector. 
+* the changes to build the new component into ADOT Collector. 
 * the changes to link the test cases. 
 
 You will need to add a block in the [testcases.json](https://github.com/aws-observability/aws-otel-collector/blob/main/e2etest/testcases.json)

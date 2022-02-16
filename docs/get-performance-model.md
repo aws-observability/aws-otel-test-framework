@@ -1,7 +1,7 @@
 # How to get performance model with the real endpoint
 
 You can run testing framework upon your testcase to get its performance model as the testing result. 
-* the performance test with the mocked endpoint will be performed in the github workflow after your code is merged to ADOT collector repository. 
+* the performance test with the mocked endpoint will be performed in the github workflow after your code is merged to ADOT Collector repository. 
 * you need to run the performance test locally with your `real endpoint` and provide the result, this doc is a guideline about how to use the testing framework to get the performance model upon the real endpoint.
 * you can also follow this document to reproduce the performance test with mock endpoint by just skipping step 3.
 
