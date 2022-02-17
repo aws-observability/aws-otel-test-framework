@@ -155,7 +155,7 @@ public class CWMetricValidator implements IValidator {
         throw new BaseException(
             ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
             String.format(
-                "metric in toBeCheckedMetricList %s not found in baseMetricList: %s",
+                "metric in %ntoBeCheckedMetricList: %s is not found in %nbaseMetricList: %s %n",
                 metric, metricSet));
       }
     }
