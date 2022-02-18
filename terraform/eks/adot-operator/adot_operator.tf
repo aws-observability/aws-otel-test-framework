@@ -36,6 +36,6 @@ resource "helm_release" "adot-operator" {
   ]
 
   provisioner "local-exec" {
-    command = "kubectl wait --kubeconfig=${var.kubeconfig} --timeout=5m --for=condition=available deployment opentelemetry-operator-controller-manager -n opentelemetry-operator-system"
+    command = "kubectl wait --kubeconfig=${var.kubeconfig} --timeout=5m --for=condition=available deployment opentelemetry-operator-controller-manager"
   }
 }
