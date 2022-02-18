@@ -25,7 +25,9 @@ variable "kubeconfig" {
 
 resource "helm_release" "adot-operator" {
   name = "adot-operator-${var.testing_id}"
-
+  // currently adot operator is at 0.41.0
+  // helm charts >-0.5.4 require 0.43.0
+  version = "0.5.3"
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart      = "opentelemetry-operator"
 
