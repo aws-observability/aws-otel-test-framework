@@ -17,6 +17,7 @@ exporters:
     endpoint: ${mock_endpoint}
     tls:
       insecure: true
+    compression: none
 
 service:
   pipelines:
