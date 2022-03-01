@@ -109,6 +109,11 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
             value = "${kubernetes_service.aoc_tcp_service[0].metadata[0].name}:${var.aoc_service.http_port}"
           }
 
+          env {
+            name  = "OTEL_METRICS_EXPORTER"
+            value = "otlp"
+          }
+
           resources {
             requests {
               cpu    = "0.2"
