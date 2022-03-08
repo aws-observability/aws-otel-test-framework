@@ -23,7 +23,7 @@ dependencies {
     implementation group: 'io.jaegertracing', name: 'jaeger-thrift', version: '1.8.0'
     implementation group: 'io.zipkin.zipkin2', name: 'zipkin', version: '2.23.16'
     implementation group: 'io.zipkin.reporter2', name: 'zipkin-sender-okhttp3', version: '2.16.3'
-    implementation group: 'io.zipkin.brave', name: 'brave', version: '5.6.0'
+    implementation group: 'io.zipkin.brave', name: 'brave', version: '5.13.7'
 
 }
 
