@@ -28,6 +28,8 @@ variable "ami_family" {
       user_data                = <<EOF
 <powershell>
 winrm quickconfig -q
+winrm set winrm/config/winrs '@{MaxShellsPerUser="100"}'
+winrm set winrm/config/winrs '@{MaxConcurrentUsers="30"}'
 winrm set winrm/config/winrs '@{MaxProcessesPerShell="100"}'
 winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
 winrm set winrm/config '@{MaxTimeoutms="1800000"}'
