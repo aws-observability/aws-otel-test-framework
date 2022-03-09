@@ -18,6 +18,7 @@
 
 #(TODO) pvasir - The terraform major version 4.0.0 is causing an versioning issue for s3 bucket, the version shall be updated once the fix is availble
 # reference - https://github.com/hashicorp/terraform-provider-aws/issues/23106
+/*
 terraform {
   required_providers {
     aws = {
@@ -26,6 +27,7 @@ terraform {
     }
   }
 }
+*/
 
 module "common" {
   source = "../common"
