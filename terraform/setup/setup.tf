@@ -16,6 +16,17 @@
 # in this module, we create the necessary common resources for the integ-tests, this setup module will only need to be executed once.
 # vpc, iam role, security group, the number of those resources could be limited, creating them concurrently for every pr would trigger throttling issue.
 
+#(TODO) pvasir - The terraform major version 4.0.0 is causing an versioning issue for s3 bucket, the version shall be updated once the fix is availble
+# reference - https://github.com/hashicorp/terraform-provider-aws/issues/23106
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "~> 3.74"
+    }
+  }
+}
+
 module "common" {
   source = "../common"
 }
