@@ -389,7 +389,7 @@ below is an example in the aoc repo workflow, you can also configure it in your 
       - name: Check out testing framework
         uses: actions/checkout@v2
         with:
-          repository: 'aws-observability/aws-otel-collector-test-framework'
+          repository: 'aws-observability/aws-otel-test-framework'
           ref: 'terraform'
 
       - name: Run testing suite
