@@ -31,18 +31,27 @@
 #Document: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
 resource "aws_s3_bucket" "setup-remote-state-s3-bucket" {
   bucket = "setup-remote-state-s3-bucket"
-  acl    = "private"
+}
 
-  versioning {
-    enabled = true
+resource "aws_s3_bucket_acl" "setup-remote-state-s3-bucket-acl" {
+  bucket = aws_s3_bucket.setup-remote-state-s3-bucket.id
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "setup-remote-state-s3-bucket-versioning" {
+  bucket = aws_s3_bucket.setup-remote-state-s3-bucket.id
+  versioning_configuration {
+    status = "Enabled"
   }
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "setup-remote-state-s3-bucket-encryption" {
+  bucket = aws_s3_bucket.setup-remote-state-s3-bucket.id
 
   #To encrypt the content
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "AES256"
     }
   }
 }
