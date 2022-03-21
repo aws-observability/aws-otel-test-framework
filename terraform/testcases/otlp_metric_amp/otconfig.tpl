@@ -16,6 +16,12 @@ processors:
 exporters:
   logging:
     loglevel: debug
+  awsprometheusremotewrite:
+    endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
+    aws_auth:
+      region: ${region}
+      service: "aps"
+    timeout: 10s
   prometheusremotewrite:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     timeout: 10s
@@ -25,7 +31,7 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [prometheusremotewrite,logging]
+      exporters: [awsprometheusremotewrite,prometheusremotewrite,logging]
   extensions: [pprof, sigv4auth]
   telemetry:
     logs:

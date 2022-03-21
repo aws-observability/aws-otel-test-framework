@@ -17,6 +17,12 @@ receivers:
               action: keep
               regex: "sample-app"
     exporters:
+      awsprometheusremotewrite:
+        endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
+        aws_auth:
+          region: ${region}
+          service: "aps"
+        timeout: 10s
       prometheusremotewrite:
         endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
         timeout: 10s
@@ -26,7 +32,7 @@ receivers:
       pipelines:
         metrics:
           receivers: [prometheus]
-          exporters: [prometheusremotewrite, logging]
+          exporters: [awsprometheusremotewrite, prometheusremotewrite, logging]
       extensions: [sigv4auth]
       telemetry:
         logs:

@@ -112,6 +112,13 @@ exporters:
     region: '${region}'
     resource_to_telemetry_conversion:
       enabled: true
+  awsprometheusremotewrite:
+    endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
+    resource_to_telemetry_conversion:
+      enabled: true
+    aws_auth:
+      region: ${region}
+      service: "aps"
   prometheusremotewrite:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     resource_to_telemetry_conversion:
@@ -131,7 +138,7 @@ service:
     metrics/container/amp:
       receivers: [ awsecscontainermetrics ]
       processors: [ filter, metricstransform, resource, batch ]
-      exporters: [ prometheusremotewrite,logging ]
+      exporters: [ awsprometheusremotewrite,prometheusremotewrite,logging ]
     metrics/application/cw:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
@@ -139,7 +146,7 @@ service:
     metrics/application/amp:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
-      exporters: [ prometheusremotewrite,logging]
+      exporters: [ awsprometheusremotewrite,prometheusremotewrite,logging]
     traces/application/xray:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
