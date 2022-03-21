@@ -20,11 +20,10 @@ terraform {
       version = ">= 1.7.0"
     }
   }
-
   ## comment out the backend block if you want the terraform state file to be locally saved on the computer (or) change the name of the s3 bucket if you are testing out on your personal AWS account
-  backend "s3"{
+  backend "s3" {
     bucket = "adot-op-cluster-terraform-statefile"
-    key = "global/s3/terraform.tfstate"
+    key    = "global/s3/terraform.tfstate"
     region = "us-west-2"
   }
 }
