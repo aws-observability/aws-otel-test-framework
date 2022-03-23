@@ -123,6 +123,8 @@ exporters:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     resource_to_telemetry_conversion:
       enabled: true
+    auth:
+      authenticator: sigv4auth
   awsxray:
     local_mode: true
     region: '${region}'

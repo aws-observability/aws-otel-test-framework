@@ -25,6 +25,8 @@ exporters:
   prometheusremotewrite:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     timeout: 10s
+    auth:
+      authenticator: sigv4auth
 
 service:
   pipelines:

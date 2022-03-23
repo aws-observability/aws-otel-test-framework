@@ -17,6 +17,8 @@ exporters:
       region: "us-west-2"
   prometheusremotewrite:
     endpoint: "https://${mock_endpoint}"
+    auth:
+      authenticator: sigv4auth
 service:
   pipelines:
     metrics:
