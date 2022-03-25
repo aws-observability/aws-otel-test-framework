@@ -1,26 +1,24 @@
-extensions:
-  sigv4auth:
-    region: "us-west-2"
 receivers:
   prometheus:
     config:
       global:
         scrape_interval: 15s
       scrape_configs:
-      - job_name: "test-pipeline-job"
+      - job_name: "test-prometheus-sample-app"
         static_configs:
         - targets: [ ${sample_app_listen_address_host}:${sample_app_listen_address_port} ]
 exporters:
-  prometheusremotewrite:
-    endpoint: "https://${mock_endpoint}"
-    auth:
-      authenticator: sigv4auth
+  awsprometheusremotewrite:
+    endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
+    aws_auth:
+      region: ${region}
+      service: "aps"
+    timeout: 15s
 service:
   pipelines:
     metrics:
      receivers: [prometheus]
-     exporters: [prometheusremotewrite]
-  extensions: [sigv4auth]
+     exporters: [awsprometheusremotewrite]
   telemetry:
     logs:
       level: debug

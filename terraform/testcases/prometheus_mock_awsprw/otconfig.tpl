@@ -1,6 +1,3 @@
-extensions:
-  sigv4auth:
-    region: "us-west-2"
 receivers:
   prometheus:
     config:
@@ -11,16 +8,15 @@ receivers:
         static_configs:
         - targets: [ ${sample_app_listen_address_host}:${sample_app_listen_address_port} ]
 exporters:
-  prometheusremotewrite:
+  awsprometheusremotewrite:
     endpoint: "https://${mock_endpoint}"
-    auth:
-      authenticator: sigv4auth
+    aws_auth:
+      region: "us-west-2"
 service:
   pipelines:
     metrics:
      receivers: [prometheus]
-     exporters: [prometheusremotewrite]
-  extensions: [sigv4auth]
+     exporters: [awsprometheusremotewrite]
   telemetry:
     logs:
       level: debug

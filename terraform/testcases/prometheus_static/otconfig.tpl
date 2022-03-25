@@ -12,12 +12,6 @@ receivers:
         static_configs:
         - targets: [ ${sample_app_listen_address_host}:${sample_app_listen_address_port} ]
 exporters:
-  awsprometheusremotewrite:
-    endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
-    aws_auth:
-      region: ${region}
-      service: "aps"
-    timeout: 15s
   prometheusremotewrite:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     timeout: 15s
@@ -27,7 +21,7 @@ service:
   pipelines:
     metrics:
      receivers: [prometheus]
-     exporters: [awsprometheusremotewrite, prometheusremotewrite]
+     exporters: [prometheusremotewrite]
   extensions: [sigv4auth]
   telemetry:
     logs:
