@@ -74,7 +74,7 @@ cd aws-otel-test-framework/terraform/setup
 terraform init
 terraform apply
 ```
-#### 2.1.4 Build a Docker Image AWS Distro for OpenTelemetry Collector 
+#### 2.1.4 Build a Docker Image for AWS Distro for OpenTelemetry Collector 
 Please [build your image with the new component](https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md), push this image to dockerhub, and record the image link, which will be used in your testing.
 
 #### 2.1.5 Documentation
