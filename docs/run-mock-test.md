@@ -10,7 +10,7 @@ Clone this repo:
 git clone git@github.com:aws-observability/aws-otel-test-framework.git
 ```
 
-Clone the ADOT Collector repo:
+Clone the ADOT Collector repo in the same directory as `aws-otel-test-framework`:
 
 ```
 git clone git@github.com:aws-observability/aws-otel-collector.git
@@ -37,7 +37,7 @@ terraform apply -var="testcase=../testcases/otlp_mock" -var-file="../testcases/o
 terraform destroy
 ```
 
-*hint: this test might take 20 minutes as it builds the image of ADOT Collector in place.*
+*hint: This test might take 20 minutes as it builds the image of ADOT Collector in place. please make sure to run docker in the background*
 
 ### Explain the test
 

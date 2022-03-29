@@ -16,7 +16,7 @@ git clone git@github.com:aws-observability/aws-otel-collector.git
 ````shell script
 cd aws-otel-test-framework/terraform/mock
 terraform init
-terraform apply -var="testcase=../testcases/otlp_mock" 
+terraform apply -var="testcase=../testcases/otlp_mock" -var-file="../testcases/otlp_mock/parameters.tfvars"
 terraform destroy
 ````
  
@@ -74,7 +74,7 @@ cd aws-otel-test-framework/terraform/setup
 terraform init
 terraform apply
 ```
-#### 2.1.4 Build AES Otel Collector Docker Image
+#### 2.1.4 Build a Docker Image AWS Distro for OpenTelemetry Collector 
 Please [build your image with the new component](https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md), push this image to dockerhub, and record the image link, which will be used in your testing.
 
 #### 2.1.5 Documentation
