@@ -7,7 +7,7 @@ fmt:
 build:
 	go build .
 
-install: fmt
+install:
 	go install .
 
 license:
