@@ -1,5 +1,9 @@
 # Style Guide
 
+## aotutil
+
+- run `make fmt` before committing
+
 ## Java
 
 - install `check style` plugin in your IDE
