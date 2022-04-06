@@ -232,22 +232,20 @@ resource "aws_ecr_repository" "mocked_server_ecr_repo" {
 #Document: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
 resource "aws_s3_bucket" "terrafrom-state" {
   bucket = module.common.terraform_state_s3_bucket_name
+}
 
+resource "aws_s3_bucket_acl" "acl-terrafrom-state" {
+  bucket = module.common.terraform_state_s3_bucket_name
+  acl    = "private"
+}
 
-  #Allow multiple upload
-  versioning {
-    enabled = true
-  }
-
-  #To encrypt the content
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
-    }
+resource "aws_s3_bucket_versioning" "versioning-terrafrom-state" {
+  bucket = module.common.terraform_state_s3_bucket_name
+  versioning_configuration {
+    status = "Enabled"
   }
 }
+
 
 resource "aws_prometheus_workspace" "amp_testing_framework" {
   alias = module.common.amp_testing_framework
