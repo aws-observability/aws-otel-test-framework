@@ -23,7 +23,7 @@ terraform {
   }
   backend "s3" {
     bucket = "adot-op-cluster-terraform-statefile"
-    key    = "global/s3/terraform.tfstate"
+    key    = "eks_adot_operator_cluster/terraform.tfstate"
     region = "us-west-2"
   }
 }
