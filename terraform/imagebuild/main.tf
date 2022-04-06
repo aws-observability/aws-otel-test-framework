@@ -47,7 +47,7 @@ locals {
 # login ecr
 resource "null_resource" "login_ecr" {
   provisioner "local-exec" {
-    command = "docker run --rm -v ~/.aws:/root/.aws amazon/aws-cli ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${local.ecr_login_domain}"
+    command = "aws ecr get-login-password --region ${var.region} | docker login --username AWS --password-stdin ${local.ecr_login_domain}"
   }
 }
 
