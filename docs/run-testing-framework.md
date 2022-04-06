@@ -35,8 +35,16 @@ In the case that you want to debug for a certain platform, you can also use this
  
 #### 2.1.1 Setup your aws credentials
 Refer to: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+
+#### 2.1.2 Setup unique bucket ID
+
+First create a unique S3 bucket identifier. This needs to be globally unique. Change example to an UUID of your choice
+```shell
+export TF_VAR_bucketId=**example**
+```
+
  
-#### 2.1.2 Run Setup
+#### 2.1.3 Run Setup
 Setup only needs to be run once, it creates:
  
 1. one iam role
@@ -60,7 +68,7 @@ this task will build and push the sample apps and mocked server images to the ec
  
 Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
 
-#### 2.1.3 Share Setup resources (Optional)
+#### 2.1.4 Share Setup resources (Optional)
 **Prerequisite:**
 - you are required to run the [setup basic components](setup-basic-components-in-aws-account.md#2-setup-basic-components) once if you and other developers did not setup these components before.
 - Uncomment the [backend configuration](https://github.com/khanhntd/aws-otel-test-framework/blob/support_s3_bucket_setup/terraform/setup/backend.tf#L17-L25) to share the setup's terraform state
@@ -74,10 +82,10 @@ cd aws-otel-test-framework/terraform/setup
 terraform init
 terraform apply
 ```
-#### 2.1.4 Build AES Otel Collector Docker Image
+#### 2.1.5 Build AES Otel Collector Docker Image
 Please [build your image with the new component](https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md), push this image to dockerhub, and record the image link, which will be used in your testing.
 
-#### 2.1.5 Documentation
+#### 2.1.6 Documentation
 - [Setup basic components in aws account](setup-basic-components-in-aws-account.md)
 
 ### 2.2 Run in EC2
