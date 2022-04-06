@@ -32,6 +32,10 @@ terraform destroy
 In the case that you want to debug for a certain platform, you can also use this testing framework to run your test case locally in multiple AWS platforms including EC2, ECS, and EKS.
  
 ### 2.1 Prerequisite
+
+#### 2.1.0
+- docker installed locally
+- awscli installed locally
  
 #### 2.1.1 Setup your aws credentials
 Refer to: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
