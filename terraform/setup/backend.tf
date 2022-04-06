@@ -18,10 +18,10 @@
 #-Avoid creating duplicate resources when sharing the same account
 
 #terraform {
-#  backend "s3" {
-#    bucket           = "setup-remote-state-s3-bucket"
-#    dynamodb_table   = "setup-remote-state-dynamodb-table"
-#    key              = "terraform.tfstate"
+# backend "s3" {
+#   bucket           = "setup-remote-state-s3-bucket"
+#   dynamodb_table   = "setup-remote-state-dynamodb-table"
+#   key              = "terraform.tfstate"
 #    region           = "us-west-2"
 #    encrypt          = true
 #  }
@@ -31,21 +31,30 @@
 #Document: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
 resource "aws_s3_bucket" "setup-remote-state-s3-bucket" {
   bucket = "setup-remote-state-s3-bucket"
-  acl    = "private"
+}
 
-  versioning {
-    enabled = true
-  }
-
-  #To encrypt the content
-  server_side_encryption_configuration {
-    rule {
-      apply_server_side_encryption_by_default {
-        sse_algorithm = "AES256"
-      }
+resource "aws_s3_bucket_server_side_encryption_configuration" "encrypt-setup-remote-state" {
+  bucket = aws_s3_bucket.setup-remote-state-s3-bucket.bucket
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
     }
   }
 }
+
+resource "aws_s3_bucket_acl" "acl-setup-remote-state" {
+  bucket = aws_s3_bucket.setup-remote-state-s3-bucket.bucket
+  acl    = "private"
+}
+
+resource "aws_s3_bucket_versioning" "versioning-setup-remote-state" {
+  bucket = aws_s3_bucket.setup-remote-state-s3-bucket.bucket
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+
 
 #Avoid multiple developers change the state at the same time since it would cause race condition
 #Document: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table
