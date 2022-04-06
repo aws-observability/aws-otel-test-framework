@@ -231,16 +231,16 @@ resource "aws_ecr_repository" "mocked_server_ecr_repo" {
 #the integration test
 #Document: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
 resource "aws_s3_bucket" "terrafrom-state" {
-  bucket = module.common.terraform_state_s3_bucket_name
+  bucket = "${module.common.terraform_state_s3_bucket_name}-${var.bucketId}"
 }
 
 resource "aws_s3_bucket_acl" "acl-terrafrom-state" {
-  bucket = module.common.terraform_state_s3_bucket_name
+  bucket = "${module.common.terraform_state_s3_bucket_name}-${var.bucketId}"
   acl    = "private"
 }
 
 resource "aws_s3_bucket_versioning" "versioning-terrafrom-state" {
-  bucket = module.common.terraform_state_s3_bucket_name
+  bucket = "${module.common.terraform_state_s3_bucket_name}-${var.bucketId}"
   versioning_configuration {
     status = "Enabled"
   }
