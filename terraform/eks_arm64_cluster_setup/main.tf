@@ -21,6 +21,11 @@ terraform {
       version = ">= 1.7.0"
     }
   }
+  backend "s3" {
+    bucket = "adot-op-cluster-terraform-statefile"
+    key    = "eks_arm64_cluster_setup/terraform.tfstate"
+    region = "us-west-2"
+  }
 }
 
 module "common" {
