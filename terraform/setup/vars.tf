@@ -17,6 +17,6 @@ variable "region" {
   default = "us-west-2"
 }
 
-variable "bucketId" {
+variable "bucketUUID" {
   default = ""
 }

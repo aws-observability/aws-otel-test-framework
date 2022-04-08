@@ -12,7 +12,7 @@ Please ensure the default profile in your ~/.aws/credentials has Admin permissio
 
 First create a unique S3 bucket identifier. This needs to be globally unique
 ```shell
-export TF_VAR_bucketId=example
+export TF_VAR_bucketUUID=example
 ```
 
 ## 3. Setup basic components
