@@ -40,7 +40,7 @@ Refer to: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.h
 
 First create a unique S3 bucket identifier. This needs to be globally unique. Change example to an UUID of your choice
 ```shell
-export TF_VAR_bucketId=**example**
+export TF_VAR_bucketUUID=$(dd if=/dev/urandom bs=1k count=1k | shasum | cut -b 1-8)
 ```
 
  
