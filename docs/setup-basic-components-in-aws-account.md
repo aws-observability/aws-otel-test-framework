@@ -10,9 +10,12 @@ Please ensure the default profile in your ~/.aws/credentials has Admin permissio
 
 ## 2. Setup unique bucket ID
 
-First create a unique S3 bucket identifier. This needs to be globally unique
+First create a unique S3 bucket identifier that will be appened to your S3 bucket names. This will
+ensure that the S3 bucket name is globally unique. The UUID can be generated with any method of your
+choosing.
+See [here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html) for S3 bucket naming rules.
 ```shell
-export TF_VAR_bucketUUID=example
+export TF_VAR_bucketUUID=$(dd if=/dev/urandom bs=1k count=1k | shasum | cut -b 1-8)
 ```
 
 ## 3. Setup basic components

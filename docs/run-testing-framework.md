@@ -38,7 +38,10 @@ Refer to: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.h
 
 #### 2.1.2 Setup unique bucket ID
 
-First create a unique S3 bucket identifier. This needs to be globally unique. Change example to an UUID of your choice
+First create a unique S3 bucket identifier that will be appened to your S3 bucket names. This will
+ensure that the S3 bucket name is globally unique. The UUID can be generated with any method of your
+choosing.
+See [here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html) for S3 bucket naming rules.
 ```shell
 export TF_VAR_bucketUUID=$(dd if=/dev/urandom bs=1k count=1k | shasum | cut -b 1-8)
 ```
