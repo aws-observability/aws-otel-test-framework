@@ -19,3 +19,4 @@ execute-batch-test: test-case-batch
 .PHONY: postBatchClean
 postBatchClean:
 > rm -rf ./tmp
+ 
