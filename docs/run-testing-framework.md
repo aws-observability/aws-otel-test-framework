@@ -217,9 +217,7 @@ terraform destroy -auto-approve
 
 Batch testing allows a set of tests to be ran synchronously. To do this,
 a `test-case-batch` file is required in the `./terraform` directory. 
-The format of the `test-case-batch` file is as such. The `test-case-batch` 
-file can contain an infinite amount of test cases as
-long as the file follows this format.
+The format of the `test-case-batch` file is as such. 
 
 ```
 serviceName1 testCase1 additionalValues1
