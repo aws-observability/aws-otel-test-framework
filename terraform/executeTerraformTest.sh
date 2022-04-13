@@ -27,6 +27,7 @@ if [[ -f ./testcases/${2}/parameters.tfvars ]] ; then
 fi
 
 
+
 US_EAST_2_AMP_ENDPOINT="https://aps-workspaces.us-east-2.amazonaws.com/workspaces/ws-1de68e95-0680-42bb-8e55-67e7fd5d0861";
 APPLY_EXIT=0
 TEST_FOLDER=""
@@ -35,35 +36,45 @@ ADDITIONAL_VARS=""
 
 service="${1}"
 case "$service" in
-    "EC2") TEST_FOLDER="./ec2/"
-    ADDITIONAL_VARS="-var=\"testing_ami=${3}\""
+    "EC2") TEST_FOLDER="./ec2/";
+    ADDITIONAL_VARS="-var=\"testing_ami=${3}\"";
     ;;
-    "EKS") TEST_FOLDER="./eks/"
+    "EKS") TEST_FOLDER="./eks/";
     ;;
     "EKS-arm64") TEST_FOLDER="./eks/"
-        arm_64_region=$(echo ${3} | cut -d \| -f 1)
-        arm_64_clustername=$(echo ${3} | cut -d \| -f 2)
-        arm_64_amp=$(echo ${3} | cut -d \| -f 3)
-        ADDITIONAL_VARS="-var=\"region=${arm_64_region}\" -var=\"eks_cluster_name=${arm_64_clustername}\" -var=\"cortex_instance_endpoint=${arm_64_amp}\""
+        arm_64_region=$(echo ${3} | cut -d \| -f 1);
+        arm_64_clustername=$(echo ${3} | cut -d \| -f 2);
+        arm_64_amp=$(echo ${3} | cut -d \| -f 3);
+        ADDITIONAL_VARS="-var=\"region=${arm_64_region}\" -var=\"eks_cluster_name=${arm_64_clustername}\" -var=\"cortex_instance_endpoint=${arm_64_amp}\"";
     ;;
-    "EKS-fargate") # do stuff
+    "EKS-fargate") TEST_FOLDER="./eks/";
     ;;
-    "EKS-operator") # do stuff
+    "EKS-operator") TEST_FOLDER="./eks/";
     ;;
-    "ECS") # do stuff
+    "ECS") TEST_FOLDER="./ecs/";
+        ADDITIONAL_VARS="-var=\"ecs_launch_type=${3}\"";
     ;;
     *)
-    echo "service ${service} is not valid"
-    exit 1
+    echo "service ${service} is not valid";
+    exit 1;
     ;;
 esac
 
+# create tmp dir for cache if doens't exist
+[ ! -d "./tmp" ] && mkdir tmp
 
 cd ${folder};
 terraform init;
-if terraform apply -auto-approve -lock=false $opts  -var="testcase=./testcases/$2" ${ADDITIONAL_VARS} -var="region=${REGION}" ; then
-    #exit 1
-else
-    #touch cache
+if [ ! -f "tmp/${2}" ]; then
+    if terraform apply -auto-approve -lock=false $opts  -var="testcase=./testcases/$2" $ADDITIONAL_VARS ; then
+        echo "Terraform apply failed"
+        echo "AWS_service: ${1}"
+        echo "Testcase: ${2}"
+        echo "Additional var: ${ADDITIONAL_VARS}"
+    else
+        touch "tmp/${2}" 
+    fi
 fi
+
+
 terraform destroy --auto-approve
