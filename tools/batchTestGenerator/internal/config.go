@@ -2,14 +2,22 @@ package internal
 
 type RunConfig struct {
 	OutputLocation   string
-	IncludedServices []string
+	IncludedServices map[string]struct{}
 	MaxBatches       int
+	testCaseFilePath string
 }
 
 func newDefaultRunConfig() RunConfig {
-	defaultServices := []string{"EKS", "ECS", "EC2", "EKS-arm64", "EKS-operator", "EKS-fargate"}
+	defaultServices := []string{"EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_FARGATE"}
+
+	//build set for default services
+	ism := make(map[string]struct{})
+	for _, ds := range defaultServices {
+		ism[ds] = struct{}{}
+	}
+
 	rc := RunConfig{
-		IncludedServices: defaultServices,
+		IncludedServices: ism,
 		MaxBatches:       40,
 	}
 	return rc
