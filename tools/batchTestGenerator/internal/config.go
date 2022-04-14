@@ -5,6 +5,8 @@ type RunConfig struct {
 	IncludedServices map[string]struct{}
 	MaxBatches       int
 	testCaseFilePath string
+	eksARM64Vars     string
+	eksVars          string
 }
 
 func newDefaultRunConfig() RunConfig {
