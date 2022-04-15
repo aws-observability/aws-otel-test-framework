@@ -8,7 +8,7 @@ import (
 
 // generates a `test-case-batch` file for local use and store it in output
 // location in runconfig
-func localGenerator(config RunConfig) error {
+func LocalGenerator(config RunConfig) error {
 	testCases, err := buildTestCases(config)
 	if err != nil {
 		return fmt.Errorf("failed to build test case: %w", err)
