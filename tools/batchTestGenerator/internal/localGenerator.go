@@ -13,12 +13,12 @@ func LocalGenerator(config RunConfig) error {
 	if err != nil {
 		return fmt.Errorf("failed to build test case: %w", err)
 	}
-	// take the first N jobs where N is the MAXBATCHES values
-	// TODO: randomly generate tests
 
+	// take the first N jobs where N is the MAXBATCHES values
+	// TODO: randomly chooose test cases
 	var numTests int
 	if len(testCases) <= config.MaxBatches {
-		numTests = len(testCases) - 1
+		numTests = len(testCases)
 	} else {
 		numTests = config.MaxBatches
 	}
@@ -27,8 +27,16 @@ func LocalGenerator(config RunConfig) error {
 	if err != nil {
 		return fmt.Errorf("failed to generate batch values: %w", err)
 	}
-
-	os.WriteFile(filepath.Join(config.OutputLocation, "test-case-batch"), []byte(finalOutput), 0644)
+	// remove existing file if it exists
+	outputFP := filepath.Join(config.OutputLocation, "test-case-batch")
+	err = os.Remove(outputFP)
+	if err != nil {
+		return fmt.Errorf("error when attempting to remove previous file: %w", err)
+	}
+	err = os.WriteFile(outputFP, []byte(finalOutput), 0644)
+	if err != nil {
+		return fmt.Errorf("error when writing test-case-batch file: %w", err)
+	}
 
 	return nil
 }
