@@ -46,7 +46,7 @@ func TestBuildTestCasesEC2ECS(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.testName, func(t *testing.T) {
-			test.runConfig.testCaseFilePath = fmt.Sprintf("./mock_test_data/%s.json", test.testName)
+			test.runConfig.TestCaseFilePath = fmt.Sprintf("./mock_test_data/%s.json", test.testName)
 
 			actual, err := buildTestCases(test.runConfig)
 			if assert.NoError(t, err) {
@@ -91,7 +91,7 @@ func TestBuildTestCaseEKS(t *testing.T) {
 		{
 			testname: "eksarm64test",
 			runConfig: RunConfig{
-				eksARM64Vars: expectedAdditionalVars,
+				EksARM64Vars: expectedAdditionalVars,
 				IncludedServices: map[string]struct{}{
 					"EKS_ARM64": {},
 				},
@@ -106,7 +106,7 @@ func TestBuildTestCaseEKS(t *testing.T) {
 		{
 			testname: "eksfargatetest",
 			runConfig: RunConfig{
-				eksVars: expectedAdditionalVars,
+				EksVars: expectedAdditionalVars,
 				IncludedServices: map[string]struct{}{
 					"EKS_FARGATE": {},
 				},
@@ -120,7 +120,7 @@ func TestBuildTestCaseEKS(t *testing.T) {
 		{
 			testname: "ekstest",
 			runConfig: RunConfig{
-				eksVars: expectedAdditionalVars,
+				EksVars: expectedAdditionalVars,
 				IncludedServices: map[string]struct{}{
 					"EKS": {},
 				},
@@ -135,7 +135,7 @@ func TestBuildTestCaseEKS(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.testname, func(t *testing.T) {
-			test.runConfig.testCaseFilePath = fmt.Sprintf("./mock_test_data/%s.json", test.testname)
+			test.runConfig.TestCaseFilePath = fmt.Sprintf("./mock_test_data/%s.json", test.testname)
 
 			actual, err := buildTestCases(test.runConfig)
 			if assert.NoError(t, err) {

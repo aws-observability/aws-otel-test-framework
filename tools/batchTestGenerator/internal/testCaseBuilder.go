@@ -48,7 +48,7 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 	testCases := []TestCaseInfo{}
 	var tests Tests
 
-	testCaseFile, err := os.ReadFile(runConfig.testCaseFilePath)
+	testCaseFile, err := os.ReadFile(runConfig.TestCaseFilePath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to read test cases file: %w", err)
 	}
@@ -89,14 +89,14 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 					newTest := TestCaseInfo{
 						testcaseName:  test.CaseName,
 						serviceType:   testPlatform,
-						additionalVar: runConfig.eksARM64Vars,
+						additionalVar: runConfig.EksARM64Vars,
 					}
 					newTests = append(newTests, newTest)
 				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS":
 					newTest := TestCaseInfo{
 						testcaseName:  test.CaseName,
 						serviceType:   testPlatform,
-						additionalVar: runConfig.eksVars,
+						additionalVar: runConfig.EksVars,
 					}
 					newTests = append(newTests, newTest)
 				default:
