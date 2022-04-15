@@ -58,6 +58,10 @@ func newCommandConfig() *commandConfig {
 		}
 		c.runConfig.EksVars = eksVars
 
+		if c.runConfig.MaxBatches < 1 {
+			return fmt.Errorf("max batches must be greater than 1")
+		}
+
 		return nil
 	}
 
