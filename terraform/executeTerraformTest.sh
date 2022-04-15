@@ -6,12 +6,16 @@
 #
 # ENV:
 # TF_VAR_aoc_version
+# for local use. command line vars will override this env var
+# TF_VAR_cortex_instance_endpoint
 #
 # Inputs
 # $1: aws_service
 # $2: testcase 
 # $3: ECS/EC2 only - ami/ecs launch type 
 # $3: For EKS-arm64 we expect region|clustername|amp_endoint
+
+# need to figure out how to 
 ##########################################
 
 set -e
@@ -37,15 +41,15 @@ case "$service" in
     ;;
     "EKS") TEST_FOLDER="./eks/";
     ;;
-    "EKS-arm64") TEST_FOLDER="./eks/"
+    "EKS_ARM64") TEST_FOLDER="./eks/"
         arm_64_region=$(echo $3 | cut -d \| -f 1);
         arm_64_clustername=$(echo $3 | cut -d \| -f 2);
         arm_64_amp=$(echo $3 | cut -d \| -f 3);
         ADDITIONAL_VARS="-var=\"region=${arm_64_region}\" -var=\"eks_cluster_name=${arm_64_clustername}\" -var=\"cortex_instance_endpoint=${arm_64_amp}\"";
     ;;
-    "EKS-fargate") TEST_FOLDER="./eks/";
+    "EKS_FARGATE") TEST_FOLDER="./eks/";
     ;;
-    "EKS-operator") TEST_FOLDER="./eks/";
+    "EKS_ADOT_OPERATOR") TEST_FOLDER="./eks/";
     ;;
     "ECS") TEST_FOLDER="./ecs/";
         ADDITIONAL_VARS="-var=\"ecs_launch_type=$3\"";
