@@ -1,10 +1,18 @@
 package internal
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
-// given a set of tests create a batched output for them
-// input: set of tests and config
-// output: String values to put into JSON Key or other location
-func generateBatchValues(config RunConfig, testSet []string) (string, error) {
-	return "", fmt.Errorf("fail")
+type testSetInput []TestCaseInfo
+
+func generateBatchValues(testSet testSetInput) (string, error) {
+	var formattedTestCase []string
+
+	for _, tsi := range testSet {
+		currentTestCase := fmt.Sprintf("%s %s %s", tsi.serviceType, tsi.testcaseName, tsi.additionalVar)
+		formattedTestCase = append(formattedTestCase, currentTestCase)
+	}
+	return strings.Join(formattedTestCase, "\n"), nil
 }
