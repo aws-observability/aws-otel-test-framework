@@ -13,8 +13,17 @@ func LocalGenerator(config RunConfig) error {
 	if err != nil {
 		return fmt.Errorf("failed to build test case: %w", err)
 	}
+	// take the first N jobs where N is the MAXBATCHES values
+	// TODO: randomly generate tests
 
-	finalOutput, err := generateBatchValues(testCases)
+	var numTests int
+	if len(testCases) <= config.MaxBatches {
+		numTests = len(testCases) - 1
+	} else {
+		numTests = config.MaxBatches
+	}
+
+	finalOutput, err := generateBatchValues(testCases[:numTests])
 	if err != nil {
 		return fmt.Errorf("failed to generate batch values: %w", err)
 	}
