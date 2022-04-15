@@ -60,3 +60,5 @@ terraform.rc
 !gradle/wrapper/gradle-wrapper.jar
 
 **/.DS_Store
+
+tools/batchTestGenerator/batchTestGenerator
