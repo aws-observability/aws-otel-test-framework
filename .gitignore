@@ -61,4 +61,7 @@ terraform.rc
 
 **/.DS_Store
 
+# ignore built binary
 tools/batchTestGenerator/batchTestGenerator
+# ignore any generated test-case-batch files
+test-case-batch
