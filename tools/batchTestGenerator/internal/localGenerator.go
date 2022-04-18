@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -22,16 +23,21 @@ func LocalGenerator(config RunConfig) error {
 	} else {
 		numTests = config.MaxBatches
 	}
-
 	finalOutput, err := generateBatchValues(testCases[:numTests])
 	if err != nil {
 		return fmt.Errorf("failed to generate batch values: %w", err)
 	}
 	// remove existing file if it exists
 	outputFP := filepath.Join(config.OutputLocation, "test-case-batch")
-	err = os.Remove(outputFP)
-	if err != nil {
-		return fmt.Errorf("error when attempting to remove previous file: %w", err)
+
+	if _, err := os.Stat(outputFP); err == nil {
+		err = os.Remove(outputFP)
+		if err != nil {
+			return fmt.Errorf("error when attempting to remove previous file: %w", err)
+		}
+	} else if !errors.Is(err, os.ErrNotExist) {
+		return fmt.Errorf("failed when calling os.stat: %w", err)
+
 	}
 	err = os.WriteFile(outputFP, []byte(finalOutput), 0644)
 	if err != nil {
