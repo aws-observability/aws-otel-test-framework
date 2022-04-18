@@ -8,11 +8,11 @@ import (
 type testSetInput []TestCaseInfo
 
 func generateBatchValues(testSet testSetInput) (string, error) {
-	var formattedTestCase []string
+	var b strings.Builder
 
 	for _, tsi := range testSet {
-		currentTestCase := fmt.Sprintf("%s %s %s", tsi.serviceType, tsi.testcaseName, tsi.additionalVar)
-		formattedTestCase = append(formattedTestCase, currentTestCase)
+		fmt.Fprintf(&b, "%s %s %s\n", tsi.serviceType, tsi.testcaseName, tsi.additionalVar)
 	}
-	return strings.Join(formattedTestCase, "\n"), nil
+
+	return b.String(), nil
 }
