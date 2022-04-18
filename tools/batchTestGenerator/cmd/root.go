@@ -27,14 +27,28 @@ type commandConfig struct {
 	eksFlags      eksFields
 }
 
+var includeAllowlist map[string]struct{} = map[string]struct{}{
+	"EKS":               {},
+	"EKS_ARM64":         {},
+	"ECS":               {},
+	"EKS_FARGATE":       {},
+	"EC2":               {},
+	"EKS_ADOT_OPERATOR": {},
+}
+
 func newCommandConfig() *commandConfig {
 	c := &commandConfig{
 		runConfig: batch.NewDefaultRunConfig(),
 	}
 
 	preRunSetup := func(cmd *cobra.Command, args []string) error {
+		var err error
 		if len(c.includeFlags) > 0 {
-			c.runConfig.IncludedServices = transformInclude(c.includeFlags)
+
+			c.runConfig.IncludedServices, err = transformInclude(c.includeFlags)
+			if err != nil {
+				return fmt.Errorf("failed to map included services: %w", err)
+			}
 		}
 
 		if c.runConfig.TestCaseFilePath == "" {
@@ -142,12 +156,17 @@ func init() {
 }
 
 // transform array slice into map
-func transformInclude(includedFiles []string) map[string]struct{} {
+func transformInclude(includedServices []string) (map[string]struct{}, error) {
+
 	output := make(map[string]struct{})
-	for _, val := range includedFiles {
-		output[val] = struct{}{}
+	for _, val := range includedServices {
+		if _, ok := includeAllowlist[val]; ok {
+			output[val] = struct{}{}
+		} else {
+			return nil, fmt.Errorf("invalid service in --include flag")
+		}
 	}
-	return output
+	return output, nil
 }
 
 func transformEKSvars(fields eksFields) (string, error) {

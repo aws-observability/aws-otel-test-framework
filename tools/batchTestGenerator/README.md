@@ -14,6 +14,7 @@ Sets the `batch-key` and `batch-values` output using std out.
 Path to test case file.
 #### --include
 List of services to include. If not provided will default to all.
+Valid values are as follows "EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_FARGATE"
 #### --eksarm64amp
 Endpoint for EKS ARM 64 AMP workspace.
 #### --eksarm64cluster
