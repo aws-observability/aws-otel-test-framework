@@ -172,7 +172,7 @@ func transformInclude(includedServices []string) (map[string]struct{}, error) {
 func transformEKSvars(fields eksFields) (string, error) {
 	outputStr := strings.Join([]string{fields.region, fields.clusterName, fields.ampEndpoint}, "|")
 	// verifies pattern matches region|clustername|amp:endpoint
-	regexPattern := `[a-z]{2}[-][a-z]+[-]\d[|].+[|].+`
+	regexPattern := `^[a-z]{2}[-][a-z]+[-]\d+[\|][^\|]+[\|][^\|]+$`
 	matched, err := regexp.MatchString(regexPattern, outputStr)
 	if err != nil {
 		return "", fmt.Errorf("error while performing regex check: %w", err)
