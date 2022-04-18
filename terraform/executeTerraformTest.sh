@@ -52,7 +52,7 @@ case "$service" in
     "EKS_ADOT_OPERATOR") TEST_FOLDER="./eks/";
     ;;
     "ECS") TEST_FOLDER="./ecs/";
-        ADDITIONAL_VARS="-var=\"ecs_launch_type=$3\"";
+        ADDITIONAL_VARS=-var="ecs_launch_type=$3";
     ;;
     *)
     echo "service ${service} is not valid";
@@ -63,20 +63,23 @@ esac
 # create tmp dir for cache if doens't exist
 [ ! -d "./tmp" ] && mkdir tmp
 
-cd ${folder};
-terraform init;
-if [ ! -f "tmp/$2" ]; then
+
+if [ ! -f "./tmp/$2" ]; then
+    cd ${TEST_FOLDER};
+    terraform init;
     if terraform apply -auto-approve -lock=false $opts  -var="testcase=./testcases/$2" ${ADDITIONAL_VARS} ; then
         echo "Terraform apply failed"
         echo "AWS_service: $1"
         echo "Testcase: $2"
         echo "Additional var: ${ADDITIONAL_VARS}"
+        terraform destroy --auto-approve
         APPLY_EXIT=1
     else
-        touch "tmp/$2" 
+        terraform destroy --auto-approve
+        touch ../tmp/$2
     fi
 fi
 
 
-terraform destroy --auto-approve
+
 exit $APPLY_EXIT
