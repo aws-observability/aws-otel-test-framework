@@ -38,9 +38,13 @@ func GithubGenerator(config RunConfig) error {
 	}
 
 	// assign containers to a batch
-	batchMap := make(map[string][]TestCaseInfo)
+	batchMap := make(map[string]string)
 	for i := 0; i < numBatches; i++ {
-		batchMap[fmt.Sprintf("batch%d", i)] = testContainers.Value.([]TestCaseInfo)
+		batchValueString, err := generateBatchValues(testContainers.Value.([]TestCaseInfo))
+		if err != nil {
+			return fmt.Errorf("failed to create batchValueString: %w", err)
+		}
+		batchMap[fmt.Sprintf("batch%d", i)] = batchValueString
 		testContainers.Next()
 	}
 
@@ -66,8 +70,6 @@ func GithubGenerator(config RunConfig) error {
 	if err != nil {
 		return fmt.Errorf("failed to marshal batch values object: %w", err)
 	}
-
-	fmt.Println(batchMap)
 
 	fmt.Print("::set-output name=batch-keys::" + string(githubBatchKeys))
 	fmt.Print("::set-output name=batch-values::" + string(githubBatchValues))
