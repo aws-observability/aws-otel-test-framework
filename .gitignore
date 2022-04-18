@@ -65,3 +65,4 @@ terraform.rc
 tools/batchTestGenerator/batchTestGenerator
 # ignore any generated test-case-batch files
 test-case-batch
+
