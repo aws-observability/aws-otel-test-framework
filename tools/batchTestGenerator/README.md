@@ -1,8 +1,7 @@
-need to call out that I am assuming that EKSARM64 and EKS/EKS_FARGTE tests are ran on different clusters
-
-
 # Batch Test Generator
-Creates batches of test cases for either local or use in a GitHub action.
+
+Creates batches of test cases for use locally or in a GitHub action.
+
 ## Commands
 ### local
 Outputs a `test-case-batch` file.
@@ -22,7 +21,7 @@ Cluster name for EKS ARM 64 tests.
 #### --eksarm64region
 Region for EKS ARM 64 tests.
 #### --eksamp
-Endpoint for EKS ARM 64 AMP workspace.
+Endpoint for EKS AMP workspace.
 #### --ekscluster
 Cluster name for EKS tests.
 #### --eksregion
