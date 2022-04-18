@@ -14,11 +14,47 @@ func GithubGenerator(config RunConfig) error {
 		return fmt.Errorf("failed to build test case: %w", err)
 	}
 
+	batchMap, err := createBatchMap(config.MaxBatches, testCases)
+	if err != nil {
+		return fmt.Errorf("failed to create batch map: %w", err)
+	}
+
+	// create batch key object
+	// convert map to array
+	var batchArray []string
+	for batchhName := range batchMap {
+		batchArray = append(batchArray, batchhName)
+	}
+
+	batchKeyJSONObject := struct {
+		BatchKey []string
+	}{
+		BatchKey: batchArray,
+	}
+
+	githubBatchKeys, err := json.Marshal(batchKeyJSONObject)
+	if err != nil {
+		return fmt.Errorf("failed to encode batch keys object: %w", err)
+	}
+	// batch values should imitate `test-case-batch` output
+	githubBatchValues, err := json.Marshal(batchMap)
+	if err != nil {
+		return fmt.Errorf("failed to marshal batch values object: %w", err)
+	}
+
+	fmt.Print("::set-output name=batch-keys::" + string(githubBatchKeys))
+	fmt.Print("::set-output name=batch-values::" + string(githubBatchValues))
+
+	return nil
+
+}
+
+func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string]string, error) {
 	var numBatches int
-	if len(testCases) <= config.MaxBatches {
+	if len(testCases) <= maxBatches {
 		numBatches = len(testCases)
 	} else {
-		numBatches = config.MaxBatches
+		numBatches = maxBatches
 	}
 
 	// circular linked list to distribute values
@@ -42,38 +78,11 @@ func GithubGenerator(config RunConfig) error {
 	for i := 0; i < numBatches; i++ {
 		batchValueString, err := generateBatchValues(testContainers.Value.([]TestCaseInfo))
 		if err != nil {
-			return fmt.Errorf("failed to create batchValueString: %w", err)
+			return nil, fmt.Errorf("failed to create batchValueString: %w", err)
 		}
 		batchMap[fmt.Sprintf("batch%d", i)] = batchValueString
 		testContainers.Next()
 	}
 
-	// create batch key object
-	//convert map to array
-	var batchArray []string
-	for batchhName, _ := range batchMap {
-		batchArray = append(batchArray, batchhName)
-	}
-
-	batchKeyObject := struct {
-		BatchKey []string
-	}{
-		BatchKey: batchArray,
-	}
-
-	githubBatchKeys, err := json.Marshal(batchKeyObject)
-	if err != nil {
-		return fmt.Errorf("failed to encode batch keys object: %w", err)
-	}
-	// batch values should imitate `test-case-batch` output
-	githubBatchValues, err := json.Marshal(batchMap)
-	if err != nil {
-		return fmt.Errorf("failed to marshal batch values object: %w", err)
-	}
-
-	fmt.Print("::set-output name=batch-keys::" + string(githubBatchKeys))
-	fmt.Print("::set-output name=batch-values::" + string(githubBatchValues))
-
-	return nil
-
+	return batchMap, nil
 }
