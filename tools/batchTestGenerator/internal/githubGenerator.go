@@ -22,8 +22,8 @@ func GithubGenerator(config RunConfig) error {
 	// create batch key object
 	// convert map to array
 	var batchArray []string
-	for batchhName := range batchMap {
-		batchArray = append(batchArray, batchhName)
+	for batchName := range batchMap {
+		batchArray = append(batchArray, batchName)
 	}
 
 	batchKeyJSONObject := struct {
