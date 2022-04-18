@@ -2,6 +2,7 @@ package internal
 
 import (
 	"container/ring"
+	"encoding/json"
 	"fmt"
 )
 
@@ -26,7 +27,7 @@ func GithubGenerator(config RunConfig) error {
 	// easiest way to distribute test cases.
 	testContainers := ring.New(numBatches)
 	for i := 0; i < numBatches; i++ {
-		testContainers.Value = make([]TestCaseInfo, 1)
+		testContainers.Value = make([]TestCaseInfo, 0)
 		testContainers = testContainers.Next()
 	}
 
@@ -42,6 +43,34 @@ func GithubGenerator(config RunConfig) error {
 		batchMap[fmt.Sprintf("batch%d", i)] = testContainers.Value.([]TestCaseInfo)
 		testContainers.Next()
 	}
+
+	// create batch key object
+	//convert map to array
+	var batchArray []string
+	for batchhName, _ := range batchMap {
+		batchArray = append(batchArray, batchhName)
+	}
+
+	batchKeyObject := struct {
+		BatchKey []string
+	}{
+		BatchKey: batchArray,
+	}
+
+	githubBatchKeys, err := json.Marshal(batchKeyObject)
+	if err != nil {
+		return fmt.Errorf("failed to encode batch keys object: %w", err)
+	}
+	// batch values should imitate `test-case-batch` output
+	githubBatchValues, err := json.Marshal(batchMap)
+	if err != nil {
+		return fmt.Errorf("failed to marshal batch values object: %w", err)
+	}
+
+	fmt.Println(batchMap)
+
+	fmt.Print("::set-output name=batch-keys::" + string(githubBatchKeys))
+	fmt.Print("::set-output name=batch-values::" + string(githubBatchValues))
 
 	return nil
 
