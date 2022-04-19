@@ -19,6 +19,7 @@
 ##########################################
 
 set -e
+set -x
 
 echo $1
 echo $2
@@ -64,19 +65,22 @@ esac
 [ ! -d "./tmp" ] && mkdir tmp
 
 
-if [ ! -f "./tmp/$2" ]; then
+if [ ! -f "./tmp/$1$2$3" ]; then
     cd ${TEST_FOLDER};
     terraform init;
     if terraform apply -auto-approve -lock=false $opts  -var="testcase=./testcases/$2" ${ADDITIONAL_VARS} ; then
+        echo "Exit code: $?"
+        terraform destroy --auto-approve
+        #need different cachename for $2$3
+        touch ../tmp/$1$2$3
+    else
         echo "Terraform apply failed"
+        echo "Exit code: $?"
         echo "AWS_service: $1"
         echo "Testcase: $2"
         echo "Additional var: ${ADDITIONAL_VARS}"
         terraform destroy --auto-approve
         APPLY_EXIT=1
-    else
-        terraform destroy --auto-approve
-        touch ../tmp/$2
     fi
 fi
 
