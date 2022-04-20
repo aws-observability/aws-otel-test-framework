@@ -1,0 +1,9 @@
+{
+    "tests": [
+            {
+                "case_name": "xrayreceiver",
+                "platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "CANARY"]
+            }
+        ]
+    }
+    
