@@ -6,6 +6,8 @@
 #
 # ENV:
 # TF_VAR_aoc_version
+# GITHUB_RUN_ID
+# DDB_TABLE_NAME
 # for local use. command line vars will override this env var
 # TF_VAR_cortex_instance_endpoint
 #
@@ -15,7 +17,6 @@
 # $3: ECS/EC2 only - ami/ecs launch type 
 # $3: For EKS-arm64 we expect region|clustername|amp_endoint
 
-# need to figure out how to 
 ##########################################
 
 set -e
@@ -61,18 +62,19 @@ case "$service" in
     ;;
 esac
 
-# create tmp dir for cache if doens't exist
-[ ! -d "./tmp" ] && mkdir tmp
+
+CACHE_HIT=$(aws dynamodb get-item --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3${GITHUB_RUN_ID}\"}})
 
 
-if [ ! -f "./tmp/$1$2$3" ]; then
+if [ -z "${CACHE_HIT}" ]; then
     cd ${TEST_FOLDER};
     terraform init;
     if terraform apply -auto-approve -lock=false $opts  -var="testcase=./testcases/$2" ${ADDITIONAL_VARS} ; then
         echo "Exit code: $?"
         terraform destroy --auto-approve
-        #need different cachename for $2$3
-        touch ../tmp/$1$2$3
+        # push onto cache
+        TTL_DATE=$(date -v +7d +%s)
+        aws dynamodb put-item --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3${GITHUB_RUN_ID}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
     else
         echo "Terraform apply failed"
         echo "Exit code: $?"
@@ -82,6 +84,8 @@ if [ ! -f "./tmp/$1$2$3" ]; then
         terraform destroy --auto-approve
         APPLY_EXIT=1
     fi
+else
+    echo "Cache Hit: ${CACHE_HIT}"
 fi
 
 
