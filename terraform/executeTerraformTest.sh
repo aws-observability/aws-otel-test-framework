@@ -77,12 +77,12 @@ if [ -z "${CACHE_HIT}" ]; then
         TTL_DATE=$(date -v +7d +%s)
         aws dynamodb put-item --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3${GITHUB_RUN_ID}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
     else
+        terraform destroy --auto-approve
         echo "Terraform apply failed"
         echo "Exit code: $?"
         echo "AWS_service: $1"
         echo "Testcase: $2"
         echo "Additional var: ${ADDITIONAL_VARS}"
-        terraform destroy --auto-approve
         APPLY_EXIT=1
     fi
 else
