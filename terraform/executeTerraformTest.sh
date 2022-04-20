@@ -1,3 +1,4 @@
+#!/bin/bash
 ##########################################
 # This script is used to execute a
 # terraform test. A destroy will 
@@ -22,9 +23,7 @@
 set -e
 set -x
 
-echo $1
-echo $2
-echo $3
+echo $@
 
 
 opts=""
