@@ -72,7 +72,7 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string]string
 	// distrubute tests into containers
 	for _, tc := range testCases {
 		testContainers.Value = append(testContainers.Value.([]TestCaseInfo), tc)
-		testContainers.Next()
+		testContainers = testContainers.Next()
 	}
 
 	// assign containers to a batch
@@ -83,7 +83,7 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string]string
 			return nil, fmt.Errorf("failed to create batchValueString: %w", err)
 		}
 		batchMap[fmt.Sprintf("batch%d", i)] = batchValueString
-		testContainers.Next()
+		testContainers = testContainers.Next()
 	}
 
 	return batchMap, nil
