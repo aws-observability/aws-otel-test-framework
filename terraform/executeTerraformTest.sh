@@ -35,11 +35,11 @@ fi
 APPLY_EXIT=0
 TEST_FOLDER=""
 ADDITIONAL_VARS=""
-
 service="$1"
+export AWS_REGION=us-west-2
 case "$service" in
     "EC2") TEST_FOLDER="./ec2/";
-    ADDITIONAL_VARS="-var=\"testing_ami=$3\"";
+    ADDITIONAL_VARS=-var="testing_ami=$3";
     ;;
     "EKS") TEST_FOLDER="./eks/";
     ;;
@@ -47,6 +47,7 @@ case "$service" in
         arm_64_region=$(echo $3 | cut -d \| -f 1);
         arm_64_clustername=$(echo $3 | cut -d \| -f 2);
         arm_64_amp=$(echo $3 | cut -d \| -f 3);
+        export AWS_REGION=${arm_64_region}
         ADDITIONAL_VARS="-var=\"region=${arm_64_region}\" -var=\"eks_cluster_name=${arm_64_clustername}\" -var=\"cortex_instance_endpoint=${arm_64_amp}\"";
     ;;
     "EKS_FARGATE") TEST_FOLDER="./eks/";
