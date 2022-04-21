@@ -11,7 +11,12 @@ check-fmt:
 execute-batch-test: test-case-batch
 	cat test-case-batch | xargs -L1 -P1 ./executeTerraformTest.sh
 
+.PHONY: test-case-batch-test
+test-case-batch-test: test-case-batch
+	cat test-case-batch | xargs -L1 -P1 echo
+
 .PHONY: postBatchClean
 postBatchClean:
 	rm -rf ./tmp
  
+
