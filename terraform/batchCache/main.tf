@@ -6,6 +6,18 @@ terraform {
       version = "4.8.0"
     }
   }
+  # for dev env account users will need to manually 
+  # edit their bucket names because variables are not allowed
+  # there may be a better way to do this in the future
+  # comment out the backend if you do not want to persist data
+  # in s3 bucket
+  backend "s3" {
+    bucket         = "setup-remote-state-s3-bucket"
+    dynamodb_table = "setup-remote-state-dynamodb-table"
+    key            = "batch-successful-cache-terraform.tfstate"
+    region         = "us-west-2"
+    encrypt        = true
+  }
 }
 
 provider "aws" {
