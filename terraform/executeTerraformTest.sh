@@ -65,7 +65,7 @@ case "$service" in
 esac
 
 
-CACHE_HIT=$(aws dynamodb get-item --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3${GITHUB_RUN_ID}\"}})
+CACHE_HIT=$(aws dynamodb get-item --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3${TF_VAR_aoc_version}\"}})
 
 
 if [ -z "${CACHE_HIT}" ]; then
@@ -74,7 +74,7 @@ if [ -z "${CACHE_HIT}" ]; then
     if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ${ADDITIONAL_VARS} ; then
         echo "Exit code: $?"
         terraform destroy --auto-approve
-        aws dynamodb put-item --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3${GITHUB_RUN_ID}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
+        aws dynamodb put-item --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
     else
         terraform destroy --auto-approve
         echo "Terraform apply failed"
