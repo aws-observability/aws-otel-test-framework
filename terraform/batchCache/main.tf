@@ -8,14 +8,14 @@ terraform {
   }
 }
 
-provider "aws"{
-    region = var.region
+provider "aws" {
+  region = var.region
 }
 
 resource "aws_dynamodb_table" "batch_successful_cache" {
-  name           = "BatchTestCache${var.bucketUUID}"
-  billing_mode   = "PAY_PER_REQUEST"
-  hash_key       = "TestId"
+  name         = "BatchTestCache${var.bucketUUID}"
+  billing_mode = "PAY_PER_REQUEST"
+  hash_key     = "TestId"
 
   attribute {
     name = "TestId"
