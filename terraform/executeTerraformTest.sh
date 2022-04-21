@@ -9,7 +9,7 @@
 # TF_VAR_aoc_version
 # GITHUB_RUN_ID
 # DDB_TABLE_NAME
-# TTL_TIME time insert for TTL item in cache
+# TTL_DATE time insert for TTL item in cache
 # on mac TTL_DATE=$(date -v +7d +%s)
 # for local use. command line vars will override this env var
 # TF_VAR_cortex_instance_endpoint
