@@ -69,7 +69,7 @@ CACHE_HIT=$(aws dynamodb get-item --table-name ${DDB_TABLE_NAME} --key {\"TestId
 if [ -z "${CACHE_HIT}" ]; then
     cd ${TEST_FOLDER};
     terraform init;
-    if terraform apply -auto-approve -lock=false $opts  -var="testcase=./testcases/$2" ${ADDITIONAL_VARS} ; then
+    if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ${ADDITIONAL_VARS} ; then
         echo "Exit code: $?"
         terraform destroy --auto-approve
         # push onto cache
