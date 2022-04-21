@@ -16,3 +16,11 @@ func generateBatchValues(testSet testSetInput) (string, error) {
 
 	return b.String(), nil
 }
+
+func generateBachValuesStringArray(testSet testSetInput) ([]string, error) {
+	output := make([]string, 0)
+	for _, tsi := range testSet {
+		output = append(output, fmt.Sprintf("%s %s %s", tsi.serviceType, tsi.testcaseName, tsi.additionalVar))
+	}
+	return output, nil
+}

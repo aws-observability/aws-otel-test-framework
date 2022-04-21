@@ -51,7 +51,7 @@ func GithubGenerator(config RunConfig) error {
 
 }
 
-func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string]string, error) {
+func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]string, error) {
 	var numBatches int
 	if len(testCases) <= maxBatches {
 		numBatches = len(testCases)
@@ -76,13 +76,13 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string]string
 	}
 
 	// assign containers to a batch
-	batchMap := make(map[string]string)
+	batchMap := make(map[string][]string)
 	for i := 0; i < numBatches; i++ {
-		batchValueString, err := generateBatchValues(testContainers.Value.([]TestCaseInfo))
+		batchValueStringArray, err := generateBachValuesStringArray(testContainers.Value.([]TestCaseInfo))
 		if err != nil {
 			return nil, fmt.Errorf("failed to create batchValueString: %w", err)
 		}
-		batchMap[fmt.Sprintf("batch%d", i)] = batchValueString
+		batchMap[fmt.Sprintf("batch%d", i)] = batchValueStringArray
 		testContainers = testContainers.Next()
 	}
 
