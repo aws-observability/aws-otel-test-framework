@@ -209,6 +209,42 @@ Don't forget to clean up your resources:
 terraform destroy -auto-approve
 ````
 
+### 2.7 Run batch tests
+
+Batch testing allows a set of tests to be run synchronously. To do this,
+a `test-case-batch` file is required in the `./terraform` directory. 
+The format of the `test-case-batch` file is as such. 
+
+```
+serviceName1 testCase1 additionalValues1
+serviceName2 testCase2 additionalValues2
+serviceName3 testCase3 additionalValues3
+serviceNameN testCaseN additionalValuesN
+```
+
+The values for these fields are as follows
+`serviceName`: `EKS` `EKS-arm64` `EKS-fargate` `EKS-operator` `ECS` `EC2`
+`testCase`: Must be an applicable test case in the `terraform/testcases` directory
+`additionalValues`: For `EC2` tests it is expected that the `testing_ami` value is provided.
+For ECS tests the `launch_type` variable is expected. For `EKS-arm64` tests it is expected that
+a pipe delimited string of `region|clustername|amp_endoint` is provided.
+
+It is also expected that`TF_VAR_aoc_version` and `TF_VAR_aoc_image_repo` are set to valid values
+pointing to a Collector image and repository to utilize. Default `aoc_image_repo` values can be utilized 
+but the `TF_VAR_aoc_version` must be specified. 
+
+To execute the test run
+```
+make exectute-batch-test
+```
+
+To clean up the successful test run cache
+```
+make postBatchClean
+```
+
+
+
 ##3. Optional add-on
 ####3.1. Upload test case's terraform state to s3 bucket 
 **Prerequisite:** you are required to run the test case before uploading any terraform state to s3
