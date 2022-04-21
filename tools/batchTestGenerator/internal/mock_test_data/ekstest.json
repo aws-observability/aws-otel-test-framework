@@ -1,0 +1,24 @@
+{
+    "tests": [
+            {
+                "case_name": "xrayreceiver",
+                "platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "CANARY"]
+            },
+            {
+                "case_name": "xrayreceiver_mock",
+                "platforms": ["PERF"]
+            },
+            {
+                "case_name": "otlp_metric_amp",
+                "platforms": ["EC2"]
+            },
+            {
+                "case_name": "otlp_metric_amp_awsprw",
+                "platforms": ["EC2"]
+            },
+            {
+                "case_name": "otlp_metric",
+                "platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "CANARY"]
+            }
+        ]
+    }
