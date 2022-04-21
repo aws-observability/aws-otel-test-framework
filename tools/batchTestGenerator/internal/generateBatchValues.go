@@ -18,7 +18,7 @@ func generateBatchValues(testSet testSetInput) (string, error) {
 }
 
 func generateBachValuesStringArray(testSet testSetInput) ([]string, error) {
-	output := make([]string, 0)
+	output := make([]string, 0, len(testSet))
 	for _, tsi := range testSet {
 		output = append(output, fmt.Sprintf("%s %s %s", tsi.serviceType, tsi.testcaseName, tsi.additionalVar))
 	}
