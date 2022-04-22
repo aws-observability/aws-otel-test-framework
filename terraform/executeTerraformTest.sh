@@ -49,7 +49,9 @@ case "$service" in
         arm_64_clustername=$(echo $3 | cut -d \| -f 2);
         arm_64_amp=$(echo $3 | cut -d \| -f 3);
         export AWS_REGION=${arm_64_region}
-        ADDITIONAL_VARS=(-var=\"region=${arm_64_region}\" -var=\"eks_cluster_name=${arm_64_clustername}\" -var=\"cortex_instance_endpoint=${arm_64_amp}\")
+        export TF_VAR_region=${arm_64_region}
+        export TF_VAR_cortex_instance_endpoint=${arm_64_amp}
+        export TF_VAR_eks_cluster_name=${arm_64_clustername}
     ;;
     "EKS_FARGATE") TEST_FOLDER="./eks/";
     ;;
