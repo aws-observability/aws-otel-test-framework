@@ -71,7 +71,7 @@ CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NA
 if [ -z "${CACHE_HIT}" ]; then
     cd ${TEST_FOLDER};
     terraform init;
-    if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ${ADDITIONAL_VARS[@]} ; then
+    if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" "${ADDITIONAL_VARS[@]}" ; then
         echo "Exit code: $?"
         aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
         terraform destroy --auto-approve
