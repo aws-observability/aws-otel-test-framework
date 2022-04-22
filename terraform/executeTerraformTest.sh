@@ -73,8 +73,8 @@ if [ -z "${CACHE_HIT}" ]; then
     terraform init;
     if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ${ADDITIONAL_VARS} ; then
         echo "Exit code: $?"
-        terraform destroy --auto-approve
         aws dynamodb put-item --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
+        terraform destroy --auto-approve
     else
         terraform destroy --auto-approve
         echo "Terraform apply failed"
