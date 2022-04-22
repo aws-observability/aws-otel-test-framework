@@ -7,4 +7,3 @@ eks_cluster_name = "adot-op-cluster"
 
 sample_app = "spark"
 
-sample_app_image = "public.ecr.aws/aws-otel-test/aws-otel-java-spark:latest"
