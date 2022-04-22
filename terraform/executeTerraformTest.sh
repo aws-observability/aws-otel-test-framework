@@ -40,7 +40,7 @@ service="$1"
 export AWS_REGION=us-west-2
 case "$service" in
     "EC2") TEST_FOLDER="./ec2/";
-    ADDITIONAL_VARS=-var="testing_ami=$3";
+    ADDITIONAL_VARS=(-var=\"testing_ami=$3\");
     ;;
     "EKS") TEST_FOLDER="./eks/";
     ;;
@@ -49,14 +49,14 @@ case "$service" in
         arm_64_clustername=$(echo $3 | cut -d \| -f 2);
         arm_64_amp=$(echo $3 | cut -d \| -f 3);
         export AWS_REGION=${arm_64_region}
-        ADDITIONAL_VARS="-var=\"region=${arm_64_region}\" -var=\"eks_cluster_name=${arm_64_clustername}\" -var=\"cortex_instance_endpoint=${arm_64_amp}\"";
+        ADDITIONAL_VARS=(-var=\"region=${arm_64_region}\" -var=\"eks_cluster_name=${arm_64_clustername}\" -var=\"cortex_instance_endpoint=${arm_64_amp}\")
     ;;
     "EKS_FARGATE") TEST_FOLDER="./eks/";
     ;;
     "EKS_ADOT_OPERATOR") TEST_FOLDER="./eks/";
     ;;
     "ECS") TEST_FOLDER="./ecs/";
-        ADDITIONAL_VARS=-var="ecs_launch_type=$3";
+        ADDITIONAL_VARS=(-var=\"ecs_launch_type=$3\");
     ;;
     *)
     echo "service ${service} is not valid";
@@ -71,7 +71,7 @@ CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NA
 if [ -z "${CACHE_HIT}" ]; then
     cd ${TEST_FOLDER};
     terraform init;
-    if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ${ADDITIONAL_VARS} ; then
+    if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ${ADDITIONAL_VARS[@]} ; then
         echo "Exit code: $?"
         aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
         terraform destroy --auto-approve
@@ -81,7 +81,7 @@ if [ -z "${CACHE_HIT}" ]; then
         echo "Exit code: $?"
         echo "AWS_service: $1"
         echo "Testcase: $2"
-        echo "Additional var: ${ADDITIONAL_VARS}"
+        echo "Additional var: ${ADDITIONAL_VARS[@]}"
         APPLY_EXIT=1
     fi
 else
