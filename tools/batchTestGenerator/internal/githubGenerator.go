@@ -59,11 +59,19 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 		numBatches = maxBatches
 	}
 
+	// This will be used to store all tests that cannot be run in parallel.
+	// Will also be used if only one batch is allowed
+	nonParallelTests := make([]TestCaseInfo, 0)
+	nonParallelTestSet := map[string]struct{}{
+		"EKS_ADOT_OPERATOR": {},
+		"EKS_FARGATE":       {},
+	}
 	// circular linked list to distribute values
 	// we reach for a circular LL to evenly distrubute values since no
 	// weighting is being done during the batching process. We just want the
 	// easiest way to distribute test cases.
-	testContainers := ring.New(numBatches)
+	// numBatches - 1 since a batch is already defined above.
+	testContainers := ring.New(numBatches - 1)
 	for i := 0; i < numBatches; i++ {
 		testContainers.Value = make([]TestCaseInfo, 0)
 		testContainers = testContainers.Next()
@@ -71,13 +79,27 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 
 	// distrubute tests into containers
 	for _, tc := range testCases {
-		testContainers.Value = append(testContainers.Value.([]TestCaseInfo), tc)
-		testContainers = testContainers.Next()
+		if _, ok := nonParallelTestSet[tc.testcaseName]; ok || numBatches == 1 {
+			nonParallelTests = append(nonParallelTests, tc)
+		} else {
+			testContainers.Value = append(testContainers.Value.([]TestCaseInfo), tc)
+			testContainers = testContainers.Next()
+		}
+
 	}
 
 	// assign containers to a batch
 	batchMap := make(map[string][]string)
-	for i := 0; i < numBatches; i++ {
+
+	// batch 0 will always be non parallel tests or all tests
+	nptsStringArray, err := generateBachValuesStringArray(nonParallelTests)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create non parallel test set string array: %w", err)
+	}
+	batchMap[fmt.Sprintf("batch%d", 0)] = nptsStringArray
+
+	//assign following batches
+	for i := 1; i < numBatches; i++ {
 		batchValueStringArray, err := generateBachValuesStringArray(testContainers.Value.([]TestCaseInfo))
 		if err != nil {
 			return nil, fmt.Errorf("failed to create batchValueString: %w", err)
