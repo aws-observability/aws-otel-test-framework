@@ -79,7 +79,7 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 
 	// distrubute tests into containers
 	for _, tc := range testCases {
-		if _, ok := nonParallelTestSet[tc.testcaseName]; ok || numBatches == 1 {
+		if _, ok := nonParallelTestSet[tc.serviceType]; ok || numBatches == 1 {
 			nonParallelTests = append(nonParallelTests, tc)
 		} else {
 			testContainers.Value = append(testContainers.Value.([]TestCaseInfo), tc)
