@@ -18,5 +18,9 @@ test-case-batch-test: test-case-batch
 .PHONY: postBatchClean
 postBatchClean:
 	rm -rf ./tmp
+
+.PHONY: checkCacheHits
+checkCacheHits:
+	cat test-case-batch | xargs -L1 -P1 ./checkCacheHit.sh
  
 
