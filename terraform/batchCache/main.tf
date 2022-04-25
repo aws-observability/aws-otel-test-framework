@@ -28,9 +28,15 @@ resource "aws_dynamodb_table" "batch_successful_cache" {
   name         = "BatchTestCache${var.bucketUUID}"
   billing_mode = "PAY_PER_REQUEST"
   hash_key     = "TestId"
+  range_key    = "aoc_version"
 
   attribute {
     name = "TestId"
+    type = "S"
+  }
+
+  attribute {
+    name = "aoc_version"
     type = "S"
   }
 
