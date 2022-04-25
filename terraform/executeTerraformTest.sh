@@ -7,7 +7,6 @@
 #
 # ENV:
 # TF_VAR_aoc_version
-# GITHUB_RUN_ID
 # DDB_TABLE_NAME
 # TTL_DATE time insert for TTL item in cache
 # on mac TTL_DATE=$(date -v +7d +%s)
@@ -66,7 +65,7 @@ case "$service" in
 esac
 
 
-CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3${TF_VAR_aoc_version}\"}})
+CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}\"}})
 
 
 if [ -z "${CACHE_HIT}" ]; then
@@ -74,7 +73,7 @@ if [ -z "${CACHE_HIT}" ]; then
     terraform init;
     if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ; then
         echo "Exit code: $?"
-        aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
+        aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
         terraform destroy --auto-approve
     else
         terraform destroy --auto-approve
