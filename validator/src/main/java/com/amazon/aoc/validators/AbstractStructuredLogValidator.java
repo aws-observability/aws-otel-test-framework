@@ -114,8 +114,8 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
           validateJsonSchema(logEvent.getMessage());
         } 
       } catch (AmazonClientException e) {
-        log.info(String.format("[StructuredLogValidator] failed to retrieve log stream %s",
-            logStreamName));
+        log.info(String.format("[StructuredLogValidator] failed to retrieve log stream %s in log group %s",
+            logStreamName, logGroupName));
         throw e;
       }
 
