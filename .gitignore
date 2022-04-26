@@ -66,3 +66,6 @@ tools/batchTestGenerator/batchTestGenerator
 # ignore any generated test-case-batch files
 test-case-batch
 
+# ignore java validator bin
+validator/bin
+
