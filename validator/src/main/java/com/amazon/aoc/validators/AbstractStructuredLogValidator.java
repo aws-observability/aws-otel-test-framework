@@ -100,9 +100,9 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
 
   protected void fetchAndValidateLogs(Instant startTime) throws Exception {
     for (String logStreamName : logStreamNames) {
-      try{
+      try {
         List<OutputLogEvent> logEvents = cloudWatchService.getLogs(logGroupName, logStreamName,
-        startTime.toEpochMilli(), QUERY_LIMIT);
+            startTime.toEpochMilli(), QUERY_LIMIT);
               
         if (logEvents.isEmpty()) {
           throw new BaseException(
@@ -112,11 +112,11 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
         }
         for (OutputLogEvent logEvent : logEvents) {
           validateJsonSchema(logEvent.getMessage());
-        }
-      }catch(AmazonClientException e){
-          log.info(String.format("[StructuredLogValidator] failed to retrieve log stream %s",
-          logStreamName));
-          throw e;
+        } 
+      } catch (AmazonClientException e) {
+        log.info(String.format("[StructuredLogValidator] failed to retrieve log stream %s",
+            logStreamName));
+        throw e;
       }
 
     }
