@@ -24,6 +24,7 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.logs.model.OutputLogEvent;
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.util.StringUtils;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,17 +100,25 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
 
   protected void fetchAndValidateLogs(Instant startTime) throws Exception {
     for (String logStreamName : logStreamNames) {
-      List<OutputLogEvent> logEvents = cloudWatchService.getLogs(logGroupName, logStreamName,
-              startTime.toEpochMilli(), QUERY_LIMIT);
-      if (logEvents.isEmpty()) {
-        throw new BaseException(
-                ExceptionCode.LOG_FORMAT_NOT_MATCHED,
-                String.format("[StructuredLogValidator] no logs found under log stream %s",
-                        logStreamName));
+      try {
+        List<OutputLogEvent> logEvents = cloudWatchService.getLogs(logGroupName, logStreamName,
+            startTime.toEpochMilli(), QUERY_LIMIT);
+              
+        if (logEvents.isEmpty()) {
+          throw new BaseException(
+                  ExceptionCode.LOG_FORMAT_NOT_MATCHED,
+                  String.format("[StructuredLogValidator] no logs found under log stream %s",
+                          logStreamName));
+        }
+        for (OutputLogEvent logEvent : logEvents) {
+          validateJsonSchema(logEvent.getMessage());
+        } 
+      } catch (AmazonClientException e) {
+        log.info(String.format("[StructuredLogValidator] failed to retrieve log stream %s",
+            logStreamName));
+        throw e;
       }
-      for (OutputLogEvent logEvent : logEvents) {
-        validateJsonSchema(logEvent.getMessage());
-      }
+
     }
   }
 
