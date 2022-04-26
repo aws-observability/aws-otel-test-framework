@@ -59,6 +59,19 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 		numBatches = maxBatches
 	}
 
+	nonParallelTestSet := map[string][]TestCaseInfo{
+		"EKS_ADOT_OPERATOR": {},
+		"EKS_FARGATE":       {},
+	}
+
+	if numBatches == 1 {
+		nonParallelTestSet = map[string][]TestCaseInfo{}
+	} else if numBatches-len(nonParallelTestSet) <= 0 {
+		numBatches = 1
+	} else {
+		numBatches -= len(nonParallelTestSet)
+	}
+
 	// circular linked list to distribute values
 	// we reach for a circular LL to evenly distrubute values since no
 	// weighting is being done during the batching process. We just want the
@@ -69,21 +82,46 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 		testContainers = testContainers.Next()
 	}
 
-	// distrubute tests into containers
+	// distribute tests into containers
 	for _, tc := range testCases {
-		testContainers.Value = append(testContainers.Value.([]TestCaseInfo), tc)
-		testContainers = testContainers.Next()
+		if _, ok := nonParallelTestSet[tc.serviceType]; ok {
+			nonParallelTestSet[tc.serviceType] = append(nonParallelTestSet[tc.serviceType], tc)
+		} else {
+			testContainers.Value = append(testContainers.Value.([]TestCaseInfo), tc)
+			testContainers = testContainers.Next()
+		}
+
 	}
 
 	// assign containers to a batch
 	batchMap := make(map[string][]string)
+
+	batch := 0
+	// non-parallel tests
+	for _, npts := range nonParallelTestSet {
+		nptsStringArray, err := generateBachValuesStringArray(npts)
+		if err != nil {
+			return nil, fmt.Errorf("failed to create non parallel test set string array: %w", err)
+		}
+		id := fmt.Sprintf("batch%d", batch)
+		batchMap[id] = append(batchMap[id], nptsStringArray...)
+		if batch < maxBatches {
+			batch++
+		}
+	}
+
+	//assign following batches
 	for i := 0; i < numBatches; i++ {
 		batchValueStringArray, err := generateBachValuesStringArray(testContainers.Value.([]TestCaseInfo))
 		if err != nil {
 			return nil, fmt.Errorf("failed to create batchValueString: %w", err)
 		}
-		batchMap[fmt.Sprintf("batch%d", i)] = batchValueStringArray
+		id := fmt.Sprintf("batch%d", batch)
+		batchMap[id] = append(batchMap[id], batchValueStringArray...)
 		testContainers = testContainers.Next()
+		if batch < maxBatches {
+			batch++
+		}
 	}
 
 	return batchMap, nil
