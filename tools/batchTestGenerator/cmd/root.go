@@ -180,10 +180,10 @@ func transformEKSvars(fields eksFields) (string, error) {
 	if !matched {
 		// not an error to provide no values to field
 		if outputStr == "||" {
-			return "", nil
+			return "nil", nil
 		} else {
 			// it is an erorr if 0 < # of provided values < 3
-			return "", fmt.Errorf("must provide all three eks field values: %w", err)
+			return "nil", fmt.Errorf("must provide all three eks field values: %w", err)
 		}
 	}
 	return outputStr, nil
