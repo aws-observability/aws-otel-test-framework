@@ -107,8 +107,8 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
         if (logEvents.isEmpty()) {
           throw new BaseException(
                   ExceptionCode.LOG_FORMAT_NOT_MATCHED,
-                  String.format("[StructuredLogValidator] no logs found under log stream %s",
-                          logStreamName));
+                  String.format("[StructuredLogValidator] no logs found under log stream %s in log group %s",
+                          logStreamName,logGroupName));
         }
         for (OutputLogEvent logEvent : logEvents) {
           validateJsonSchema(logEvent.getMessage());
