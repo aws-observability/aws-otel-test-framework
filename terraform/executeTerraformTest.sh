@@ -76,7 +76,14 @@ if [ -z "${CACHE_HIT}" ]; then
         aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
         terraform destroy --auto-approve
     else
-        terraform destroy --auto-approve
+        case "$service" in
+            "EKS_FARGATE" | "EKS_ADOT_OPERATOR") terraform destroy --auto-approve $opts;
+            ;;
+            *)
+            terraform destroy --auto-approve;
+            ;;
+        esac
+        
         echo "Terraform apply failed"
         echo "Exit code: $?"
         echo "AWS_service: $1"
