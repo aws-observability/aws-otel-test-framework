@@ -99,6 +99,10 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 	batch := 0
 	// non-parallel tests
 	for _, npts := range nonParallelTestSet {
+		if len(npts) == 0 {
+			continue
+		}
+
 		nptsStringArray, err := generateBachValuesStringArray(npts)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create non parallel test set string array: %w", err)
@@ -112,7 +116,13 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 
 	//assign following batches
 	for i := 0; i < numBatches; i++ {
-		batchValueStringArray, err := generateBachValuesStringArray(testContainers.Value.([]TestCaseInfo))
+		ts := testContainers.Value.([]TestCaseInfo)
+		if len(ts) == 0 {
+			testContainers = testContainers.Next()
+			continue
+		}
+
+		batchValueStringArray, err := generateBachValuesStringArray(ts)
 		if err != nil {
 			return nil, fmt.Errorf("failed to create batchValueString: %w", err)
 		}
