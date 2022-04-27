@@ -74,26 +74,22 @@ if [ -z "${CACHE_HIT}" ]; then
     if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ; then
         echo "Exit code: $?"
         aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
-        terraform destroy --auto-approve
     else
-        case "$service" in
-            "EKS_FARGATE" | "EKS_ADOT_OPERATOR") terraform destroy --auto-approve $opts;
-            ;;
-            *)
-            terraform destroy --auto-approve;
-            ;;
-        esac
-        
         echo "Terraform apply failed"
         echo "Exit code: $?"
         echo "AWS_service: $1"
         echo "Testcase: $2"
         APPLY_EXIT=1
     fi
+    case "$service" in
+        "EKS_FARGATE" | "EKS_ADOT_OPERATOR") terraform destroy --auto-approve $opts;
+        ;;
+    *)
+        terraform destroy --auto-approve;
+    ;;
+    esac
 else
     echo "Cache Hit: ${CACHE_HIT}"
 fi
-
-
 
 exit $APPLY_EXIT
