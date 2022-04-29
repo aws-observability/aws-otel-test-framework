@@ -18,13 +18,14 @@ type eksFields struct {
 }
 
 type commandConfig struct {
-	runConfig     batch.RunConfig
-	rootCommand   cobra.Command
-	githubCommand cobra.Command
-	localCommand  cobra.Command
-	includeFlags  []string
-	eksARM64Flags eksFields
-	eksFlags      eksFields
+	runConfig       batch.RunConfig
+	rootCommand     cobra.Command
+	githubCommand   cobra.Command
+	localCommand    cobra.Command
+	validateCommand cobra.Command
+	includeFlags    []string
+	eksARM64Flags   eksFields
+	eksFlags        eksFields
 }
 
 var includeAllowlist map[string]struct{} = map[string]struct{}{
@@ -116,8 +117,21 @@ func newCommandConfig() *commandConfig {
 			return batch.GithubGenerator(c.runConfig)
 		},
 	}
+
+	c.validateCommand = cobra.Command{
+		Use:   "validate",
+		Short: "Validate all test cases are present in the cache",
+		Long: `This command verifies that all tests succesffully passed
+		and are thus present in the DynamoDB table name that was provided.
+		EKS and EKS_ARM64 additional vars that are identical to the ones passed
+		into the github command must be provided also.`,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return nil
+		},
+	}
 	c.rootCommand.AddCommand(&c.localCommand)
 	c.rootCommand.AddCommand(&c.githubCommand)
+	c.rootCommand.AddCommand(&c.validateCommand)
 
 	return c
 }
