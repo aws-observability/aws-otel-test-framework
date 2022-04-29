@@ -26,6 +26,12 @@ type commandConfig struct {
 	includeFlags    []string
 	eksARM64Flags   eksFields
 	eksFlags        eksFields
+	// used in the validate command
+	// DyanmoDB Table that was used a successful test cache
+	DynamoDBTable string
+	// Name of ADOT Collector image that was used. Will be used
+	// as sort key when querying cache.
+	AocVersion string
 }
 
 var includeAllowlist map[string]struct{} = map[string]struct{}{
@@ -163,12 +169,17 @@ func init() {
 	comCfg.githubCommand.Flags().IntVar(&comCfg.runConfig.MaxBatches, "maxBatch", 40, "Maxium number of batches allowed.")
 	comCfg.githubCommand.Flags().StringSliceVar(&comCfg.includeFlags, "include", []string{}, "list of commma separated services to include. See README for list of valid values.")
 
-	//local flags only
+	// local flags only
 	comCfg.localCommand.Flags().StringVar(&comCfg.runConfig.OutputLocation, "output", "", "Output location for test-case-batch file.")
 	comCfg.localCommand.Flags().IntVar(&comCfg.runConfig.MaxBatches, "maxJobs", 5, "Maximum number of jobs allowed in test-case-batch file. Will generate tests up to this amount if possible from"+
 		" provided test cases and included services. ")
 	comCfg.localCommand.Flags().StringSliceVar(&comCfg.includeFlags, "include", []string{}, "list of commma separated services to include. See README for list of valid values.")
 
+	// validate flags only
+	comCfg.validateCommand.Flags().StringVar(&comCfg.DynamoDBTable, "ddbtable", "", "name of the DynamoDB table that was used a successful test cache")
+	comCfg.validateCommand.Flags().StringVar(&comCfg.AocVersion, "aocVersion", "", "name of the ADOT Collector Image used in testing")
+	comCfg.validateCommand.MarkFlagRequired("ddbtable")
+	comCfg.validateCommand.MarkFlagRequired("aocVersion")
 }
 
 // transform array slice into map
