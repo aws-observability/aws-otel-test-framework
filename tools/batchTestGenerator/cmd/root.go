@@ -133,7 +133,7 @@ func newCommandConfig() *commandConfig {
 		EKS and EKS_ARM64 additional vars that are identical to the ones passed
 		into the github command must be provided also.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return nil
+			return batch.ValidateCache(c.runConfig, c.DynamoDBTable, c.AocVersion)
 		},
 	}
 	c.rootCommand.AddCommand(&c.localCommand)
