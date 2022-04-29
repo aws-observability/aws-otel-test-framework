@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -64,7 +65,7 @@ func newCommandConfig() *commandConfig {
 			if err != nil {
 				return fmt.Errorf("failed to get cwd: %w", err)
 			}
-			c.runConfig.TestCaseFilePath = defaultFileLoc
+			c.runConfig.TestCaseFilePath = filepath.Join(defaultFileLoc, "testcases.json")
 		}
 
 		eks64vars, err := transformEKSvars(c.eksARM64Flags)

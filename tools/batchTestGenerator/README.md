@@ -14,7 +14,7 @@ Users should provide identical values for `EKS` and `EKS_ARM_64` flags that were
 ## Flags
 ### Globally Available flags
 #### --testCaseFilePath
-Path to test case file.
+Path to test case file. Defaults to `./testcases.json`
 #### --eksarm64amp
 Endpoint for EKS ARM 64 AMP workspace.
 #### --eksarm64cluster
