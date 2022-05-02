@@ -14,11 +14,17 @@
 # -------------------------------------------------------------------------
 
 terraform {
+  required_version = "=1.1.6"
   required_providers {
     kubectl = {
       source  = "gavinbunney/kubectl"
       version = ">= 1.7.0"
     }
+  }
+  backend "s3" {
+    bucket = "adot-op-cluster-terraform-statefile"
+    key    = "eks_adot_operator_cluster/terraform.tfstate"
+    region = "us-west-2"
   }
 }
 

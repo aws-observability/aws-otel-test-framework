@@ -32,11 +32,26 @@ terraform destroy
 In the case that you want to debug for a certain platform, you can also use this testing framework to run your test case locally in multiple AWS platforms including EC2, ECS, and EKS.
  
 ### 2.1 Prerequisite
+
+#### 2.1.0
+- docker installed locally
+- awscli installed locally
  
 #### 2.1.1 Setup your aws credentials
 Refer to: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
+
+#### 2.1.2 Setup unique bucket ID
+
+First create a unique S3 bucket identifier that will be appened to your S3 bucket names. This will
+ensure that the S3 bucket name is globally unique. The UUID can be generated with any method of your
+choosing.
+See [here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html) for S3 bucket naming rules.
+```shell
+export TF_VAR_bucketUUID=$(dd if=/dev/urandom bs=1k count=1k | shasum | cut -b 1-8)
+```
+
  
-#### 2.1.2 Run Setup
+#### 2.1.3 Run Setup
 Setup only needs to be run once, it creates:
  
 1. one iam role
@@ -60,7 +75,7 @@ this task will build and push the sample apps and mocked server images to the ec
  
 Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
 
-#### 2.1.3 Share Setup resources (Optional)
+#### 2.1.4 Share Setup resources (Optional)
 **Prerequisite:**
 - you are required to run the [setup basic components](setup-basic-components-in-aws-account.md#2-setup-basic-components) once if you and other developers did not setup these components before.
 - Uncomment the [backend configuration](https://github.com/khanhntd/aws-otel-test-framework/blob/support_s3_bucket_setup/terraform/setup/backend.tf#L17-L25) to share the setup's terraform state
@@ -74,10 +89,11 @@ cd aws-otel-test-framework/terraform/setup
 terraform init
 terraform apply
 ```
-#### 2.1.4 Build a Docker Image for AWS Distro for OpenTelemetry Collector 
+
+#### 2.1.5 Build AWS Otel Collector Docker Image
 Please [build your image with the new component](https://github.com/aws-observability/aws-otel-collector/blob/main/docs/developers/build-docker.md), push this image to dockerhub, and record the image link, which will be used in your testing.
 
-#### 2.1.5 Documentation
+#### 2.1.6 Documentation
 - [Setup basic components in aws account](setup-basic-components-in-aws-account.md)
 
 ### 2.2 Run in EC2
@@ -208,6 +224,42 @@ Don't forget to clean up your resources:
 ````
 terraform destroy -auto-approve
 ````
+
+### 2.7 Run batch tests
+
+Batch testing allows a set of tests to be run synchronously. To do this,
+a `test-case-batch` file is required in the `./terraform` directory. 
+The format of the `test-case-batch` file is as such. 
+
+```
+serviceName1 testCase1 additionalValues1
+serviceName2 testCase2 additionalValues2
+serviceName3 testCase3 additionalValues3
+serviceNameN testCaseN additionalValuesN
+```
+
+The values for these fields are as follows
+`serviceName`: `EKS` `EKS-arm64` `EKS-fargate` `EKS-operator` `ECS` `EC2`
+`testCase`: Must be an applicable test case in the `terraform/testcases` directory
+`additionalValues`: For `EC2` tests it is expected that the `testing_ami` value is provided.
+For ECS tests the `launch_type` variable is expected. For `EKS-arm64` tests it is expected that
+a pipe delimited string of `region|clustername|amp_endoint` is provided.
+
+It is also expected that`TF_VAR_aoc_version` and `TF_VAR_aoc_image_repo` are set to valid values
+pointing to a Collector image and repository to utilize. Default `aoc_image_repo` values can be utilized 
+but the `TF_VAR_aoc_version` must be specified. 
+
+To execute the test run
+```
+make exectute-batch-test
+```
+
+To clean up the successful test run cache
+```
+make postBatchClean
+```
+
+
 
 ##3. Optional add-on
 ####3.1. Upload test case's terraform state to s3 bucket 

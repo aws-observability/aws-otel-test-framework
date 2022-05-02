@@ -1,4 +1,8 @@
-receivers:
+extensions:
+      sigv4auth:
+        region: ${region}
+        service: "aps"
+    receivers:
       prometheus:
         config:
           scrape_configs:
@@ -13,19 +17,19 @@ receivers:
               action: keep
               regex: "sample-app"
     exporters:
-      awsprometheusremotewrite:
+      prometheusremotewrite:
         endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
-        aws_auth:
-          region: ${region}
-          service: "aps"
         timeout: 10s
+        auth:
+          authenticator: sigv4auth
       logging:
         loglevel: debug
     service:
       pipelines:
         metrics:
           receivers: [prometheus]
-          exporters: [awsprometheusremotewrite, logging]
+          exporters: [prometheusremotewrite, logging]
+      extensions: [sigv4auth]
       telemetry:
         logs:
           level: debug

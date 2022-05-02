@@ -115,7 +115,7 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
           }
 
           resources {
-            requests {
+            limits {
               cpu    = "0.2"
               memory = "256Mi"
             }

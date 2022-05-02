@@ -1,6 +1,10 @@
 extensions:
   pprof:
     endpoint: 0.0.0.0:1777
+  sigv4auth:
+    region: ${region}
+    service: "aps"
+
 receivers:
   awsecscontainermetrics:
   otlp:
@@ -108,13 +112,12 @@ exporters:
     region: '${region}'
     resource_to_telemetry_conversion:
       enabled: true
-  awsprometheusremotewrite:
+  prometheusremotewrite:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     resource_to_telemetry_conversion:
       enabled: true
-    aws_auth:
-      region: ${region}
-      service: "aps"
+    auth:
+      authenticator: sigv4auth
   awsxray:
     local_mode: true
     region: '${region}'
@@ -130,7 +133,7 @@ service:
     metrics/container/amp:
       receivers: [ awsecscontainermetrics ]
       processors: [ filter, metricstransform, resource, batch ]
-      exporters: [ awsprometheusremotewrite,logging ]
+      exporters: [ prometheusremotewrite, logging ]
     metrics/application/cw:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
@@ -138,12 +141,12 @@ service:
     metrics/application/amp:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
-      exporters: [ awsprometheusremotewrite,logging]
+      exporters: [ prometheusremotewrite, logging ]
     traces/application/xray:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
       exporters: [ awsxray ]
-  extensions: [pprof]
+  extensions: [pprof, sigv4auth]
   telemetry:
     logs:
       level: debug

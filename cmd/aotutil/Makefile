@@ -1,12 +1,13 @@
 all: license fmt build
 
 fmt:
+	go install golang.org/x/tools/cmd/goimports@latest
 	goimports -d -l -w .
 
-build: fmt
+build:
 	go build .
 
-install: fmt
+install:
 	go install .
 
 license:
