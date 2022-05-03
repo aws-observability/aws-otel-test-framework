@@ -11,11 +11,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
-type TableKeys struct {
-	TestId      string
-	aoc_version string
-}
-
 func ValidateCache(rc RunConfig, ddbTableName string, aocVersion string) error {
 	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion("us-west-2"))
 	if err != nil {
@@ -36,7 +31,6 @@ func ValidateCache(rc RunConfig, ddbTableName string, aocVersion string) error {
 		testId := fmt.Sprintf("%s%s%s", tc.serviceType, tc.testcaseName, tc.additionalVar)
 
 		ddbOutput, err := svc.GetItem(context.TODO(), &dynamodb.GetItemInput{
-			//Key:       tk,
 			Key: map[string]types.AttributeValue{
 				"TestId":      &types.AttributeValueMemberS{Value: testId},
 				"aoc_version": &types.AttributeValueMemberS{Value: aocVersion},
