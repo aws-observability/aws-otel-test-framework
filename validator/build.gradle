@@ -42,7 +42,7 @@ dependencies {
     implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.8.9'
 
     // apache io utils
-    implementation group: 'commons-io', name: 'commons-io', version: '2.4'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
     // yaml reader
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.11.1'
