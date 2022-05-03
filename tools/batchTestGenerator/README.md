@@ -64,3 +64,10 @@ Name of the dyanmoddb table that should be queried for cache hits
 --maxJobs=10 \
 --include=ECS,EKS
 ```
+
+```
+./batchTestGenerator validate --testCaseFilePath=./testcases.json \
+--ddbtable=BatchTestCache \
+--aocVersion=v0.17.0-1e2c593 \
+--include=ECS
+```
