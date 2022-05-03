@@ -41,9 +41,6 @@ Max number of batches to use.
 Output directory for `test-case-batch` file.
 #### --maxJobs
 Max number of jobs to include in `test-case-batch` file. 
-#### --include
-List of services to include. If not provided will default to all.
-Valid values are as follows "EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_FARGATE"
 
 ### Validate command unique
 ### --ddbTable
