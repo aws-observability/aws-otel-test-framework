@@ -165,7 +165,6 @@ func init() {
 	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.eksFlags.ampEndpoint, "eksamp", "", "AMP endpoint for EKS tests")
 	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.eksFlags.clusterName, "ekscluster", "", "Cluster name for EKS tests")
 	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.eksFlags.region, "eksregion", "", "Region for EKS tests")
-	comCfg.rootCommand.PersistentFlags().StringSliceVar(&comCfg.includeFlags, "include", []string{}, "list of commma separated services to include. See README for list of valid values.")
 
 	// githubflags only
 	comCfg.githubCommand.Flags().IntVar(&comCfg.runConfig.MaxBatches, "maxBatch", 40, "Maxium number of batches allowed.")
