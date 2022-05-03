@@ -29,7 +29,9 @@ func ValidateCache(rc RunConfig, ddbTableName string, aocVersion string) error {
 
 	for _, tc := range testCases {
 		testId := fmt.Sprintf("%s%s%s", tc.serviceType, tc.testcaseName, tc.additionalVar)
-
+		// TODO: Could be improved. DDB API provides batch gets that may be more efficient.
+		// This implementation should still operate very efficiently with the scale of our
+		// DDB cache.
 		ddbOutput, err := svc.GetItem(context.TODO(), &dynamodb.GetItemInput{
 			Key: map[string]types.AttributeValue{
 				"TestId":      &types.AttributeValueMemberS{Value: testId},
