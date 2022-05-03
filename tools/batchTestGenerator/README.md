@@ -48,6 +48,8 @@ Valid values are as follows "EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR
 ### Validate command unique
 ### --ddbTable
 Name of the dyanmoddb table that should be queried for cache hits
+### --aocVersion
+Image tag for ADOT Collector version that was used in testing.
 
 
 
