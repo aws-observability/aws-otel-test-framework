@@ -27,13 +27,14 @@ Endpoint for EKS AMP workspace.
 Cluster name for EKS tests.
 #### --eksregion
 Region for EKS tests.
+#### --include
+List of services to include. If not provided will default to all.
+Valid values are as follows "EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_FARGATE"
 
 ### GitHub command unique
 #### --maxBatch
 Max number of batches to use.  
-#### --include
-List of services to include. If not provided will default to all.
-Valid values are as follows "EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_FARGATE"
+
 
 ### Local command unique
 #### --output
