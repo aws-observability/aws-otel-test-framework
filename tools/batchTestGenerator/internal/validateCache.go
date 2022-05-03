@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
 
 type TableKeys struct {
@@ -33,18 +34,14 @@ func ValidateCache(rc RunConfig, ddbTableName string, aocVersion string) error {
 
 	for _, tc := range testCases {
 		testId := fmt.Sprintf("%s%s%s", tc.serviceType, tc.testcaseName, tc.additionalVar)
-		tableKeys := TableKeys{
-			TestId:      testId,
-			aoc_version: aocVersion,
-		}
-		tk, err := attributevalue.MarshalMap(tableKeys)
-		if err != nil {
-			return fmt.Errorf("failed to marshal table keys: %w", err)
-		}
 
 		ddbOutput, err := svc.GetItem(context.TODO(), &dynamodb.GetItemInput{
-			Key:       tk,
-			TableName: &ddbTableName,
+			//Key:       tk,
+			Key: map[string]types.AttributeValue{
+				"TestId":      &types.AttributeValueMemberS{Value: testId},
+				"aoc_version": &types.AttributeValueMemberS{Value: aocVersion},
+			},
+			TableName: aws.String(ddbTableName),
 		})
 		if err != nil {
 			return fmt.Errorf("failed to query ddb table: %w", err)
