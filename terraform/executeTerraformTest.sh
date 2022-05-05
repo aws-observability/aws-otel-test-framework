@@ -64,14 +64,17 @@ case "$service" in
     ;;
 esac
 
+checkCache(){
+    CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}\"}})
+}
 
-CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}\"}})
-
-
-if [ -z "${CACHE_HIT}" ]; then
-    cd ${TEST_FOLDER};
+checkCache $1 $2 $3
+# Used as a retry mechanic.
+ATTEMPTS_LEFT=2
+cd ${TEST_FOLDER};
+while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     terraform init;
-    if terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ; then
+    if timeout -k 5m --signal=SIGINT -v 1m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ; then
         echo "Exit code: $?"
         aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
     else
@@ -88,8 +91,10 @@ if [ -z "${CACHE_HIT}" ]; then
         terraform destroy --auto-approve;
     ;;
     esac
-else
-    echo "Cache Hit: ${CACHE_HIT}"
-fi
+
+    checkCache $1 $2 $3 
+    let ATTEMPTS_LEFT=ATTEMPTS_LEFT-1
+done
+
 
 exit $APPLY_EXIT
