@@ -21,11 +21,11 @@ terraform {
       version = ">= 1.7.0"
     }
   }
-  backend "s3" {
-    bucket = "adot-op-cluster-terraform-statefile"
-    key    = "eks_adot_operator_cluster/terraform.tfstate"
-    region = "us-west-2"
-  }
+  # backend "s3" {
+  #   bucket = "adot-op-cluster-terraform-statefile"
+  #   key    = "eks_adot_operator_cluster/terraform.tfstate"
+  #   region = "us-west-2"
+  # }
 }
 
 module "common" {
@@ -61,7 +61,7 @@ module "eks" {
   vpc_id          = module.vpc.vpc_id
   subnets         = module.vpc.public_subnets
   enable_irsa     = true
-
+  kubeconfig_api_version = "client.authentication.k8s.io/v1beta1"
   cluster_endpoint_public_access = true
 
   workers_role_name           = aws_iam_role.eks_adot_operator_role.name
@@ -153,7 +153,7 @@ resource "helm_release" "adot-operator-cert-manager" {
 
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = "v1.4.3"
+  version    = "v1.8.0"
 
   create_namespace = true
 
@@ -167,7 +167,7 @@ resource "helm_release" "adot-operator-cert-manager" {
     command = <<-EOT
       kubectl wait --kubeconfig=${module.eks.kubeconfig_filename} --timeout=5m --for=condition=available deployment cert-manager -n cert-manager
       kubectl wait --kubeconfig=${module.eks.kubeconfig_filename} --timeout=5m --for=condition=available deployment cert-manager-webhook -n cert-manager
-      sleep 20s
+      sleep 20
     EOT
   }
 }
