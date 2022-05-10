@@ -21,11 +21,6 @@ terraform {
       version = ">= 1.7.0"
     }
   }
-  # backend "s3" {
-  #   bucket = "adot-op-cluster-terraform-statefile"
-  #   key    = "eks_adot_operator_cluster/terraform.tfstate"
-  #   region = "us-west-2"
-  # }
 }
 
 module "common" {
@@ -56,12 +51,12 @@ module "eks" {
   source  = "terraform-aws-modules/eks/aws"
   version = "17.24.0"
 
-  cluster_version = "1.21"
-  cluster_name    = var.eks_cluster_name
-  vpc_id          = module.vpc.vpc_id
-  subnets         = module.vpc.public_subnets
-  enable_irsa     = true
-  kubeconfig_api_version = "client.authentication.k8s.io/v1beta1"
+  cluster_version                = "1.21"
+  cluster_name                   = var.eks_cluster_name
+  vpc_id                         = module.vpc.vpc_id
+  subnets                        = module.vpc.public_subnets
+  enable_irsa                    = true
+  kubeconfig_api_version         = "client.authentication.k8s.io/v1beta1"
   cluster_endpoint_public_access = true
 
   workers_role_name           = aws_iam_role.eks_adot_operator_role.name
