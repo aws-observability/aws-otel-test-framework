@@ -1,0 +1,12 @@
+{
+"tests": [
+        {
+            "case_name": "xrayreceiver",
+            "platforms": ["EC2"]
+        },
+        {
+            "case_name": "otlp_metric_amp",
+            "platforms": ["EC2"]
+        }
+    ]
+}
