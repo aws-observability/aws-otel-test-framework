@@ -1,3 +1,4 @@
+cleanupDirs = ecs ec2 eks 
 
 .PHONY: fmt
 fmt:
@@ -22,5 +23,10 @@ postBatchClean:
 .PHONY: checkCacheHits
 checkCacheHits:
 	cat test-case-batch | xargs -L1 -P1 ./checkCacheHit.sh
+
+.PHONY: terraformCleanup
+terraformCleanup: test-case-batch
+	cat test-case-batch | xargs -L1 ./executeTerraformCleanup.sh 
+
  
 
