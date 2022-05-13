@@ -4,6 +4,7 @@ import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.fileconfigs.LocalPathExpectedTemplate;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.models.Context;
+import com.amazonaws.AmazonClientException;
 import com.amazonaws.services.logs.model.FilteredLogEvent;
 import com.fasterxml.jackson.databind.JsonNode;
 import lombok.extern.log4j.Log4j2;
@@ -68,12 +69,19 @@ public class ContainerInsightStructuredLogValidator
   protected void fetchAndValidateLogs(Instant startTime) throws Exception {
     log.info("Fetch and validate logs with types: "
             + String.join(", ", schemasToValidate.keySet()));
+
     for (String logType : schemasToValidate.keySet()) {
       String filterPattern = String.format("{ $.Type = \"%s\"}", logType);
-      List<FilteredLogEvent> logEvents = cloudWatchService.filterLogs(logGroupName, filterPattern,
-              startTime.toEpochMilli(), QUERY_LIMIT);
-      for (FilteredLogEvent logEvent : logEvents) {
-        validateJsonSchema(logEvent.getMessage());
+      try {
+        List<FilteredLogEvent> logEvents = cloudWatchService.filterLogs(logGroupName, filterPattern,
+                startTime.toEpochMilli(), QUERY_LIMIT);
+        for (FilteredLogEvent logEvent : logEvents) {
+          validateJsonSchema(logEvent.getMessage());
+        }
+      } catch (AmazonClientException e) {
+        log.info(String.format("[StructuredLogValidator] failed to retrieve filtered logs %s"
+                + "with filter pattern %s", logGroupName, filterPattern));
+        throw e;
       }
     }
   }

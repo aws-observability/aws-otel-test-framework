@@ -150,6 +150,14 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
               JsonLoader.fromString(logEventNode.toString()));
       if (report.isSuccess()) {
         validatedSchema.add(key);
+      } else {
+        // This will probably generate a lot of extra logs
+        // may want to log this to a different level in the future.
+        StringBuilder reportString = new StringBuilder();
+        reportString.append("Json validation failed: ");
+        report.forEach(processingMessage -> reportString.append(processingMessage.getMessage()));
+        log.info("[StructuredLogValidator] failed to validate schema \n");
+        log.info(reportString + "\n");
       }
     }
   }
