@@ -73,13 +73,15 @@ public class ContainerInsightStructuredLogValidator
     for (String logType : schemasToValidate.keySet()) {
       String filterPattern = String.format("{ $.Type = \"%s\"}", logType);
       try {
+        log.info(String.format("[StructuredLogValidator] Filtering logs in log group %s"
+                + "with filter pattern %s", logGroupName, filterPattern));
         List<FilteredLogEvent> logEvents = cloudWatchService.filterLogs(logGroupName, filterPattern,
                 startTime.toEpochMilli(), QUERY_LIMIT);
         for (FilteredLogEvent logEvent : logEvents) {
           validateJsonSchema(logEvent.getMessage());
         }
       } catch (AmazonClientException e) {
-        log.info(String.format("[StructuredLogValidator] failed to retrieve filtered logs %s"
+        log.info(String.format("[StructuredLogValidator] failed to retrieve filtered logs in log group %s"
                 + "with filter pattern %s", logGroupName, filterPattern));
         throw e;
       }
