@@ -38,11 +38,7 @@ import lombok.extern.log4j.Log4j2;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Log4j2
 public abstract class AbstractStructuredLogValidator implements IValidator {
@@ -91,7 +87,6 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
     RetryHelper.retry(getMaxRetryCount(), CHECK_INTERVAL_IN_MILLI, true, () -> {
       Instant startTime = Instant.now().minusSeconds(CHECK_DURATION_IN_SECONDS)
               .truncatedTo(ChronoUnit.MINUTES);
-
       fetchAndValidateLogs(startTime);
       checkResult();
     });
@@ -124,18 +119,23 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
 
   private void checkResult() throws BaseException {
     if (schemasToValidate.isEmpty() || schemasToValidate.keySet().equals(validatedSchema)) {
+      log.info(String.format("[StructuredLogValidator] log structure validation successful"
+              + "isEmpty: %b isEqual: %b",
+              schemasToValidate.isEmpty(), schemasToValidate.keySet().equals(validatedSchema)));
       return;
     }
-    String[] failedTargets = new String[schemasToValidate.size()];
-    int i = 0;
+    ArrayList<String> failedTargets = new ArrayList<>();
     for (String key : schemasToValidate.keySet()) {
-      failedTargets[i] = key;
-      i++;
+      if (!validatedSchema.contains(key)) {
+        failedTargets.add(key);
+      }
     }
+    log.info(String.format("[StructuredLogValidator] log structure validation failed for %s",
+            failedTargets));
     throw new BaseException(
             ExceptionCode.LOG_FORMAT_NOT_MATCHED,
             String.format("[StructuredLogValidator] log structure validation failed for %s",
-                    StringUtils.join(",", failedTargets)));
+                    failedTargets));
   }
 
   protected void validateJsonSchema(String logEventMsg) throws Exception {
