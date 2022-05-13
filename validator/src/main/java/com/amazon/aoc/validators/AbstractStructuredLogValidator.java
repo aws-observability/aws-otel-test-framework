@@ -154,7 +154,7 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
         // This will probably generate a lot of extra logs
         // may want to log this to a different level in the future.
         log.info("[StructuredLogValidator] failed to validate schema \n");
-        log.info(report.toString());
+        log.info(report.toString() + "\n");
       }
     }
   }
