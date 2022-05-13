@@ -91,7 +91,6 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
     RetryHelper.retry(getMaxRetryCount(), CHECK_INTERVAL_IN_MILLI, true, () -> {
       Instant startTime = Instant.now().minusSeconds(CHECK_DURATION_IN_SECONDS)
               .truncatedTo(ChronoUnit.MINUTES);
-
       fetchAndValidateLogs(startTime);
       checkResult();
     });
@@ -124,6 +123,9 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
 
   private void checkResult() throws BaseException {
     if (schemasToValidate.isEmpty() || schemasToValidate.keySet().equals(validatedSchema)) {
+      log.info(String.format("[StructuredLogValidator] log structure validation successful for %s"
+              + "isEmpty: %b isEqual: %b",
+              schemasToValidate.isEmpty(), schemasToValidate.keySet().equals(validatedSchema)));
       return;
     }
     String[] failedTargets = new String[schemasToValidate.size()];
@@ -132,6 +134,8 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
       failedTargets[i] = key;
       i++;
     }
+    log.info(String.format("[StructuredLogValidator] log structure validation failed for %s",
+            StringUtils.join(",", failedTargets)));
     throw new BaseException(
             ExceptionCode.LOG_FORMAT_NOT_MATCHED,
             String.format("[StructuredLogValidator] log structure validation failed for %s",
