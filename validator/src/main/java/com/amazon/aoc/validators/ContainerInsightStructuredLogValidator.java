@@ -84,6 +84,10 @@ public class ContainerInsightStructuredLogValidator
         log.info(String.format("[StructuredLogValidator] failed to retrieve filtered logs "
                 + "in log group %s with filter pattern %s", logGroupName, filterPattern));
         throw e;
+      } catch (Exception e) {
+        log.info(String.format("[StructuredLogValidator] error in fetch and validate logs: %s",
+                e));
+        throw e;
       }
     }
   }
