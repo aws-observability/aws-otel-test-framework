@@ -81,8 +81,8 @@ public class ContainerInsightStructuredLogValidator
           validateJsonSchema(logEvent.getMessage());
         }
       } catch (AmazonClientException e) {
-        log.info(String.format("[StructuredLogValidator] failed to retrieve filtered logs in log group %s"
-                + "with filter pattern %s", logGroupName, filterPattern));
+        log.info(String.format("[StructuredLogValidator] failed to retrieve filtered logs "
+                + "in log group %s with filter pattern %s", logGroupName, filterPattern));
         throw e;
       }
     }
