@@ -119,7 +119,7 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
 
   private void checkResult() throws BaseException {
     if (schemasToValidate.isEmpty() || schemasToValidate.keySet().equals(validatedSchema)) {
-      log.info(String.format("[StructuredLogValidator] log structure validation successful for %s"
+      log.info(String.format("[StructuredLogValidator] log structure validation successful"
               + "isEmpty: %b isEqual: %b",
               schemasToValidate.isEmpty(), schemasToValidate.keySet().equals(validatedSchema)));
       return;
