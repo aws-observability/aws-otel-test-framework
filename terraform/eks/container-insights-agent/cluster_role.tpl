@@ -22,3 +22,9 @@ rules:
     resources: ["configmaps"]
     resourceNames: ["otel-container-insight-clusterleader"]
     verbs: ["get","update"]
+  - apiGroups:
+      - coordination.k8s.io
+    resources:
+      - leases
+    verbs:
+      - '*'
