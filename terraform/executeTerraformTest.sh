@@ -75,15 +75,19 @@ cd ${TEST_FOLDER};
 while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     terraform init;
     if timeout -k 5m --signal=SIGINT -v 45m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ; then
-        echo "Exit code: $?"
-        aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
+        echo "Exit code: $?" 
     else
         echo "Terraform apply failed"
         echo "Exit code: $?"
         echo "AWS_service: $1"
-        echo "Testcase: $2"
-        APPLY_EXIT=1
+        echo "Testcase: $2" 
     fi
+    APPLY_EXIT=$?
+    # put cache if success 
+    if [ $APPLY_EXIT -eq 0 ]; then
+        aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
+    fi
+
     case "$service" in
         "EKS_FARGATE" | "EKS_ADOT_OPERATOR") terraform destroy --auto-approve $opts;
         ;;
