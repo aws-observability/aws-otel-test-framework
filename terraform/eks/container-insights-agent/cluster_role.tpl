@@ -22,4 +22,3 @@ rules:
     resources: ["configmaps"]
     resourceNames: ["otel-container-insight-clusterleader"]
     verbs: ["get","update", "create", "patch"]
-    
