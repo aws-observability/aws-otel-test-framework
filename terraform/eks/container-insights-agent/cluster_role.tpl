@@ -21,4 +21,13 @@ rules:
   - apiGroups: [""]
     resources: ["configmaps"]
     resourceNames: ["otel-container-insight-clusterleader"]
-    verbs: ["get","update", "create", "patch"]
+    verbs: ["get","update", "create"]
+  - apiGroups:
+    - coordination.k8s.io
+    resourceNames:
+    - otel-container-insight-clusterleader
+    resources:
+    - leases
+    verbs:
+    - get
+
