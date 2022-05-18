@@ -5,10 +5,10 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["pods", "nodes", "endpoints"]
-    verbs: ["list", "watch"]
+    verbs: ["list", "watch", "get"]
   - apiGroups: ["apps"]
     resources: ["replicasets"]
-    verbs: ["list", "watch"]
+    verbs: ["list", "watch", "get"]
   - apiGroups: ["batch"]
     resources: ["jobs"]
     verbs: ["list", "watch"]
@@ -21,10 +21,4 @@ rules:
   - apiGroups: [""]
     resources: ["configmaps"]
     resourceNames: ["otel-container-insight-clusterleader"]
-    verbs: ["get","update"]
-  - apiGroups:
-      - coordination.k8s.io
-    resources:
-      - leases
-    verbs:
-      - '*'
+    verbs: ["get","update", "create", "patch"]
