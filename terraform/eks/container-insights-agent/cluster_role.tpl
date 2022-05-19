@@ -5,10 +5,10 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["pods", "nodes", "endpoints"]
-    verbs: ["list", "watch", "get"]
+    verbs: ["list", "watch"]
   - apiGroups: ["apps"]
     resources: ["replicasets"]
-    verbs: ["list", "watch", "get"]
+    verbs: ["list", "watch"]
   - apiGroups: ["batch"]
     resources: ["jobs"]
     verbs: ["list", "watch"]
@@ -16,18 +16,10 @@ rules:
     resources: ["nodes/proxy"]
     verbs: ["get"]
   - apiGroups: [""]
-    resources: ["nodes/stats", "configmaps", "events"]
-    verbs: ["create", "get"]
+    resources: ["nodes/stats", "configmaps", "events", "leases"]
+    verbs: ["create", "get", "update"]
   - apiGroups: [""]
-    resources: ["configmaps"]
+    resources: ["configmaps", "leases"]
     resourceNames: ["otel-container-insight-clusterleader"]
     verbs: ["get","update", "create"]
-  - apiGroups:
-    - coordination.k8s.io
-    resourceNames:
-    - otel-container-insight-clusterleader
-    resources:
-    - leases
-    verbs:
-    - get
 
