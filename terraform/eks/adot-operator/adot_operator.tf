@@ -23,16 +23,28 @@ variable "kubeconfig" {
   default = "kubeconfig"
 }
 
+module "variables" {
+  source = "./variables"
+
+  operator_tag           = var.operator_tag
+  operator_helm_version  = var.operator_helm_version
+}
+
 resource "helm_release" "adot-operator" {
   name = "adot-operator-${var.testing_id}"
 
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart      = "opentelemetry-operator"
-  version    = "0.6.4"
+  version    = module.variables.operator_helm_version
 
   values = [
     file("./adot-operator/adot-operator-values.yaml")
   ]
+
+  set {
+    name  = "manager.image.tag"
+    value = module.variables.operator_tag
+  }
 
   provisioner "local-exec" {
     command = "kubectl wait --kubeconfig=${var.kubeconfig} --timeout=5m --for=condition=available deployment opentelemetry-operator-controller-manager"
