@@ -23,11 +23,14 @@ variable "kubeconfig" {
   default = "kubeconfig"
 }
 
-module "variables" {
-  source = "./variables"
+variable "operator_tag" {
+  type    = string
+  default = "latest"
+}
 
-  operator_tag           = var.operator_tag
-  operator_helm_version  = var.operator_helm_version
+variable "operator_helm_version" {
+  type    = string
+  default = ""
 }
 
 resource "helm_release" "adot-operator" {
