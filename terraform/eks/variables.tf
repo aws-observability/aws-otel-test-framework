@@ -55,3 +55,11 @@ variable "rollup" {
 variable "fargate_sample_app_lb_port" {
   default = "80"
 }
+
+variable "operator_tag" {
+  default = "v0.45.0"
+}
+
+variable "operator_helm_version" {
+  default = "0.6.4"
+}
