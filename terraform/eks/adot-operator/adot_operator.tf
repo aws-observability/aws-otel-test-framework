@@ -38,7 +38,7 @@ resource "helm_release" "adot-operator" {
 
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart      = "opentelemetry-operator"
-  version    = module.variables.operator_helm_version
+  version    = var.operator_helm_version
 
   values = [
     file("./adot-operator/adot-operator-values.yaml")
@@ -46,7 +46,7 @@ resource "helm_release" "adot-operator" {
 
   set {
     name  = "manager.image.tag"
-    value = module.variables.operator_tag
+    value = var.operator_tag
   }
 
   provisioner "local-exec" {
