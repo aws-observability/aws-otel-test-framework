@@ -31,7 +31,7 @@ resource "helm_release" "bitnami" {
   name      = "memcached"
   namespace = kubernetes_namespace.memcached_ns.metadata[0].name
 
-  repository = "https://charts.bitnami.com/bitnami"
+  repository = "https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami"
   chart      = "memcached"
   version    = "5.8.1"
 
