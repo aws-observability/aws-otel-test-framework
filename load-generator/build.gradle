@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
     // This dependency is used by the application.
-    implementation "com.google.guava:guava:31.0.1-jre"
+    implementation "com.google.guava:guava:31.1-jre"
 
     implementation "io.grpc:grpc-bom:1.44.1"
     implementation "io.grpc:grpc-api:1.43.2"
