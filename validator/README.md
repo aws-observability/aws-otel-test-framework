@@ -19,7 +19,7 @@ help
 ### run as github action
 
 ```yaml
-uses: aws-observability/aws-otel-collector-test-framework@terraform
+uses: aws-observability/aws-otel-test-framework@terraform
 with:
     running_type: validator
     opts: "-c default-otel-trace-validation.yml --endpoint 'the endpoint to test(Ex. 127.0.0.1:4567)'"
