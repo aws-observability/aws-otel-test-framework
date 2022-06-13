@@ -1,6 +1,6 @@
 manager:
   image:
-    repository: public.ecr.aws/aws-observability/adot-operator
+    repository: ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator
     tag: "latest"
 
 kubeRBACProxy:
