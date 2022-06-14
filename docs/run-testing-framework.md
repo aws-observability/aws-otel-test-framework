@@ -63,9 +63,10 @@ Setup only needs to be run once, it creates:
 
 Run 
 ````
-cd terraform/setup && terraform init && terraform apply -auto-approve
+cd terraform/setup && terraform init && terraform apply -auto-approve -var="bucketUUID=some_unique_identifier"
 ````
- 
+You will see a cortex endpoint as an output. Copy this and paste it under ```cortex_instance_endpoint``` in [terraform/common.tf](../terraform/common.tf)
+
 And Run
 ````
 cd terraform/imagebuild && terraform init && terraform apply -auto-approve
@@ -125,16 +126,23 @@ terraform destroy -auto-approve
 ````
  
 ### 2.4 Run in EKS
-**Prerequisite:** you are required to create an EKS cluster in your account
+**Prerequisite:** 
+
+Make sure your ```kubectl``` version is ```<= 1.23```
+
+Run
+
+````
+cd terraform/eks_adot_operator_cluster_setup && terraform init && terraform apply -auto-approve
+````
+And Run
 ````
 cd terraform/eks && terraform init && terraform apply -auto-approve \
     -var="aoc_image_repo={{the docker image you just pushed}}" \
     -var="aoc_version={{ the docker image tag name}}" \
     -var="testcase=../testcases/{{your test case folder name}}" \
     -var-file="../testcases/{{your test case folder name}}/parameters.tfvars" \
-    -var="eks_cluster_name={{the eks cluster name in your account}}" 
 ````
-
  Don't forget to clean up your resources:
 ````
 terraform destroy -auto-approve \

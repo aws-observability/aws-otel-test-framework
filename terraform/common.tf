@@ -68,7 +68,7 @@ variable "sample_app_mode" {
 }
 
 variable "cortex_instance_endpoint" {
-  # change to your cortex endpoint
+  # IMPORTANT - change to your cortex endpoint here
   default = "https://aps-workspaces.us-west-2.amazonaws.com/workspaces/ws-cd278045-1d6e-4550-a207-c5046a1b40b8"
 }
 
