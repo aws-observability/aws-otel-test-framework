@@ -153,7 +153,7 @@ resource "helm_release" "adot-operator-cert-manager" {
 
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
-  version    = "v1.4.3"
+  version    = "v1.8.1"
 
   create_namespace = true
 
