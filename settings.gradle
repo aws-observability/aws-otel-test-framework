@@ -1,6 +1,6 @@
 pluginManagement {
   plugins {
-    id("com.google.cloud.tools.jib") version "2.7.1"
+    id("com.google.cloud.tools.jib") version "3.2.1"
   }
 }
 rootProject.name = 'aws-otel-test-framework'

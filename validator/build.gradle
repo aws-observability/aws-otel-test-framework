@@ -2,7 +2,7 @@ plugins {
     id 'java'
 
     id 'application'
-    id 'com.google.cloud.tools.jib' version "3.1.4"
+    id 'com.google.cloud.tools.jib' version "3.2.1"
 
     // lombok
     id "io.freefair.lombok" version "6.3.0"
