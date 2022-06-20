@@ -76,7 +76,7 @@ dependencies {
     compileOnly 'info.picocli:picocli-codegen:4.3.2'
 
     // mockito
-    testImplementation "org.mockito:mockito-core:3.+"
+    testImplementation "org.mockito:mockito-core:4.+"
 }
 
 application {
