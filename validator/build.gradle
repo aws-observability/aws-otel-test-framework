@@ -2,10 +2,10 @@ plugins {
     id 'java'
 
     id 'application'
-    id 'com.google.cloud.tools.jib' version "3.1.4"
+    id 'com.google.cloud.tools.jib' version "3.2.1"
 
     // lombok
-    id "io.freefair.lombok" version "6.3.0"
+    id "io.freefair.lombok" version "6.4.3.1"
 
     // check style
     id 'checkstyle'
@@ -36,13 +36,13 @@ dependencies {
 
     // log
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
 
     // mustache template
     implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.8.9'
 
     // apache io utils
-    implementation group: 'commons-io', name: 'commons-io', version: '2.4'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
     // yaml reader
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.11.1'
@@ -76,7 +76,7 @@ dependencies {
     compileOnly 'info.picocli:picocli-codegen:4.3.2'
 
     // mockito
-    testImplementation "org.mockito:mockito-core:3.+"
+    testImplementation "org.mockito:mockito-core:4.+"
 }
 
 application {

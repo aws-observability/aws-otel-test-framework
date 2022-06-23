@@ -14,7 +14,7 @@ plugins {
     id 'application'
 
     // lombok
-    id "io.freefair.lombok" version "6.3.0"
+    id "io.freefair.lombok" version "6.4.3.1"
 }
 
 repositories {
@@ -23,12 +23,12 @@ repositories {
 
 dependencies {
     // This dependency is used by the application.
-    implementation "com.google.guava:guava:31.0.1-jre"
+    implementation "com.google.guava:guava:31.1-jre"
 
-    implementation "io.grpc:grpc-bom:1.44.1"
-    implementation "io.grpc:grpc-api:1.43.2"
+    implementation "io.grpc:grpc-bom:1.47.0"
+    implementation "io.grpc:grpc-api:1.47.0"
 
-    implementation "io.grpc:grpc-netty-shaded:1.44.1"
+    implementation "io.grpc:grpc-netty-shaded:1.47.0"
 
     implementation platform("io.opentelemetry:opentelemetry-bom:1.12.0")
     implementation "io.opentelemetry:opentelemetry-api"
@@ -38,8 +38,8 @@ dependencies {
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:1.4.1-alpha"
 
-    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.10.0"
-    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.10.0"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.11.2"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.11.2"
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13.2'
