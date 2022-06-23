@@ -20,7 +20,6 @@ exporters:
 
 
 service:
-  extensions:
   pipelines:
     traces:
       receivers: [jaeger]

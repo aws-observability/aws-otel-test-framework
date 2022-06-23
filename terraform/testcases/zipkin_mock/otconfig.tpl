@@ -18,7 +18,6 @@ exporters:
 
 
 service:
-  extensions:
   pipelines:
     traces:
       receivers: [zipkin]
