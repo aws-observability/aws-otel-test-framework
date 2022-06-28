@@ -8,26 +8,30 @@ under sample apps in languages that support centralized sampling. As of now the 
 supported are Java and Go. To run these tests, first start up the collector, then
 start up the chosen sample app, then start running the tests.
 
-
-The design doc for this project is found here
-[Design Doc](https://quip-amazon.com/qcsdACbyatNi/X-Ray-Centralized-Sampling-Testing).
-The wiki for this project is found here
-[Wiki](https://w.amazon.com/bin/view/AWS/X-Ray/Development/SDK_and_Tools/Centralized-Sampling-Integration-Testing)
-
 ## Run Locally
 
 ### Set up collector
 To run locally first set up the collector with the correct configuration.
 It is possible that this is already done. The collector-contrib releases can be found here
-[Otel-Collector-Contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib/releases).
-Make sure that the collector config is configured to work with a local x-ray listener. 
-See the example-collector-config.yaml for what it should look like. Start the collector.
+[aws-otel-collector](https://github.com/aws-observability/aws-otel-collector).
+Make sure that the collector config is configured to work with a local x-ray listener pointed
+to port 2000. See the example-collector-config.yaml for what it should look like. Start the 
+collector with command.
+```shell
+    docker run --rm -p 2000:2000 -p 55680:55680 -p 8889:8888 \
+      -e AWS_REGION=us-west-2 \
+      -e AWS_PROFILE=default \
+      -v ~/.aws:/root/.aws \
+      -v "${PWD}/examples/docker/config-test.yaml":/otel-local-config.yaml \
+      --name awscollector public.ecr.aws/aws-observability/aws-otel-collector:latest \
+      --config otel-local-config.yaml;
+```
 
 ### Start up sample app
 Start up the sample app of your choice that is configured for centralized sampling integration
 tests. The sample apps exist in the sample-apps folder. Each sample app will have a 
 readMe on how to run it. If adding a sample-app to use for the integration tests see
-[Sample-app-requirements](https://quip-amazon.com/o48yA4tsDf4F/Integration-Test-Sample-App-Requirements)
+[Sample-app-requirements](https://docs.google.com/document/d/1nu6XwYKe8h3EZ6upCQqf83hI9gQ-yg5WXlxHRjJ7BCg/edit?usp=sharing)
 
 ### Start up integration tests
 Insert directions on how to run once they are done.
