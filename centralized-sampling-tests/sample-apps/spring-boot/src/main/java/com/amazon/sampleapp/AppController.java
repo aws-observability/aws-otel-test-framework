@@ -34,7 +34,7 @@ public class AppController {
             AttributeKey.stringKey("http.route"), "/getSampled",
             AttributeKey.stringKey("required"), required,
             AttributeKey.stringKey("http.target"), "/getSampled");
-    return getSpans(name, totalSpans, attributes);
+    return getSampledCount(name, totalSpans, attributes);
   }
 
   // Post endpoint for /getSampled that requires three header values for user, service_name, and
@@ -56,7 +56,7 @@ public class AppController {
             AttributeKey.stringKey("http.route"), "/getSampled",
             AttributeKey.stringKey("required"), required,
             AttributeKey.stringKey("http.target"), "/getSampled");
-    return getSpans(name, totalSpans, attributes);
+    return getSampledCount(name, totalSpans, attributes);
   }
 
   // Get endpoint for /importantEndpoint that requires three header values for user, service_name,
@@ -77,10 +77,10 @@ public class AppController {
             AttributeKey.stringKey("required"), required,
             AttributeKey.stringKey("user"), userAttribute,
             AttributeKey.stringKey("http.target"), "/importantEndpoint");
-    return getSpans(name, totalSpans, attributes);
+    return getSampledCount(name, totalSpans, attributes);
   }
 
-  public static int getSpans(String name, String totalSpans, Attributes attributes) {
+  public static int getSampledCount(String name, String totalSpans, Attributes attributes) {
     int numSampled = 0;
     int spans = Integer.parseInt(totalSpans);
 
