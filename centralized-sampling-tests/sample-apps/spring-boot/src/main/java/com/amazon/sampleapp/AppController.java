@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 // Controller for the application
 @Controller
 public class AppController {
+    // Global variable to represent number of spans the endpoint creates
+    public static int totalSpans = 1000;
 
     // Get endpoint for /getSampled that requires three header values for user, service_name, and required
     // Returns the number of times a span was sampled out of the creation of 1000 spans
@@ -26,7 +28,7 @@ public class AppController {
             @RequestHeader("required") String required) {
 
         int numSampled = 0;
-        for (int i = 0; i < 1000; i++)
+        for (int i = 0; i < totalSpans; i++)
         {
             Attributes attributes =
                     Attributes.of(
@@ -65,7 +67,7 @@ public class AppController {
             @RequestHeader("required") String required) {
 
         int numSampled = 0;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < totalSpans; i++) {
             Attributes attributes =
                     Attributes.of(
                             AttributeKey.stringKey("http.method"), "POST",
@@ -103,7 +105,7 @@ public class AppController {
             @RequestHeader("required") String required) {
 
         int numSampled = 0;
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < totalSpans; i++) {
             Attributes attributes =
                     Attributes.of(
                             AttributeKey.stringKey("http.method"), "GET",
