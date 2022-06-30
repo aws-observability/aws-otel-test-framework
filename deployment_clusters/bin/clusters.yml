@@ -1,0 +1,14 @@
+---
+clusters:
+  armCluster:
+    launch_type: ec2
+    cpu_architecture: Arm-64
+    version: 1.19
+  # amdCluster:
+  #   launch_type: ec2
+  #   cpu_architecture: AMD_64
+  #   version: 1.21
+  # fargateCluster:
+  #   launch_type: fargate
+  #   cpu_architecture: null 
+  #   version: 1.22
