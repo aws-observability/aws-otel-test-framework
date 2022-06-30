@@ -36,7 +36,6 @@ dependencies {
 	implementation("io.opentelemetry:opentelemetry-extension-trace-propagators")
 	implementation("io.opentelemetry:opentelemetry-extension-aws")
 	implementation("io.opentelemetry.instrumentation:opentelemetry-aws-sdk-2.2")
-	implementation("io.opentelemetry:opentelemetry-api")
 	implementation ('io.grpc:grpc-netty:1.46.0')
 }
 
