@@ -22,10 +22,10 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 public class Application {
 
-  public static Resource resource = Resource.builder().build();
+  public final static Resource RESOURCE = Resource.builder().build();
 
   // Opentelemetry builder to create a xray remote sampler with polling interval of 1
-  public static OpenTelemetry openTelemetry =
+  public final static OpenTelemetry OPEN_TELEMETRY =
       OpenTelemetrySdk.builder()
           .setPropagators(
               ContextPropagators.create(
@@ -35,9 +35,9 @@ public class Application {
               SdkTracerProvider.builder()
                   .addSpanProcessor(
                       BatchSpanProcessor.builder(OtlpGrpcSpanExporter.getDefault()).build())
-                  .setResource(resource)
+                  .setResource(RESOURCE)
                   .setSampler(
-                      AwsXrayRemoteSampler.newBuilder(resource)
+                      AwsXrayRemoteSampler.newBuilder(RESOURCE)
                           .setPollingInterval(Duration.ofSeconds(1))
                           .build())
                   .setIdGenerator(AwsXrayIdGenerator.getInstance())

@@ -25,32 +25,16 @@ public class AppController {
       @RequestHeader("service_name") String name,
       @RequestHeader("required") String required,
       @RequestHeader("totalSpans") String totalSpans) {
-    int numSampled = 0;
-    int spans = Integer.parseInt(totalSpans);
-    for (int i = 0; i < spans; i++) {
-      Attributes attributes =
-          Attributes.of(
-              AttributeKey.stringKey("http.method"), "GET",
-              AttributeKey.stringKey("http.url"), "http://localhost:8080/getSampled",
-              AttributeKey.stringKey("user"), userAttribute,
-              AttributeKey.stringKey("http.route"), "/getSampled",
-              AttributeKey.stringKey("required"), required,
-              AttributeKey.stringKey("http.target"), "/getSampled");
-      Tracer tracer = Application.openTelemetry.getTracer(name);
-      Span span =
-          tracer
-              .spanBuilder(name)
-              .setSpanKind(SpanKind.SERVER)
-              .setAllAttributes(attributes)
-              .startSpan();
 
-      boolean isSampled = span.getSpanContext().isSampled();
-      span.end();
-      if (isSampled) {
-        numSampled++;
-      }
-    }
-    return numSampled;
+    Attributes attributes =
+        Attributes.of(
+            AttributeKey.stringKey("http.method"), "GET",
+            AttributeKey.stringKey("http.url"), "http://localhost:8080/getSampled",
+            AttributeKey.stringKey("user"), userAttribute,
+            AttributeKey.stringKey("http.route"), "/getSampled",
+            AttributeKey.stringKey("required"), required,
+            AttributeKey.stringKey("http.target"), "/getSampled");
+    return getSpans(name, totalSpans, attributes);
   }
 
   // Post endpoint for /getSampled that requires three header values for user, service_name, and
@@ -64,32 +48,15 @@ public class AppController {
       @RequestHeader("required") String required,
       @RequestHeader("totalSpans") String totalSpans) {
 
-    int numSampled = 0;
-    int spans = Integer.parseInt(totalSpans);
-    for (int i = 0; i < spans; i++) {
-      Attributes attributes =
-          Attributes.of(
-              AttributeKey.stringKey("http.method"), "POST",
-              AttributeKey.stringKey("http.url"), "http://localhost:8080/getSampled",
-              AttributeKey.stringKey("user"), userAttribute,
-              AttributeKey.stringKey("http.route"), "/getSampled",
-              AttributeKey.stringKey("required"), required,
-              AttributeKey.stringKey("http.target"), "/getSampled");
-      Tracer tracer = Application.openTelemetry.getTracer(name);
-      Span span =
-          tracer
-              .spanBuilder(name)
-              .setSpanKind(SpanKind.SERVER)
-              .setAllAttributes(attributes)
-              .startSpan();
-
-      boolean isSampled = span.getSpanContext().isSampled();
-      if (isSampled) {
-        numSampled++;
-      }
-      span.end();
-    }
-    return numSampled;
+    Attributes attributes =
+        Attributes.of(
+            AttributeKey.stringKey("http.method"), "POST",
+            AttributeKey.stringKey("http.url"), "http://localhost:8080/getSampled",
+            AttributeKey.stringKey("user"), userAttribute,
+            AttributeKey.stringKey("http.route"), "/getSampled",
+            AttributeKey.stringKey("required"), required,
+            AttributeKey.stringKey("http.target"), "/getSampled");
+    return getSpans(name, totalSpans, attributes);
   }
 
   // Get endpoint for /importantEndpoint that requires three header values for user, service_name,
@@ -102,20 +69,24 @@ public class AppController {
       @RequestHeader("service_name") String name,
       @RequestHeader("required") String required,
       @RequestHeader("totalSpans") String totalSpans) {
+    Attributes attributes =
+        Attributes.of(
+            AttributeKey.stringKey("http.method"), "GET",
+            AttributeKey.stringKey("http.url"), "http://localhost:8080/importantEndpoint",
+            AttributeKey.stringKey("http.route"), "/importantEndpoint",
+            AttributeKey.stringKey("required"), required,
+            AttributeKey.stringKey("user"), userAttribute,
+            AttributeKey.stringKey("http.target"), "/importantEndpoint");
+    return getSpans(name, totalSpans, attributes);
+  }
 
+  public static int getSpans(String name, String totalSpans, Attributes attributes) {
     int numSampled = 0;
     int spans = Integer.parseInt(totalSpans);
 
     for (int i = 0; i < spans; i++) {
-      Attributes attributes =
-          Attributes.of(
-              AttributeKey.stringKey("http.method"), "GET",
-              AttributeKey.stringKey("http.url"), "http://localhost:8080/importantEndpoint",
-              AttributeKey.stringKey("http.route"), "/importantEndpoint",
-              AttributeKey.stringKey("required"), required,
-              AttributeKey.stringKey("user"), userAttribute,
-              AttributeKey.stringKey("http.target"), "/importantEndpoint");
-      Tracer tracer = Application.openTelemetry.getTracer(name);
+
+      Tracer tracer = Application.OPEN_TELEMETRY.getTracer(name);
       Span span =
           tracer
               .spanBuilder(name)
