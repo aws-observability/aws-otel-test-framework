@@ -33,8 +33,6 @@ public class Application {
                       W3CTraceContextPropagator.getInstance(), AwsXrayPropagator.getInstance())))
           .setTracerProvider(
               SdkTracerProvider.builder()
-                  .addSpanProcessor(
-                      BatchSpanProcessor.builder(OtlpGrpcSpanExporter.getDefault()).build())
                   .setResource(RESOURCE)
                   .setSampler(
                       AwsXrayRemoteSampler.newBuilder(RESOURCE)
