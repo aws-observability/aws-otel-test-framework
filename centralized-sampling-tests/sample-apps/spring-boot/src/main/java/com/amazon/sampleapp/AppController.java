@@ -16,10 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.time.Duration;
 
-// Controller for the application
 @Controller
 public class AppController {
 
@@ -42,9 +40,10 @@ public class AppController {
     this.tracer = openTelemetry.getTracer("centralized-sampling-tests");
   }
 
-  // Get endpoint for /getSampled that requires three header values for user, service_name, and
-  // required
-  // Returns the number of times a span was sampled out of the creation of 1000 spans
+  /**
+   * Get endpoint for /getSampled that requires three header values for user, service_name, and
+   * required Returns the number of times a span was sampled out of the creation of 1000 spans
+   */
   @GetMapping(value = "/getSampled")
   @ResponseBody
   public int getSampled(
@@ -64,9 +63,10 @@ public class AppController {
     return getSampledSpanCount(name, totalSpans, attributes);
   }
 
-  // Post endpoint for /getSampled that requires three header values for user, service_name, and
-  // required
-  // Returns the number of times a span was sampled out of the creation of 1000 spans
+  /**
+   * Post endpoint for /getSampled that requires three header values for user, service_name, and
+   * required Returns the number of times a span was sampled out of the creation of 1000 spans
+   */
   @PostMapping("/getSampled")
   @ResponseBody
   public int postSampled(
@@ -85,9 +85,10 @@ public class AppController {
     return getSampledSpanCount(name, totalSpans, attributes);
   }
 
-  // Get endpoint for /importantEndpoint that requires three header values for user, service_name,
-  // and required
-  // Returns the number of times a span was sampled out of the creation of 1000 spans
+  /**
+   * Get endpoint for /importantEndpoint that requires three header values for user, service_name,
+   * and required Returns the number of times a span was sampled out of the creation of 1000 spans
+   */
   @GetMapping("/importantEndpoint")
   @ResponseBody
   public int importantEndpoint(
@@ -106,6 +107,15 @@ public class AppController {
     return getSampledSpanCount(name, totalSpans, attributes);
   }
 
+  /**
+   * Creates x amount of spans with x being supplied by totalSpans and returns how many of those
+   * spans were sampled
+   *
+   * @param name name of the span that will end up being the service-name
+   * @param totalSpans number of spans to make
+   * @param attributes attributes to set for the span
+   * @return the number of times a span was sampled
+   */
   private int getSampledSpanCount(String name, String totalSpans, Attributes attributes) {
     int numSampled = 0;
     int spans = Integer.parseInt(totalSpans);
