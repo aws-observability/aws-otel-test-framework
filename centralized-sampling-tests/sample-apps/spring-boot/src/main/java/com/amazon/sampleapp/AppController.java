@@ -32,18 +32,18 @@ public class AppController {
   public void setResource() {
     this.resource = Resource.builder().build();
     this.openTelemetry =
-            OpenTelemetrySdk.builder()
-                    .setTracerProvider(
-                            SdkTracerProvider.builder()
-                                    .setResource(this.resource)
-                                    .setSampler(
-                                            AwsXrayRemoteSampler.newBuilder(this.resource)
-                                                    .setPollingInterval(Duration.ofSeconds(1))
-                                                    .build())
-                                    .build())
-                    .buildAndRegisterGlobal();
+        OpenTelemetrySdk.builder()
+            .setTracerProvider(
+                SdkTracerProvider.builder()
+                    .setResource(this.resource)
+                    .setSampler(
+                        AwsXrayRemoteSampler.newBuilder(this.resource)
+                            .setPollingInterval(Duration.ofSeconds(1))
+                            .build())
+                    .build())
+            .buildAndRegisterGlobal();
   }
-  
+
   // Get endpoint for /getSampled that requires three header values for user, service_name, and
   // required
   // Returns the number of times a span was sampled out of the creation of 1000 spans

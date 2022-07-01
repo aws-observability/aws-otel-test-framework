@@ -1,16 +1,9 @@
 package com.amazon.sampleapp;
 
-import io.opentelemetry.api.OpenTelemetry;
-import io.opentelemetry.contrib.awsxray.AwsXrayRemoteSampler;
-import io.opentelemetry.sdk.OpenTelemetrySdk;
-import io.opentelemetry.sdk.resources.Resource;
-import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 public class Application {
