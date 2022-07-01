@@ -26,7 +26,7 @@ public class AppController {
   private Tracer tracer;
 
   @Autowired
-  public void setResource() {
+  public void setTracer() {
     Resource resource = Resource.builder().build();
     OpenTelemetry openTelemetry =
         OpenTelemetrySdk.builder()
