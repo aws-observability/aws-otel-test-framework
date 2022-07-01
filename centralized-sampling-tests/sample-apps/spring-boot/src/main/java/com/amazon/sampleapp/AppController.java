@@ -10,19 +10,23 @@ import io.opentelemetry.contrib.awsxray.AwsXrayRemoteSampler;
 import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
+import java.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.ResponseBody;
-import java.time.Duration;
 
 @Controller
 public class AppController {
 
   private Tracer tracer;
 
+  /**
+   * Injects the tracer into application controller, so it can be used by a later function
+   * Creates a resource and open-telemetry agent then uses those to create/set a tracer.
+   */
   @Autowired
   public void setTracer() {
     Resource resource = Resource.builder().build();
