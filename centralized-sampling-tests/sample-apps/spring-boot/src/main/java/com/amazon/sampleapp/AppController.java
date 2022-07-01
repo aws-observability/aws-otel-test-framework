@@ -22,26 +22,24 @@ import java.time.Duration;
 // Controller for the application
 @Controller
 public class AppController {
-  // Resource used to create xray sampler
-  private Resource resource;
 
-  // Opentelemetry builder to create a xray remote sampler with polling interval of 1
-  private OpenTelemetry openTelemetry;
+  private Tracer tracer;
 
   @Autowired
   public void setResource() {
-    this.resource = Resource.builder().build();
-    this.openTelemetry =
+    Resource resource = Resource.builder().build();
+    OpenTelemetry openTelemetry =
         OpenTelemetrySdk.builder()
             .setTracerProvider(
                 SdkTracerProvider.builder()
-                    .setResource(this.resource)
+                    .setResource(resource)
                     .setSampler(
-                        AwsXrayRemoteSampler.newBuilder(this.resource)
+                        AwsXrayRemoteSampler.newBuilder(resource)
                             .setPollingInterval(Duration.ofSeconds(1))
                             .build())
                     .build())
             .buildAndRegisterGlobal();
+    this.tracer = openTelemetry.getTracer("centralized-sampling-tests");
   }
 
   // Get endpoint for /getSampled that requires three header values for user, service_name, and
@@ -114,9 +112,8 @@ public class AppController {
 
     for (int i = 0; i < spans; i++) {
 
-      Tracer tracer = this.openTelemetry.getTracer(name);
       Span span =
-          tracer
+          this.tracer
               .spanBuilder(name)
               .setSpanKind(SpanKind.SERVER)
               .setAllAttributes(attributes)
