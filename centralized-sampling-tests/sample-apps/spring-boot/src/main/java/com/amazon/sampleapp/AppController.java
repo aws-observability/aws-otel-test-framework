@@ -24,8 +24,8 @@ public class AppController {
   private Tracer tracer;
 
   /**
-   * Injects the tracer into application controller, so it can be used by a later function
-   * Creates a resource and open-telemetry agent then uses those to create/set a tracer.
+   * Injects the tracer into application controller, so it can be used by a later function Creates a
+   * resource and open-telemetry agent then uses those to create/set a tracer.
    */
   @Autowired
   public void setTracer() {
