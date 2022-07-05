@@ -31,6 +31,8 @@ const yaml = require('js-yaml')
 // }
 
 
-const route = '../my-project/bin/clusters.yml';
+const route = '../deployment_clusters/bin/clusters.yml';
+const raw = readFileSync(route)
+const data = yaml.load(raw)
 const app = new cdk.App();
-new MyProjectStack(app, 'MyProjectStack', {route: route});
+new MyProjectStack(app, 'DeploymentStack', {data: data});

@@ -49,15 +49,6 @@ export function validateClusters(info: Object){
                     break
             }
         }
-        // const cpuType = dict.get('cpu_architecture')
-        // const fixedCPUType = refactorAndValidateArchitecture(cpuType)
-        // dict.set('cpu_architecture', fixedCPUType);
-        // const launchType = dict.get('launch_type')
-        // const fixedLaunchType = refactorAndValidateLaunchType(launchType)
-        // dict.set('cpu_architecture', fixedLaunchType);
-        // validateVersion(dict.get('version'))
-        // console.log(dict);
-        // console.log(dict.get('version'))
     }
 }
 
