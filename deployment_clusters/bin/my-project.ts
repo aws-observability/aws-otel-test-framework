@@ -5,7 +5,7 @@ import { MyProjectStack } from '../lib/my-project-stack';
 import {parseData, validateClusters} from '../lib/utils/parse' 
 import { fileURLToPath } from 'url';
 import { resolve, dirname } from 'path';
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync} from 'fs';
 const yaml = require('js-yaml')
 
 

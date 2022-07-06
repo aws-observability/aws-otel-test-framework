@@ -1,7 +1,12 @@
+import { singletonEventRole } from 'aws-cdk-lib/aws-events-targets';
 import { FunctionVersionUpgrade } from 'aws-cdk-lib/aws-lambda';
 import { readFileSync, writeFileSync } from 'fs';
 import { exit } from 'process';
 const yaml = require('js-yaml')
+
+const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21', '1.22']);
+const supportedCPUArchitectures = new Set(['amd64', 'arm64']);
+const supportedLaunchTypes = new Set(['ec2', 'fargate']);
 
 export function parseData(info: Object){
     var bigMap = new Map()
@@ -56,20 +61,15 @@ export function validateClusters(info: Object){
 
 function validateVersion(version: string){
     
-    const fl = parseFloat(version)
-    // console.log("validating version: " + fl)
-    if(isNaN(fl) || version.length != 4){
+    if(version === '1.2'){
+        version = "1.20"
+    }
+
+    // const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21', '1.22']);
+    if(!supportedVersions.has(version)){
         throw new Error("Version needs to be number between 1.18 to 1.22");
     }
-    const splitCheckArray = version.split(".")
-    if(splitCheckArray.length != 2 || splitCheckArray[0] != "1"){
-        throw new Error("Version needs to be between 1.18 to 1.22")
-    }
-    const latterValue = parseInt(splitCheckArray[1])
-    if(latterValue < 19 || latterValue > 22){
-        throw new Error("Version isn't between 1.18-1.22")
-    }
-    return fl
+    return version
 }
 
 function refactorAndValidateArchitecture(cpu: string){
@@ -77,10 +77,14 @@ function refactorAndValidateArchitecture(cpu: string){
         console.log("It is null: " + cpu)
         return null
     }
+    // const supportedCPUArchitectures = new Set(['amd64', 'arm64']);
     const adjustedType = cpu.toLowerCase().replace(/[\W_]+/g, "");
-    if(adjustedType != 'arm64' && adjustedType != 'amd64'){
+    if(!supportedCPUArchitectures.has(adjustedType)){
         throw new Error("Improper CPU Architecture Type")
     }
+    // if(adjustedType != 'arm64' && adjustedType != 'amd64'){
+    //     throw new Error("Improper CPU Architecture Type")
+    // }
     return adjustedType
 }
 
@@ -88,9 +92,13 @@ function refactorAndValidateLaunchType(type: string){
     if(type == null){
         throw new Error("Launch Type can't be null")
     }
+    // const supportedLaunchTypes = new Set(['ec2', 'fargate']);
     const adjustedType = type.toLowerCase().replace(/[\W_]+/g, "");
-    if(adjustedType != 'ec2' && adjustedType != 'fargate'){
+    if(!supportedLaunchTypes.has(adjustedType)){
         throw new Error("Improper CPU Architecture Type")
     }
+    // if(adjustedType != 'ec2' && adjustedType != 'fargate'){
+    //     throw new Error("Improper CPU Architecture Type")
+    // }
     return adjustedType
 }

@@ -10,6 +10,8 @@ const yaml = require('js-yaml')
 
 
 export class MyProjectStack extends Stack {
+  clusterMap = new Map();
+
   constructor(scope: Construct, id: string, props: ParentStackProps) {
     super(scope, id, props);
 
@@ -36,24 +38,33 @@ export class MyProjectStack extends Stack {
     for(const [key, value] of Object.entries(data['clusters'])){
       const val = Object(value)
       const versionKubernetes = eks.KubernetesVersion.of(String(val['version']));
-      if(String(val['launch_type']) === 'ec2'){
-        const arm64Cluster = new EC2Stack(this, key + "Stack", {
-          name: key,
-          vpc: vpc,
-          version: versionKubernetes,
-          cpu: String(val["cpu_architecture"])
-        });
-      } else if(String(val['launch_type']) === 'fargate'){
-        const fargateCluster = new FargateNested(this, key + "Stack", {
-          name: key,
-          vpc: vpc,
-          version: versionKubernetes
-        });
-      } else {
-        console.log('-------------------------------------------')
-        console.log('nothing deployed: error with configuration')
-        console.log('------------------------------------------------')
-      }
+      const newStack = new EC2Stack(this, key + "Stack", {
+        launch_type: String(val['launch_type']),
+        name: key,
+        vpc: vpc,
+        version: versionKubernetes,
+        cpu: String(val["cpu_architecture"])
+      })
+      this.clusterMap.set(key, newStack.cluster)
+
+      // if(String(val['launch_type']) === 'ec2'){
+      //   const arm64Cluster = new EC2Stack(this, key + "Stack", {
+      //     name: key,
+      //     vpc: vpc,
+      //     version: versionKubernetes,
+      //     cpu: String(val["cpu_architecture"])
+      //   });
+      // } else if(String(val['launch_type']) === 'fargate'){
+      //   const fargateCluster = new FargateNested(this, key + "Stack", {
+      //     name: key,
+      //     vpc: vpc,
+      //     version: versionKubernetes
+      //   });
+      // } else {
+      //   console.log('-------------------------------------------')
+      //   console.log('nothing deployed: error with configuration')
+      //   console.log('------------------------------------------------')
+      // }
     }
 
     
@@ -74,6 +85,10 @@ export class MyProjectStack extends Stack {
     
 
 
+  }
+
+  getCluster(clusterName: string) : eks.Cluster | eks.FargateCluster {
+    return this.clusterMap.get(clusterName)
   }
 
   
