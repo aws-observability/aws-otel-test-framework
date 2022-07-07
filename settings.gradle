@@ -9,6 +9,10 @@ include 'load-generator'
 include 'sample-apps'
 include 'trace-java-client'
 include 'jaeger-zipkin-emitter-app'
+
+include 'centralized-sampling-tests:sample-apps:spring-boot'
+findProject(':centralized-sampling-tests:sample-apps:spring-boot')?.name = 'spring-boot'
+
 include 'sample-app:jaeger-zipkin-sample-app'
 findProject(':sample-app:jaeger-zipkin-sample-app')?.name = 'jaeger-zipkin-sample-app'
 include 'sample-apps:jaeger-zipkin-sample-app'
