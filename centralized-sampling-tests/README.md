@@ -12,8 +12,8 @@ start up the chosen sample app, then start running the tests.
 
 ### Set up collector
 To run locally first set up the collector with the correct configuration.
-It is possible that this is already done. The collector-contrib releases can be found here
-[aws-otel-collector](https://github.com/aws-observability/aws-otel-collector).
+It is possible that this is already done. Available ADOT Collector releases can be found here
+[aws-otel-collector](https://github.com/aws-observability/aws-otel-collector/releases).
 Make sure that the collector config is configured to work with a local x-ray listener pointed
 to port 2000. See the example-collector-config.yaml for what it should look like. Start the 
 collector with command.
