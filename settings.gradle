@@ -13,6 +13,9 @@ include 'jaeger-zipkin-emitter-app'
 include 'centralized-sampling-tests:sample-apps:spring-boot'
 findProject(':centralized-sampling-tests:sample-apps:spring-boot')?.name = 'spring-boot'
 
+include 'centralized-sampling-tests:integration-tests'
+findProject(':centralized-sampling-tests:integration-tests')?.name = 'integration-tests'
+
 include 'sample-app:jaeger-zipkin-sample-app'
 findProject(':sample-app:jaeger-zipkin-sample-app')?.name = 'jaeger-zipkin-sample-app'
 include 'sample-apps:jaeger-zipkin-sample-app'
