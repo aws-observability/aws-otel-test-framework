@@ -42,13 +42,13 @@ resource "helm_release" "adot-operator" {
   ]
 
   set {
-    name = "manager.image.repository"
-    value = "${var.operator_repository}"
+    name  = "manager.image.repository"
+    value = var.operator_repository
   }
 
   set {
-    name = "manager.image.tag"
-    value = "${var.operator_tag}"
+    name  = "manager.image.tag"
+    value = var.operator_tag
   }
 
   provisioner "local-exec" {
