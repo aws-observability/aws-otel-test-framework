@@ -1,5 +1,8 @@
 package com.amazon.tests;
 
+/**
+ * Constant global variables used in tests
+ */
 public class GenericConstants {
   public static final int MAX_RETRIES = 4;
   public static final int WAIT_FOR_RESERVOIR = 20;

@@ -10,7 +10,6 @@ import java.util.List;
  */
 public class testCases {
   public List<String> matches;
-  public int defaultRate = GenericConstants.DEFAULT_RATE;
   public String name;
   public String user;
   public String required;

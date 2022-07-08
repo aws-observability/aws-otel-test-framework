@@ -2,9 +2,6 @@ package com.amazon.tests;
 
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /** File that contains all sample Rules that will be created to be used for testing */
 public class SampleRules {
   public String name;
@@ -30,7 +27,7 @@ public class SampleRules {
    * @param priority - int - priority of the rule
    * @param reservoir - int - reservoir or minimum it should sample
    * @param rate - double - fixed rate of the sample rule
-   * @param service_name - String - service name to filter by, "*" if none
+   * @param serviceName - String - service name to filter by, "*" if none
    * @param method - String - REST method to filter by, "*" if none
    * @param path - PATH - path to filter by, "*" if none
    * @param attributes - JSONObject - attributes to filter by, can be null
@@ -41,7 +38,7 @@ public class SampleRules {
       int priority,
       int reservoir,
       double rate,
-      String service_name,
+      String serviceName,
       String method,
       String path,
       JSONObject attributes) {
@@ -54,7 +51,7 @@ public class SampleRules {
     jsonBody.put("ReservoirSize", reservoir);
     jsonBody.put("ResourceARN", "*");
     jsonBody.put("RuleName", name);
-    jsonBody.put("ServiceName", service_name);
+    jsonBody.put("ServiceName", serviceName);
     jsonBody.put("ServiceType", "*");
     jsonBody.put("URLPath", path);
     jsonBody.put("Version", 1);
