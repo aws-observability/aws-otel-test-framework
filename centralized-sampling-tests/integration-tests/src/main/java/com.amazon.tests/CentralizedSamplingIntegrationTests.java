@@ -60,7 +60,7 @@ public class CentralizedSamplingIntegrationTests {
                     .method(testCase.method, reqbody)
                     .build())
             .execute()) {
-      stringResp = response.body().string().toString();
+      stringResp = response.body().string();
 
     } catch (IOException e) {
       throw new UncheckedIOException("Could not fetch endpoint", e);
