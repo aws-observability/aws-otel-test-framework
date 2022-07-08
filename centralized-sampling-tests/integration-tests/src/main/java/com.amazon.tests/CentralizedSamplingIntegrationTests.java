@@ -40,9 +40,9 @@ public class CentralizedSamplingIntegrationTests {
    *
    * @param testCase - testCase to make call with, determines headers, method, and endpoint, etc.
    * @param sampleRule - sampleRule that is currently active
-   * @return true if call is succesful and has expected sampling rate, false else
+   * @return true if call is successful and has expected sampling rate, false else
    */
-  public static boolean makeCalls(testCases testCase, SampleRules sampleRule) throws IOException {
+  public static boolean makeCalls(testCases testCase, SampleRule sampleRule) throws IOException {
     RequestBody reqbody = null;
     String stringResp = "";
     if (testCase.method.equals("POST")) {
@@ -66,8 +66,8 @@ public class CentralizedSamplingIntegrationTests {
       throw new UncheckedIOException("Could not fetch endpoint", e);
     }
     int expectedRate = GenericConstants.DEFAULT_RATE;
-    if (testCase.matches.contains(sampleRule.name)) {
-      expectedRate = (int) Math.round(sampleRule.ExpectedSampled * GenericConstants.TOTAL_CALLS);
+    if (testCase.matches.contains(sampleRule.getName())) {
+      expectedRate = (int) Math.round(sampleRule.getExpectedSampled() * GenericConstants.TOTAL_CALLS);
     }
     double range = expectedRate * .1 + GenericConstants.DEFAULT_RANGE;
     int roundedRange = (int) Math.round(range);
@@ -80,7 +80,7 @@ public class CentralizedSamplingIntegrationTests {
             + ". Expected rate: "
             + expectedRate
             + " for Sample Rule "
-            + sampleRule.name
+            + sampleRule.getName()
             + " and test case "
             + testCase.name);
     if (Integer.parseInt(stringResp) > expectedRate + roundedRange
@@ -100,7 +100,7 @@ public class CentralizedSamplingIntegrationTests {
    */
   public static void makeRule(String jsonBody, String ruleName) throws IOException {
     // Default rule exists in x-ray by default hence the name
-    if (jsonBody.equals("Default")) {
+    if (ruleName.equals("Default")) {
       return;
     }
     System.out.println("Creating " + ruleName + " sample rule");
@@ -154,10 +154,10 @@ public class CentralizedSamplingIntegrationTests {
    * @throws InterruptedException if a test fails after retries
    */
   public static void reservoirTests() throws IOException, InterruptedException {
-    SampleRules[] sampleRules = SampleRules.getReservoirRules();
-    for (SampleRules sampleRule : sampleRules) {
+    SampleRule[] sampleRules = SampleRules.getReservoirRules();
+    for (SampleRule sampleRule : sampleRules) {
       try {
-        makeRule(sampleRule.JSON, sampleRule.name);
+        makeRule(sampleRule.getJson(), sampleRule.getName());
       } catch (IOException exception) {
         System.out.println("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
@@ -177,15 +177,15 @@ public class CentralizedSamplingIntegrationTests {
           } else {
             System.out.println(
                 "Test failed for Sample rule: "
-                    + sampleRule.name
+                    + sampleRule.getName()
                     + " and test case "
                     + testCases.getDefaultUser().name);
-            deleteRule(sampleRule.name);
+            deleteRule(sampleRule.getName());
             throw new InterruptedException();
           }
         }
       }
-      deleteRule(sampleRule.name);
+      deleteRule(sampleRule.getName());
     }
   }
 
@@ -199,10 +199,10 @@ public class CentralizedSamplingIntegrationTests {
    */
   public static void priorityTests() throws IOException, InterruptedException {
     testCases[] allTestCases = testCases.getAllTestCases();
-    SampleRules[] sampleRules = SampleRules.getPriorityRules();
-    for (SampleRules sampleRule : sampleRules) {
+    SampleRule[] sampleRules = SampleRules.getPriorityRules();
+    for (SampleRule sampleRule : sampleRules) {
       try {
-        makeRule(sampleRule.JSON, sampleRule.name);
+        makeRule(sampleRule.getJson(), sampleRule.getName());
       } catch (IOException exception) {
         System.out.println("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
@@ -212,7 +212,7 @@ public class CentralizedSamplingIntegrationTests {
     for (testCases allTestCase : allTestCases) {
       int priority = sampleRules.length - 1;
       for (int j = 0; j < sampleRules.length; j++) {
-        if (allTestCase.matches.contains(sampleRules[j].name)
+        if (allTestCase.matches.contains(sampleRules[j].getName())
             && priority == sampleRules.length - 1) {
           priority = j;
         }
@@ -235,23 +235,23 @@ public class CentralizedSamplingIntegrationTests {
       if (!passed) {
         System.out.println(
             "Test failed for Sample rule: "
-                + sampleRules[priority].name
+                + sampleRules[priority].getName()
                 + " and test case "
                 + allTestCase.name);
-        for (SampleRules sampleRule : sampleRules) {
-          deleteRule(sampleRule.name);
+        for (SampleRule sampleRule : sampleRules) {
+          deleteRule(sampleRule.getName());
         }
         throw new InterruptedException();
       } else {
         System.out.println(
             "Test passed for Sample rule: "
-                + sampleRules[priority].name
+                + sampleRules[priority].getName()
                 + " and test case "
                 + allTestCase.name);
       }
     }
-    for (SampleRules sampleRule : sampleRules) {
-      deleteRule(sampleRule.name);
+    for (SampleRule sampleRule : sampleRules) {
+      deleteRule(sampleRule.getName());
     }
   }
 
@@ -264,12 +264,12 @@ public class CentralizedSamplingIntegrationTests {
    * @throws InterruptedException if tests fail
    */
   public static void sampleRulesTests() throws IOException, InterruptedException {
-    SampleRules[] sampleRules = SampleRules.getSampleRules();
+    SampleRule[] sampleRules = SampleRules.getSampleRules();
     testCases[] allTestCases = testCases.getAllTestCases();
 
-    for (SampleRules sampleRule : sampleRules) {
+    for (SampleRule sampleRule : sampleRules) {
       try {
-        makeRule(sampleRule.JSON, sampleRule.name);
+        makeRule(sampleRule.getJson(), sampleRule.getName());
       } catch (IOException exception) {
         System.out.println("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
@@ -294,20 +294,20 @@ public class CentralizedSamplingIntegrationTests {
         if (!passed) {
           System.out.println(
               "Test failed for Sample rule: "
-                  + sampleRule.name
+                  + sampleRule.getName()
                   + " and test case "
                   + allTestCase.name);
-          deleteRule(sampleRule.name);
+          deleteRule(sampleRule.getName());
           throw new InterruptedException();
         } else {
           System.out.println(
               "Test passed for Sample rule: "
-                  + sampleRule.name
+                  + sampleRule.getName()
                   + " and test case "
                   + allTestCase.name);
         }
       }
-      deleteRule(sampleRule.name);
+      deleteRule(sampleRule.getName());
     }
   }
 }

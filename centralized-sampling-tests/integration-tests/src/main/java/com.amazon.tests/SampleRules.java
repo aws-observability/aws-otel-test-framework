@@ -4,73 +4,13 @@ import org.json.simple.JSONObject;
 
 /** File that contains all sample Rules that will be created to be used for testing */
 public class SampleRules {
-  public String name;
-  public String JSON;
-
-  public double ExpectedSampled;
-
-  /**
-   * @param name - name of the sample rule
-   * @param JSON - JSON object to send to the xray to create sample rule
-   * @param ExpectedSampled - rate of expected sampling
-   */
-  public SampleRules(String name, String JSON, double ExpectedSampled) {
-    this.JSON = JSON;
-    this.name = name;
-    this.ExpectedSampled = ExpectedSampled;
-  }
-
-  /**
-   * Function to get a string JSON variable to send to xray to create a sample rule
-   *
-   * @param name - String - name of the rule
-   * @param priority - int - priority of the rule
-   * @param reservoir - int - reservoir or minimum it should sample
-   * @param rate - double - fixed rate of the sample rule
-   * @param serviceName - String - service name to filter by, "*" if none
-   * @param method - String - REST method to filter by, "*" if none
-   * @param path - PATH - path to filter by, "*" if none
-   * @param attributes - JSONObject - attributes to filter by, can be null
-   * @return
-   */
-  public static String getJSON(
-      String name,
-      int priority,
-      int reservoir,
-      double rate,
-      String serviceName,
-      String method,
-      String path,
-      JSONObject attributes) {
-    JSONObject jsonObject = new JSONObject();
-    JSONObject jsonBody = new JSONObject();
-    jsonBody.put("FixedRate", rate);
-    jsonBody.put("Host", "*");
-    jsonBody.put("HTTPMethod", method);
-    jsonBody.put("Priority", priority);
-    jsonBody.put("ReservoirSize", reservoir);
-    jsonBody.put("ResourceARN", "*");
-    jsonBody.put("RuleName", name);
-    jsonBody.put("ServiceName", serviceName);
-    jsonBody.put("ServiceType", "*");
-    jsonBody.put("URLPath", path);
-    jsonBody.put("Version", 1);
-    if (attributes != null) {
-      jsonBody.put("Attributes", attributes);
-    }
-    jsonObject.put("SamplingRule", jsonBody);
-
-    return jsonObject.toString();
-  }
-
   /**
    * Sample rule that samples all targets
    *
    * @return AcceptAll SampleRule
    */
-  private static SampleRules getAcceptAll() {
-    String JSON = SampleRules.getJSON("AcceptAll", 1000, 1, 1.0, "*", "*", "*", null);
-    return new SampleRules("AcceptAll", JSON, 1);
+  private static SampleRule getAcceptAll() {
+    return new SampleRule.SampleRuleBuilder("AcceptAll", 1000, 1, 1).build();
   }
 
   /**
@@ -78,9 +18,8 @@ public class SampleRules {
    *
    * @return SampleNone SampleRule
    */
-  private static SampleRules getSampleNone() {
-    String JSON = SampleRules.getJSON("SampleNone", 1000, 0, 0.0, "*", "*", "*", null);
-    return new SampleRules("SampleNone", JSON, 0);
+  private static SampleRule getSampleNone() {
+    return new SampleRule.SampleRuleBuilder("SampleNone", 1000, 0.0, 0.0).setReservoir(0).build();
   }
 
   /**
@@ -88,11 +27,11 @@ public class SampleRules {
    *
    * @return SampleNoneAtEndpoint SampleRule
    */
-  private static SampleRules getSampleNoneAtEndpoint() {
-    String JSON =
-        SampleRules.getJSON(
-            "SampleNoneAtEndpoint", 1000, 0, 0.0, "*", "*", "/importantEndpoint", null);
-    return new SampleRules("SampleNoneAtEndpoint", JSON, 0);
+  private static SampleRule getSampleNoneAtEndpoint() {
+    return new SampleRule.SampleRuleBuilder("SampleNoneAtEndpoint", 1000, 0.0, 0.0)
+        .setReservoir(0)
+        .setPath("/importantEndpoint")
+        .build();
   }
 
   /**
@@ -100,9 +39,8 @@ public class SampleRules {
    *
    * @return PostRule SampleRule
    */
-  private static SampleRules getMethodRule() {
-    String JSON = SampleRules.getJSON("PostRule", 10, 1, 0.1, "*", "POST", "*", null);
-    return new SampleRules("PostRule", JSON, .11);
+  private static SampleRule getMethodRule() {
+    return new SampleRule.SampleRuleBuilder("PostRule", 10, .1, .11).setMethod("POST").build();
   }
 
   /**
@@ -110,10 +48,10 @@ public class SampleRules {
    *
    * @return ImportantEndpoint SampleRule
    */
-  private static SampleRules getImportantRule() {
-    String JSON =
-        SampleRules.getJSON("ImportantEndpoint", 1, 1, 1.0, "*", "*", "/importantEndpoint", null);
-    return new SampleRules("ImportantEndpoint", JSON, 1);
+  private static SampleRule getImportantRule() {
+    return new SampleRule.SampleRuleBuilder("ImportantEndpoint", 1, 1.0, 1)
+        .setPath("/importantEndpoint")
+        .build();
   }
 
   /**
@@ -121,12 +59,13 @@ public class SampleRules {
    *
    * @return AttributeAtEndpoint SampleRule
    */
-  private static SampleRules getAttributeatEndpoint() {
+  private static SampleRule getAttributeatEndpoint() {
     JSONObject attributes = new JSONObject();
     attributes.put("user", "service");
-    String JSON =
-        SampleRules.getJSON("AttributeAtEndpoint", 8, 1, .5, "*", "*", "/getSampled", attributes);
-    return new SampleRules("AttributeAtEndpoint", JSON, .51);
+    return new SampleRule.SampleRuleBuilder("AttributeAtEndpoint", 8, 0.5, .51)
+        .setPath("/getSampled")
+        .setAttributes(attributes)
+        .build();
   }
 
   /**
@@ -134,9 +73,8 @@ public class SampleRules {
    *
    * @return LowReservoir SampleRule
    */
-  private static SampleRules getlowReservoirHighRate() {
-    String JSON = SampleRules.getJSON("LowReservoir", 10, 0, .8, "*", "*", "*", null);
-    return new SampleRules("LowReservoir", JSON, .80);
+  private static SampleRule getlowReservoirHighRate() {
+    return new SampleRule.SampleRuleBuilder("LowReservoir", 10, .8, .80).setReservoir(0).build();
   }
 
   /**
@@ -144,9 +82,10 @@ public class SampleRules {
    *
    * @return HighReservoir SampleRule
    */
-  public static SampleRules getHighReservoirLowRate() {
-    String JSON = SampleRules.getJSON("HighReservoir", 2000, 500, 0.0, "*", "*", "*", null);
-    return new SampleRules("HighReservoir", JSON, .50);
+  public static SampleRule getHighReservoirLowRate() {
+    return new SampleRule.SampleRuleBuilder("HighReservoir", 2000, 0.0, .50)
+        .setReservoir(500)
+        .build();
   }
 
   /**
@@ -154,9 +93,10 @@ public class SampleRules {
    *
    * @return HighReservoir SampleRule
    */
-  public static SampleRules getMixedReservoir() {
-    String JSON = SampleRules.getJSON("MixedReservoir", 2000, 500, 0.5, "*", "*", "*", null);
-    return new SampleRules("MixedReservoir", JSON, .75);
+  public static SampleRule getMixedReservoir() {
+    return new SampleRule.SampleRuleBuilder("MixedReservoir", 2000, .5, .75)
+        .setReservoir(500)
+        .build();
   }
 
   /**
@@ -164,11 +104,12 @@ public class SampleRules {
    *
    * @return ImportantAttribute SampleRule
    */
-  private static SampleRules getImportantAttribute() {
+  private static SampleRule getImportantAttribute() {
     JSONObject attributes = new JSONObject();
     attributes.put("user", "admin");
-    String JSON = SampleRules.getJSON("ImportantAttribute", 2, 1, .5, "*", "*", "*", attributes);
-    return new SampleRules("ImportantAttribute", JSON, .51);
+    return new SampleRule.SampleRuleBuilder("ImportantAttribute", 2, .5, .5)
+        .setAttributes(attributes)
+        .build();
   }
 
   /**
@@ -176,12 +117,13 @@ public class SampleRules {
    *
    * @return MultipleAttributes SampleRule
    */
-  private static SampleRules getMultipleAttribute() {
+  private static SampleRule getMultipleAttribute() {
     JSONObject attributes = new JSONObject();
     attributes.put("user", "admin");
     attributes.put("required", "true");
-    String JSON = SampleRules.getJSON("MultipleAttributes", 9, 1, .4, "*", "*", "*", attributes);
-    return new SampleRules("MultipleAttributes", JSON, .41);
+    return new SampleRule.SampleRuleBuilder("MultipleAttributes", 9, .4, .41)
+        .setAttributes(attributes)
+        .build();
   }
 
   /**
@@ -189,9 +131,8 @@ public class SampleRules {
    *
    * @return Default SampleRule
    */
-  private static SampleRules getDefaultRule() {
-    String JSON = "Default";
-    return new SampleRules("Default", JSON, .06);
+  private static SampleRule getDefaultRule() {
+    return new SampleRule.SampleRuleBuilder("Default", 10000, .06, .06).build();
   }
 
   /**
@@ -199,11 +140,10 @@ public class SampleRules {
    *
    * @return ImportantServiceName SampleRule
    */
-  private static SampleRules getServiceNameRule() {
-    String JSON =
-        SampleRules.getJSON(
-            "ImportantServiceName", 3, 1, 1.0, "ImportantServiceName", "*", "*", null);
-    return new SampleRules("ImportantServiceName", JSON, 1);
+  private static SampleRule getServiceNameRule() {
+    return new SampleRule.SampleRuleBuilder("ImportantServiceName", 3, 1, 1)
+        .setServiceName("ImportantServiceName")
+        .build();
   }
 
   /**
@@ -211,8 +151,8 @@ public class SampleRules {
    *
    * @return list of SampleRules
    */
-  public static SampleRules[] getSampleRules() {
-    return new SampleRules[]{
+  public static SampleRule[] getSampleRules() {
+    return new SampleRule[] {
       getSampleNone(),
       getAcceptAll(),
       getImportantRule(),
@@ -232,8 +172,8 @@ public class SampleRules {
    *
    * @return list of SampleRules
    */
-  public static SampleRules[] getPriorityRules() {
-    return new SampleRules[]{
+  public static SampleRule[] getPriorityRules() {
+    return new SampleRule[] {
       getImportantRule(),
       getImportantAttribute(),
       getAttributeatEndpoint(),
@@ -247,7 +187,7 @@ public class SampleRules {
    *
    * @return list of SampleRules
    */
-  public static SampleRules[] getReservoirRules() {
-    return new SampleRules[]{getHighReservoirLowRate(), getMixedReservoir()};
+  public static SampleRule[] getReservoirRules() {
+    return new SampleRule[] {getHighReservoirLowRate(), getMixedReservoir()};
   }
 }
