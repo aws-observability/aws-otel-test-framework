@@ -33,5 +33,7 @@ Each sample app will have a readMe on how to run it. If adding a sample-app to u
 [Sample-app-requirements](https://docs.google.com/document/d/1nu6XwYKe8h3EZ6upCQqf83hI9gQ-yg5WXlxHRjJ7BCg/edit?usp=sharing)
 
 ### Start up integration tests
-Insert directions on how to run once they are done.
-
+run this command in the root dir of the testing framework once collector and sample app are up and running
+```shell
+./gradlew :centralized-sampling-tests:integration-tests:run
+```
