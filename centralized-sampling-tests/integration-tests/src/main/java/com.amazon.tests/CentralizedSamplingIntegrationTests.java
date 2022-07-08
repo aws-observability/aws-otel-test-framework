@@ -42,7 +42,7 @@ public class CentralizedSamplingIntegrationTests {
    * @param sampleRule - sampleRule that is currently active
    * @return true if call is succesful and has expected sampling rate, false else
    */
-  public static boolean makeCalls(testCases testCase, SampleRules sampleRule) {
+  public static boolean makeCalls(testCases testCase, SampleRules sampleRule) throws IOException {
     RequestBody reqbody = null;
     String stringResp = "";
     if (testCase.method.equals("POST")) {
@@ -98,7 +98,6 @@ public class CentralizedSamplingIntegrationTests {
    * @param ruleName - name of the Rule
    * @throws IOException - throws if unable to connect to xray backend
    */
-  @SuppressWarnings("checkstyle:EmptyBlock")
   public static void makeRule(String jsonBody, String ruleName) throws IOException {
     // Default rule exists in x-ray by default hence the name
     if (jsonBody.equals("Default")) {
@@ -156,13 +155,20 @@ public class CentralizedSamplingIntegrationTests {
    */
   public static void reservoirTests() throws IOException, InterruptedException {
     SampleRules[] sampleRules = SampleRules.getReservoirRules();
-    for (int i = 0; i < sampleRules.length; i++) {
-      makeRule(sampleRules[i].JSON, sampleRules[i].name);
+    for (SampleRules sampleRule : sampleRules) {
+      try {
+        makeRule(sampleRule.JSON, sampleRule.name);
+      } catch (IOException exception) {
+        System.out.println("Could not fetch endpoint, XRay backend might not be running");
+        throw new IOException();
+      }
       boolean passed = false;
-      for (int j = 0; i < GenericConstants.MAX_RETRIES; j++) {
+      for (int j = 0; j < GenericConstants.MAX_RETRIES; j++) {
         TimeUnit.SECONDS.sleep(GenericConstants.WAIT_FOR_RESERVOIR);
         try {
-          passed = makeCalls(testCases.getDefaultUser(), sampleRules[i]);
+          passed = makeCalls(testCases.getDefaultUser(), sampleRule);
+        } catch (Exception e) {
+          System.out.println("Could not fetch endpoint, sample app might not be started");
         } finally {
           if (passed) {
             break;
@@ -171,14 +177,15 @@ public class CentralizedSamplingIntegrationTests {
           } else {
             System.out.println(
                 "Test failed for Sample rule: "
-                    + sampleRules[i].name
+                    + sampleRule.name
                     + " and test case "
                     + testCases.getDefaultUser().name);
+            deleteRule(sampleRule.name);
             throw new InterruptedException();
           }
         }
       }
-      deleteRule(sampleRules[i].name);
+      deleteRule(sampleRule.name);
     }
   }
 
@@ -194,7 +201,12 @@ public class CentralizedSamplingIntegrationTests {
     testCases[] allTestCases = testCases.getAllTestCases();
     SampleRules[] sampleRules = SampleRules.getPriorityRules();
     for (SampleRules sampleRule : sampleRules) {
-      makeRule(sampleRule.JSON, sampleRule.name);
+      try {
+        makeRule(sampleRule.JSON, sampleRule.name);
+      } catch (IOException exception) {
+        System.out.println("Could not fetch endpoint, XRay backend might not be running");
+        throw new IOException();
+      }
     }
     TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
     for (testCases allTestCase : allTestCases) {
@@ -209,6 +221,8 @@ public class CentralizedSamplingIntegrationTests {
       for (int k = 0; k < GenericConstants.MAX_RETRIES; k++) {
         try {
           passed = makeCalls(allTestCase, sampleRules[priority]);
+        } catch (Exception e) {
+          System.out.println("Could not fetch endpoint, sample app might not be started");
         } finally {
           if (passed) {
             break;
@@ -217,12 +231,16 @@ public class CentralizedSamplingIntegrationTests {
           }
         }
       }
+
       if (!passed) {
         System.out.println(
             "Test failed for Sample rule: "
                 + sampleRules[priority].name
                 + " and test case "
                 + allTestCase.name);
+        for (SampleRules sampleRule : sampleRules) {
+          deleteRule(sampleRule.name);
+        }
         throw new InterruptedException();
       } else {
         System.out.println(
@@ -232,7 +250,6 @@ public class CentralizedSamplingIntegrationTests {
                 + allTestCase.name);
       }
     }
-
     for (SampleRules sampleRule : sampleRules) {
       deleteRule(sampleRule.name);
     }
@@ -253,40 +270,44 @@ public class CentralizedSamplingIntegrationTests {
     for (SampleRules sampleRule : sampleRules) {
       try {
         makeRule(sampleRule.JSON, sampleRule.name);
-        TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
-        for (testCases allTestCase : allTestCases) {
-          boolean passed = false;
-          for (int k = 0; k < GenericConstants.MAX_RETRIES; k++) {
-            try {
-              passed = makeCalls(allTestCase, sampleRule);
-            } finally {
-              if (passed) {
-                break;
-              } else if (k < GenericConstants.MAX_RETRIES - 1) {
-                System.out.println("Test failed here, attempting retry");
-              }
-              TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
+      } catch (IOException exception) {
+        System.out.println("Could not fetch endpoint, XRay backend might not be running");
+        throw new IOException();
+      }
+      TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
+      for (testCases allTestCase : allTestCases) {
+        boolean passed = false;
+        for (int k = 0; k < GenericConstants.MAX_RETRIES; k++) {
+          try {
+            passed = makeCalls(allTestCase, sampleRule);
+          } catch (Exception e) {
+            System.out.println("Could not fetch endpoint, sample app might not be started");
+          } finally {
+            if (passed) {
+              break;
+            } else if (k < GenericConstants.MAX_RETRIES - 1) {
+              System.out.println("Test failed here, attempting retry");
             }
-          }
-          if (!passed) {
-            System.out.println(
-                "Test failed for Sample rule: "
-                    + sampleRule.name
-                    + " and test case "
-                    + allTestCase.name);
-
-            throw new InterruptedException();
-          } else {
-            System.out.println(
-                "Test passed for Sample rule: "
-                    + sampleRule.name
-                    + " and test case "
-                    + allTestCase.name);
+            TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
           }
         }
-      } finally {
-        deleteRule(sampleRule.name);
+        if (!passed) {
+          System.out.println(
+              "Test failed for Sample rule: "
+                  + sampleRule.name
+                  + " and test case "
+                  + allTestCase.name);
+          deleteRule(sampleRule.name);
+          throw new InterruptedException();
+        } else {
+          System.out.println(
+              "Test passed for Sample rule: "
+                  + sampleRule.name
+                  + " and test case "
+                  + allTestCase.name);
+        }
       }
+      deleteRule(sampleRule.name);
     }
   }
 }
