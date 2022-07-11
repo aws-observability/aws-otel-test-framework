@@ -70,7 +70,7 @@ public class PrometheusMetricValidator implements IValidator {
                   this.listMetricFromPrometheus(cortexService, expectedMetricList);
 
           log.info("check if all the expected metrics are found");
-          log.info("base metricList is {}", metricList);
+          log.info("actual metricList is {}", metricList);
           log.info("expected metricList is {}", expectedMetricList);
           compareMetricLists(expectedMetricList, metricList);
 
