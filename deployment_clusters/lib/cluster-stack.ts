@@ -28,7 +28,7 @@ export class ClusterStack extends NestedStack {
         eks.ClusterLoggingTypes.SCHEDULER,
       ]
     });
-      if(props.cpu === "arm64"){
+      if(props.cpu === "arm_64"){
           this.cluster.addNodegroupCapacity('ng-arm', {
               instanceTypes: [new ec2.InstanceType('m6g.' + props.node_size)],
               minSize: 2
@@ -43,7 +43,7 @@ export class ClusterStack extends NestedStack {
 
     if(props.launch_type === 'fargate'){
       console.log("Fargate starting")
-      new eks.FargateCluster(this, props.name + '-Cluster', {
+      this.cluster = new eks.FargateCluster(this, props.name + '-Cluster', {
         clusterName: props.name,
         vpc: props.vpc,
         // defaultCapacity: 0,  // we want to manage capacity our selves
@@ -58,25 +58,6 @@ export class ClusterStack extends NestedStack {
       });
     }
 
-    // const armCluster = new eks.Cluster(this, props.name+'-Cluster', {
-    //   clusterName: props.name,
-    //   vpc: props.vpc,
-    //   defaultCapacity: 0,  // we want to manage capacity our selves
-    //   version: props.version
-    // });
-
-    // if(props.cpu == "arm64"){
-    //     armCluster.addNodegroupCapacity('ng-arm', {
-    //         instanceTypes: [new ec2.InstanceType('m6g.large')],
-    //         minSize: 2
-    //     })
-    // } else {
-    //     armCluster.addNodegroupCapacity('ng-arm', {
-    //         instanceTypes: [new ec2.InstanceType('m5.large')],
-    //         minSize: 2
-    //     })
-    // }
-    
 
   }
 }

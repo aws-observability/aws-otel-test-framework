@@ -77,21 +77,6 @@ export class ClusterManagementStack extends Stack {
 
     
 
-    
-
-    // const versionKubernetes = eks.KubernetesVersion.of('1.22');
-    
-   
-    // const versionKubernetes = eks.KubernetesVersion.of(String(data['clusters']['armCluster']['version']));
-
-    // const armCluster = new eks.Cluster(this, String(data['clusters']['armCluster']['version']) + "-Stack", {
-    //   clusterName: String(data['clusters']['armCluster']['version']) + "-Cluster",
-    //   vpc: vpc,
-    //   // defaultCapacity: 0,  // we want to manage capacity our selves
-    //   version: versionKubernetes
-    // });
-    
-
 
   }
 
