@@ -22,7 +22,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logzio]
+      exporters: [logzio/traces]
   extensions: [pprof]
   telemetry:
     logs:
