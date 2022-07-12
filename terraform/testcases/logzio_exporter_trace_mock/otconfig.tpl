@@ -13,9 +13,9 @@ processors:
 exporters:
   logging:
     loglevel: debug
-  logzio:
+  logzio/traces:
     account_token: testToken
-    custom_endpoint: "https://${mock_endpoint}"
+    endpoint: "https://${mock_endpoint}"
 
 service:
   pipelines:
