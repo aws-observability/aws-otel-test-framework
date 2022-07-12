@@ -3,7 +3,7 @@ import * as iam from 'aws-cdk-lib/aws-iam'
 import { Construct } from 'constructs';
 import {FargateNested} from './fargate-stack';
 import {ClusterStack} from './cluster-stack';
-import {parseData, validateClusters} from './utils/parse' 
+import {validateClusters} from './utils/parse' 
 import { readFileSync, writeFileSync } from 'fs';
 import {ManagedPolicy} from 'aws-cdk-lib/aws-iam';
 const yaml = require('js-yaml')

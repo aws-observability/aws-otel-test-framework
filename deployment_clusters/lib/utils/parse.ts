@@ -9,34 +9,6 @@ const supportedCPUArchitectures = new Set(['amd_64', 'arm_64']);
 const supportedLaunchTypes = new Set(['ec2', 'fargate']);
 const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xkarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
 
-export function parseData(info: Object){
-    var bigMap = new Map()
-    for(const [key, value] of Object.entries(info)){
-        // console.log(key,value)
-        const valString = JSON.stringify(value)
-        const valArray = valString.split(',')
-        // console.log(v)
-        var dict = new Map();
-        for(var index in valArray){
-          const st = valArray[index]
-          const fixedString = st.replace("{", "").replace(/"/g, '').replace("}", "");
-          valArray[index] = fixedString
-          const fixedStringArray = fixedString.split(':')
-          dict.set(fixedStringArray[0], fixedStringArray[1])
-        }
-        const cpuType = dict.get('cpu_architecture')
-        const fixedCPUType = refactorAndValidateArchitecture(cpuType)
-        dict.set('cpu_architecture', fixedCPUType);
-        const launchType = dict.get('launch_type')
-        const fixedLaunchType = refactorAndValidateLaunchType(launchType)
-        dict.set('cpu_architecture', fixedLaunchType);
-        validateVersion(dict.get('version'))
-        // console.log(dict);
-        // console.log(dict.get('version'))
-        bigMap.set(key, dict);
-    }
-    return bigMap
-}
 
 export function validateClusters(info: Object){
     for(const [key, value] of Object.entries(info)){
