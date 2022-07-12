@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { MyProjectStack } from '../lib/my-project-stack';
+import { ClusterManagementStack } from '../lib/cluster-management-stack';
 import {parseData, validateClusters} from '../lib/utils/parse' 
 import { fileURLToPath } from 'url';
 import { resolve, dirname } from 'path';
@@ -9,30 +9,22 @@ import { readFileSync} from 'fs';
 const yaml = require('js-yaml')
 
 
-// try {
-//   const raw = readFileSync('../my-project/bin/clusters.yml')
-//   const data = yaml.load(raw)
-//   console.log(data)
-//   console.log("-----------")
-//   validateClusters(data['clusters'])
-//   if(!data['clusters']['amdCluster']['target']){
-//     console.log(true)
-//   } else {
-//     console.log(false)
-//   }
-//   data['clusters']['armCluster']['target'] = 11
-//   data['clusters']['fargateCluster']['target'] = 12
-//   console.log(data)
-//   console.log(typeof data['clusters']['amdCluster']['version'])
-//   console.log(typeof data['clusters']['amdCluster']['cpu_architecture'])
-//   console.log(typeof data['clusters']['amdCluster']['launch_type'])
-// } catch (e) {
-//   console.log(e);
-// }
-
-
 const route = '../deployment_clusters/bin/clusters.yml';
 const raw = readFileSync(route)
 const data = yaml.load(raw)
 const app = new cdk.App();
-new MyProjectStack(app, 'DeploymentStack', {data: data});
+new ClusterManagementStack(app, 'DeploymentStack', {
+    data: data,
+    env: {
+        region: 'us-west-2'
+    },
+});
+const route2 = '../deployment_clusters/bin/clusters2.yml';
+const raw2 = readFileSync(route2)
+const data2 = yaml.load(raw2)
+new ClusterManagementStack(app, "DStack2", {
+    data: data2,
+    env: {
+        region: 'us-west-2'
+    },
+})

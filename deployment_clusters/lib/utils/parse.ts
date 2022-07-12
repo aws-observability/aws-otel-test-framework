@@ -5,8 +5,9 @@ import { exit } from 'process';
 const yaml = require('js-yaml')
 
 const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21', '1.22']);
-const supportedCPUArchitectures = new Set(['amd64', 'arm64']);
+const supportedCPUArchitectures = new Set(['amd_64', 'arm_64']);
 const supportedLaunchTypes = new Set(['ec2', 'fargate']);
+const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xkarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
 
 export function parseData(info: Object){
     var bigMap = new Map()
@@ -52,8 +53,12 @@ export function validateClusters(info: Object){
                 case 'launch_type':
                     val[k] = refactorAndValidateLaunchType(String(v))
                     break
+                case 'node_size':
+                    val[k] = validateNodeSize(String(v))
+                    break;
             }
         }
+        addedChecks(val)
     }
 }
 
@@ -77,14 +82,10 @@ function refactorAndValidateArchitecture(cpu: string){
         console.log("It is null: " + cpu)
         return null
     }
-    // const supportedCPUArchitectures = new Set(['amd64', 'arm64']);
-    const adjustedType = cpu.toLowerCase().replace(/[\W_]+/g, "");
+    const adjustedType = cpu.toLowerCase()
     if(!supportedCPUArchitectures.has(adjustedType)){
         throw new Error("Improper CPU Architecture Type")
     }
-    // if(adjustedType != 'arm64' && adjustedType != 'amd64'){
-    //     throw new Error("Improper CPU Architecture Type")
-    // }
     return adjustedType
 }
 
@@ -101,4 +102,26 @@ function refactorAndValidateLaunchType(type: string){
     //     throw new Error("Improper CPU Architecture Type")
     // }
     return adjustedType
+}
+
+function validateNodeSize(size: string){
+    if(!size || size === null || size === 'null' || size === ''){
+        return null
+    }
+    const adjustedSize = size.toLowerCase()
+    if(!supportedNodeSizes.has(adjustedSize)){
+        throw new Error("Node size isn't one of the options listed here https://www.amazonaws.cn/en/ec2/instance-types/")
+    }
+    return adjustedSize
+
+}
+
+function addedChecks(val: Object){
+    const value = Object(val)
+    if(String(value['launch_type']) === 'ec2' && !supportedCPUArchitectures.has(String(value['cpu_architecture']))){
+        throw new Error('ec2 type needs to have cpu architecture type')
+    }
+    if(String([value['cpu_architecture']]) === 'arm_66' && String([value['node_size']]) === '24xlarge'){
+        throw new Error("Cpur architecture and node size aren't compatible")
+    }
 }
