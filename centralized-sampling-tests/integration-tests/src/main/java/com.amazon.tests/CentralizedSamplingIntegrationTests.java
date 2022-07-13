@@ -1,9 +1,16 @@
 package com.amazon.tests;
 
-import java.io.*;
+import java.io.IOException;
 import java.lang.Math;
 import java.util.concurrent.TimeUnit;
-import okhttp3.*;
+import okhttp3.Call;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 
 /** File that runs all of the integrations tests and creates/deletes sample rules */
@@ -18,6 +25,9 @@ public class CentralizedSamplingIntegrationTests {
   public static Call.Factory httpClient() {
     return new OkHttpClient();
   }
+
+  private static final Logger logger =
+      LoggerFactory.getLogger(CentralizedSamplingIntegrationTests.class);
 
   /**
    * Main function that runs the three tests for Centralized Sampling SampleRulesTests - tests rules
@@ -52,10 +62,11 @@ public class CentralizedSamplingIntegrationTests {
         httpClient()
             .newCall(
                 new Request.Builder()
-                    .addHeader("user", testCase.user)
-                    .addHeader("service_name", testCase.name)
-                    .addHeader("required", testCase.required)
-                    .addHeader("totalSpans", String.valueOf(GenericConstants.TOTAL_CALLS))
+                    .addHeader(GenericConstants.USER, testCase.user)
+                    .addHeader(GenericConstants.SERVICE_NAME, testCase.name)
+                    .addHeader(GenericConstants.REQUIRED, testCase.required)
+                    .addHeader(
+                        GenericConstants.TOTAL_SPANS, String.valueOf(GenericConstants.TOTAL_CALLS))
                     .url("http://localhost:8080" + testCase.endpoint)
                     .method(testCase.method, reqbody)
                     .build())
@@ -63,18 +74,19 @@ public class CentralizedSamplingIntegrationTests {
       stringResp = response.body().string();
 
     } catch (IOException e) {
-      throw new UncheckedIOException("Could not fetch endpoint", e);
+      throw new IOException("Could not fetch endpoint", e);
     }
     int expectedRate = GenericConstants.DEFAULT_RATE;
     if (testCase.matches.contains(sampleRule.getName())) {
-      expectedRate = (int) Math.round(sampleRule.getExpectedSampled() * GenericConstants.TOTAL_CALLS);
+      expectedRate =
+          (int) Math.round(sampleRule.getExpectedSampled() * GenericConstants.TOTAL_CALLS);
     }
     double range = expectedRate * .1 + GenericConstants.DEFAULT_RANGE;
     int roundedRange = (int) Math.round(range);
     if (expectedRate == 0) {
       roundedRange = 0;
     }
-    System.out.println(
+    logger.info(
         "Sampled rate: "
             + stringResp
             + ". Expected rate: "
@@ -85,7 +97,7 @@ public class CentralizedSamplingIntegrationTests {
             + testCase.name);
     if (Integer.parseInt(stringResp) > expectedRate + roundedRange
         || Integer.parseInt(stringResp) < expectedRate - roundedRange) {
-      System.out.println("Sampled rate does not match expected rate");
+      logger.info("Sampled rate does not match expected rate");
       return false;
     }
     return true;
@@ -103,7 +115,7 @@ public class CentralizedSamplingIntegrationTests {
     if (ruleName.equals("Default")) {
       return;
     }
-    System.out.println("Creating " + ruleName + " sample rule");
+    logger.info("Creating " + ruleName + " sample rule");
     MediaType json = MediaType.get("application/json; charset=utf-8");
 
     RequestBody reqbody = RequestBody.create(json, jsonBody);
@@ -127,7 +139,7 @@ public class CentralizedSamplingIntegrationTests {
    * @throws IOException - throws if unable to connect to xray backend
    */
   public static void deleteRule(String ruleName) throws IOException {
-    System.out.println("Deleting " + ruleName + " sample rule");
+    logger.info("Deleting " + ruleName + " sample rule");
 
     MediaType json = MediaType.get("application/json; charset=utf-8");
     String jsonBody = "{\n" + "   \"RuleName\": \"" + ruleName + "\"\n" + "}\n";
@@ -159,7 +171,7 @@ public class CentralizedSamplingIntegrationTests {
       try {
         makeRule(sampleRule.getJson(), sampleRule.getName());
       } catch (IOException exception) {
-        System.out.println("Could not fetch endpoint, XRay backend might not be running");
+        logger.info("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
       }
       boolean passed = false;
@@ -168,14 +180,14 @@ public class CentralizedSamplingIntegrationTests {
         try {
           passed = makeCalls(testCases.getDefaultUser(), sampleRule);
         } catch (Exception e) {
-          System.out.println("Could not fetch endpoint, sample app might not be started");
+          logger.info("Could not fetch endpoint, sample app might not be started");
         } finally {
           if (passed) {
             break;
           } else if (j < GenericConstants.MAX_RETRIES - 1) {
-            System.out.println("Test failed, attempting retry");
+            logger.info("Test failed, attempting retry");
           } else {
-            System.out.println(
+            logger.info(
                 "Test failed for Sample rule: "
                     + sampleRule.getName()
                     + " and test case "
@@ -204,7 +216,7 @@ public class CentralizedSamplingIntegrationTests {
       try {
         makeRule(sampleRule.getJson(), sampleRule.getName());
       } catch (IOException exception) {
-        System.out.println("Could not fetch endpoint, XRay backend might not be running");
+        logger.info("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
       }
     }
@@ -222,18 +234,18 @@ public class CentralizedSamplingIntegrationTests {
         try {
           passed = makeCalls(allTestCase, sampleRules[priority]);
         } catch (Exception e) {
-          System.out.println("Could not fetch endpoint, sample app might not be started");
+          logger.info("Could not fetch endpoint, sample app might not be started");
         } finally {
           if (passed) {
             break;
           } else if (k < GenericConstants.MAX_RETRIES - 1) {
-            System.out.println("Test failed, attempting retry");
+            logger.info("Test failed, attempting retry");
           }
         }
       }
 
       if (!passed) {
-        System.out.println(
+        logger.info(
             "Test failed for Sample rule: "
                 + sampleRules[priority].getName()
                 + " and test case "
@@ -243,7 +255,7 @@ public class CentralizedSamplingIntegrationTests {
         }
         throw new InterruptedException();
       } else {
-        System.out.println(
+        logger.info(
             "Test passed for Sample rule: "
                 + sampleRules[priority].getName()
                 + " and test case "
@@ -271,7 +283,7 @@ public class CentralizedSamplingIntegrationTests {
       try {
         makeRule(sampleRule.getJson(), sampleRule.getName());
       } catch (IOException exception) {
-        System.out.println("Could not fetch endpoint, XRay backend might not be running");
+        logger.info("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
       }
       TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
@@ -281,18 +293,18 @@ public class CentralizedSamplingIntegrationTests {
           try {
             passed = makeCalls(allTestCase, sampleRule);
           } catch (Exception e) {
-            System.out.println("Could not fetch endpoint, sample app might not be started");
+            logger.info("Could not fetch endpoint, sample app might not be started");
           } finally {
             if (passed) {
               break;
             } else if (k < GenericConstants.MAX_RETRIES - 1) {
-              System.out.println("Test failed here, attempting retry");
+              logger.info("Test failed here, attempting retry");
             }
             TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
           }
         }
         if (!passed) {
-          System.out.println(
+          logger.info(
               "Test failed for Sample rule: "
                   + sampleRule.getName()
                   + " and test case "
@@ -300,7 +312,7 @@ public class CentralizedSamplingIntegrationTests {
           deleteRule(sampleRule.getName());
           throw new InterruptedException();
         } else {
-          System.out.println(
+          logger.info(
               "Test passed for Sample rule: "
                   + sampleRule.getName()
                   + " and test case "

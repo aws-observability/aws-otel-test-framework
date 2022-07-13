@@ -48,7 +48,13 @@ public class testCases {
    * @return list of ruleNames
    */
   public static List<String> getDefaultMatches() {
-    return Arrays.asList("AcceptAll", "SampleNone", "HighReservoir", "LowReservoir", "MixedReservoir");
+    return Arrays.asList(
+        GenericConstants.SampleRuleName.Default.getSampleName(),
+        GenericConstants.SampleRuleName.AcceptAll.getSampleName(),
+        GenericConstants.SampleRuleName.SampleNone.getSampleName(),
+        GenericConstants.SampleRuleName.HighReservoir.getSampleName(),
+        GenericConstants.SampleRuleName.MixedReservoir.getSampleName(),
+        GenericConstants.SampleRuleName.LowReservoir.getSampleName());
   }
 
   /**
@@ -70,7 +76,8 @@ public class testCases {
    */
   public static testCases getDefaultUser() {
     List<String> matches = getDefaultMatches();
-    return new testCases("test", "default", "false", matches, "/getSampled", "GET");
+    return new testCases(
+        GenericConstants.Users.Test.getUser(), "default", "false", matches, "/getSampled", "GET");
   }
 
   /**
@@ -80,8 +87,18 @@ public class testCases {
    */
   private static testCases getTestImportantEndpoint() {
     List<String> matches =
-        getMatches(new ArrayList<>(Arrays.asList("ImportantEndpoint", "SampleNoneAtEndpoint")));
-    return new testCases("test", "importantTest", "false", matches, "/importantEndpoint", "GET");
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.ImportantEndpoint.getSampleName(),
+                    GenericConstants.SampleRuleName.SampleNoneAtEndpoint.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Test.getUser(),
+        "importantTest",
+        "false",
+        matches,
+        "/importantEndpoint",
+        "GET");
   }
 
   /**
@@ -90,8 +107,17 @@ public class testCases {
    * @return testCases admin User
    */
   private static testCases getAdminGetSampled() {
-    List<String> matches = getMatches(new ArrayList<>(Arrays.asList("ImportantAttribute")));
-    return new testCases("admin", "adminGetSampled", "false", matches, "/getSampled", "GET");
+    List<String> matches =
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(GenericConstants.SampleRuleName.ImportantAttribute.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Admin.getUser(),
+        "adminGetSampled",
+        "false",
+        matches,
+        "/getSampled",
+        "GET");
   }
 
   /**
@@ -102,8 +128,18 @@ public class testCases {
    */
   private static testCases getAdminPostSampled() {
     List<String> matches =
-        getMatches(new ArrayList<>(Arrays.asList("ImportantAttribute", "PostRule")));
-    return new testCases("admin", "adminPostSampled", "false", matches, "/getSampled", "POST");
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.ImportantAttribute.getSampleName(),
+                    GenericConstants.SampleRuleName.PostRule.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Admin.getUser(),
+        "adminPostSampled",
+        "false",
+        matches,
+        "/getSampled",
+        "POST");
   }
 
   /**
@@ -116,8 +152,17 @@ public class testCases {
     List<String> matches =
         getMatches(
             new ArrayList<>(
-                Arrays.asList("ImportantAttribute", "SampleNoneAtEndpoint", "ImportantEndpoint")));
-    return new testCases("admin", "importantAdmin", "false", matches, "/importantEndpoint", "GET");
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.ImportantAttribute.getSampleName(),
+                    GenericConstants.SampleRuleName.SampleNoneAtEndpoint.getSampleName(),
+                    GenericConstants.SampleRuleName.ImportantEndpoint.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Admin.getUser(),
+        "importantAdmin",
+        "false",
+        matches,
+        "/importantEndpoint",
+        "GET");
   }
 
   /**
@@ -126,8 +171,18 @@ public class testCases {
    * @return testCases serviceGetSamped user
    */
   private static testCases getServiceGetSampled() {
-    List<String> matches = getMatches(new ArrayList<>(Arrays.asList("AttributeAtEndpoint")));
-    return new testCases("service", "serviceGetSampled", "false", matches, "/getSampled", "GET");
+    List<String> matches =
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.AttributeAtEndpoint.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Service.getUser(),
+        "serviceGetSampled",
+        "false",
+        matches,
+        "/getSampled",
+        "GET");
   }
 
   /**
@@ -138,8 +193,18 @@ public class testCases {
    */
   private static testCases getServicePostSampled() {
     List<String> matches =
-        getMatches(new ArrayList<>(Arrays.asList("AttributeAtEndpoint", "PostRule")));
-    return new testCases("service", "servicePostSampled", "false", matches, "/getSampled", "POST");
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.AttributeAtEndpoint.getSampleName(),
+                    GenericConstants.SampleRuleName.PostRule.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Service.getUser(),
+        "servicePostSampled",
+        "false",
+        matches,
+        "/getSampled",
+        "POST");
   }
 
   /**
@@ -150,9 +215,18 @@ public class testCases {
    */
   private static testCases getServiceImportantEndpoint() {
     List<String> matches =
-        getMatches(new ArrayList<>(Arrays.asList("ImportantEndpoint", "SampleNoneAtEndpoint")));
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.ImportantEndpoint.getSampleName(),
+                    GenericConstants.SampleRuleName.SampleNoneAtEndpoint.getSampleName())));
     return new testCases(
-        "service", "serviceImportant", "false", matches, "/importantEndpoint", "GET");
+        GenericConstants.Users.Service.getUser(),
+        "serviceImportant",
+        "false",
+        matches,
+        "/importantEndpoint",
+        "GET");
   }
 
   /**
@@ -163,8 +237,18 @@ public class testCases {
    */
   private static testCases getMultAttributesGetSampled() {
     List<String> matches =
-        getMatches(new ArrayList<>(Arrays.asList("MultipleAttributes", "ImportantAttribute")));
-    return new testCases("admin", "multAttributeGetSampled", "true", matches, "/getSampled", "GET");
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.MultipleAttributes.getSampleName(),
+                    GenericConstants.SampleRuleName.ImportantAttribute.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Admin.getUser(),
+        "multAttributeGetSampled",
+        "true",
+        matches,
+        "/getSampled",
+        "GET");
   }
 
   /**
@@ -176,9 +260,18 @@ public class testCases {
   private static testCases getMultAttributesPostSampled() {
     List<String> matches =
         getMatches(
-            new ArrayList<>(Arrays.asList("MultipleAttributes", "ImportantAttribute", "PostRule")));
+            new ArrayList<>(
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.MultipleAttributes.getSampleName(),
+                    GenericConstants.SampleRuleName.ImportantAttribute.getSampleName(),
+                    GenericConstants.SampleRuleName.PostRule.getSampleName())));
     return new testCases(
-        "admin", "multAttributePostSampled", "true", matches, "/getSampled", "POST");
+        GenericConstants.Users.Admin.getUser(),
+        "multAttributePostSampled",
+        "true",
+        matches,
+        "/getSampled",
+        "POST");
   }
 
   /**
@@ -187,8 +280,12 @@ public class testCases {
    * @return testCases postSampled user
    */
   private static testCases getPostOnly() {
-    List<String> matches = getMatches(new ArrayList<>(Arrays.asList("PostRule")));
-    return new testCases("test", "PostOnly", "false", matches, "/getSampled", "POST");
+    List<String> matches =
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(GenericConstants.SampleRuleName.PostRule.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Test.getUser(), "PostOnly", "false", matches, "/getSampled", "POST");
   }
 
   /**
@@ -202,12 +299,17 @@ public class testCases {
         getMatches(
             new ArrayList<>(
                 Arrays.asList(
-                    "MultipleAttributes",
-                    "ImportantAttribute",
-                    "ImportantEndpoint",
-                    "SampleNoneAtEndpoint")));
+                    GenericConstants.SampleRuleName.MultipleAttributes.getSampleName(),
+                    GenericConstants.SampleRuleName.ImportantAttribute.getSampleName(),
+                    GenericConstants.SampleRuleName.ImportantEndpoint.getSampleName(),
+                    GenericConstants.SampleRuleName.SampleNoneAtEndpoint.getSampleName())));
     return new testCases(
-        "admin", "multAttributeImportant", "true", matches, "/importantEndpoint", "GET");
+        GenericConstants.Users.Admin.getUser(),
+        "multAttributeImportant",
+        "true",
+        matches,
+        "/importantEndpoint",
+        "GET");
   }
 
   /**
@@ -217,8 +319,18 @@ public class testCases {
    * @return testCases serviceName user
    */
   private static testCases getServiceNameTest() {
-    List<String> matches = getMatches(new ArrayList<>(Arrays.asList("ImportantServiceName")));
-    return new testCases("test", "ImportantServiceName", "false", matches, "/getSampled", "GET");
+    List<String> matches =
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.ImportantServiceName.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Test.getUser(),
+        "ImportantServiceName",
+        "false",
+        matches,
+        "/getSampled",
+        "GET");
   }
 
   /**
@@ -229,8 +341,18 @@ public class testCases {
    */
   private static testCases getAdminServiceNameTest() {
     List<String> matches =
-        getMatches(new ArrayList<>(Arrays.asList("ImportantServiceName", "ImportantAttribute")));
-    return new testCases("admin", "ImportantServiceName", "false", matches, "/getSampled", "GET");
+        getMatches(
+            new ArrayList<>(
+                Arrays.asList(
+                    GenericConstants.SampleRuleName.ImportantServiceName.getSampleName(),
+                    GenericConstants.SampleRuleName.ImportantAttribute.getSampleName())));
+    return new testCases(
+        GenericConstants.Users.Admin.getUser(),
+        "ImportantServiceName",
+        "false",
+        matches,
+        "/getSampled",
+        "GET");
   }
 
   /**
@@ -239,7 +361,7 @@ public class testCases {
    * @return list of all testCases
    */
   public static testCases[] getAllTestCases() {
-    return new testCases[]{
+    return new testCases[] {
       getDefaultUser(),
       getAdminGetSampled(),
       getAdminPostSampled(),
