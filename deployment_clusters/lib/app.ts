@@ -35,7 +35,7 @@ const data = yaml.load(raw)
 
 
 
-validateClusters(data['clusters'])
+validateClusters(data)
 // const bigMap = parseData(data['clusters'])
 for(const [key, value] of Object.entries(data['clusters'])){
   const val = Object(value)
