@@ -14,19 +14,21 @@ export class ClusterStack extends NestedStack {
   constructor(scope: Construct, id: string, props: ClusterStackProps) {
     super(scope, id, props);
 
+    const logging = [
+      eks.ClusterLoggingTypes.API,
+      eks.ClusterLoggingTypes.AUDIT,
+      eks.ClusterLoggingTypes.AUTHENTICATOR,
+      eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
+      eks.ClusterLoggingTypes.SCHEDULER,
+    ]
+
     if(props.launch_type === 'ec2'){
       this.cluster = new eks.Cluster(this, props.name+'-Cluster', {
       clusterName: props.name,
       vpc: props.vpc,
       defaultCapacity: 0,  // we want to manage capacity our selves
       version: props.version,
-      clusterLogging: [
-        eks.ClusterLoggingTypes.API,
-        eks.ClusterLoggingTypes.AUDIT,
-        eks.ClusterLoggingTypes.AUTHENTICATOR,
-        eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
-        eks.ClusterLoggingTypes.SCHEDULER,
-      ]
+      clusterLogging: logging
     });
       if(props.cpu === "arm_64"){
           this.cluster.addNodegroupCapacity('ng-arm', {
@@ -34,7 +36,7 @@ export class ClusterStack extends NestedStack {
               minSize: 2
           })
       } else {
-          this.cluster.addNodegroupCapacity('ng-arm', {
+          this.cluster.addNodegroupCapacity('ng-amd', {
               instanceTypes: [new ec2.InstanceType('m5.' + props.node_size)],
               minSize: 2
           })
@@ -48,13 +50,7 @@ export class ClusterStack extends NestedStack {
         vpc: props.vpc,
         // defaultCapacity: 0,  // we want to manage capacity our selves
         version: props.version,
-        clusterLogging: [
-          eks.ClusterLoggingTypes.API,
-          eks.ClusterLoggingTypes.AUDIT,
-          eks.ClusterLoggingTypes.AUTHENTICATOR,
-          eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
-          eks.ClusterLoggingTypes.SCHEDULER,
-        ]
+        clusterLogging: logging
       });
     }
 

@@ -11,7 +11,12 @@ const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xk
 
 
 export function validateClusters(info: Object){
-    for(const [key, value] of Object.entries(info)){
+    const data = Object(info)
+    if(!data['clusters']){
+        throw new Error('No clusters field being filed in the yaml file')
+    }
+    const clusterInfo = data['clusters']
+    for(const [key, value] of Object.entries(clusterInfo)){
         // console.log(key,value)
         const val = Object(value)
         for(const [k, v] of Object.entries(val)){

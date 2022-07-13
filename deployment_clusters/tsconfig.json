@@ -21,10 +21,13 @@
     "strictPropertyInitialization": false,
     "typeRoots": [
       "./node_modules/@types"
-    ]
+    ],
+    "outDir": "./dist/lib"
   },
-  "exclude": [
-    "node_modules",
-    "cdk.out"
-  ]
+  "exclude": ["cdk.out","build","node_modules", "dist"],
+  "include": [
+    "lib/**/*.ts",
+    "lib/*.ts",
+    "config/*.yaml"
+  ],
 }
