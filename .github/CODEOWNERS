@@ -8,4 +8,4 @@
 #  https://help.github.com/en/articles/about-code-owners
 #
 * @aws-observability/adot-collector-maintainers
-centralized-sampling-tests @willarmiros @wangzlei
+/centralized-sampling-tests/ @willarmiros @wangzlei
