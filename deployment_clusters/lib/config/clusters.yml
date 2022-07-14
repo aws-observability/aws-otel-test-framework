@@ -5,11 +5,11 @@ clusters:
     cpu_architecture: arm_64
     version: 1.22
     node_size: large
-  amdCluster0:
-    launch_type: ec2
-    cpu_architecture: AMD_64
-    version: 1.22
-    node_size: large
+  # amdCluster0:
+  #   launch_type: ec2
+  #   cpu_architecture: AMD_64
+  #   version: 1.22
+  #   node_size: large
   # fargateCluster0:
   #   launch_type: fargate
   #   cpu_architecture: null 

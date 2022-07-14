@@ -8,7 +8,7 @@ import { Construct } from "constructs";
 import { ClusterManagementStack } from "./cluster-management-stack";
 import { ClusterStack } from "./cluster-stack";
 
-interface ClusterResourceProps{
+interface ClusterResourceProps extends StackProps{
     clusterStack: ClusterStack
 }
 

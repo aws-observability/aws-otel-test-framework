@@ -18,11 +18,13 @@ const yaml = require('js-yaml')
 
 const app = new cdk.App();
 
+const REGION = 'us-west-2'
+
 const clusterMap = new Map<string, ClusterStack>();
 
 const vs = new VPCStack(app, "EKSVpc", {
   env: {
-    region: 'us-west-2'
+    region: REGION
   }
 })
 
@@ -48,32 +50,42 @@ for(const [key, value] of Object.entries(data['clusters'])){
     cpu: String(val["cpu_architecture"]),
     node_size: String(val["node_size"]),
     env: {
-      region: 'us-west-2'
+      region: REGION
     },
   })
+    if(process.env.CDK_EKS_RESOURCE_DEPLOY == 'true'){
+        const crs = new ClusterResourceStack(app, key+"-resource",{
+            clusterStack: newStack,
+            env: {
+                region: REGION
+            }
+        })
+        crs.addDependency(newStack)
+    }
+
   clusterMap.set(key, newStack)
 }
 
 
 
 
-if(process.env.CDK_EKS_RESOURCE_DEPLOY == 'true'){
+// if(process.env.CDK_EKS_RESOURCE_DEPLOY){
 
-    for(const key in clusterMap.keys()){
-        const cms = clusterMap.get(key)
-        if(cms === undefined){
-            continue
-        }
-        const crs = new ClusterResourceStack(app,"eks-cluster-resource",{
-            clusterStack: cms
-        })
-        crs.addDependency(cms)
-    }
-    // const crs = new ClusterResourceStack(app,"eks-cluster-resource",{
-    //     clusterManagementStack:cms
-    // })
-    // crs.addDependency(cms)
-}
+//     for(const key in clusterMap.keys()){
+//         const cms = clusterMap.get(key)
+//         if(cms === undefined){
+//             continue
+//         }
+//         const crs = new ClusterResourceStack(app,cms.cluster.clusterName + "-resource",{
+//             clusterStack: cms
+//         })
+//         crs.addDependency(cms)
+//     }
+//     // const crs = new ClusterResourceStack(app,"eks-cluster-resource",{
+//     //     clusterManagementStack:cms
+//     // })
+//     // crs.addDependency(cms)
+// }
 
 function getCluster(clusterName: string) : eks.ICluster | undefined {
     return clusterMap.get(clusterName)?.cluster
