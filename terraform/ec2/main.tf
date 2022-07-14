@@ -62,7 +62,7 @@ locals {
   docker_compose_path  = var.soaking_compose_file != "" ? var.soaking_compose_file : fileexists("${var.testcase}/docker_compose.tpl") ? "${var.testcase}/docker_compose.tpl" : module.common.default_docker_compose_path
   selected_ami         = var.amis[var.testing_ami]
   ami_family           = var.ami_family[local.selected_ami["family"]]
-  ami_id               = data.aws_ami.selected.id
+  ami_id               = var.amis[var.testing_ami]["ami_id"]
   instance_type        = lookup(local.selected_ami, "instance_type", local.ami_family["instance_type"])
   otconfig_destination = local.ami_family["otconfig_destination"]
   login_user           = lookup(local.selected_ami, "login_user", local.ami_family["login_user"])
