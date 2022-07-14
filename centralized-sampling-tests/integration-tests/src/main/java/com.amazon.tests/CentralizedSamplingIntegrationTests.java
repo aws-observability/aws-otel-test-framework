@@ -29,6 +29,7 @@ public class CentralizedSamplingIntegrationTests {
   private static final Logger logger =
       LoggerFactory.getLogger(CentralizedSamplingIntegrationTests.class);
 
+  private static SampleRules sampleRulesObj = new SampleRules();
   /**
    * Main function that runs the three tests for Centralized Sampling SampleRulesTests - tests rules
    * filter and sample the correct number of targets ReservoirTests - tests that reservoir works
@@ -166,7 +167,7 @@ public class CentralizedSamplingIntegrationTests {
    * @throws InterruptedException if a test fails after retries
    */
   public static void reservoirTests() throws IOException, InterruptedException {
-    SampleRule[] sampleRules = SampleRules.getReservoirRules();
+    SampleRule[] sampleRules = sampleRulesObj.getReservoirRules();
     for (SampleRule sampleRule : sampleRules) {
       try {
         makeRule(sampleRule.getJson(), sampleRule.getName());
@@ -211,7 +212,7 @@ public class CentralizedSamplingIntegrationTests {
    */
   public static void priorityTests() throws IOException, InterruptedException {
     testCases[] allTestCases = testCases.getAllTestCases();
-    SampleRule[] sampleRules = SampleRules.getPriorityRules();
+    SampleRule[] sampleRules = sampleRulesObj.getPriorityRules();
     for (SampleRule sampleRule : sampleRules) {
       try {
         makeRule(sampleRule.getJson(), sampleRule.getName());
@@ -276,7 +277,7 @@ public class CentralizedSamplingIntegrationTests {
    * @throws InterruptedException if tests fail
    */
   public static void sampleRulesTests() throws IOException, InterruptedException {
-    SampleRule[] sampleRules = SampleRules.getSampleRules();
+    SampleRule[] sampleRules = sampleRulesObj.getSampleRules();
     testCases[] allTestCases = testCases.getAllTestCases();
 
     for (SampleRule sampleRule : sampleRules) {

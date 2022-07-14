@@ -4,12 +4,41 @@ import org.json.simple.JSONObject;
 
 /** File that contains all sample Rules that will be created to be used for testing */
 public class SampleRules {
+  private final SampleRule[] sampleRules;
+  private final SampleRule[] priorityRules;
+  private final SampleRule[] reservoirRules;
+
+
+  public SampleRules() {
+    this.sampleRules = new SampleRule[] {
+            getSampleNone(),
+            getAcceptAll(),
+            getImportantRule(),
+            getImportantAttribute(),
+            getAttributeatEndpoint(),
+            getlowReservoirHighRate(),
+            getMethodRule(),
+            getMultipleAttribute(),
+            getDefaultRule(),
+            getServiceNameRule(),
+            getSampleNoneAtEndpoint()
+    };
+    this.priorityRules = new SampleRule[] {
+            getImportantRule(),
+            getImportantAttribute(),
+            getAttributeatEndpoint(),
+            getMethodRule(),
+            getServiceNameRule()
+    };
+
+    this.reservoirRules = new SampleRule[] {getHighReservoirLowRate(), getMixedReservoir()};
+  }
   /**
    * Sample rule that samples all targets
    *
    * @return AcceptAll SampleRule
    */
-  private static SampleRule getAcceptAll() {
+  private SampleRule getAcceptAll() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.AcceptAll.getSampleName(), 1000, 1, 1)
         .build();
@@ -20,7 +49,7 @@ public class SampleRules {
    *
    * @return SampleNone SampleRule
    */
-  private static SampleRule getSampleNone() {
+  private SampleRule getSampleNone() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.SampleNone.getSampleName(), 1000, 0.0, 0.0)
         .setReservoir(0)
@@ -32,7 +61,7 @@ public class SampleRules {
    *
    * @return SampleNoneAtEndpoint SampleRule
    */
-  private static SampleRule getSampleNoneAtEndpoint() {
+  private SampleRule getSampleNoneAtEndpoint() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.SampleNoneAtEndpoint.getSampleName(), 1000, 0.0, 0.0)
         .setReservoir(0)
@@ -45,7 +74,7 @@ public class SampleRules {
    *
    * @return PostRule SampleRule
    */
-  private static SampleRule getMethodRule() {
+  private SampleRule getMethodRule() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.PostRule.getSampleName(), 10, .1, .11)
         .setMethod("POST")
@@ -57,7 +86,7 @@ public class SampleRules {
    *
    * @return ImportantEndpoint SampleRule
    */
-  private static SampleRule getImportantRule() {
+  private SampleRule getImportantRule() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.ImportantEndpoint.getSampleName(), 1, 1.0, 1)
         .setPath("/importantEndpoint")
@@ -69,9 +98,9 @@ public class SampleRules {
    *
    * @return AttributeAtEndpoint SampleRule
    */
-  private static SampleRule getAttributeatEndpoint() {
+  private SampleRule getAttributeatEndpoint() {
     JSONObject attributes = new JSONObject();
-    attributes.put("user", "service");
+    attributes.put(GenericConstants.USER, GenericConstants.Users.Service.getUser());
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.AttributeAtEndpoint.getSampleName(), 8, 0.5, .51)
         .setPath("/getSampled")
@@ -84,7 +113,7 @@ public class SampleRules {
    *
    * @return LowReservoir SampleRule
    */
-  private static SampleRule getlowReservoirHighRate() {
+  private SampleRule getlowReservoirHighRate() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.LowReservoir.getSampleName(), 10, .8, .80)
         .setReservoir(0)
@@ -96,7 +125,7 @@ public class SampleRules {
    *
    * @return HighReservoir SampleRule
    */
-  public static SampleRule getHighReservoirLowRate() {
+  private SampleRule getHighReservoirLowRate() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.HighReservoir.getSampleName(), 2000, 0.0, .50)
         .setReservoir(500)
@@ -108,7 +137,7 @@ public class SampleRules {
    *
    * @return HighReservoir SampleRule
    */
-  public static SampleRule getMixedReservoir() {
+  private SampleRule getMixedReservoir() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.MixedReservoir.getSampleName(), 2000, .5, .75)
         .setReservoir(500)
@@ -120,9 +149,9 @@ public class SampleRules {
    *
    * @return ImportantAttribute SampleRule
    */
-  private static SampleRule getImportantAttribute() {
+  private SampleRule getImportantAttribute() {
     JSONObject attributes = new JSONObject();
-    attributes.put("user", "admin");
+    attributes.put(GenericConstants.USER, GenericConstants.Users.Admin.getUser());
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.ImportantAttribute.getSampleName(), 2, .5, .5)
         .setAttributes(attributes)
@@ -134,10 +163,10 @@ public class SampleRules {
    *
    * @return MultipleAttributes SampleRule
    */
-  private static SampleRule getMultipleAttribute() {
+  private SampleRule getMultipleAttribute() {
     JSONObject attributes = new JSONObject();
-    attributes.put("user", "admin");
-    attributes.put("required", "true");
+    attributes.put(GenericConstants.USER, GenericConstants.Users.Admin.getUser());
+    attributes.put(GenericConstants.REQUIRED, "true");
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.MultipleAttributes.getSampleName(), 9, .4, .41)
         .setAttributes(attributes)
@@ -149,7 +178,7 @@ public class SampleRules {
    *
    * @return Default SampleRule
    */
-  private static SampleRule getDefaultRule() {
+  private SampleRule getDefaultRule() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.Default.getSampleName(), 10000, .06, .06)
         .build();
@@ -160,7 +189,7 @@ public class SampleRules {
    *
    * @return ImportantServiceName SampleRule
    */
-  private static SampleRule getServiceNameRule() {
+  private SampleRule getServiceNameRule() {
     return new SampleRule.SampleRuleBuilder(
             GenericConstants.SampleRuleName.ImportantServiceName.getSampleName(), 3, 1, 1)
         .setServiceName("ImportantServiceName")
@@ -172,20 +201,8 @@ public class SampleRules {
    *
    * @return list of SampleRules
    */
-  public static SampleRule[] getSampleRules() {
-    return new SampleRule[] {
-      getSampleNone(),
-      getAcceptAll(),
-      getImportantRule(),
-      getImportantAttribute(),
-      getAttributeatEndpoint(),
-      getlowReservoirHighRate(),
-      getMethodRule(),
-      getMultipleAttribute(),
-      getDefaultRule(),
-      getServiceNameRule(),
-      getSampleNoneAtEndpoint()
-    };
+  public SampleRule[] getSampleRules() {
+    return this.sampleRules;
   }
 
   /**
@@ -193,14 +210,8 @@ public class SampleRules {
    *
    * @return list of SampleRules
    */
-  public static SampleRule[] getPriorityRules() {
-    return new SampleRule[] {
-      getImportantRule(),
-      getImportantAttribute(),
-      getAttributeatEndpoint(),
-      getMethodRule(),
-      getServiceNameRule()
-    };
+  public SampleRule[] getPriorityRules() {
+    return this.priorityRules;
   }
 
   /**
@@ -208,7 +219,7 @@ public class SampleRules {
    *
    * @return list of SampleRules
    */
-  public static SampleRule[] getReservoirRules() {
-    return new SampleRule[] {getHighReservoirLowRate(), getMixedReservoir()};
+  public SampleRule[] getReservoirRules() {
+    return this.reservoirRules;
   }
 }
