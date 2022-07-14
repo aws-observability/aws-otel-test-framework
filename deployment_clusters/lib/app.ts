@@ -18,7 +18,7 @@ const yaml = require('js-yaml')
 
 const app = new cdk.App();
 
-const clusterMap = new Map<string, eks.Cluster | eks.FargateCluster>();
+const clusterMap = new Map<string, eks.ICluster>();
 
 const vs = new VPCStack(app, "EKSVpc", {
   env: {
@@ -55,7 +55,7 @@ for(const [key, value] of Object.entries(data['clusters'])){
 }
 
 
-function getCluster(clusterName: string) : eks.Cluster | eks.FargateCluster | undefined {
+function getCluster(clusterName: string) : eks.ICluster | undefined {
   return clusterMap.get(clusterName)
 }
 

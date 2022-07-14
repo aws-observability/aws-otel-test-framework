@@ -1,4 +1,4 @@
-import { NestedStack, NestedStackProps, aws_eks as eks, aws_ec2 as ec2} from 'aws-cdk-lib';
+import { Stack, StackProps, aws_eks as eks, aws_ec2 as ec2} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
@@ -8,7 +8,7 @@ import { KubernetesVersion, Nodegroup } from 'aws-cdk-lib/aws-eks';
 import { CpuArchitecture } from 'aws-cdk-lib/aws-ecs';
 
 
-export class ClusterStack extends NestedStack {
+export class ClusterStack extends Stack {
   cluster : eks.Cluster | eks.FargateCluster
 
   constructor(scope: Construct, id: string, props: ClusterStackProps) {
@@ -58,7 +58,7 @@ export class ClusterStack extends NestedStack {
   }
 }
 
-export interface ClusterStackProps extends NestedStackProps{
+export interface ClusterStackProps extends StackProps{
     launch_type: string;
     name: string;
     vpc: Vpc;
