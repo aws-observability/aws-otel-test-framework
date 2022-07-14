@@ -18,7 +18,7 @@ const yaml = require('js-yaml')
 
 const app = new cdk.App();
 
-const clusterMap = new Map<string, eks.ICluster>();
+const clusterMap = new Map<string, ClusterStack>();
 
 const vs = new VPCStack(app, "EKSVpc", {
   env: {
@@ -51,13 +51,33 @@ for(const [key, value] of Object.entries(data['clusters'])){
       region: 'us-west-2'
     },
   })
-  clusterMap.set(key, newStack.cluster)
+  clusterMap.set(key, newStack)
 }
 
+
+
+
+if(process.env.CDK_EKS_RESOURCE_DEPLOY == 'true'){
+
+    for(const key in clusterMap.keys()){
+        const cms = clusterMap.get(key)
+        if(cms === undefined){
+            continue
+        }
+        const crs = new ClusterResourceStack(app,"eks-cluster-resource",{
+            clusterStack: cms
+        })
+        crs.addDependency(cms)
+    }
+    // const crs = new ClusterResourceStack(app,"eks-cluster-resource",{
+    //     clusterManagementStack:cms
+    // })
+    // crs.addDependency(cms)
+}
 
 function getCluster(clusterName: string) : eks.ICluster | undefined {
-  return clusterMap.get(clusterName)
-}
+    return clusterMap.get(clusterName)?.cluster
+  }
 
 
 
@@ -76,10 +96,3 @@ function getCluster(clusterName: string) : eks.ICluster | undefined {
 //     },
 // });
 
-// if(process.env.CDK_EKS_RESOURCE_DEPLOY){
-
-//     const crs = new ClusterResourceStack(app,"eks-cluster-resource",{
-//         clusterManagementStack:cms
-//     })
-//     crs.addDependency(cms)
-// }
