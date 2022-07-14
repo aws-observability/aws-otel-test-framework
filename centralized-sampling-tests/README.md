@@ -31,6 +31,8 @@ collector with command.
 Start up the sample app of your choice in the sample apps folder. The sample apps exist in the sample-apps folder. 
 Each sample app will have a readMe on how to run it. If adding a sample-app to use for the integration tests see
 [Sample-app-requirements](https://docs.google.com/document/d/1nu6XwYKe8h3EZ6upCQqf83hI9gQ-yg5WXlxHRjJ7BCg/edit?usp=sharing)
+The sample apps were manually instrumented for X-Ray Remote Sampling, for more context see
+[here](https://aws-otel.github.io/docs/getting-started/java-sdk/trace-auto-instr#using-x-ray-remote-sampling)
 
 ### Start up integration tests
 run this command in the root dir of the testing framework once collector and sample app are up and running
