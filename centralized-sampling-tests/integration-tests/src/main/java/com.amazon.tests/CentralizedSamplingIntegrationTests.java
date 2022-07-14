@@ -3,6 +3,7 @@ package com.amazon.tests;
 import java.io.IOException;
 import java.lang.Math;
 import java.util.concurrent.TimeUnit;
+
 import okhttp3.Call;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
@@ -30,6 +31,8 @@ public class CentralizedSamplingIntegrationTests {
       LoggerFactory.getLogger(CentralizedSamplingIntegrationTests.class);
 
   private static SampleRules sampleRulesObj = new SampleRules();
+
+  private static testCases testCasesObj = new testCases();
   /**
    * Main function that runs the three tests for Centralized Sampling SampleRulesTests - tests rules
    * filter and sample the correct number of targets ReservoirTests - tests that reservoir works
@@ -53,23 +56,23 @@ public class CentralizedSamplingIntegrationTests {
    * @param sampleRule - sampleRule that is currently active
    * @return true if call is successful and has expected sampling rate, false else
    */
-  public static boolean makeCalls(testCases testCase, SampleRule sampleRule) throws IOException {
+  public static boolean makeCalls(testCase testCase, SampleRule sampleRule) throws IOException {
     RequestBody reqbody = null;
     String stringResp = "";
-    if (testCase.method.equals("POST")) {
+    if (testCase.getMethod().equals("POST")) {
       reqbody = RequestBody.create(null, new byte[0]);
     }
     try (Response response =
         httpClient()
             .newCall(
                 new Request.Builder()
-                    .addHeader(GenericConstants.USER, testCase.user)
-                    .addHeader(GenericConstants.SERVICE_NAME, testCase.name)
-                    .addHeader(GenericConstants.REQUIRED, testCase.required)
+                    .addHeader(GenericConstants.USER, testCase.getUser())
+                    .addHeader(GenericConstants.SERVICE_NAME, testCase.getName())
+                    .addHeader(GenericConstants.REQUIRED, testCase.getRequired())
                     .addHeader(
                         GenericConstants.TOTAL_SPANS, String.valueOf(GenericConstants.TOTAL_CALLS))
-                    .url("http://localhost:8080" + testCase.endpoint)
-                    .method(testCase.method, reqbody)
+                    .url("http://localhost:8080" + testCase.getEndpoint())
+                    .method(testCase.getMethod(), reqbody)
                     .build())
             .execute()) {
       stringResp = response.body().string();
@@ -78,7 +81,7 @@ public class CentralizedSamplingIntegrationTests {
       throw new IOException("Could not fetch endpoint", e);
     }
     int expectedRate = GenericConstants.DEFAULT_RATE;
-    if (testCase.matches.contains(sampleRule.getName())) {
+    if (testCase.getMatches().contains(sampleRule.getName())) {
       expectedRate =
           (int) Math.round(sampleRule.getExpectedSampled() * GenericConstants.TOTAL_CALLS);
     }
@@ -95,7 +98,7 @@ public class CentralizedSamplingIntegrationTests {
             + " for Sample Rule "
             + sampleRule.getName()
             + " and test case "
-            + testCase.name);
+            + testCase.getName());
     if (Integer.parseInt(stringResp) > expectedRate + roundedRange
         || Integer.parseInt(stringResp) < expectedRate - roundedRange) {
       logger.info("Sampled rate does not match expected rate");
@@ -179,7 +182,7 @@ public class CentralizedSamplingIntegrationTests {
       for (int j = 0; j < GenericConstants.MAX_RETRIES; j++) {
         TimeUnit.SECONDS.sleep(GenericConstants.WAIT_FOR_RESERVOIR);
         try {
-          passed = makeCalls(testCases.getDefaultUser(), sampleRule);
+          passed = makeCalls(testCasesObj.getDefaultUser(), sampleRule);
         } catch (Exception e) {
           logger.info("Could not fetch endpoint, sample app might not be started");
         } finally {
@@ -192,7 +195,7 @@ public class CentralizedSamplingIntegrationTests {
                 "Test failed for Sample rule: "
                     + sampleRule.getName()
                     + " and test case "
-                    + testCases.getDefaultUser().name);
+                    + testCasesObj.getDefaultUser().getName());
             deleteRule(sampleRule.getName());
             throw new InterruptedException();
           }
@@ -211,7 +214,7 @@ public class CentralizedSamplingIntegrationTests {
    * @throws InterruptedException if tests fail after retries
    */
   public static void priorityTests() throws IOException, InterruptedException {
-    testCases[] allTestCases = testCases.getAllTestCases();
+    testCase[] allTestCases = testCasesObj.getAllTestCases();
     SampleRule[] sampleRules = sampleRulesObj.getPriorityRules();
     for (SampleRule sampleRule : sampleRules) {
       try {
@@ -222,10 +225,10 @@ public class CentralizedSamplingIntegrationTests {
       }
     }
     TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
-    for (testCases allTestCase : allTestCases) {
+    for (testCase allTestCase : allTestCases) {
       int priority = sampleRules.length - 1;
       for (int j = 0; j < sampleRules.length; j++) {
-        if (allTestCase.matches.contains(sampleRules[j].getName())
+        if (allTestCase.getMatches().contains(sampleRules[j].getName())
             && priority == sampleRules.length - 1) {
           priority = j;
         }
@@ -250,7 +253,7 @@ public class CentralizedSamplingIntegrationTests {
             "Test failed for Sample rule: "
                 + sampleRules[priority].getName()
                 + " and test case "
-                + allTestCase.name);
+                + allTestCase.getName());
         for (SampleRule sampleRule : sampleRules) {
           deleteRule(sampleRule.getName());
         }
@@ -260,7 +263,7 @@ public class CentralizedSamplingIntegrationTests {
             "Test passed for Sample rule: "
                 + sampleRules[priority].getName()
                 + " and test case "
-                + allTestCase.name);
+                + allTestCase.getName());
       }
     }
     for (SampleRule sampleRule : sampleRules) {
@@ -278,7 +281,7 @@ public class CentralizedSamplingIntegrationTests {
    */
   public static void sampleRulesTests() throws IOException, InterruptedException {
     SampleRule[] sampleRules = sampleRulesObj.getSampleRules();
-    testCases[] allTestCases = testCases.getAllTestCases();
+    testCase[] allTestCases = testCasesObj.getAllTestCases();
 
     for (SampleRule sampleRule : sampleRules) {
       try {
@@ -288,7 +291,7 @@ public class CentralizedSamplingIntegrationTests {
         throw new IOException();
       }
       TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
-      for (testCases allTestCase : allTestCases) {
+      for (testCase allTestCase : allTestCases) {
         boolean passed = false;
         for (int k = 0; k < GenericConstants.MAX_RETRIES; k++) {
           try {
@@ -309,7 +312,7 @@ public class CentralizedSamplingIntegrationTests {
               "Test failed for Sample rule: "
                   + sampleRule.getName()
                   + " and test case "
-                  + allTestCase.name);
+                  + allTestCase.getName());
           deleteRule(sampleRule.getName());
           throw new InterruptedException();
         } else {
@@ -317,7 +320,7 @@ public class CentralizedSamplingIntegrationTests {
               "Test passed for Sample rule: "
                   + sampleRule.getName()
                   + " and test case "
-                  + allTestCase.name);
+                  + allTestCase.getName());
         }
       }
       deleteRule(sampleRule.getName());

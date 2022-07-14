@@ -8,28 +8,29 @@ public class SampleRules {
   private final SampleRule[] priorityRules;
   private final SampleRule[] reservoirRules;
 
-
   public SampleRules() {
-    this.sampleRules = new SampleRule[] {
-            getSampleNone(),
-            getAcceptAll(),
-            getImportantRule(),
-            getImportantAttribute(),
-            getAttributeatEndpoint(),
-            getlowReservoirHighRate(),
-            getMethodRule(),
-            getMultipleAttribute(),
-            getDefaultRule(),
-            getServiceNameRule(),
-            getSampleNoneAtEndpoint()
-    };
-    this.priorityRules = new SampleRule[] {
-            getImportantRule(),
-            getImportantAttribute(),
-            getAttributeatEndpoint(),
-            getMethodRule(),
-            getServiceNameRule()
-    };
+    this.sampleRules =
+        new SampleRule[] {
+          getSampleNone(),
+          getAcceptAll(),
+          getImportantRule(),
+          getImportantAttribute(),
+          getAttributeatEndpoint(),
+          getlowReservoirHighRate(),
+          getMethodRule(),
+          getMultipleAttribute(),
+          getDefaultRule(),
+          getServiceNameRule(),
+          getSampleNoneAtEndpoint()
+        };
+    this.priorityRules =
+        new SampleRule[] {
+          getImportantRule(),
+          getImportantAttribute(),
+          getAttributeatEndpoint(),
+          getMethodRule(),
+          getServiceNameRule()
+        };
 
     this.reservoirRules = new SampleRule[] {getHighReservoirLowRate(), getMixedReservoir()};
   }
