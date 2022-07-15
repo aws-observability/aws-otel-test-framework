@@ -19,6 +19,9 @@ export function validateClusters(info: Object){
     for(const [key, value] of Object.entries(clusterInfo)){
         // console.log(key,value)
         const val = Object(value)
+        if(Object.keys(val).length !== 4){
+            throw new Error("Didn't set all the fields for the clusters")
+        }
         for(const [k, v] of Object.entries(val)){
             switch(k){
                 case 'version':
