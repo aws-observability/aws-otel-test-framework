@@ -23,6 +23,14 @@ variable "kubeconfig" {
   default = "kubeconfig"
 }
 
+variable "operator_repository" {
+  default = "ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator"
+}
+
+variable "operator_tag" {
+  default = "latest"
+}
+
 resource "helm_release" "adot-operator" {
   name = "adot-operator-${var.testing_id}"
 
@@ -32,6 +40,16 @@ resource "helm_release" "adot-operator" {
   values = [
     file("./adot-operator/adot-operator-values.yaml")
   ]
+
+  set {
+    name  = "manager.image.repository"
+    value = var.operator_repository
+  }
+
+  set {
+    name  = "manager.image.tag"
+    value = var.operator_tag
+  }
 
   provisioner "local-exec" {
     command = "kubectl wait --kubeconfig=${var.kubeconfig} --timeout=5m --for=condition=available deployment opentelemetry-operator-controller-manager"
