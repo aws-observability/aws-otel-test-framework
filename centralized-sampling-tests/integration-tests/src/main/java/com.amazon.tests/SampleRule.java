@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 
 /** Class used to create Sample Rules, used by SampleRules file to create sampleRules */
 public class SampleRule {
-  private String name;
+  private GenericConstants.SampleRuleName name;
   private String json;
   private double expectedSampled;
 
@@ -20,9 +20,9 @@ public class SampleRule {
   }
 
   /**
-   * @return String name of the rule
+   * @return enum name of the rule
    */
-  public String getName() {
+  public GenericConstants.SampleRuleName getName() {
     return this.name;
   }
 
@@ -42,7 +42,7 @@ public class SampleRule {
 
   /** Builder class for sampleRule */
   public static class SampleRuleBuilder {
-    private final String name;
+    private final GenericConstants.SampleRuleName name;
     private final int priority;
     private int reservoir;
     private final double rate;
@@ -61,7 +61,8 @@ public class SampleRule {
      * @param rate rate at which the rule should sample
      * @param expectedSampled - number expected to be sampled by this rule
      */
-    public SampleRuleBuilder(String name, int priority, double rate, double expectedSampled) {
+    public SampleRuleBuilder(
+        GenericConstants.SampleRuleName name, int priority, double rate, double expectedSampled) {
       this.name = name;
       this.priority = priority;
       this.rate = rate;
@@ -143,7 +144,7 @@ public class SampleRule {
       jsonBody.put("Priority", priority);
       jsonBody.put("ReservoirSize", reservoir);
       jsonBody.put("ResourceARN", "*");
-      jsonBody.put("RuleName", name);
+      jsonBody.put("RuleName", name.getSampleName());
       jsonBody.put("ServiceName", serviceName);
       jsonBody.put("ServiceType", "*");
       jsonBody.put("URLPath", path);

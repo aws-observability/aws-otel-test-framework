@@ -96,7 +96,7 @@ public class CentralizedSamplingIntegrationTests {
             + ". Expected rate: "
             + expectedRate
             + " for Sample Rule "
-            + sampleRule.getName()
+            + sampleRule.getName().getSampleName()
             + " and test case "
             + testCase.getName());
     if (Integer.parseInt(stringResp) > expectedRate + roundedRange
@@ -173,7 +173,7 @@ public class CentralizedSamplingIntegrationTests {
     SampleRule[] sampleRules = sampleRulesObj.getReservoirRules();
     for (SampleRule sampleRule : sampleRules) {
       try {
-        makeRule(sampleRule.getJson(), sampleRule.getName());
+        makeRule(sampleRule.getJson(), sampleRule.getName().getSampleName());
       } catch (IOException exception) {
         logger.info("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
@@ -196,12 +196,12 @@ public class CentralizedSamplingIntegrationTests {
                     + sampleRule.getName()
                     + " and test case "
                     + testCasesObj.getDefaultUser().getName());
-            deleteRule(sampleRule.getName());
+            deleteRule(sampleRule.getName().getSampleName());
             throw new InterruptedException();
           }
         }
       }
-      deleteRule(sampleRule.getName());
+      deleteRule(sampleRule.getName().getSampleName());
     }
   }
 
@@ -218,7 +218,7 @@ public class CentralizedSamplingIntegrationTests {
     SampleRule[] sampleRules = sampleRulesObj.getPriorityRules();
     for (SampleRule sampleRule : sampleRules) {
       try {
-        makeRule(sampleRule.getJson(), sampleRule.getName());
+        makeRule(sampleRule.getJson(), sampleRule.getName().getSampleName());
       } catch (IOException exception) {
         logger.info("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
@@ -251,23 +251,23 @@ public class CentralizedSamplingIntegrationTests {
       if (!passed) {
         logger.info(
             "Test failed for Sample rule: "
-                + sampleRules[priority].getName()
+                + sampleRules[priority].getName().getSampleName()
                 + " and test case "
                 + allTestCase.getName());
         for (SampleRule sampleRule : sampleRules) {
-          deleteRule(sampleRule.getName());
+          deleteRule(sampleRule.getName().getSampleName());
         }
         throw new InterruptedException();
       } else {
         logger.info(
             "Test passed for Sample rule: "
-                + sampleRules[priority].getName()
+                + sampleRules[priority].getName().getSampleName()
                 + " and test case "
                 + allTestCase.getName());
       }
     }
     for (SampleRule sampleRule : sampleRules) {
-      deleteRule(sampleRule.getName());
+      deleteRule(sampleRule.getName().getSampleName());
     }
   }
 
@@ -285,7 +285,7 @@ public class CentralizedSamplingIntegrationTests {
 
     for (SampleRule sampleRule : sampleRules) {
       try {
-        makeRule(sampleRule.getJson(), sampleRule.getName());
+        makeRule(sampleRule.getJson(), sampleRule.getName().getSampleName());
       } catch (IOException exception) {
         logger.info("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
@@ -310,20 +310,20 @@ public class CentralizedSamplingIntegrationTests {
         if (!passed) {
           logger.info(
               "Test failed for Sample rule: "
-                  + sampleRule.getName()
+                  + sampleRule.getName().getSampleName()
                   + " and test case "
                   + allTestCase.getName());
-          deleteRule(sampleRule.getName());
+          deleteRule(sampleRule.getName().getSampleName());
           throw new InterruptedException();
         } else {
           logger.info(
               "Test passed for Sample rule: "
-                  + sampleRule.getName()
+                  + sampleRule.getName().getSampleName()
                   + " and test case "
                   + allTestCase.getName());
         }
       }
-      deleteRule(sampleRule.getName());
+      deleteRule(sampleRule.getName().getSampleName());
     }
   }
 }

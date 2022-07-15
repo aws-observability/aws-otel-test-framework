@@ -40,8 +40,7 @@ public class SampleRules {
    * @return AcceptAll SampleRule
    */
   private SampleRule getAcceptAll() {
-    return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.AcceptAll.getSampleName(), 1000, 1, 1)
+    return new SampleRule.SampleRuleBuilder(GenericConstants.SampleRuleName.AcceptAll, 1000, 1, 1)
         .build();
   }
 
@@ -52,7 +51,7 @@ public class SampleRules {
    */
   private SampleRule getSampleNone() {
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.SampleNone.getSampleName(), 1000, 0.0, 0.0)
+            GenericConstants.SampleRuleName.SampleNone, 1000, 0.0, 0.0)
         .setReservoir(0)
         .build();
   }
@@ -64,7 +63,7 @@ public class SampleRules {
    */
   private SampleRule getSampleNoneAtEndpoint() {
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.SampleNoneAtEndpoint.getSampleName(), 1000, 0.0, 0.0)
+            GenericConstants.SampleRuleName.SampleNoneAtEndpoint, 1000, 0.0, 0.0)
         .setReservoir(0)
         .setPath("/importantEndpoint")
         .build();
@@ -76,8 +75,7 @@ public class SampleRules {
    * @return PostRule SampleRule
    */
   private SampleRule getMethodRule() {
-    return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.PostRule.getSampleName(), 10, .1, .11)
+    return new SampleRule.SampleRuleBuilder(GenericConstants.SampleRuleName.PostRule, 10, .1, .11)
         .setMethod("POST")
         .build();
   }
@@ -89,7 +87,7 @@ public class SampleRules {
    */
   private SampleRule getImportantRule() {
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.ImportantEndpoint.getSampleName(), 1, 1.0, 1)
+            GenericConstants.SampleRuleName.ImportantEndpoint, 1, 1.0, 1)
         .setPath("/importantEndpoint")
         .build();
   }
@@ -103,7 +101,7 @@ public class SampleRules {
     JSONObject attributes = new JSONObject();
     attributes.put(GenericConstants.USER, GenericConstants.Users.Service.getUser());
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.AttributeAtEndpoint.getSampleName(), 8, 0.5, .51)
+            GenericConstants.SampleRuleName.AttributeAtEndpoint, 8, 0.5, .51)
         .setPath("/getSampled")
         .setAttributes(attributes)
         .build();
@@ -116,7 +114,7 @@ public class SampleRules {
    */
   private SampleRule getlowReservoirHighRate() {
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.LowReservoir.getSampleName(), 10, .8, .80)
+            GenericConstants.SampleRuleName.LowReservoir, 10, .8, .80)
         .setReservoir(0)
         .build();
   }
@@ -128,7 +126,7 @@ public class SampleRules {
    */
   private SampleRule getHighReservoirLowRate() {
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.HighReservoir.getSampleName(), 2000, 0.0, .50)
+            GenericConstants.SampleRuleName.HighReservoir, 2000, 0.0, .50)
         .setReservoir(500)
         .build();
   }
@@ -140,7 +138,7 @@ public class SampleRules {
    */
   private SampleRule getMixedReservoir() {
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.MixedReservoir.getSampleName(), 2000, .5, .75)
+            GenericConstants.SampleRuleName.MixedReservoir, 2000, .5, .75)
         .setReservoir(500)
         .build();
   }
@@ -154,7 +152,7 @@ public class SampleRules {
     JSONObject attributes = new JSONObject();
     attributes.put(GenericConstants.USER, GenericConstants.Users.Admin.getUser());
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.ImportantAttribute.getSampleName(), 2, .5, .5)
+            GenericConstants.SampleRuleName.ImportantAttribute, 2, .5, .5)
         .setAttributes(attributes)
         .build();
   }
@@ -169,7 +167,7 @@ public class SampleRules {
     attributes.put(GenericConstants.USER, GenericConstants.Users.Admin.getUser());
     attributes.put(GenericConstants.REQUIRED, "true");
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.MultipleAttributes.getSampleName(), 9, .4, .41)
+            GenericConstants.SampleRuleName.MultipleAttributes, 9, .4, .41)
         .setAttributes(attributes)
         .build();
   }
@@ -181,7 +179,7 @@ public class SampleRules {
    */
   private SampleRule getDefaultRule() {
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.Default.getSampleName(), 10000, .06, .06)
+            GenericConstants.SampleRuleName.Default, 10000, .06, .06)
         .build();
   }
 
@@ -192,7 +190,7 @@ public class SampleRules {
    */
   private SampleRule getServiceNameRule() {
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.ImportantServiceName.getSampleName(), 3, 1, 1)
+            GenericConstants.SampleRuleName.ImportantServiceName, 3, 1, 1)
         .setServiceName("ImportantServiceName")
         .build();
   }

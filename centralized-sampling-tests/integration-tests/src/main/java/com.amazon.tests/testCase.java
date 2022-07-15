@@ -3,7 +3,7 @@ package com.amazon.tests;
 import java.util.List;
 
 public class testCase {
-  private final List<String> matches;
+  private final List<GenericConstants.SampleRuleName> matches;
   private final String name;
   private final String user;
   private final String required;
@@ -25,7 +25,7 @@ public class testCase {
       String user,
       String name,
       String required,
-      List<String> matches,
+      List<GenericConstants.SampleRuleName> matches,
       String endpoint,
       String method) {
     this.matches = matches;
@@ -86,7 +86,7 @@ public class testCase {
    *
    * @return List<String> matches
    */
-  public List<String> getMatches() {
+  public List<GenericConstants.SampleRuleName> getMatches() {
     return this.matches;
   }
 }
