@@ -4,8 +4,9 @@ import * as cdk from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { Version } from 'aws-cdk-lib/aws-lambda';
-import { KubernetesVersion, Nodegroup } from 'aws-cdk-lib/aws-eks';
+import { AwsAuth, KubernetesVersion, Nodegroup } from 'aws-cdk-lib/aws-eks';
 import { CpuArchitecture } from 'aws-cdk-lib/aws-ecs';
+import { Role } from 'aws-cdk-lib/aws-iam';
 
 
 export class ClusterStack extends Stack {
@@ -53,6 +54,11 @@ export class ClusterStack extends Stack {
         clusterLogging: logging
       });
     }
+
+    const auth = new AwsAuth(this,"clusterAuth"+props.name,{
+      cluster: this.cluster,
+    })
+    auth.addMastersRole(Role.fromRoleName(this,"eks-admin-role","Admin"))
 
 
   }

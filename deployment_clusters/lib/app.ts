@@ -8,6 +8,8 @@ import { validateClusters } from './utils/parse';
 import { VPCStack } from './utils/vpc-stack';
 import { Stack, StackProps, aws_eks as eks, aws_ec2 as ec2} from 'aws-cdk-lib';
 import { ClusterStack } from './stacks/cluster-stack';
+import { AwsAuth } from 'aws-cdk-lib/aws-eks';
+import { Role } from 'aws-cdk-lib/aws-iam';
 const yaml = require('js-yaml')
 
 
@@ -62,6 +64,7 @@ for(const [key, value] of Object.entries(data['clusters'])){
         })
         crs.addDependency(newStack)
     }
+    
 
   clusterMap.set(key, newStack)
 }
