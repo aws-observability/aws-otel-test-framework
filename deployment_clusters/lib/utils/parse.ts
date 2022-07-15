@@ -4,6 +4,7 @@ import { readFileSync, writeFileSync } from 'fs';
 import { exit } from 'process';
 const yaml = require('js-yaml')
 
+const supportedFields = new Set(['version', 'cpu_architecture', 'launch_type', 'node_size'])
 const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21', '1.22']);
 const supportedCPUArchitectures = new Set(['amd_64', 'arm_64']);
 const supportedLaunchTypes = new Set(['ec2', 'fargate']);
@@ -23,6 +24,9 @@ export function validateClusters(info: Object){
             throw new Error("Didn't set all the fields for the clusters")
         }
         for(const [k, v] of Object.entries(val)){
+            if(!supportedFields.has(k)){
+                throw new Error("Uncompatible field type")
+            }
             switch(k){
                 case 'version':
                     val[k] = validateVersion(String(v))
