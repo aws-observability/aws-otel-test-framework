@@ -34,3 +34,9 @@ application {
     // Define the main class for the application.
     mainClassName = 'com.amazon.tests.CentralizedSamplingIntegrationTests'
 }
+
+jib {
+    to {
+        image = "public.ecr.aws/m9u9m0e1/integrationtests:latest"
+    }
+}
