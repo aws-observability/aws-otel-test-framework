@@ -24,8 +24,8 @@ const configData = yaml.load(raw)
 clusterMap = deployClusters(app, configData);
 
 
-function getCluster(clusterName: string) : eks.ICluster | undefined {
-    return clusterMap.get(clusterName)?.cluster
-  }
-
+function getCluster(clusterName: string) : eks.ICluster | null {
+    var clusterStack = clusterMap.get(clusterName)
+    return clusterStack == undefined ? null : clusterStack.cluster
+}
 
