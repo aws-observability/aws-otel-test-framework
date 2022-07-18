@@ -28,10 +28,10 @@ export function validateClusters(info: Object){
                     val[k] = validateVersion(String(v))
                     break;
                 case 'cpu_architecture':
-                    val[k] = refactorAndValidateArchitecture(String(v))
+                    val[k] = convertAndValidateArchitecture(String(v))
                     break
                 case 'launch_type':
-                    val[k] = refactorAndValidateLaunchType(String(v))
+                    val[k] = convertAndValidateLaunchType(String(v))
                     break
                 case 'node_size':
                     val[k] = validateNodeSize(String(v))
@@ -56,7 +56,7 @@ function validateVersion(version: string){
     return version
 }
 
-function refactorAndValidateArchitecture(cpu: string){
+function convertAndValidateArchitecture(cpu: string){
     if(cpu === null || !cpu || cpu == 'null'){
         console.log("It is null: " + cpu)
         return null
@@ -68,7 +68,7 @@ function refactorAndValidateArchitecture(cpu: string){
     return adjustedType
 }
 
-function refactorAndValidateLaunchType(type: string){
+function convertAndValidateLaunchType(type: string){
     if(type == null){
         throw new Error("Launch Type can't be null")
     }
