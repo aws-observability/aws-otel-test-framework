@@ -16,13 +16,16 @@ It is possible that this is already done. Available ADOT Collector releases can 
 [aws-otel-collector](https://github.com/aws-observability/aws-otel-collector/releases).
 Make sure that the collector config is configured to work with a local x-ray listener pointed
 to port 2000 and the docker run command exposes port 2000. Set up the ADOT collector with the 
-example-collector-config file. Start the collector with command.
+example-collector-config file. Clone the ADOT collector repo and start the collector with commands.
+```shell
+    cd aws-otel-collector
+```
 ```shell
     docker run --rm -p 2000:2000 -p 55680:55680 -p 8889:8888 \
       -e AWS_REGION=us-west-2 \
       -e AWS_PROFILE=default \
       -v ~/.aws:/root/.aws \
-      -v "${PWD}/example-collector-config.yaml":/otel-local-config.yaml \
+      -v "${PWD}/examples/docker/config-test.yaml":/otel-local-config.yaml \
       --name awscollector public.ecr.aws/aws-observability/aws-otel-collector:latest \
       --config otel-local-config.yaml;
 ```
@@ -35,7 +38,9 @@ Each sample app will have a readMe on how to run it. If adding a sample-app to u
 [here](https://aws-otel.github.io/docs/getting-started/java-sdk/trace-auto-instr#using-x-ray-remote-sampling)
 
 ### Start up integration tests
-run this command in the root dir of the testing framework once collector and sample app are up and running
+Run this command in the root directory(aws-otel-test-framework) of the testing framework once collector 
+and sample app are up and running. Ensure that the aws account being used on your local account has no 
+pre-existing sample rules in it or the tests will fail.
 ```shell
 ./gradlew :centralized-sampling-tests:integration-tests:run
 ```
