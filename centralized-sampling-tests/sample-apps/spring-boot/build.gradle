@@ -41,3 +41,8 @@ application {
 	mainClassName = 'com.amazon.sampleapp.Application'
 }
 
+jib {
+	to {
+		image = "public.ecr.aws/m9u9m0e1/githubtest2:latest"
+	}
+}

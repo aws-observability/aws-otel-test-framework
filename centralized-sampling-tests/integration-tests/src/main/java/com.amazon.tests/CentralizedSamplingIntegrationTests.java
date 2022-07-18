@@ -47,6 +47,7 @@ public class CentralizedSamplingIntegrationTests {
     sampleRulesTests();
     reservoirTests();
     priorityTests();
+    System.exit(0);
   }
 
   /**
@@ -62,6 +63,10 @@ public class CentralizedSamplingIntegrationTests {
     if (testCase.getMethod().equals("POST")) {
       reqbody = RequestBody.create(null, new byte[0]);
     }
+    String host = System.getenv("TARGET_ADDRESS");
+    if (host == null) {
+      host = "http://localhost:8080";
+    }
     try (Response response =
         httpClient()
             .newCall(
@@ -71,7 +76,7 @@ public class CentralizedSamplingIntegrationTests {
                     .addHeader(GenericConstants.REQUIRED, testCase.getRequired())
                     .addHeader(
                         GenericConstants.TOTAL_SPANS, String.valueOf(GenericConstants.TOTAL_CALLS))
-                    .url("http://localhost:8080" + testCase.getEndpoint())
+                    .url(host + testCase.getEndpoint())
                     .method(testCase.getMethod(), reqbody)
                     .build())
             .execute()) {
@@ -119,15 +124,20 @@ public class CentralizedSamplingIntegrationTests {
     if (ruleName.equals("Default")) {
       return;
     }
-    logger.info("Creating " + ruleName + " sample rule");
-    MediaType json = MediaType.get("application/json; charset=utf-8");
+    String host = System.getenv("XRAY_ENDPOINT");
+    if (host == null) {
+      host = "http://localhost:2000";
+    }
 
+    logger.info("Creating " + ruleName + " sample rule");
+
+    MediaType json = MediaType.get("application/json; charset=utf-8");
     RequestBody reqbody = RequestBody.create(json, jsonBody);
     try (Response response =
         httpClient()
             .newCall(
                 new Request.Builder()
-                    .url("http://localhost:2000/CreateSamplingRule")
+                    .url(host + "/CreateSamplingRule")
                     .method("POST", reqbody)
                     .build())
             .execute()) {
@@ -143,6 +153,10 @@ public class CentralizedSamplingIntegrationTests {
    * @throws IOException - throws if unable to connect to xray backend
    */
   public static void deleteRule(String ruleName) throws IOException {
+    String host = System.getenv("XRAY_ENDPOINT");
+    if (host == null) {
+      host = "http://localhost:2000";
+    }
     logger.info("Deleting " + ruleName + " sample rule");
 
     MediaType json = MediaType.get("application/json; charset=utf-8");
@@ -152,7 +166,7 @@ public class CentralizedSamplingIntegrationTests {
         httpClient()
             .newCall(
                 new Request.Builder()
-                    .url("http://localhost:2000/DeleteSamplingRule")
+                    .url(host + "/DeleteSamplingRule")
                     .method("POST", reqbody)
                     .build())
             .execute()) {
