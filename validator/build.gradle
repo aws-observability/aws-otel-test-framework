@@ -5,7 +5,7 @@ plugins {
     id 'com.google.cloud.tools.jib' version "3.2.1"
 
     // lombok
-    id "io.freefair.lombok" version "6.4.3.1"
+    id "io.freefair.lombok" version "6.5.0.3"
 
     // check style
     id 'checkstyle'
