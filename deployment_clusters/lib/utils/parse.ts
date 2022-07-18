@@ -1,7 +1,3 @@
-import { singletonEventRole } from 'aws-cdk-lib/aws-events-targets';
-import { FunctionVersionUpgrade } from 'aws-cdk-lib/aws-lambda';
-import { readFileSync, writeFileSync } from 'fs';
-import { exit } from 'process';
 const yaml = require('js-yaml')
 
 const supportedFields = new Set(['version', 'cpu_architecture', 'launch_type', 'node_size'])
@@ -18,7 +14,7 @@ export function validateClusters(info: Object){
     }
     const clusterInfo = data['clusters']
     for(const [key, value] of Object.entries(clusterInfo)){
-        // console.log(key,value)
+        
         const val = Object(value)
         if(Object.keys(val).length !== 4){
             throw new Error("Didn't set all the fields for the clusters")
@@ -54,7 +50,6 @@ function validateVersion(version: string){
         version = "1.20"
     }
 
-    // const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21', '1.22']);
     if(!supportedVersions.has(version)){
         throw new Error("Version needs to be number between 1.18 to 1.22");
     }
@@ -77,14 +72,11 @@ function refactorAndValidateLaunchType(type: string){
     if(type == null){
         throw new Error("Launch Type can't be null")
     }
-    // const supportedLaunchTypes = new Set(['ec2', 'fargate']);
+   
     const adjustedType = type.toLowerCase().replace(/[\W_]+/g, "");
     if(!supportedLaunchTypes.has(adjustedType)){
         throw new Error("Improper CPU Architecture Type")
     }
-    // if(adjustedType != 'ec2' && adjustedType != 'fargate'){
-    //     throw new Error("Improper CPU Architecture Type")
-    // }
     return adjustedType
 }
 
