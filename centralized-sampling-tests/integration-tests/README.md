@@ -18,6 +18,3 @@ see the parent folders README.
 ```shell
 ./gradlew :centralized-sampling-tests:integration-tests:run
 ```
-
-### run as a github action 
-to be determined

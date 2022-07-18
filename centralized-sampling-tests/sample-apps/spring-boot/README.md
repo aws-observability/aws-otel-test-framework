@@ -8,6 +8,3 @@ Run this command in the root directory(aws-otel-test-framework) of the testing f
 ```shell
 ./gradlew :centralized-sampling-tests:sample-apps:spring-boot:run
 ```
-
-### run as a github action
-To be determined
