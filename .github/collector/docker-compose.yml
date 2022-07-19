@@ -1,0 +1,52 @@
+version: "3.7"
+services:
+  otel:
+    image: amazon/aws-otel-collector:latest
+    command: --config /config/collector-config.yml
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
+    volumes:
+      - .:/config
+      - /tmp/awscreds:/tmp/awscreds
+    ports:
+      - '4317:4317'
+      - '2000:2000'
+
+  app:
+    image: ${APP_IMAGE}
+    depends_on:
+      - otel
+    environment:
+      - INSTANCE_ID
+      - LISTEN_ADDRESS=0.0.0.0:8080
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
+      - OTEL_RESOURCE_ATTRIBUTES=service.name=aws-otel-integ-test
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel:4317
+      - XRAY_ENDPOINT=http://otel:2000
+      - AWS_REGION=us-west-2
+      - OTEL_JAVAAGENT_DEBUG=true
+      - OTEL_METRICS_EXPORTER=otlp
+    volumes:
+      - /tmp/awscreds:/tmp/awscreds
+    ports:
+      - '8080:8080'
+
+  integration-tests:
+    image: public.ecr.aws/aws-otel-test/aws-otel-centralized-sampling-tests:latest
+    depends_on:
+      - otel
+      - app
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
+      - AWS_REGION=us-west-2
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel:4317
+      - XRAY_ENDPOINT=http://otel:2000
+      - TARGET_ADDRESS=http://app:8080
+    volumes:
+      - /tmp/awscreds:/tmp/awscreds

@@ -4,7 +4,7 @@ plugins {
     id 'java'
     id 'java-library'
     id 'application'
-    id 'checkstyle'
+    id("com.google.cloud.tools.jib")
 }
 
 group 'org.example'
@@ -33,4 +33,10 @@ dependencies {
 application {
     // Define the main class for the application.
     mainClassName = 'com.amazon.tests.CentralizedSamplingIntegrationTests'
+}
+
+jib {
+    to {
+        image = "public.ecr.aws/aws-otel-test/aws-otel-centralized-sampling-tests:latest"
+    }
 }
