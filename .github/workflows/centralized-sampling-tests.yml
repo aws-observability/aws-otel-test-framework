@@ -50,24 +50,6 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: public.ecr.aws
-
-      - name: Build snapshot with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: build
-        env:
-          PUBLISH_USERNAME: ${{ secrets.PUBLISH_USERNAME }}
-          PUBLISH_PASSWORD: ${{ secrets.PUBLISH_PASSWORD }}
-          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      - name: Build and push agent and testing docker images with Gradle
-        uses: gradle/gradle-build-action@v2
-        with:
-          arguments: jib
-        env:
-          COMMIT_HASH: ${{ github.sha }}
-      - uses: codecov/codecov-action@v1
-
   run_tests:
     name: Run centralized sampling integration tests
     needs: build
