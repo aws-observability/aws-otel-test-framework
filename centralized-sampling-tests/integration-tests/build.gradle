@@ -37,6 +37,6 @@ application {
 
 jib {
     to {
-        image = "public.ecr.aws/m9u9m0e1/integrationtests:latest"
+        image = "public.ecr.aws/aws-otel-test/aws-otel-centralized-sampling-tests:latest"
     }
 }
