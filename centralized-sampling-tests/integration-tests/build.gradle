@@ -34,9 +34,3 @@ application {
     // Define the main class for the application.
     mainClassName = 'com.amazon.tests.CentralizedSamplingIntegrationTests'
 }
-
-jib {
-    to {
-        image = "public.ecr.aws/aws-otel-test/aws-otel-centralized-sampling-tests:latest"
-    }
-}

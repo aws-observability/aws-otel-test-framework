@@ -32,8 +32,3 @@ application {
 	mainClassName = 'com.amazon.sampleapp.Application'
 }
 
-jib {
-	to {
-		image = "public.ecr.aws/aws-otel-test/aws-otel-centralized-sampling-springboot-app:latest"
-	}
-}
