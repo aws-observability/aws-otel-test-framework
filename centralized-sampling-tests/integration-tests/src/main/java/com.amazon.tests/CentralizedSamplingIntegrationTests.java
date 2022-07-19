@@ -106,7 +106,7 @@ public class CentralizedSamplingIntegrationTests {
             + testCase.getName());
     if (Integer.parseInt(stringResp) > expectedRate + roundedRange
         || Integer.parseInt(stringResp) < expectedRate - roundedRange) {
-      logger.info("Sampled rate does not match expected rate");
+      logger.warn("Sampled rate does not match expected rate");
       return false;
     }
     return true;
@@ -189,7 +189,7 @@ public class CentralizedSamplingIntegrationTests {
       try {
         makeRule(sampleRule.getJson(), sampleRule.getName().getSampleName());
       } catch (IOException exception) {
-        logger.info("Could not fetch endpoint, XRay backend might not be running");
+        logger.error("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
       }
       boolean passed = false;
@@ -198,14 +198,14 @@ public class CentralizedSamplingIntegrationTests {
         try {
           passed = makeCalls(testCasesObj.getDefaultUser(), sampleRule);
         } catch (Exception e) {
-          logger.info("Could not fetch endpoint, sample app might not be started");
+          logger.error("Could not fetch endpoint, sample app might not be started");
         } finally {
           if (passed) {
             break;
           } else if (j < GenericConstants.MAX_RETRIES - 1) {
-            logger.info("Test failed, attempting retry");
+            logger.warn("Test failed, attempting retry");
           } else {
-            logger.info(
+            logger.error(
                 "Test failed for Sample rule: "
                     + sampleRule.getName()
                     + " and test case "
@@ -234,7 +234,7 @@ public class CentralizedSamplingIntegrationTests {
       try {
         makeRule(sampleRule.getJson(), sampleRule.getName().getSampleName());
       } catch (IOException exception) {
-        logger.info("Could not fetch endpoint, XRay backend might not be running");
+        logger.error("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
       }
     }
@@ -252,18 +252,18 @@ public class CentralizedSamplingIntegrationTests {
         try {
           passed = makeCalls(allTestCase, sampleRules[priority]);
         } catch (Exception e) {
-          logger.info("Could not fetch endpoint, sample app might not be started");
+          logger.error("Could not fetch endpoint, sample app might not be started");
         } finally {
           if (passed) {
             break;
           } else if (k < GenericConstants.MAX_RETRIES - 1) {
-            logger.info("Test failed, attempting retry");
+            logger.warn("Test failed, attempting retry");
           }
         }
       }
 
       if (!passed) {
-        logger.info(
+        logger.error(
             "Test failed for Sample rule: "
                 + sampleRules[priority].getName().getSampleName()
                 + " and test case "
@@ -301,7 +301,7 @@ public class CentralizedSamplingIntegrationTests {
       try {
         makeRule(sampleRule.getJson(), sampleRule.getName().getSampleName());
       } catch (IOException exception) {
-        logger.info("Could not fetch endpoint, XRay backend might not be running");
+        logger.error("Could not fetch endpoint, XRay backend might not be running");
         throw new IOException();
       }
       TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
@@ -311,18 +311,18 @@ public class CentralizedSamplingIntegrationTests {
           try {
             passed = makeCalls(allTestCase, sampleRule);
           } catch (Exception e) {
-            logger.info("Could not fetch endpoint, sample app might not be started");
+            logger.error("Could not fetch endpoint, sample app might not be started");
           } finally {
             if (passed) {
               break;
             } else if (k < GenericConstants.MAX_RETRIES - 1) {
-              logger.info("Test failed here, attempting retry");
+              logger.warn("Test failed here, attempting retry");
             }
             TimeUnit.SECONDS.sleep(GenericConstants.RETRY_WAIT);
           }
         }
         if (!passed) {
-          logger.info(
+          logger.error(
               "Test failed for Sample rule: "
                   + sampleRule.getName().getSampleName()
                   + " and test case "
