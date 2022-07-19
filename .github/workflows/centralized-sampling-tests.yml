@@ -53,7 +53,7 @@ jobs:
       - name: Build with Gradle Spring Boot App
         run: ./gradlew :centralized-sampling-tests:sample-apps:spring-boot:build
       - name: Build with Gradle Integration Tests
-        run: ./gradlew :centralized-sampling-tests:sample-apps:integration-tests:build
+        run: ./gradlew :centralized-sampling-tests:integration-tests:build
       - name: Run test containers
         run: docker-compose up --abort-on-container-exit
         working-directory: centralized-sampling-tests
