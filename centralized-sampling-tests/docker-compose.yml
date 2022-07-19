@@ -15,7 +15,8 @@ services:
       - '2000:2000'
 
   app:
-    image: ${APP_IMAGE}
+    build:
+      context: ./sample-apps/spring-boot
     depends_on:
       - otel
     environment:
@@ -36,7 +37,8 @@ services:
       - '8080:8080'
 
   integration-tests:
-    image: public.ecr.aws/aws-otel-test/aws-otel-centralized-sampling-tests:latest
+    build:
+      context: ./integration-tests
     depends_on:
       - otel
       - app

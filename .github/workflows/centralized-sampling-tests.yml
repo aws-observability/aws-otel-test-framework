@@ -97,7 +97,7 @@ jobs:
 
       - name: Run test containers
         run: docker-compose up --abort-on-container-exit
-        working-directory: .github/collector
+        working-directory: centralized-sampling-tests
         env:
           INSTANCE_ID: ${{ github.run_id }}-${{ github.run_number }}
           LISTEN_ADDRESS: 0.0.0.0:8080
