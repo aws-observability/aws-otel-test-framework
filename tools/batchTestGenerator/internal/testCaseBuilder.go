@@ -85,7 +85,7 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 						}
 						newTests = append(newTests, newTest)
 					}
-				case "EKS_ARM64":
+				case "EKS_ARM64", "EKS_ADOT_OPERATOR_ARM64":
 					newTest := TestCaseInfo{
 						testcaseName:  test.CaseName,
 						serviceType:   testPlatform,

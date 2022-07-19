@@ -29,7 +29,7 @@ Cluster name for EKS tests.
 Region for EKS tests.
 #### --include
 List of services to include. If not provided will default to all.
-Valid values are as follows "EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_FARGATE"
+Valid values are as follows "EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS_FARGATE"
 
 ### GitHub command unique
 #### --maxBatch

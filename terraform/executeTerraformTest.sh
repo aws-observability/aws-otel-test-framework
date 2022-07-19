@@ -17,7 +17,7 @@
 # $1: aws_service
 # $2: testcase 
 # $3: ECS/EC2 only - ami/ecs launch type 
-# $3: For EKS-arm64 we expect region|clustername|amp_endoint
+# $3: For EKS-arm64 and EKS-operator-arm64 we expect region|clustername|amp_endoint
 
 ##########################################
 
@@ -54,6 +54,15 @@ case "$service" in
     ;;
     "EKS_ADOT_OPERATOR") TEST_FOLDER="./eks/";
     ;;
+    "EKS_ADOT_OPERATOR_ARM64") TEST_FOLDER="./eks/"
+        arm_64_region=$(echo $3 | cut -d \| -f 1);
+        arm_64_clustername=$(echo $3 | cut -d \| -f 2);
+        arm_64_amp=$(echo $3 | cut -d \| -f 3);
+        export AWS_REGION=${arm_64_region}
+        export TF_VAR_region=${arm_64_region}
+        export TF_VAR_cortex_instance_endpoint=${arm_64_amp}
+        export TF_VAR_eks_cluster_name=${arm_64_clustername}
+    ;;
     "ECS") TEST_FOLDER="./ecs/";
         export TF_VAR_ecs_launch_type=$3;
     ;;
@@ -87,7 +96,7 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     fi
 
     case "$service" in
-        "EKS_FARGATE" | "EKS_ADOT_OPERATOR") terraform destroy --auto-approve $opts;
+        "EKS_FARGATE" | "EKS_ADOT_OPERATOR" | "EKS_ADOT_OPERATOR_ARM64") terraform destroy --auto-approve $opts;
         ;;
     *)
         terraform destroy --auto-approve;

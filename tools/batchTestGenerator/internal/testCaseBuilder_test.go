@@ -104,6 +104,35 @@ func TestBuildTestCaseEKS(t *testing.T) {
 			serviceType: "EKS_ARM64",
 		},
 		{
+			testname: "eksoperatortest",
+			runConfig: RunConfig{
+				EksVars: expectedAdditionalVars,
+				IncludedServices: map[string]struct{}{
+					"EKS_ADOT_OPERATOR": {},
+				},
+			},
+			expectedTestCases: map[string]struct{}{
+				"prometheus_sd_adot_operator":        {},
+				"prometheus_sd_adot_operator_awsprw": {},
+			},
+			serviceType: "EKS_ADOT_OPERATOR",
+		},
+		{
+			testname: "eksoperatorarm64test",
+			runConfig: RunConfig{
+				EksVars: expectedAdditionalVars,
+				IncludedServices: map[string]struct{}{
+					"EKS_ADOT_OPERATOR_ARM64": {},
+				},
+			},
+			expectedTestCases: map[string]struct{}{
+				"otlp_metric_adot_operator":          {},
+				"prometheus_static_adot_operator":    {},
+				"prometheus_sd_adot_operator_awsprw": {},
+			},
+			serviceType: "EKS_ADOT_OPERATOR_ARM64",
+		},
+		{
 			testname: "eksfargatetest",
 			runConfig: RunConfig{
 				EksVars: expectedAdditionalVars,
