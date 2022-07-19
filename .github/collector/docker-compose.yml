@@ -14,7 +14,6 @@ services:
       - '4317:4317'
       - '2000:2000'
 
-
   app:
     image: ${APP_IMAGE}
     depends_on:
@@ -37,7 +36,7 @@ services:
       - '8080:8080'
 
   integration-tests:
-    image: public.ecr.aws/m9u9m0e1/integrationtests:latest
+    image: public.ecr.aws/aws-otel-test/aws-otel-centralized-sampling-tests:latest
     depends_on:
       - otel
       - app
