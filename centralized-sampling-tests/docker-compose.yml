@@ -47,7 +47,6 @@ services:
       - AWS_SECRET_ACCESS_KEY
       - AWS_SESSION_TOKEN
       - AWS_REGION=us-west-2
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel:4317
       - XRAY_ENDPOINT=http://otel:2000
       - TARGET_ADDRESS=http://app:8080
     volumes:
