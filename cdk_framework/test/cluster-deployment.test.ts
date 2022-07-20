@@ -3,7 +3,7 @@ import { Template } from 'aws-cdk-lib/assertions';
 // import {MyProjectStack} from '../lib/my-project-stack';
 import { readFileSync, writeFileSync } from 'fs';
 // import { VPCStack } from '../lib/awsNeeds';
-import { validateClustersConfig } from '../lib/utils/parse';
+import { validateClustersConfig } from '../lib/utils/validate';
 // import { EKSStack } from '../lib/eksStack';
 import { Stack, StackProps, aws_eks as eks, aws_ec2 as ec2} from 'aws-cdk-lib';
 import { ClusterStack } from '../lib/stacks/cluster-stack';

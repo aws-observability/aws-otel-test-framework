@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { validateClustersConfig } from './utils/parse';
+import { validateClustersConfig } from './utils/validate';
 import { VPCStack } from './utils/vpc-stack';
 import { aws_eks as eks, aws_ec2 as ec2} from 'aws-cdk-lib';
 import { ClusterStack } from './stacks/cluster-stack';

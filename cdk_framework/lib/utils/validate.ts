@@ -1,7 +1,7 @@
 const yaml = require('js-yaml')
 
 const supportedFields = new Set(['version', 'cpu_architecture', 'launch_type', 'node_size'])
-const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21', '1.22']);
+const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21']);
 const supportedCPUArchitectures = new Set(['amd_64', 'arm_64']);
 const supportedLaunchTypes = new Set(['ec2', 'fargate']);
 const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xkarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
