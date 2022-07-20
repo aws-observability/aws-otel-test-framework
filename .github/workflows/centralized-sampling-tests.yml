@@ -56,4 +56,3 @@ jobs:
         env:
           INSTANCE_ID: ${{ github.run_id }}-${{ github.run_number }}
           LISTEN_ADDRESS: 0.0.0.0:8080
-          APP_IMAGE: public.ecr.aws/aws-otel-test/aws-otel-centralized-sampling-springboot-app:latest
