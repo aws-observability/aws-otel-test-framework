@@ -15,13 +15,6 @@ on:
     paths:
       - 'centralized-sampling-tests/**'
   workflow_dispatch:
-    inputs:
-      logLevel:
-        description: 'Log level'
-        required: true
-        default: 'warning'
-      tags:
-        description: 'Test scenario tags'
 
 permissions:
   id-token: write
