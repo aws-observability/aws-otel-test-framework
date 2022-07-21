@@ -14,11 +14,6 @@ on:
   pull_request:
     paths:
       - 'centralized-sampling-tests/**'
-  workflow_dispatch:
-
-permissions:
-  id-token: write
-  contents: read
 
 jobs:
   run_tests:
