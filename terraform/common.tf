@@ -27,7 +27,7 @@ variable "mocked_server" {
 # we use sample_app_image if it's not empty, if it's empty, the sample_app_image will come from the basic component, which is built by imagebuild module
 # instead "sample_app" will be used to choose the image
 variable "sample_app_image" {
-  default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/otel-test/sample-apps:spark-latest"
+  default = ""
 }
 
 variable "aoc_image_repo" {
