@@ -39,7 +39,7 @@ Each sample app will have a readMe on how to run it. If adding a sample-app to u
 
 ### Start integration tests
 Run this command in the root directory(aws-otel-test-framework) of the testing framework once collector 
-and sample app are up and running. Ensure that the aws account being used on your local account has no 
+and sample app are up and running. Ensure that the AWS account being used on your local account has no 
 pre-existing sample rules in it or the tests will fail.
 ```shell
 ./gradlew :centralized-sampling-tests:integration-tests:run
