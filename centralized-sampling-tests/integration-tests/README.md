@@ -4,7 +4,7 @@
 To run the integration tests there are three requirements for the tests
 to successfully run.
 1. There must be the ADOT collector running with
-   aws xray on port 2000, i.e. Collector running at http://localhost:2000.
+   AWS X-Ray on port 2000, i.e. Collector running at http://localhost:2000.
 2. There must be one of the sample apps configured for centralized sampling
    running on port 8080 i.e. sample app running at http://localhost:8080.
 3. There must be no pre-existing sampling rules on the aws-account being used to run
