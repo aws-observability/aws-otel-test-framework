@@ -16,6 +16,10 @@ on:
       - 'centralized-sampling-tests/**'
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+  
 jobs:
   run_tests:
     name: Run centralized sampling integration tests
