@@ -221,7 +221,7 @@ EOF
       ami_search_pattern = "suse-sles-12*"
       ami_owner          = "amazon"
       ami_product_code   = []
-      ami_id             = "ami-0c90274e6cb54c210"
+      ami_id             = "ami-088a78f435ef7f78a"
       family             = "linux"
       login_user         = "ec2-user"
       arch               = "amd64"
