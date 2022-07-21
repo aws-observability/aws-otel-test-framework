@@ -16,7 +16,7 @@ It is possible that this is already done. Available ADOT Collector releases can 
 [aws-otel-collector](https://github.com/aws-observability/aws-otel-collector/releases).
 Make sure that the collector config is configured to work with a local x-ray listener pointed
 to port 2000 and the docker run command exposes port 2000. Set up the ADOT collector with the 
-example-collector-config file. Clone the ADOT Collector repo and start the collector with commands.
+example-collector-config file. Clone the ADOT Collector repo and start the Collector with commands.
 ```shell
     cd aws-otel-collector
 ```
