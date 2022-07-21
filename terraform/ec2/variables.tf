@@ -81,7 +81,7 @@ variable "negative_soaking" {
 
 # options: s3, local, ssm
 variable "install_package_source" {
-  default = "local" # which means we download rpm/dev/msi from s3, the links are defined in the ami map.
+  default = "s3" # which means we download rpm/dev/msi from s3, the links are defined in the ami map.
 }
 
 # use this parameter when install_package_source is local

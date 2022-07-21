@@ -17,7 +17,7 @@ variable "sample_app" {
 ## mocked server related
 # we use mocked_server_image if it's not empty, if it's empty, the image will come from the basic component, which is built by imagebuild module
 variable "mocked_server_image" {
-  default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/otel-test/mocked-server:https-latest"
+  default = ""
 }
 
 variable "mocked_server" {
