@@ -105,6 +105,8 @@ public class CWMetricValidator implements IValidator {
           }
 
           log.info("check if all the expected metrics are found");
+          log.info("actual metricList is {}", metricList);
+          log.info("expected metricList is {}", expectedMetricList);
           compareMetricLists(expectedMetricList, metricList);
 
           log.info("check if there're unexpected additional metric getting fetched");

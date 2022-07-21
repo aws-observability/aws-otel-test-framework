@@ -13,16 +13,16 @@ processors:
 exporters:
   logging:
     loglevel: debug
-  logzio:
+  logzio/traces:
     account_token: testToken
-    custom_endpoint: "https://${mock_endpoint}"
+    endpoint: "https://${mock_endpoint}"
 
 service:
   pipelines:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logzio]
+      exporters: [logzio/traces]
   extensions: [pprof]
   telemetry:
     logs:
