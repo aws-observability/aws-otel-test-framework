@@ -14,6 +14,7 @@ on:
   pull_request:
     paths:
       - 'centralized-sampling-tests/**'
+  workflow_dispatch:
 
 jobs:
   run_tests:
