@@ -399,43 +399,6 @@ locals {
   arch = var.amis[var.testing_ami]["arch"] == "amd64" ? "x86_64" : var.amis[var.testing_ami]["arch"]
 }
 
-# data "aws_ami" "selected" {
-#   most_recent = true
-
-#   filter {
-#     name = "name"
-#     values = [
-#     var.amis[var.testing_ami]["ami_search_pattern"]]
-#   }
-
-#   filter {
-#     name   = "architecture"
-#     values = [local.arch]
-#   }
-
-#   filter {
-#     name = "state"
-#     values = [
-#     "available"]
-#   }
-
-#   # Only apply product code filter for some AMI, e.g. debian10
-#   # https://www.terraform.io/docs/language/expressions/dynamic-blocks.html
-#   dynamic "filter" {
-#     for_each = var.amis[var.testing_ami]["ami_product_code"]
-#     content {
-#       name = "product-code"
-#       values = [
-#         filter.value
-#       ]
-#     }
-#   }
-
-#   owners = [
-#   var.amis[var.testing_ami]["ami_owner"]]
-# }
-
-
 # this ami is used to launch the emitter instance
 data "aws_ami" "amazonlinux2" {
   most_recent = true
