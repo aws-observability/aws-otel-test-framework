@@ -28,4 +28,3 @@ function getCluster(clusterName: string) : eks.ICluster | null {
     var cluster = clusterMap.get(clusterName)
     return cluster == undefined ? null : cluster
 }
-

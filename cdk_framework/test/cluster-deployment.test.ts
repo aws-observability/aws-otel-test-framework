@@ -34,12 +34,12 @@ test('ClusterTest', () => {
         const val = Object(value)
         const versionKubernetes = eks.KubernetesVersion.of(String(val['version']));
         const newStack = new ClusterStack(app, key + "Stack", {
-            launch_type: String(val['launch_type']),
+            launchType: String(val['launch_type']),
             name: key,
             vpc: vs.vpc,
             version: versionKubernetes,
             cpu: String(val["cpu_architecture"]),
-            node_size: String(val["node_size"]),
+            nodeSize: String(val["node_size"]),
             env: {
             region: 'us-west-2'
             },

@@ -1,12 +1,12 @@
 ---
 clusters:
-  # amdCluster12:
-  #   launch_type: ec2
-  #   cpu_architecture: amd_64
-  #   version: 1.22
-  #   node_size: large
-  amdCluster13:
+  amdCluster12:
     launch_type: ec2
     cpu_architecture: amd_64
-    version: 1.22
+    version: 1.21
+    node_size: large
+  armCluster13:
+    launch_type: ec2
+    cpu_architecture: arm_64
+    version: 1.21
     node_size: large

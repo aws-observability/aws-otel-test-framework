@@ -47,23 +47,23 @@ export function validateClustersConfig(info: Object){
 function validateVersion(version: string){
     
     if(version === '1.2'){
-        version = "1.20"
+        version = '1.20'
     }
 
     if(!supportedVersions.has(version)){
-        throw new Error("Version needs to be number between 1.18 to 1.22");
+        throw new Error('Version needs to be number between 1.18 to 1.21');
     }
     return version
 }
 
 function convertAndValidateArchitecture(cpu: string){
     if(cpu === null || !cpu || cpu == 'null'){
-        console.log("It is null: " + cpu)
+        console.log('It is null: ' + cpu)
         return null
     }
     const adjustedType = cpu.toLowerCase()
     if(!supportedCPUArchitectures.has(adjustedType)){
-        throw new Error("Improper CPU Architecture Type")
+        throw new Error('Improper CPU Architecture Type')
     }
     return adjustedType
 }
@@ -75,7 +75,7 @@ function convertAndValidateLaunchType(type: string){
    
     const adjustedType = type.toLowerCase().replace(/[\W_]+/g, "");
     if(!supportedLaunchTypes.has(adjustedType)){
-        throw new Error("Improper CPU Architecture Type")
+        throw new Error('Improper CPU Architecture Type')
     }
     return adjustedType
 }
@@ -86,7 +86,7 @@ function validateNodeSize(size: string){
     }
     const adjustedSize = size.toLowerCase()
     if(!supportedNodeSizes.has(adjustedSize)){
-        throw new Error("Node size isn't one of the options listed here https://www.amazonaws.cn/en/ec2/instance-types/")
+        throw new Error('Node size is not one of the options listed here https://www.amazonaws.cn/en/ec2/instance-types/')
     }
     return adjustedSize
 
@@ -97,7 +97,11 @@ function addedChecks(val: Object){
     if(String(value['launch_type']) === 'ec2' && !supportedCPUArchitectures.has(String(value['cpu_architecture']))){
         throw new Error('ec2 type needs to have cpu architecture type')
     }
-    if(String([value['cpu_architecture']]) === 'arm_66' && String([value['node_size']]) === '24xlarge'){
+    if(String([value['cpu_architecture']]) === 'arm_64' && String([value['node_size']]) === '24xlarge'){
+        throw new Error("Cpur architecture and node size aren't compatible")
+    }
+
+    if(String([value['cpu_architecture']]) === 'amd_64' && String([value['node_size']]) === 'medium'){
         throw new Error("Cpur architecture and node size aren't compatible")
     }
 }
