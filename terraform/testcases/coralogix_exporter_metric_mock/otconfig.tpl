@@ -14,18 +14,18 @@ exporters:
   logging:
     loglevel: debug
   coralogix:
-    traces:
-      endpoint: "${mock_endpoint}"
-      tls:
-        insecure: true
+    endpoint: "${mock_endpoint}"
     metrics:
       endpoint: "${mock_endpoint}"
+      compression: none
+      tls:
+        insecure: true
     private_key: "e83138ae-fe21-11ec-b939-0242ac120002"
     application_name: "APP_NAME"
     subsystem_name: "SUBSYSTEM"
 service:
   pipelines:
-    traces:
+    metrics:
       receivers: [otlp]
       processors: [batch]
       exporters: [coralogix]

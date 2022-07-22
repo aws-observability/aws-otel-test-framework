@@ -1,7 +1,9 @@
-mocked_server = "grpc_trace"
 # data type will be emitted. Possible values: metric or trace
-soaking_data_mode = "trace"
+soaking_data_mode = "metric"
 
 sample_app = "spark"
 
 sample_app_image = "public.ecr.aws/aws-otel-test/aws-otel-java-spark:latest"
+
+mocked_server = "grpc_metrics"
+mock_endpoint = "mocked-server:55671"
