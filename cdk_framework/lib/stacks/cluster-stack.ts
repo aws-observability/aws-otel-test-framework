@@ -1,8 +1,7 @@
 import { Stack, StackProps, aws_eks as eks, aws_ec2 as ec2} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import * as iam from 'aws-cdk-lib/aws-iam'
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { AwsAuth, KubernetesVersion, Nodegroup } from 'aws-cdk-lib/aws-eks';
+import { KubernetesVersion} from 'aws-cdk-lib/aws-eks';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 
@@ -70,11 +69,6 @@ export class ClusterStack extends Stack {
     }
 
     this.cluster.awsAuth.addMastersRole(Role.fromRoleName(this,"eks-admin-role","Admin"))
-    /*
-    const auth = new AwsAuth(this,"clusterAuth"+props.name,{
-      cluster: this.cluster,
-    })
-    */
 
   }
 }

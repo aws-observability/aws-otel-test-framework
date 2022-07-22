@@ -1,6 +1,5 @@
 import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
-import { readFileSync, writeFileSync } from 'fs';
 import { VPCStack } from '../lib/utils/vpc-stack';
 const yaml = require('js-yaml')
 

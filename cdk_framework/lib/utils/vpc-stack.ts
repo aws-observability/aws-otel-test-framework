@@ -2,7 +2,6 @@ import { Stack, StackProps, aws_eks as eks, aws_ec2 as ec2} from 'aws-cdk-lib';
 import * as iam from 'aws-cdk-lib/aws-iam'
 import { Construct } from 'constructs';
 import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
-// const yaml = require('js-yaml')
 
 
 
