@@ -37,7 +37,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
           role-duration-seconds: 1200
-          aws-region: us-east-1
+          aws-region: us-west-2
       - name: Build with Gradle Spring Boot App
         run: ./gradlew :centralized-sampling-tests:sample-apps:spring-boot:build
       - name: Build with Gradle Integration Tests
