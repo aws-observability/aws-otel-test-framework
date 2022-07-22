@@ -68,6 +68,8 @@ export class ClusterStack extends Stack {
         clusterLogging: logging
       });
     }
+
+    this.cluster.awsAuth.addMastersRole(Role.fromRoleName(this,"eks-admin-role","Admin"))
     /*
     const auth = new AwsAuth(this,"clusterAuth"+props.name,{
       cluster: this.cluster,
