@@ -4,16 +4,6 @@ plugins {
 	id 'java'
 	id 'java-library'
 	id 'application'
-	id 'checkstyle'
-}
-
-tasks.withType(Checkstyle) {
-	checkstyle {
-		toolVersion '8.33'
-		configFile = new File(projectDir, "src/main/resources/checkstyle.xml")
-		maxWarnings = 0
-		ignoreFailures = false
-	}
 }
 
 version = '1.0'

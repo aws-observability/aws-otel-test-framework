@@ -3,11 +3,8 @@
 ## Run
 ### run as a command
 
-run this command in the root dir of the testing framework
+Run this command in the root directory(aws-otel-test-framework) of the testing framework to run the sample-app
 
 ```shell
 ./gradlew :centralized-sampling-tests:sample-apps:spring-boot:run
 ```
-
-### run as a github action
-To be determined

@@ -27,7 +27,10 @@ public class AppController {
    * resource and open-telemetry agent then uses those to create/set a tracer.
    */
   AppController() {
-
+    String host = System.getenv("XRAY_ENDPOINT");
+    if (host == null) {
+      host = "http://localhost:2000";
+    }
     Resource resource = Resource.builder().build();
     OpenTelemetry openTelemetry =
         OpenTelemetrySdk.builder()
@@ -36,6 +39,7 @@ public class AppController {
                     .setResource(resource)
                     .setSampler(
                         AwsXrayRemoteSampler.newBuilder(resource)
+                            .setEndpoint(host)
                             .setPollingInterval(Duration.ofSeconds(1))
                             .build())
                     .build())
