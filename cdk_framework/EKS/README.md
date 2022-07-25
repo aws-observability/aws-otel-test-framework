@@ -29,10 +29,11 @@ There are a number of environemnt variables that should be defined before deploy
 
 Sample template of what config file looks like could be seen in the YAML files found in `lib/config` folder. Should create a category called `clusters`, where each desired cluster should be configured. The name of the cluster given should be the key name for each cluster. Then, there are a couple of fields that need to be addressed:
 
-* `launch_type` - either `ec2` or `fargate`. Determines the launch type for the cluster to be deployed.
-* `cpu_architecture` - This is the the CPU Architecture for `ec2` launch types. The options are `arm_64` or `amd_64`. There can’t be any other characters and needs to have the underscore between letters and numbers. It is case insensitive. For `fargate` launch type, `null` should be provided. 
-* `version` - Kubernetes Version. Supported Kubernetes versions are anything between 1.18-1.21.
-* `node_size` - This determines the size of the cpu architecture (memory, vCPUs, etc). It is case insensitive.
+* `clusters`:
+    * `launch_type` - either `ec2` or `fargate`. Determines the launch type for the cluster to be deployed.
+    * `cpu_architecture` - This is the the CPU Architecture for `ec2` launch types. The options are `arm_64` or `amd_64`. There can’t be any other characters and needs to have the underscore between letters and numbers. It is case insensitive. For `fargate` launch type, `null` should be provided.  
+    * `version` - Kubernetes Version. Supported Kubernetes versions are anything between 1.18-1.21.
+    * `node_size` - This determines the size of the cpu architecture (memory, vCPUs, etc). It is case insensitive.
 
 ### Deploying clusters
 
