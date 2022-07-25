@@ -391,6 +391,24 @@ EOF
 sudo snap refresh amazon-ssm-agent
 EOF
     }
+    canary_windows = {
+      os_family          = "windows"
+      ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
+      ami_owner          = "amazon"
+      ami_id             = "ami-0297fbf7e83dd1209"
+      ami_product_code   = []
+      family             = "windows"
+      arch               = "amd64"
+    }
+    canary_linux = {
+      os_family          = "amazon_linux"
+      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
+      ami_owner          = "amazon"
+      ami_id             = "ami-0d08ef957f0e4722b"
+      ami_product_code   = []
+      family             = "amazon_linux"
+      arch               = "amd64"
+    }
   }
 }
 
