@@ -16,9 +16,9 @@ export function deployClusters(app: cdk.App) : Map<string, eks.ICluster> {
     const raw = readFileSync(route)
     const configData = yaml.load(raw)
 
-    const clusterMap = new Map<string, eks.ICluster>();
+    const eksClusterMap = new Map<string, eks.ICluster>();
     
-    const vs = new VPCStack(app, "EKSVpc", {
+    const vpcStack = new VPCStack(app, "EKSVpc", {
       env: {
         region: REGION
       }
@@ -30,8 +30,8 @@ export function deployClusters(app: cdk.App) : Map<string, eks.ICluster> {
       const versionKubernetes = eks.KubernetesVersion.of(String(val['version']));
       const newStack = new ClusterStack(app, key, {
         launchType: String(val['launch_type']),
-        name: key + "Cluster",
-        vpc: vs.vpc,
+        name: key,
+        vpc: vpcStack.vpc,
         version: versionKubernetes,
         cpu: String(val["cpu_architecture"]),
         nodeSize: String(val["node_size"]),
@@ -41,8 +41,8 @@ export function deployClusters(app: cdk.App) : Map<string, eks.ICluster> {
       })
         
     
-      clusterMap.set(key, newStack.cluster)
+      eksClusterMap.set(key, newStack.cluster)
     }
 
-    return clusterMap
+    return eksClusterMap
 }

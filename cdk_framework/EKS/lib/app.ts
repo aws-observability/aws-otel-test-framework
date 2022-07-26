@@ -17,10 +17,6 @@ const app = new cdk.App();
 
 var clusterMap = new Map<string, eks.ICluster>()
 
-const route = process.env.CDK_CONFIG_PATH ||  __dirname + '/config/clusters.yml';
-const raw = readFileSync(route)
-const configData = yaml.load(raw)
-
 clusterMap = deployClusters(app);
 
 

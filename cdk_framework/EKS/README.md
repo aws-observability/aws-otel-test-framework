@@ -18,9 +18,16 @@ The `tsconfig.json` file is used to tell TypeScript how to configure the project
 
 ## Getting Started
 
+### Environment Setup
+
+Since the code base in written in TypeScript, the CDK library has to be downloaded using Node. 
+
+1. Make sure you have Node, so that you can use `npm` control. 
+2. Download the AWS CDK Library by typing `npm install aws-cdk-lib`. 
+
 ### Environemnt Variables
 
-There are a number of environemnt variables that should be defined before deploying the clusters:
+There are a number of environment variables that should be defined before deploying the clusters:
 
 * `CDK_CONFIG_PATH` - This is the path for which the cluster configuration file is located - default is `clusters.yml` in `lib/config` folder.
 * `REGION` - This is the region for which the clusters should be deployed - default is `us-west-2`.

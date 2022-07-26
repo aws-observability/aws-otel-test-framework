@@ -17,20 +17,6 @@ test('ClusterManagementTest', () => {
         // THEN
     const template = Template.fromStack(vpcStack);
 
-    
-
-    template.hasResourceProperties("AWS::IAM::Role", {
-        AssumeRolePolicyDocument: {
-            Statement: [
-                {
-                  Principal: {
-                    Service: "ec2.amazonaws.com"
-                  }
-                }
-              ]
-        },
-    })
-
     template.hasResourceProperties("AWS::EC2::VPC", {
         CidrBlock: "10.0.0.0/16"
     })

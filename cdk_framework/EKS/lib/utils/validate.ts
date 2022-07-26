@@ -4,7 +4,7 @@ const supportedFields = new Set(['version', 'cpu_architecture', 'launch_type', '
 const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21']);
 const supportedCPUArchitectures = new Set(['amd_64', 'arm_64']);
 const supportedLaunchTypes = new Set(['ec2', 'fargate']);
-const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xkarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
+const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xlarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
 
 
 export function validateClustersConfig(info: Object){
@@ -13,12 +13,17 @@ export function validateClustersConfig(info: Object){
         throw new Error('No clusters field being filed in the yaml file')
     }
     const clusterInfo = data['clusters']
+    const clusterNamesSet = new Set()
     for(const [key, value] of Object.entries(clusterInfo)){
         
         const val = Object(value)
         if(Object.keys(val).length !== 4){
             throw new Error("Didn't set all the fields for the clusters")
         }
+        if(clusterNamesSet.has(key)){
+            throw new Error('Cannot have multiple clusters with the samne name')
+        }
+        clusterNamesSet.add(key)
         for(const [k, v] of Object.entries(val)){
             if(!supportedFields.has(k)){
                 throw new Error("Uncompatible field type")
@@ -98,10 +103,10 @@ function addedChecks(val: Object){
         throw new Error('ec2 type needs to have cpu architecture type')
     }
     if(String([value['cpu_architecture']]) === 'arm_64' && String([value['node_size']]) === '24xlarge'){
-        throw new Error("Cpur architecture and node size aren't compatible")
+        throw new Error("CPU Architecture and node size aren't compatible")
     }
 
     if(String([value['cpu_architecture']]) === 'amd_64' && String([value['node_size']]) === 'medium'){
-        throw new Error("Cpur architecture and node size aren't compatible")
+        throw new Error("CPU architecture and node size aren't compatible")
     }
 }

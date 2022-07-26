@@ -7,8 +7,6 @@ import { ClusterStack } from '../lib/stacks/cluster-stack';
 import { VPCStack } from '../lib/utils/vpc-stack';
 const yaml = require('js-yaml')
 
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/my-project-stack.ts
 test('ClusterTest', () => {
     var app = new cdk.App();
     // WHEN
@@ -26,7 +24,6 @@ test('ClusterTest', () => {
       })
 
     validateClustersConfig(data)
-    // const bigMap = parseData(data['clusters'])
     for(const [key, value] of Object.entries(data['clusters'])){
         const val = Object(value)
         const versionKubernetes = eks.KubernetesVersion.of(String(val['version']));

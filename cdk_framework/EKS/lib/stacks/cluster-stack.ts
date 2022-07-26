@@ -34,7 +34,7 @@ export class ClusterStack extends Stack {
     });
 
     if(props.launchType === 'ec2'){
-      this.cluster = new eks.Cluster(this, props.name+'-Cluster', {
+      this.cluster = new eks.Cluster(this, props.name, {
       clusterName: props.name,
       vpc: props.vpc,
       vpcSubnets: [{subnetType: ec2.SubnetType.PUBLIC}],
@@ -59,8 +59,7 @@ export class ClusterStack extends Stack {
     }
 
     if(props.launchType === 'fargate'){
-      console.log("Fargate starting")
-      this.cluster = new eks.FargateCluster(this, props.name + '-Cluster', {
+      this.cluster = new eks.FargateCluster(this, props.name, {
         clusterName: props.name,
         vpc: props.vpc,
         version: props.version,

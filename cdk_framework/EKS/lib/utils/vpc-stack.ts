@@ -11,24 +11,6 @@ export class VPCStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-     // IAM role for our EC2 worker nodes
-     const workerRole = new iam.Role(this, 'EKSWorkerRole', {
-      assumedBy: new iam.ServicePrincipal('ec2.amazonaws.com'),
-      managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonPrometheusRemoteWriteAccess"),
-        ManagedPolicy.fromAwsManagedPolicyName("AWSXrayWriteOnlyAccess"),
-        ManagedPolicy.fromAwsManagedPolicyName("CloudWatchAgentAdminPolicy"),
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonS3ReadOnlyAccess"),
-        ManagedPolicy.fromAwsManagedPolicyName("AWSAppMeshEnvoyAccess"),
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSWorkerNodePolicy"),
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"),
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonEKS_CNI_Policy")
-      ]
-    });
-
-
-    
-
     this.vpc = new ec2.Vpc(this, 'EKSVpc',
      {cidr: "10.0.0.0/16",
      natGateways: 1,
@@ -47,13 +29,5 @@ export class VPCStack extends Stack {
       }
      ] 
     });  
-
-    
-
   }
-
-
-  
-
-  
 }
