@@ -51,7 +51,7 @@ public class SampleRules {
    */
   private SampleRule getSampleNone() {
     return new SampleRule.SampleRuleBuilder(
-            GenericConstants.SampleRuleName.SampleNone, 1000, 0.0, 0.0)
+            GenericConstants.SampleRuleName.SampleNone, 1000, 0.0, 1000)
         .setReservoir(0)
         .build();
   }
