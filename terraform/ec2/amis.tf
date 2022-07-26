@@ -410,6 +410,7 @@ EOF
       family             = "amazon_linux"
       arch               = "amd64"
     }
+    # AMIs for performance and Soaking tests
     soaking_windows = {
       os_family          = "windows"
       ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
