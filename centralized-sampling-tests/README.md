@@ -47,10 +47,10 @@ pre-existing sample rules in it or the tests will fail.
 
 ### Github Actions
 The tests will run automatically on PRs for changes that involve the centralized-sampling-tests folder.
-It is also possible to run the tests manually as a github action. To do this, It is also possible to run the tests manually as a GitHub action. To do this, you will need to make a fork
+It is also possible to run the tests manually as a GitHub action. To do this, you will need to make a fork
 of the repository. From your fork, add a GitHub secret AWS_CENTRALIZED_SAMPLING_ROLE and add an AWS Dev
-account with permissions to AWS XRay and GitHub setup.
-Example:
+account with permissions to AWS XRay and GitHub setup. 
+Example: 
 ```shell
 AWS_CENTRALIZED_SAMPLING_ROLE: arn:aws:iam::123456789012:role/S3Access
 ```
