@@ -1,12 +1,18 @@
 ---
 clusters:
   amdCluster12:
-    launch_type: ec2
-    cpu_architecture: amd_64
+    launch_type: 
+      ec2:
+        ec2_instance: m6g
+        node_size: large
     version: 1.21
-    node_size: large
-  # armCluster13:
-  #   launch_type: ec2
-  #   cpu_architecture: arm_64
-  #   version: 1.21
-  #   node_size: large
+  fargateCluster13:
+    launch_type: 
+      fargate:
+    version: 1.21
+  t4gCluster:
+    launch_type: 
+      ec2:
+        ec2_instance: t4g
+        node_size: large
+    version: 1.21

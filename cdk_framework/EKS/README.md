@@ -37,10 +37,11 @@ There are a number of environment variables that should be defined before deploy
 Sample template of what config file looks like could be seen in the YAML files found in `lib/config` folder. Should create a category called `clusters`, where each desired cluster should be configured. The name of the cluster given should be the key name for each cluster. Then, there are a couple of fields that need to be addressed:
 
 * `clusters`:
-    * `launch_type` - either `ec2` or `fargate`. Determines the launch type for the cluster to be deployed.
-    * `cpu_architecture` - This is the the CPU Architecture for `ec2` launch types. The options are `arm_64` or `amd_64`. There can’t be any other characters and needs to have the underscore between letters and numbers. It is case insensitive. For `fargate` launch type, `null` should be provided.  
+    * `launch_type` - choose either `ec2` or `fargate` subcategory - can't be both. Determines the launch type for the cluster to be deployed. This will act as the key to another list. 
+        * `ec2_instance` - This is the the CPU Architecture for `ec2` launch types. It is only useful information for `ec2` key. If the `launch_type` is `fargate`, then nothing will happen by providing an `ec2_instance`. The options are `m6g`, `t4g`, amd `m5`, otherwise, an error will be thrown. There can’t be any other characters. It is case insensitive.
+        * `node_size` - This determines the size of the cpu architecture (memory, vCPUs, etc). It is only useful information for `ec2` key. If the key is `fargate` nothing will happen by providing the `node_size`. It is case insensitive.
     * `version` - Kubernetes Version. Supported Kubernetes versions are anything between 1.18-1.21.
-    * `node_size` - This determines the size of the cpu architecture (memory, vCPUs, etc). It is case insensitive.
+   
 
 ### Deploying clusters
 

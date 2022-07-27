@@ -9,14 +9,12 @@ import { readFileSync} from 'fs';
 const yaml = require('js-yaml')
 
 
-export function deployClusters(app: cdk.App) : Map<string, eks.ICluster> {
+export function deployClusters(app: cdk.App, configData: any) : Map<string, ClusterStack> {
     const REGION = process.env.REGION || 'us-west-2'
 
-    const route = process.env.CDK_CONFIG_PATH ||  __dirname + '/config/clusters.yml';
-    const raw = readFileSync(route)
-    const configData = yaml.load(raw)
+    
 
-    const eksClusterMap = new Map<string, eks.ICluster>();
+    const eksClusterMap = new Map<string, ClusterStack>();
     
     const vpcStack = new VPCStack(app, "EKSVpc", {
       env: {
@@ -29,19 +27,17 @@ export function deployClusters(app: cdk.App) : Map<string, eks.ICluster> {
       const val = Object(value)
       const versionKubernetes = eks.KubernetesVersion.of(String(val['version']));
       const newStack = new ClusterStack(app, key, {
-        launchType: String(val['launch_type']),
+        launchType: (val['launch_type']),
         name: key,
         vpc: vpcStack.vpc,
         version: versionKubernetes,
-        cpu: String(val["cpu_architecture"]),
-        nodeSize: String(val["node_size"]),
         env: {
           region: REGION
         },
       })
         
     
-      eksClusterMap.set(key, newStack.cluster)
+      eksClusterMap.set(key, newStack)
     }
 
     return eksClusterMap

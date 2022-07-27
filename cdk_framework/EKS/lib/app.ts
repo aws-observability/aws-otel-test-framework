@@ -15,12 +15,16 @@ const yaml = require('js-yaml')
 
 const app = new cdk.App();
 
-var clusterMap = new Map<string, eks.ICluster>()
+const route = process.env.CDK_CONFIG_PATH ||  __dirname + '/config/clusters.yml';
+const raw = readFileSync(route)
+const configData = yaml.load(raw)
 
-clusterMap = deployClusters(app);
+var clusterMap = new Map<string, ClusterStack>()
+
+clusterMap = deployClusters(app, configData);
 
 
 function getCluster(clusterName: string) : eks.ICluster | null {
-    var cluster = clusterMap.get(clusterName)
-    return cluster == undefined ? null : cluster
+    var clusterStack = clusterMap.get(clusterName)
+    return clusterStack == undefined ? null : clusterStack.cluster
 }

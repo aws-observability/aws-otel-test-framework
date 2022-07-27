@@ -1,10 +1,12 @@
 const yaml = require('js-yaml')
 
-const supportedFields = new Set(['version', 'cpu_architecture', 'launch_type', 'node_size'])
+const supportedFields = new Set(['version', 'ec2_instance', 'launch_type', 'node_size'])
 const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21']);
-const supportedCPUArchitectures = new Set(['amd_64', 'arm_64']);
+const supportedCPUArchitectures = new Set(['m5', 'm6g', 't4g']);
 const supportedLaunchTypes = new Set(['ec2', 'fargate']);
 const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xlarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
+const supportedT4gInstances = new Set(['nano', 'micro', 'small', 'medium', 'large', 'xlarge', '2xlarge'])
+const requiredFields = new Set(['version', 'launch_type'])
 
 
 export function validateClustersConfig(info: Object){
@@ -17,13 +19,11 @@ export function validateClustersConfig(info: Object){
     for(const [key, value] of Object.entries(clusterInfo)){
         
         const val = Object(value)
-        if(Object.keys(val).length !== 4){
-            throw new Error("Didn't set all the fields for the clusters")
-        }
         if(clusterNamesSet.has(key)){
             throw new Error('Cannot have multiple clusters with the samne name')
         }
         clusterNamesSet.add(key)
+        validateRequiredFields(val)
         for(const [k, v] of Object.entries(val)){
             if(!supportedFields.has(k)){
                 throw new Error("Uncompatible field type")
@@ -32,22 +32,30 @@ export function validateClustersConfig(info: Object){
                 case 'version':
                     val[k] = validateVersion(String(v))
                     break;
-                case 'cpu_architecture':
-                    val[k] = convertAndValidateArchitecture(String(v))
-                    break
                 case 'launch_type':
-                    val[k] = convertAndValidateLaunchType(String(v))
+                    val[k] = convertAndValidateLaunchType(val)
                     break
-                case 'node_size':
-                    val[k] = validateNodeSize(String(v))
-                    break;
             }
         }
-        addedChecks(val)
     }
 }
 
+function validateRequiredFields(fields: any){
+    for(const field of requiredFields){
+        if(!fields[field]){
+            throw new Error('Required field - ' + field + ' - not provided')
+        }
+    }
+}
 
+function checkToSetUpDefaults(fields: any){
+    if(!fields['ec2_instance']){
+        fields['ec2_instance'] = 'm5'
+    }
+    if(!fields['node_size']){
+        fields['node_size'] = 'large'
+    }
+}
 
 function validateVersion(version: string){
     
@@ -61,52 +69,79 @@ function validateVersion(version: string){
     return version
 }
 
-function convertAndValidateArchitecture(cpu: string){
-    if(cpu === null || !cpu || cpu == 'null'){
-        console.log('It is null: ' + cpu)
-        return null
+function convertAndValidateEC2Instance(instance: string){
+    if(instance === null || !instance || instance == 'null'){
+        throw new Error('EC2 instance type was not provided for ec2 cluster')
     }
-    const adjustedType = cpu.toLowerCase()
+    const adjustedType = instance.toLowerCase()
     if(!supportedCPUArchitectures.has(adjustedType)){
-        throw new Error('Improper CPU Architecture Type')
+        throw new Error('Improper instance type or provided faulty ec2_instance/node_size for fargate cluster')
     }
     return adjustedType
 }
 
-function convertAndValidateLaunchType(type: string){
-    if(type == null){
-        throw new Error("Launch Type can't be null")
+function convertAndValidateLaunchType(type: any){
+    var launchType = Object(type['launch_type'])
+    if(Object.keys(launchType).length != 1){
+        throw new Error("More than 1 launch_type provided or none provided")
     }
-   
-    const adjustedType = type.toLowerCase().replace(/[\W_]+/g, "");
-    if(!supportedLaunchTypes.has(adjustedType)){
-        throw new Error('Improper CPU Architecture Type')
+    if(launchType['fargate'] !== undefined){
+        return launchType
+    } else if(launchType['ec2'] !== undefined){
+        var launchData = Object(launchType['ec2'])
+        checkToSetUpDefaults(launchData)
+        for(const [k, v] of Object.entries(launchData)){
+            if(!supportedFields.has(k)){
+                throw new Error("Uncompatible field type")
+            }
+            switch(k){
+                case 'ec2_instance':
+                    launchData[k] = convertAndValidateEC2Instance(String(v))
+                    break
+                case 'node_size':
+                    launchData[k] = validateNodeSize(String(v), String(launchData['ec2_instance']))
+                    break;
+            }
+        }
+        launchType['ec2'] = launchData
+        addedChecks(launchData)
+        return launchType
+    } else {
+        throw new Error('launch_type is neither ec2 nor fargate')
     }
-    return adjustedType
 }
 
-function validateNodeSize(size: string){
+function validateNodeSize(size: string, instance: string){
     if(!size || size === null || size === 'null' || size === ''){
         return null
     }
     const adjustedSize = size.toLowerCase()
-    if(!supportedNodeSizes.has(adjustedSize)){
-        throw new Error('Node size is not one of the options listed here https://www.amazonaws.cn/en/ec2/instance-types/')
+    const adjustedInstance = convertAndValidateEC2Instance(instance)
+
+    if(adjustedInstance === 't4g'){
+        if(!supportedT4gInstances.has(adjustedSize)){
+            throw new Error('Node size is not one of the options listed here https://www.amazonaws.cn/en/ec2/instance-types/')
+        }
+    } else {
+        if(!supportedNodeSizes.has(adjustedSize)){
+            throw new Error('Node size is not one of the options listed here https://www.amazonaws.cn/en/ec2/instance-types/')
+        }
     }
+    
     return adjustedSize
 
 }
 
 function addedChecks(val: Object){
     const value = Object(val)
-    if(String(value['launch_type']) === 'ec2' && !supportedCPUArchitectures.has(String(value['cpu_architecture']))){
+    if(!supportedCPUArchitectures.has(String(value['ec2_instance']))){
         throw new Error('ec2 type needs to have cpu architecture type')
     }
-    if(String([value['cpu_architecture']]) === 'arm_64' && String([value['node_size']]) === '24xlarge'){
+    if(String([value['ec2_instance']]) === 'm6g' && String([value['node_size']]) === '24xlarge'){
         throw new Error("CPU Architecture and node size aren't compatible")
     }
 
-    if(String([value['cpu_architecture']]) === 'amd_64' && String([value['node_size']]) === 'medium'){
+    if(String([value['ec2_instance']]) === 'm5' && String([value['node_size']]) === 'medium'){
         throw new Error("CPU architecture and node size aren't compatible")
     }
 }
