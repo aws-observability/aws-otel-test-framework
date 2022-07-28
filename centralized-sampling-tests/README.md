@@ -47,5 +47,13 @@ pre-existing sample rules in it or the tests will fail.
 
 ### Github Actions
 The tests will run automatically on PRs for changes that involve the centralized-sampling-tests folder.
-It is also possible to run the tests manually as a github action. To do this, go to [actions](https://github.com/aws-observability/aws-otel-test-framework/actions)
-on the aws-otel-test-framework github, select the Centralized Sampling Integration Tests workflow and click the Run workflow button.
+It is also possible to run the tests manually as a GitHub action. To do this, you will need to make a fork
+of the repository. From your fork, add a GitHub secret AWS_CENTRALIZED_SAMPLING_ROLE and add an AWS Dev
+account with permissions to AWS XRay and GitHub setup. 
+Example: 
+```shell
+AWS_CENTRALIZED_SAMPLING_ROLE: arn:aws:iam::123456789012:role/S3Access
+```
+See [Setup AWS GitHub](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services)
+for more information. Once the secret is added go to your forks actions, select the Centralized Sampling Integration Tests workflow and
+click the Run workflow button.
