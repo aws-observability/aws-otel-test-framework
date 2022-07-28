@@ -56,3 +56,4 @@ AWS_CENTRALIZED_SAMPLING_ROLE: arn:aws:iam::123456789012:role/S3Access
 ```
 See [Setup AWS GitHub](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services)
 for more information. Once the secret is added go to your forks actions, select the Centralized Sampling Integration Tests workflow and
+click the Run workflow button.
