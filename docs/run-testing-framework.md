@@ -241,7 +241,7 @@ The values for these fields are as follows
 `serviceName`: `EKS` `EKS-arm64` `EKS-fargate` `EKS-operator` `EKS-operator-arm64` `ECS` `EC2`
 `testCase`: Must be an applicable test case in the `terraform/testcases` directory
 `additionalValues`: For `EC2` tests it is expected that the `testing_ami` value is provided.
-For ECS tests the `launch_type` variable is expected. For `EKS-arm64` and `EKS-operator-arm64` tests it is expected that
+For ECS tests the `launch_type` variable is expected. For `EKS-arm64` tests it is expected that
 a pipe delimited string of `region|clustername|amp_endoint` is provided.
 
 It is also expected that`TF_VAR_aoc_version` and `TF_VAR_aoc_image_repo` are set to valid values
