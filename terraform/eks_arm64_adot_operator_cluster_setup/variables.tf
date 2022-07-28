@@ -3,5 +3,5 @@ variable "eks_cluster_name" {
 }
 
 variable "region" {
-  default = "us-east-2"
+  default = "us-west-2"
 }
