@@ -48,5 +48,4 @@ pre-existing sample rules in it or the tests will fail.
 ### Github Actions
 The tests will run automatically on PRs for changes that involve the centralized-sampling-tests folder.
 It is also possible to run the tests manually as a github action. To do this, go to [actions](https://github.com/aws-observability/aws-otel-test-framework/actions)
-on the aws-otel-test-framework github, select the Centralized Sampling Integration Tests workflow and
-click the Run workflow button.
+on the aws-otel-test-framework github, select the Centralized Sampling Integration Tests workflow and click the Run workflow button.
