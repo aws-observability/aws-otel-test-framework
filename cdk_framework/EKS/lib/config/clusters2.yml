@@ -1,7 +1,0 @@
----
-clusters:
-  armCluster12:
-    launch_type: ec2
-    cpu_architecture: arm_64
-    version: 1.22
-    node_size: large

@@ -16,6 +16,8 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": false,
     "inlineSourceMap": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
     "inlineSources": true,
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
@@ -29,6 +31,7 @@
     "lib/**/*.ts",
     "**/*.test.ts",
     "lib/*.ts",
-    "config/*.yaml"
+    "config/*.yaml",
+    ".eslintrc.js"
   ],
 }

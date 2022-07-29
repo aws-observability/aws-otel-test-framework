@@ -3,20 +3,19 @@ import { Template } from 'aws-cdk-lib/assertions';
 import { readFileSync} from 'fs';
 import { ClusterStack } from '../lib/stacks/cluster-stack';
 import { deployClusters } from '../lib/cluster-deployment';
-import { Size } from 'aws-cdk-lib';
-import { validateClustersConfig } from '../lib/utils/validate';
+
 const yaml = require('js-yaml')
 
 test('ClusterTest', () => {
-    var app = new cdk.App();
+    const app = new cdk.App();
 
     const route = __dirname + '/test_config/test_clusters.yml';
     const raw = readFileSync(route)
     const data = yaml.load(raw)
 
 
-    var clusterMap = new Map<string, ClusterStack>()
-    var versionMap = new Map<string, string>()
+    let clusterMap = new Map<string, ClusterStack>()
+    const versionMap = new Map<string, string>()
 
     clusterMap = deployClusters(app, data)
 
@@ -28,8 +27,8 @@ test('ClusterTest', () => {
   }
 
     for(const [key, st] of clusterMap){
-        var template = Template.fromStack(st);
-        var KubernetesVersion = versionMap.get(key)
+        const template = Template.fromStack(st);
+        const KubernetesVersion = versionMap.get(key)
 
         template.hasResourceProperties("Custom::AWSCDK-EKS-Cluster", {
             Config: {

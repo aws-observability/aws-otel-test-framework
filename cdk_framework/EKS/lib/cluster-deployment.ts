@@ -3,16 +3,12 @@ import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { validateClustersConfig } from './utils/validate';
 import { VPCStack } from './utils/vpc-stack';
-import { aws_eks as eks, aws_ec2 as ec2} from 'aws-cdk-lib';
+import { aws_eks as eks} from 'aws-cdk-lib';
 import { ClusterStack } from './stacks/cluster-stack';
-import { readFileSync} from 'fs';
-const yaml = require('js-yaml')
 
 
 export function deployClusters(app: cdk.App, configData: any) : Map<string, ClusterStack> {
     const REGION = process.env.REGION || 'us-west-2'
-
-    
 
     const eksClusterMap = new Map<string, ClusterStack>();
     
