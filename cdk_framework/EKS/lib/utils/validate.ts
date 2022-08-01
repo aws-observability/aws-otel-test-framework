@@ -1,7 +1,6 @@
 const supportedFields = new Set(['version', 'ec2_instance', 'launch_type', 'node_size'])
 const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21']);
 const supportedCPUArchitectures = new Set(['m5', 'm6g', 't4g']);
-const supportedLaunchTypes = new Set(['ec2', 'fargate']);
 const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xlarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
 const supportedT4gInstances = new Set(['nano', 'micro', 'small', 'medium', 'large', 'xlarge', '2xlarge'])
 const requiredFields = new Set(['version', 'launch_type'])
@@ -64,7 +63,7 @@ function validateVersion(version: string){
     }
 
     if(!supportedVersions.has(version)){
-        throw new Error('Version needs to be number between 1.18 to 1.21');
+        throw new Error('Version needs to be a value of one of the following: ' + Array.from(supportedVersions).join(', '));
     }
     return version
 }
