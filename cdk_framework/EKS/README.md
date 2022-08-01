@@ -50,7 +50,13 @@ Sample template of what config file looks like could be seen in the YAML files f
 
 ## Testing
 
-In order to run tests, use command `tsc && npm test`. 
+There are two different tests that are implemented:
+1. Fine-Grained Assertion Tests
+    * These tests are used to test the template of the the cloudformation stacks that are being created. 
+2. Unit Tests
+    * These tests are created to ensure proper configuraiton validation. 
+
+In order to run these tests, use command `npm test`. 
 
 ## Useful commands
 
