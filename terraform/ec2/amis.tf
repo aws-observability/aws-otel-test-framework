@@ -395,7 +395,7 @@ EOF
       os_family          = "windows"
       ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
       ami_owner          = "amazon"
-      ami_id             = "ami-0297fbf7e83dd1209"
+      ami_id             = "ami-01f14dc60171d8d7b"
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
@@ -413,7 +413,7 @@ EOF
       os_family          = "windows"
       ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
       ami_owner          = "amazon"
-      ami_id             = "ami-0297fbf7e83dd1209"
+      ami_id             = "ami-01f14dc60171d8d7b"
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
