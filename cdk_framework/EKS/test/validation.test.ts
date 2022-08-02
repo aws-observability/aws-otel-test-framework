@@ -1,90 +1,104 @@
 import assert from 'assert';
-import { readFileSync} from 'fs';
-import { validateClustersConfig } from '../lib/utils/validate';
-const yaml = require('js-yaml')
+import { validateClustersConfig} from '../lib/utils/validate';
 
-const route = __dirname + '/test_config/test_clusters.yml';
-const raw = readFileSync(route)
-let data = yaml.load(raw)
 
-beforeEach(() => {
-    data = yaml.load(raw)
+const defaultSetUpTable = Object.entries({
+    'Bad kubernetes version 1.22': {
+        data: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : 1.22}}},
+        expectedErr: Error
+    },
+    'Regular working deployment': {
+        data: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : 1.21}}},
+        expectedOut: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : "1.21"}}}
+    },
+    'Too many fields in the cluster': {
+        data: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : 1.21, random_field: 'random_value'}}},
+        expectedErr: Error
+    },
+    'Missing ec2_instance field': {
+        data: {clusters: {amdCluster: { launch_type: { ec2: {node_size: 'xlarge'}}, version : 1.21}}},
+        expectedOut: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'xlarge'}}, version : "1.21"}}}
+    },
+    'Missing node_size field': {
+        data: {clusters: {amdCluster: { launch_type: { ec2: {ec2_instance: 'm5'}}, version : 1.21}}},
+        expectedOut: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : "1.21"}}}
+    },
+    'Missing ec2 fields': {
+        data: {clusters: {amdCluster: { launch_type: { ec2: null}, version : 1.21}}},
+        expectedOut: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : "1.21"}}}
+    },
+    'launch_type is null': {
+        data: {clusters: {amdCluster: { launch_type: null, version : 1.21}}},
+        expectedErr: Error
+    },
+    'Too many launch_types': {
+        data: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}, fargate: null}, version : 1.21}}},
+        expectedErr: Error
+    },
+    'Does not have clusters category': {
+        data: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : 1.21}},
+        expectedErr: Error
+    },
+    'Working fargate deployment': {
+        data: {clusters: {fargateCluster: { launch_type: { fargate: null}, version : 1.21}}},
+        expectedOut: {clusters: {fargateCluster: { launch_type: { fargate: null}, version : "1.21"}}}
+    },
+    'Multiple deployment - fargate and ec2': {
+        data: {clusters: {fargateCluster: { launch_type: { fargate: null}, version : 1.21}, amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : 1.21}}},
+        expectedOut: {clusters: {fargateCluster: { launch_type: { fargate: null}, version : "1.21"}, amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : "1.21"}}}
+    },
+    'Multiple deployment - two ec2s': {
+        data: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'xlarge'}}, version : 1.19}, amdCluster2: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : 1.21}}},
+        expectedOut: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'xlarge'}}, version : "1.19"}, amdCluster2: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'large'}}, version : "1.21"}}}
+    },
+    't4g sizw is not good': {
+        data: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 't4g', node_size: '4xlarge'}}, version : 1.21}}},
+        expectedErr: Error
+    },
+    'm6g size is not good': {
+        data: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm6g', node_size: '24xlarge'}}, version : 1.21}}},
+        expectedErr: Error
+    },
+    'm5 size is not good': {
+        data: {cluster: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'medium'}}, version : 1.21}}},
+        expectedErr: Error
+    },
+    'ec2 instance invalid name': {
+        data: {clusters: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'wrong_name', node_size: 'large'}}, version : 1.21}}},
+        expectedErr: Error
+    },
+    'launch_type is invalid': {
+        data: {clusters: {amdCluster: { launch_type: { wrong_type : {ec2_instance : 'm6g', node_size: '24xlarge'}}, version : 1.21}}},
+        expectedErr: Error
+    },
+    'version not provided': {
+        data: {cluster: {amdCluster: { launch_type: { ec2 : {ec2_instance : 'm5', node_size: 'medium'}}}}},
+        expectedErr: Error
+    },
+    'launch_type not provided': {
+        data: {clusters: {amdCluster: { version : 1.21}}},
+        expectedErr: Error
+    },
+    'no clusters provided': {
+        data: {clusters: null},
+        expectedErr: Error
+    },
 })
 
+defaultSetUpTable.forEach(([name, fields]) => 
+    test(name, () => {
+        if(fields.expectedErr){
+            try{
+                validateClustersConfig(fields.data)
+                assert(false)
+            } catch(error){
+                expect(error).toBeInstanceOf(Error);
+            }
+        } else {
+            validateClustersConfig(fields.data)
+            expect((fields.data)).toEqual(fields.expectedOut);
+        }
+    })
+)
 
-test('ValidationTest', () => {
-    validateClustersConfig(data)
-    assert(Object.keys(data['clusters']).length === 4)
-    assert(data['clusters']['amdCluster']['launch_type']['ec2']['ec2_instance'] === 'm5')
-});
-
-test('Version Error', () => {
-    data['clusters']['amdCluster']['version'] = 1.22
-    try{
-        validateClustersConfig(data)
-        assert(false)
-    } catch(error){
-        expect(error).toBeInstanceOf(Error);
-    }
-})
-
-test('Added cluster field Error', () => {
-    data['clusters']['amdCluster']['addedKey'] = "random_value"
-    try{
-        validateClustersConfig(data)
-        assert(false)
-    } catch(error){
-        expect(error).toBeInstanceOf(Error);
-    }
-})
-
-test('Added launch_type field Error', () => {
-    data['clusters']['t4gCluster']['launch_type']['ec2']['added_value'] = "random_value"
-    try{
-        validateClustersConfig(data)
-        assert(false)
-    } catch(error){
-        expect(error).toBeInstanceOf(Error);
-    }
-})
-
-test('2 launch_type fields Error', () => {
-    data['clusters']['t4gCluster']['launch_type']['fargate'] = "addedField"
-    try{
-        validateClustersConfig(data)
-        assert(false)
-    } catch(error){
-        expect(error).toBeInstanceOf(Error);
-    }
-})
-
-test('Wrogn ec2 instance name Error', () => {
-    data['clusters']['t4gCluster']['launch_type']['ec2']['ec2_instance'] = "wrong_type"
-    try{
-        validateClustersConfig(data)
-        assert(false)
-    } catch(error){
-        expect(error).toBeInstanceOf(Error);
-    }
-})
-
-test('Incompatible node size with t4g instance type Error', () => {
-    data['clusters']['t4gCluster']['launch_type']['ec2']['node_size'] = "24xlarge"
-    try{
-        validateClustersConfig(data)
-        assert(false)
-    } catch(error){
-        expect(error).toBeInstanceOf(Error);
-    }
-})
-
-test('Incompatible node size with m6g instance type Error', () => {
-    data['clusters']['armCluster']['launch_type']['ec2']['node_size'] = "24xlarge"
-    try{
-        validateClustersConfig(data)
-        assert(false)
-    } catch(error){
-        expect(error).toBeInstanceOf(Error);
-    }
-})
 

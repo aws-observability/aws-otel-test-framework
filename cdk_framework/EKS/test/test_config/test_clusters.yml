@@ -19,4 +19,4 @@ clusters:
   fargateCluster0:
     launch_type: 
       fargate:
-    version: 1.20
+    version: 1.19

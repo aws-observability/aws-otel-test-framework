@@ -5,10 +5,16 @@ import { validateClustersConfig } from './utils/validate';
 import { VPCStack } from './utils/vpc-stack';
 import { aws_eks as eks} from 'aws-cdk-lib';
 import { ClusterStack } from './stacks/cluster-stack';
+import { readFileSync} from 'fs';
+const yaml = require('js-yaml')
 
 
-export function deployClusters(app: cdk.App, configData: any) : Map<string, ClusterStack> {
+export function deployClusters(app: cdk.App) : Map<string, ClusterStack> {
     const REGION = process.env.REGION || 'us-west-2'
+
+    const route = process.env.CDK_CONFIG_PATH ||  __dirname + '/config/clusters.yml';
+    const raw = readFileSync(route)
+    const configData = yaml.load(raw)
 
     const eksClusterMap = new Map<string, ClusterStack>();
     
