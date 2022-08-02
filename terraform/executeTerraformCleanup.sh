@@ -49,6 +49,7 @@ case "$service" in
     "EKS_ADOT_OPERATOR") TEST_FOLDER="./eks/";
     ;;
     "EKS_ADOT_OPERATOR_ARM64") TEST_FOLDER="./eks/";
+        opts+=" -var=eks_cluster_name=arm64-adot-op-cluster";
     ;;
     "ECS") TEST_FOLDER="./ecs/";
         export TF_VAR_ecs_launch_type=$3;

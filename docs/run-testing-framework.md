@@ -238,7 +238,7 @@ serviceNameN testCaseN additionalValuesN
 ```
 
 The values for these fields are as follows
-`serviceName`: `EKS` `EKS-arm64` `EKS-fargate` `EKS-operator` `EKS-operator-arm64` `ECS` `EC2`
+`serviceName`: `EKS`, `EKS_ARM64`, `EKS_FARGATE`, `EKS_ADOT_OPERATOR`, `EKS_ADOT_OPERATOR_ARM_64`, `ECS`, `EC2`
 `testCase`: Must be an applicable test case in the `terraform/testcases` directory
 `additionalValues`: For `EC2` tests it is expected that the `testing_ami` value is provided.
 For ECS tests the `launch_type` variable is expected. For `EKS-arm64` tests it is expected that
