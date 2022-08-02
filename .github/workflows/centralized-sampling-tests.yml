@@ -11,9 +11,6 @@ on:
   push:
     paths:
       - 'centralized-sampling-tests/**'
-  pull_request:
-    paths:
-      - 'centralized-sampling-tests/**'
   workflow_dispatch:
 
 permissions:
