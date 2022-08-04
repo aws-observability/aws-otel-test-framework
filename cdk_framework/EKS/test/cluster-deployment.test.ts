@@ -28,29 +28,29 @@ test('ClusterTest', () => {
   }
 
     for(const [key, st] of clusterMap){
-        const template = Template.fromStack(st);
-        const KubernetesVersion = versionMap.get(key)
+      const template = Template.fromStack(st);
+      const KubernetesVersion = versionMap.get(key)
 
-        template.hasResourceProperties("Custom::AWSCDK-EKS-Cluster", {
-            Config: {
-                name: key,
-                version: KubernetesVersion,
-                logging: {
-                  clusterLogging: [
-                    {
-                      enabled: true,
-                      types: [
-                        "api",
-                        "audit",
-                        "authenticator",
-                        "controllerManager",
-                        "scheduler"
-                      ]
-                    }
-                  ]
-                }
-            }
-        })
+      template.hasResourceProperties("Custom::AWSCDK-EKS-Cluster", {
+          Config: {
+              name: key,
+              version: KubernetesVersion,
+              logging: {
+                clusterLogging: [
+                  {
+                    enabled: true,
+                    types: [
+                      "api",
+                      "audit",
+                      "authenticator",
+                      "controllerManager",
+                      "scheduler"
+                    ]
+                  }
+                ]
+              }
+          }
+      })
     }
 
 });
