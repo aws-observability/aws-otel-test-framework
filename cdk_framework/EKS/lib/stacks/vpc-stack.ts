@@ -10,7 +10,7 @@ export class VPCStack extends Stack {
     super(scope, id, props);
 
     this.vpc = new ec2.Vpc(this, 'EKSVpc',
-     {cidr: "10.0.0.0/16",
+     {cidr: '10.0.0.0/16',
      natGateways: 1,
      vpnGateway: true,
      availabilityZones: ['us-west-2a', 'us-west-2b', 'us-west-2c'],
@@ -23,7 +23,7 @@ export class VPCStack extends Stack {
       {
         cidrMask: 24,
         subnetType: ec2.SubnetType.PUBLIC,
-        name: "public_subnet"
+        name: 'public_subnet'
       }
      ] 
     });  

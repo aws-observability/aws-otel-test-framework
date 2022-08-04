@@ -1,8 +1,8 @@
 CLUSTERS := $(shell cdk ls)
-EKSCLUSTERS := $(shell printf '%s' '$(CLUSTERS)' | grep -oh "\w*Cluster\w*")
+EKSCLUSTERS := $(shell printf '%s' '$(CLUSTERS)' | grep -oh "\w*EKSCluster\w*")
 len := $(shell printf '%s' '$(EKSCLUSTERS)' | wc -w)
 
-local:
+EKS-infra:
 	make deploy-VPC
 	make -j $(len) deploy-cluster
 .PHONY: local
@@ -16,5 +16,11 @@ deploy-VPC:
 	cdk synth
 	cdk deploy EKSVpc
 .PHONY: deploy-VPC
+
+check-clusters:
+	@echo $(CLUSTERS)
+
+check-eksclusters:
+	@echo $(EKSCLUSTERS)
 
 

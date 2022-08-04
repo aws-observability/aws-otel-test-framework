@@ -22,14 +22,14 @@ export class ClusterStack extends Stack {
     const workerRole = new Role(this, 'EKSWorkerRole', {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
       managedPolicies: [
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonPrometheusRemoteWriteAccess"),
-        ManagedPolicy.fromAwsManagedPolicyName("AWSXrayWriteOnlyAccess"),
-        ManagedPolicy.fromAwsManagedPolicyName("CloudWatchAgentAdminPolicy"),
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonS3ReadOnlyAccess"),
-        ManagedPolicy.fromAwsManagedPolicyName("AWSAppMeshEnvoyAccess"),
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonEKSWorkerNodePolicy"),
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonEC2ContainerRegistryReadOnly"),
-        ManagedPolicy.fromAwsManagedPolicyName("AmazonEKS_CNI_Policy")
+        ManagedPolicy.fromAwsManagedPolicyName('AmazonPrometheusRemoteWriteAccess'),
+        ManagedPolicy.fromAwsManagedPolicyName('AWSXrayWriteOnlyAccess'),
+        ManagedPolicy.fromAwsManagedPolicyName('CloudWatchAgentAdminPolicy'),
+        ManagedPolicy.fromAwsManagedPolicyName('AmazonS3ReadOnlyAccess'),
+        ManagedPolicy.fromAwsManagedPolicyName('AWSAppMeshEnvoyAccess'),
+        ManagedPolicy.fromAwsManagedPolicyName('AmazonEKSWorkerNodePolicy'),
+        ManagedPolicy.fromAwsManagedPolicyName('AmazonEC2ContainerRegistryReadOnly'),
+        ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy')
       ]
     });
     if(props.launchType['ec2'] !== undefined){
@@ -58,7 +58,7 @@ export class ClusterStack extends Stack {
       });
     } 
     
-    this.cluster.awsAuth.addMastersRole(Role.fromRoleName(this, "eks_admin_role", "Admin"))
+    this.cluster.awsAuth.addMastersRole(Role.fromRoleName(this, 'eks_admin_role', 'Admin'))
 
   }
 }

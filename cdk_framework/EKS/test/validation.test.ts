@@ -1,5 +1,5 @@
 import assert from 'assert';
-import { validateClustersConfig} from '../lib/utils/validate';
+import { validateClustersConfig} from '../lib/utils/validate-cluster-config';
 
 
 const defaultSetUpTable = Object.entries({

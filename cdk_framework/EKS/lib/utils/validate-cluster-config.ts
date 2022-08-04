@@ -15,7 +15,7 @@ export function validateClustersConfig(info: unknown){
     const clusterNamesSet = new Set()
     for(const [key, value] of Object.entries(clusterInfo)){
         if(Object.keys(Object(value)).length !== 2){
-            throw new Error("Didn't use proper fields for cluster. You can only have launch_type and version")
+            throw new Error('Did not use proper fields for cluster. You can only have launch_type and version')
         }
         const val = Object(value)
         if(clusterNamesSet.has(key)){
@@ -25,7 +25,7 @@ export function validateClustersConfig(info: unknown){
         validateRequiredFields(val)
         for(const [k, v] of Object.entries(val)){
             if(!supportedFields.has(k)){
-                throw new Error("Incompatible field type")
+                throw new Error('Incompatible field type')
             }
             switch(k){
                 case 'version':
@@ -82,7 +82,7 @@ function convertAndValidateEC2Instance(instance: string){
 function convertAndValidateLaunchType(type: any){
     const launchType = Object(type['launch_type'])
     if(Object.keys(launchType).length != 1){
-        throw new Error("More than 1 launch_type provided or none provided")
+        throw new Error('More than 1 launch_type provided or none provided')
     }
     if(launchType['fargate'] !== undefined){
         return launchType
@@ -136,15 +136,11 @@ function addedChecks(val: unknown){
     if(!supportedCPUArchitectures.has(String(value['ec2_instance']))){
         throw new Error('ec2 type needs to have cpu architecture type')
     }
-    if(String([value['ec2_instance']]) === 'm6g' && String([value['node_size']]) === '24xlarge'){
-        throw new Error("CPU Architecture and node size aren't compatible")
-    }
-
     if(String([value['ec2_instance']]) === 'm5' && String([value['node_size']]) === 'medium'){
-        throw new Error("CPU architecture and node size aren't compatible")
+        throw new Error('CPU architecture and node size are not compatible')
     }
     if(String([value['ec2_instance']]) === 'm6g' && String([value['node_size']]) === '24xlarge'){
-        throw new Error("CPU architecture and node size aren't compatible")
+        throw new Error('CPU architecture and node size are not compatible')
     }
 }
 
