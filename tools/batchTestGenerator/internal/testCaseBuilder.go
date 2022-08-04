@@ -92,7 +92,7 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 						additionalVar: runConfig.EksARM64Vars,
 					}
 					newTests = append(newTests, newTest)
-				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS":
+				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS":
 					newTest := TestCaseInfo{
 						testcaseName:  test.CaseName,
 						serviceType:   testPlatform,

@@ -36,12 +36,13 @@ type commandConfig struct {
 }
 
 var includeAllowlist map[string]struct{} = map[string]struct{}{
-	"EKS":               {},
-	"EKS_ARM64":         {},
-	"ECS":               {},
-	"EKS_FARGATE":       {},
-	"EC2":               {},
-	"EKS_ADOT_OPERATOR": {},
+	"EKS":                     {},
+	"EKS_ARM64":               {},
+	"ECS":                     {},
+	"EKS_FARGATE":             {},
+	"EC2":                     {},
+	"EKS_ADOT_OPERATOR":       {},
+	"EKS_ADOT_OPERATOR_ARM64": {},
 }
 
 func newCommandConfig() *commandConfig {

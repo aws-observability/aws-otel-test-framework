@@ -55,6 +55,9 @@ case "$service" in
     "EKS_ADOT_OPERATOR") TEST_FOLDER="./eks/";
         opts+=" -var=eks_cluster_name=adot-op-cluster";
     ;;
+    "EKS_ADOT_OPERATOR_ARM64") TEST_FOLDER="./eks/"
+        opts+=" -var=eks_cluster_name=arm64-adot-op-cluster";
+    ;;
     "ECS") TEST_FOLDER="./ecs/";
         opts+=" -var=ecs_launch_type=$3";
     ;;
@@ -88,7 +91,7 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     fi
 
     case "$service" in
-        "EKS_FARGATE" | "EKS_ADOT_OPERATOR") terraform destroy --auto-approve $opts;
+        "EKS_FARGATE" | "EKS_ADOT_OPERATOR" | "EKS_ADOT_OPERATOR_ARM64") terraform destroy --auto-approve $opts;
         ;;
     *)
         terraform destroy --auto-approve;

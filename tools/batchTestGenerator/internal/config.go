@@ -10,7 +10,7 @@ type RunConfig struct {
 }
 
 func NewDefaultRunConfig() RunConfig {
-	defaultServices := []string{"EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_FARGATE"}
+	defaultServices := []string{"EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS_FARGATE"}
 
 	//build set for default services
 	ism := make(map[string]struct{})
