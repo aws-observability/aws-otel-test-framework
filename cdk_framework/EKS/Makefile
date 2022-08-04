@@ -3,7 +3,7 @@ EKSCLUSTERS := $(shell printf '%s' '$(CLUSTERS)' | grep -oh "\w*Cluster\w*")
 len := $(shell printf '%s' '$(EKSCLUSTERS)' | wc -w)
 
 local:
-	# make deploy-VPC
+	make deploy-VPC
 	make -j $(len) deploy-cluster
 .PHONY: local
 
