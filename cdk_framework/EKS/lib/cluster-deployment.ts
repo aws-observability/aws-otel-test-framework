@@ -12,7 +12,7 @@ const yaml = require('js-yaml')
 export function deployClusters(app: cdk.App) : Map<string, ClusterStack> {
     const REGION = process.env.REGION || 'us-west-2'
 
-    const route = process.env.CDK_CONFIG_PATH ||  __dirname + '/config/clusters.yml';
+    const route = process.env.CDK_CONFIG_PATH ||  __dirname + '/config/cluster-config/clusters.yml';
 
     if (!/(.yml|.yaml)$/.test(route)){
       throw new Error ('Path for cluster configuration must be to a yaml file')
