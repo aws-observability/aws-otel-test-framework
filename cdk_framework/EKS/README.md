@@ -25,7 +25,8 @@ The `tsconfig.json` file is used to tell TypeScript how to configure the project
 Since the code base in written in TypeScript, the CDK library has to be downloaded using Node. 
 
 1. Make sure you have Node, so that you can use `npm` control. 
-2. Download the AWS CDK Library by typing `npm install aws-cdk-lib`. 
+2. Download from EKS directory the AWS CDK Library by typing `npm install aws-cdk-lib`. 
+3. In order to use the linter, the eslint dependency needs to be downloaded. This could be done by calling `npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin`. 
 
 ### Environemnt Variables
 
