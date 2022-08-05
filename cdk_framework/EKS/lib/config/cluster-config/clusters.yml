@@ -3,7 +3,7 @@ clusters:
   amdCluster:
     launch_type: 
       ec2:
-        ec2_instance: m6g
+        ec2_instance: m5
         node_size: large
     version: 1.21
   fargateCluster:

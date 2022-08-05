@@ -4,12 +4,12 @@ len := $(shell printf '%s' '$(EKSCLUSTERS)' | wc -w)
 
 EKS-infra:
 	make deploy-VPC
-	make -j $(len) deploy-cluster
+	make -j $(len) deploy-clusters
 .PHONY: local
 
-deploy-cluster: $(EKSCLUSTERS:%=deploy-cluster/%)
-deploy-cluster/%: CLUSTER=$*
-deploy-cluster/%:
+deploy-clusters: $(EKSCLUSTERS:%=deploy-cluster/%)
+deploy-clusters/%: CLUSTER=$*
+deploy-clusters/%:
 	cdk deploy $(CLUSTER) --require-approval never
 
 deploy-VPC:
@@ -17,10 +17,12 @@ deploy-VPC:
 	cdk deploy EKSVpc
 .PHONY: deploy-VPC
 
-check-clusters:
-	@echo $(CLUSTERS)
+destroy-EKS-infra:
+	make -j $(len) destroy-clusters
 
-check-eksclusters:
-	@echo $(EKSCLUSTERS)
+destroy-clusters: $(EKSCLUSTERS:%=deploy-cluster/%)
+destroy-clusters/%: CLUSTER=$*
+destroy-clusters/%:
+	cdk destroy $(CLUSTER) --require-approval never
 
 

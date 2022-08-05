@@ -12,6 +12,8 @@ The `test` directory is where testing is done on the cluster deployment.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
+The `Makefile` is a file used to deploy the clusters in parallel. All that is required is call `make EKS-infra` and all the clusters configured in configuration file will be deployed. 
+
 The `package.json` file contains the important libraries that are needed to run the deployment. 
 
 The `tsconfig.json` file is used to tell TypeScript how to configure the project. 
@@ -29,7 +31,7 @@ Since the code base in written in TypeScript, the CDK library has to be download
 
 There are a number of environment variables that should be defined before deploying the clusters:
 
-* `CDK_CONFIG_PATH` - This is the path for which the cluster configuration file is located - default is `clusters.yml` in `lib/config` folder.
+* `CDK_CONFIG_PATH` - This is the path for which the cluster configuration file is located - default is `clusters.yml` in `lib/config/cluster-config` folder.
 * `REGION` - This is the region for which the clusters should be deployed - default is `us-west-2`.
 
 ### Setting Config File
@@ -71,6 +73,12 @@ There are three different clusters being deployed in this example - amdCluster, 
 
 1. Call `cdk synth` to synthesize the clusters to be deployed. This also makes sure everything was configured properly. 
 2. Call `cdk deploy --all` to dpeloy all the clusters. You could specify the cluster to deploy by the name calling `cdk deploy CLUSTERNAME`. CLUSTERNAME is the name of the cluster you passed in. 
+
+#### Makefile
+
+The makefile is used to deploy the clusters in parallel. It determines how many clusters are configured, and then sets that number to the number of processes to run to deploy all the clusters simultaneously. In order to accomplish this, after saving the configuration file and setting all appropriate envrionment variables, call `make EKS-infra` and all the clusters should be deployed. This call will first call `deploy-VPC` which will call `cdk synth` and then create the VPC by calling `cdk deploy EKSVpc`. After the VPC is deployed, it then calls `deploy-clusters` where all the EKS clusters that were configured are deployed. The way it calls `deploy-clusters` is by calling `make -j #processes deploy-clusters`, where #processes is the number of clusters being deployed. 
+
+Additionally, in order to destroy all the clusters in parallel call `make destroy-EKS-infra`. 
 
 ## Testing
 
