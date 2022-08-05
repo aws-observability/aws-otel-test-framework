@@ -16,13 +16,3 @@ deploy-VPC:
 	cdk synth
 	cdk deploy EKSVpc
 .PHONY: deploy-VPC
-
-destroy-EKS-infra:
-	make -j $(len) destroy-clusters
-
-destroy-clusters: $(EKSCLUSTERS:%=deploy-cluster/%)
-destroy-clusters/%: CLUSTER=$*
-destroy-clusters/%:
-	cdk destroy $(CLUSTER) --require-approval never
-
-
