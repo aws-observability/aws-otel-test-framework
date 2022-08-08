@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { ClusterStack } from './stacks/cluster-stack';
 import { deployClusters } from './cluster-deployment';
+import { deployResources } from './resource-deployment';
 
 const app = new cdk.App();
 
-let clusterMap = new Map<string, ClusterStack>()
+const clusterStackMap = deployClusters(app);
 
-clusterMap = deployClusters(app);
-
-
+// resource deployment
+if (process.env.CDK_EKS_RESOURCE_DEPLOY == 'true') {
+    deployResources(app, clusterStackMap)
+}

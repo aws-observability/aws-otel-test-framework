@@ -1,0 +1,28 @@
+---
+test_case:
+  cluster_name: amdCluster
+  sample_app_image_uri: "public.ecr.aws/aws-otel-test/prometheus-sample-app:latest"
+  sample_app_mode: pull
+  collector_config:
+    receivers:
+      prometheus:
+        config:
+          global:
+            scrape_interval: 15s
+          scrape_configs:
+          - job_name: "test-prometheus-sample-app"
+            static_configs:
+            - targets: [ sample-app-service:8080 ]
+
+    exporters:
+      logging:
+        logLevel: debug
+        
+    service:
+      pipelines:
+        metrics:
+          receivers: [prometheus]
+          exporters: [logging]
+      telemetry:
+        logs:
+          level: debug
