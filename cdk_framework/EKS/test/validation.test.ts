@@ -293,7 +293,7 @@ const defaultSetUpTable = Object.entries({
             }
         }
     },
-    't4g sizw is not good': {
+    't4g size is not good': {
         data: {
             clusters: {
                 amdCluster: { 

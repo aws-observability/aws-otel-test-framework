@@ -19,7 +19,7 @@ export function validateClustersConfig(info: unknown){
         }
         const val = Object(value)
         if(clusterNamesSet.has(key)){
-            throw new Error('Cannot have multiple clusters with the samne name')
+            throw new Error('Cannot have multiple clusters with the same name')
         }
         clusterNamesSet.add(key)
         validateRequiredFields(val)
@@ -40,9 +40,9 @@ export function validateClustersConfig(info: unknown){
 }
 
 function validateRequiredFields(fields: any){
-    for(const field of requiredFields){
-        if(!fields[field]){
-            throw new Error('Required field - ' + field + ' - not provided')
+    for(const expectedField of requiredFields){
+        if(!fields[expectedField]){
+            throw new Error('Required field - ' + expectedField + ' - not provided')
         }
     }
 }
@@ -82,7 +82,7 @@ function convertAndValidateEC2Instance(instance: string){
 function convertAndValidateLaunchType(type: any){
     const launchType = Object(type['launch_type'])
     if(Object.keys(launchType).length != 1){
-        throw new Error('More than 1 launch_type provided or none provided')
+        throw new Error('Must provide exactly one launch type')
     }
     if(launchType['fargate'] !== undefined){
         return launchType
@@ -90,9 +90,6 @@ function convertAndValidateLaunchType(type: any){
         const launchData = Object(launchType['ec2'])
         checkToSetUpDefaults(launchData)
         for(const [k, v] of Object.entries(launchData)){
-            if(!supportedFields.has(k)){
-                throw new Error('Provided field type, ' + k + ', is not a compatible field type')
-            }
             switch(k){
                 case 'ec2_instance':
                     launchData[k] = convertAndValidateEC2Instance(String(v))
@@ -100,6 +97,8 @@ function convertAndValidateLaunchType(type: any){
                 case 'node_size':
                     launchData[k] = validateNodeSize(String(v), String(launchData['ec2_instance']))
                     break;
+                default:
+                    throw new Error('Provided field type, ' + k + ', is not a compatible field type')
             }
         }
         launchType['ec2'] = launchData
@@ -133,9 +132,6 @@ function validateNodeSize(size: string, instance: string){
 
 function addedChecks(val: unknown){
     const value = Object(val)
-    if(!supportedCPUArchitectures.has(String(value['ec2_instance']))){
-        throw new Error('ec2 type needs to have cpu architecture type')
-    }
     if(String([value['ec2_instance']]) === 'm5' && String([value['node_size']]) === 'medium'){
         throw new Error('CPU architecture and node size are not compatible')
     }
