@@ -1,6 +1,6 @@
 import { Construct } from 'constructs';
 import { Cluster, FargateCluster } from 'aws-cdk-lib/aws-eks';
-import { NamespaceConstruct } from './namespace-construct';
+import { NamespaceConstruct } from '../specific_constructs/namespace-construct';
 import { GeneralSampleAppDeploymentConstruct, GeneralSampleAppDeploymentConstructProps } from './general-sample-app-deployment-construct';
 import { GeneralCollectorDeploymentConstruct, GeneralCollectorDeploymentConstructProps } from './general-collector-deployment-construct';
 

@@ -1,12 +1,12 @@
 import { Construct } from 'constructs';
 import { Cluster, FargateCluster } from 'aws-cdk-lib/aws-eks';
-import { NamespaceConstruct } from './namespace-construct';
-import { GRPCServiceConstruct } from './grpc-service-construct';
-import { ServiceAccountConstruct } from './service-account-construct';
-import { CollectorConfigMapConstruct } from './collector-config-map-construct';
-import { CollectorDeploymentConstruct } from './collector-deployment-construct';
-import { TCPServiceConstruct } from './tcp-service-construct';
-import { UDPServiceConstruct } from './udp-service-construct';
+import { NamespaceConstruct } from '../specific_constructs/namespace-construct';
+import { GRPCServiceConstruct } from '../specific_constructs/grpc-service-construct';
+import { ServiceAccountConstruct } from '../specific_constructs/service-account-construct';
+import { CollectorConfigMapConstruct } from '../specific_constructs/collector-config-map-construct';
+import { CollectorDeploymentConstruct } from '../specific_constructs/collector-deployment-construct';
+import { TCPServiceConstruct } from '../specific_constructs/tcp-service-construct';
+import { UDPServiceConstruct } from '../specific_constructs/udp-service-construct';
 
 //TODO - Consider renaming. Role is a different Kubernetes kind so 
 // this name is confusing

@@ -1,8 +1,8 @@
 import { Construct } from 'constructs';
 import { Cluster, FargateCluster } from 'aws-cdk-lib/aws-eks';
-import { PushModeSampleAppDeploymentConstruct } from './push-mode-sample-app-construct';
-import { PullModeSampleAppDeploymentConstruct } from './pull-mode-sample-app-construct';
-import { NamespaceConstruct } from './namespace-construct';
+import { PushModeSampleAppDeploymentConstruct } from '../specific_constructs/push-mode-sample-app-construct';
+import { PullModeSampleAppDeploymentConstruct } from '../specific_constructs/pull-mode-sample-app-construct';
+import { NamespaceConstruct } from '../specific_constructs/namespace-construct';
 import { SampleAppServiceConstruct } from './sample-app-service-construct';
 
 
