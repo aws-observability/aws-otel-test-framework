@@ -7,8 +7,8 @@ The purpose of this directory is to deploy different EKS clusters using AWS CDK.
 
 
 Steps in how the cluster deployment occurs:
-1. Root construct, App, is created and the configuration file is read
-2. Calls deployClusters method where VPC stack is created. In it, the VPC is made and prepared to be passed in to each cluster. 
+1. Root construct, App, is created and calls cluster-deployment method
+2. Cluster configuration file is read and VPC stack is created. In it, the VPC is made and prepared to be passed in to each cluster. 
 3. Cluster stacks are configured from the configuration file and the VPC is passed in as one of the props.
 4. A single cluster is made in each stack with the configurations provided. The reason we need multiple stacks instead of putting all the clusters in one stack is because stack can’t hold more than one EKS cluster 
 
@@ -119,4 +119,4 @@ For testing the Cluster stack, the environment variable `CDK_CONFIG_PATH` is cha
 
 ### Unit Testing
 
-The unit testing is used to make sure the `validate-cluster-config.ts` file is properly validating the information. 
+The unit testing is used to make sure the `validate-cluster-config.ts` file is properly validating the configuration file. 
