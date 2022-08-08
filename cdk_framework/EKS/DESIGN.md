@@ -3,7 +3,8 @@
 The purpose of this directory is to deploy EKS clusters using AWS CDK. 
 
 # Architecture
-![Deployment design](image.png)
+![Deployment design](https://user-images.githubusercontent.com/54683946/183471629-59479f8c-db49-4c53-bbe5-48b5f18d6b14.png)
+
 
 Steps in how the cluster deployment occurs:
 1. Root construct, App, is created and the configuration file is read
