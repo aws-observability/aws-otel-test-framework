@@ -17,7 +17,6 @@ export class CollectorDeploymentConstruct extends Construct {
 
             metadata: {
                 name: 'collector',
-                //namespace: var.deployment_type == 'fargate' ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name,
                 namespace: props.namespaceConstruct.name,
                 labels: {
                     app: 'collector'
@@ -29,7 +28,6 @@ export class CollectorDeploymentConstruct extends Construct {
             
                 selector: {
                     matchLabels: {
-                        // app: local.sample_app_label_selector
                         app: props.collectorAppLabel
                     }
                 },
@@ -37,37 +35,26 @@ export class CollectorDeploymentConstruct extends Construct {
                 template: {
                     metadata: {
                         labels: {
-                            // app: local.sample_app_label_selector
                             app: props.collectorAppLabel
                         }
                     },
             
                     spec: {
-                        // serviceAccountName: 'aoc-role-${module.common.testing_id}',
                         serviceAccountName: props.serviceAccountConstruct.name,
                         automountServiceAccountToken: true,
                         
                         volumes: [
                             {
-                                // in the old framework the name was hardcoded to otel-config (as well as below in the volumeMounts)
-                                // and only the name in the config map accessed a variable which ended up being the same name
-                                // I think it's simpler to just set both to the variable
                                 name: props.collectorConfigMapConstruct.name,
                                 configMap: {
-                                    // name: kubernetes_config_map.aoc_config_map.0.metadata[0].name
-                                    //Using a hard-coded name ultimately from otlp.tf
                                     name: props.collectorConfigMapConstruct.name
                                 }
                             },
 
                             // {
-                            //     // in the old framework the name was hardcoded to otel-config (as well as below in the volumeMounts)
-                            //     // and only the name in the config map accessed a variable which ended up being the same name
-                            //     // I think it's simpler to just set both to the variable
                             //     name: props.mockedServerCertConstruct.name,
                             //     configMap: {
                             //         // name: kubernetes_config_map.mocked_server_cert.0.metadata[0].name
-                            //         //Using a hard-coded name ultimately from otlp.tf
                             //         name: props.mockedServerCertConstruct.name
                             //     }
                             // }
@@ -91,8 +78,6 @@ export class CollectorDeploymentConstruct extends Construct {
                             // },
                             {
                                 name: 'collector',
-                                //image: module.common.aoc_image,
-                                // from outputs.tf -> common.tf
                                 image: 'public.ecr.aws/aws-otel-test/adot-collector-integration-test:latest',
                                 imagePullPolicy: 'Always',
                                 args: [

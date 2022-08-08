@@ -9,16 +9,12 @@ export class PushModeSampleAppDeploymentConstruct extends Construct {
    constructor(scope: Construct, id: string, props: PushModeSampleAppDeploymentConstructProps) {
         super(scope, id);
 
-         // configs
-         // Using hard-coded values ultimately from push_mode_samples.tf and output.tf (assuming not adot operator)
         const pushModeSampleAppDeploymentManifest = {
             apiVersion: 'apps/v1',
             kind: 'Deployment',
          
-            // maybe change name to 'push-mode-sample-app'?
             metadata: {
                 name: 'push-mode-sample-app',
-                // namespace: var.aoc_namespace,
                 namespace: props.namespaceConstruct.name,
                 labels: {
                     app: 'push-mode-sample-app'
@@ -30,7 +26,6 @@ export class PushModeSampleAppDeploymentConstruct extends Construct {
 
                 selector: {
                     matchLabels: {
-                        // app: local.sample_app_label_selector
                         app: props.sampleAppLabel
                     }
                 },
@@ -38,17 +33,14 @@ export class PushModeSampleAppDeploymentConstruct extends Construct {
                 template: {
                     metadata: {
                         labels: {
-                            // app: local.sample_app_label_selector
                             app: props.sampleAppLabel
                         }
                     },
 
                     spec: {
-                        //sample app
                         containers: [
                             {
                                 name: 'sample-app',
-                                //image: local.eks_pod_config['image'],
                                 image: props.sampleAppImageURI,
                                 imagePullPolicy: 'Always',
                                 //command: length(local.eks_pod_config['command']) != 0 ? local.eks_pod_config['command'] : null,
@@ -64,17 +56,14 @@ export class PushModeSampleAppDeploymentConstruct extends Construct {
                                     },
                                     {
                                         name: 'COLLECTOR_UDP_ADDRESS',
-                                        // value: '${kubernetes_service.aoc_udp_service[0].metadata[0].name}:${var.aoc_service.udp_port}'
                                         value: `${props.udpServiceName}:${props.udpPort}`
                                     },
                                     {
                                         name: 'AWS_XRAY_DAEMON_ADDRESS',
-                                        //value: '${kubernetes_service.aoc_udp_service[0].metadata[0].name}:${var.aoc_service.udp_port}'
                                         value: `${props.udpServiceName}:${props.udpPort}`
                                     },
                                     {
                                         name: 'AWS_REGION',
-                                        //value: var.region
                                         value: props.region
                                     },
                                     {
@@ -89,17 +78,14 @@ export class PushModeSampleAppDeploymentConstruct extends Construct {
                                     },
                                     {
                                         name: 'LISTEN_ADDRESS',
-                                        //value: '${var.sample_app.listen_address_ip}:${var.sample_app.listen_address_port}'
                                         value: `${props.listenAddressHost}:${props.listenAddressPort}`
                                     },
                                     {
                                         name: 'JAEGER_RECEIVER_ENDPOINT',
-                                        // value: '${kubernetes_service.aoc_tcp_service[0].metadata[0].name}:${var.aoc_service.http_port}'
                                         value: `${props.tcpServiceName}:${props.httpPort}`
                                     },
                                     {
                                         name: 'ZIPKIN_RECEIVER_ENDPOINT',
-                                        // value: '${kubernetes_service.aoc_tcp_service[0].metadata[0].name}:${var.aoc_service.http_port}'
                                         value: `${props.tcpServiceName}:${props.httpPort}`
                                     },
                                     {
@@ -118,7 +104,6 @@ export class PushModeSampleAppDeploymentConstruct extends Construct {
                                 readinessProbe: {
                                     httpGet: {
                                         path: '/',
-                                        //port: var.sample_app.listen_address_port
                                         port: props.listenAddressPort
                                     },
                                     initialDelaySeconds: 10,

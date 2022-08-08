@@ -12,7 +12,6 @@ export class PullModeSampleAppDeploymentConstruct extends Construct {
             apiVersion: 'apps/v1',
             kind: 'Deployment',
             
-            // maybe change name to 'pull-mode-sample-app'?
             metadata: {
                 name: 'pull-mode-sample-app',
                 namespace: props.namespaceConstruct.name,

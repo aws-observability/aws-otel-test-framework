@@ -10,7 +10,7 @@ export class ServiceAccountConstruct extends Construct {
         super(scope, id);
         this.name = props.name
 
-        //TODO There's a service account constuct in CDK, should we use that?
+        //There's a service account constuct in CDK, should we use that?
         const serviceAccountManifest = {
             apiVersion: "v1",
             kind: "ServiceAccount",
