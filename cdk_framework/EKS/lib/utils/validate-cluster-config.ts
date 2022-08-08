@@ -1,4 +1,3 @@
-const supportedFields = new Set(['version', 'ec2_instance', 'launch_type', 'node_size'])
 const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21']);
 const supportedCPUArchitectures = new Set(['m5', 'm6g', 't4g']);
 const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xlarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
@@ -7,6 +6,7 @@ const requiredFields = new Set(['version', 'launch_type'])
 
 
 export function validateClustersConfig(info: unknown){
+    //Needs to be casted to Object to access fields in configuration file
     const data = Object(info)
     if(!data['clusters']){
         throw new Error('No clusters field being filed in the yaml file')
@@ -24,9 +24,6 @@ export function validateClustersConfig(info: unknown){
         clusterNamesSet.add(key)
         validateRequiredFields(val)
         for(const [k, v] of Object.entries(val)){
-            if(!supportedFields.has(k)){
-                throw new Error('Incompatible field type')
-            }
             switch(k){
                 case 'version':
                     val[k] = validateVersion(String(v))
@@ -34,6 +31,8 @@ export function validateClustersConfig(info: unknown){
                 case 'launch_type':
                     val[k] = convertAndValidateLaunchType(val)
                     break
+                default:
+                    throw new Error('Incompatible field type')
             }
         }
     }
@@ -57,11 +56,10 @@ function checkToSetUpDefaults(fields: any){
 }
 
 function validateVersion(version: string){
-    
+    //When parsing version 1.20, it automatically is coverted to 1.2 => change back to 1.20 for cluster deployment
     if(version === '1.2'){
         version = '1.20'
     }
-
     if(!supportedVersions.has(version)){
         throw new Error('Version needs to be a value of one of the following: ' + Array.from(supportedVersions).join(', '));
     }
