@@ -13,5 +13,5 @@
         "@typescript-eslint/no-var-requires": 0,
         "eslint-disable no-undef": 0
     }
-  }
-  
+}
+

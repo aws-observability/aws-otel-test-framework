@@ -9,11 +9,14 @@ export class VPCStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
+    const REGION = process.env.REGION || 'us-west-2'
+
+
     this.vpc = new ec2.Vpc(this, 'EKSVpc',
      {cidr: '10.0.0.0/16',
      natGateways: 1,
      vpnGateway: true,
-     availabilityZones: ['us-west-2a', 'us-west-2b', 'us-west-2c'],
+     availabilityZones: [REGION + 'a', REGION + 'b', REGION + 'c'],
      subnetConfiguration: [
       {
         cidrMask: 24,
