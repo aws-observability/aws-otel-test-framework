@@ -49,7 +49,7 @@ Here is a sample configuration file example:
 ```
 ---
 clusters:
-  amdCluster:
+  armCluster:
     launch_type: 
       ec2:
         ec2_instance: m6g
@@ -85,6 +85,26 @@ In order to update clusters, just change the config file and then call `make -j 
 #### Makefile
 
 The makefile is used to deploy the clusters in parallel. It determines how many clusters are configured, and then sets that number to the number of processes to run to deploy all the clusters simultaneously. In order to accomplish this, after saving the configuration file and setting all appropriate envrionment variables, call `make EKS-infra` and all the clusters should be deployed. This call will first call `deploy-VPC` which will call `cdk synth` and then create the VPC by calling `cdk deploy EKSVpc`. After the VPC is deployed, it then calls `deploy-clusters` where all the EKS clusters that were configured are deployed. The way it calls `deploy-clusters` is by calling `make -j #processes deploy-clusters`, where #processes is the number of clusters being deployed. 
+
+### Example Deployment
+
+Here is an example case of how to run a deployment. Let's say there are two clusters that one desires to deploy, and amd_64 cluster (ec2_instance type is `m5`), with node size "`large`" and a fargate cluster. So, first thing to do is to set up the configuration file. Looking at the example provided above, all we have to do is give copy the template above and give the clusters names. For this example, we will use `amdCluster` for the amd_64 cluster and `fargateCluster` for the fargate cluster. 
+
+```
+---
+clusters:
+  amdCluster:
+    launch_type: 
+      ec2:
+        ec2_instance: m5
+        node_size: large
+    version: 1.21
+  fargateCluster:
+    launch_type: 
+      fargate:
+    version: 1.21
+```
+Now that we have the configuration file set up, we want to make sure the CDK_CONFIG_PATH environment variable is set to the route to this configuration file. This only needs to be done if the clusters.yml file in /lib/config/cluster-config folder was not overriden. Once the variable is set, all that needs to be done is call `make EKS-infra` and all the clusters will be deployed. 
 
 ## Testing
 
