@@ -27,7 +27,7 @@ variable "mock_endpoint" {
 // jmx: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights-Prometheus-Sample-Workloads-javajmx.html
 // Don't forget to re-tag the images to ${sample_app_image_repo}:(feapp|colorapp|tomcatapp) before pushing to remote.
 variable "sample_app_image_repo" {
-  default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/otel-test/container-insight-samples"
+  default = "public.ecr.aws/u4v1i0d4/eks-tests"
 }
 
 // aoc_base_scenario refers to the base scenario that the aoc is used for.

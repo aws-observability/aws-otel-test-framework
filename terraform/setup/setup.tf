@@ -16,6 +16,15 @@
 # in this module, we create the necessary common resources for the integ-tests, this setup module will only need to be executed once.
 # vpc, iam role, security group, the number of those resources could be limited, creating them concurrently for every pr would trigger throttling issue.
 
+terraform {
+  required_providers {
+    aws ={
+      source  = "hashicorp/aws"
+      version = "~>3.74"
+    }
+  }
+}
+
 module "common" {
   source = "../common"
 }
@@ -34,7 +43,7 @@ data "aws_caller_identity" "current" {
 }
 
 ## create one iam role for all the tests
-resource "aws_iam_instance_profile" "aoc_test_profile" {
+resource "aws_iam_instance_profile" "aoc_testing_profile" {
   name = module.common.aoc_iam_role_name
   role = aws_iam_role.aoc_role.name
 }

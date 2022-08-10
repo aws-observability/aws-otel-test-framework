@@ -29,8 +29,8 @@
 
 #Create S3 bucket to record terraform state for this setup in order to share the state for configuration setup when using integration test account
 #Document: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/s3_bucket
-resource "aws_s3_bucket" "setup-remote-state-s3-bucket" {
-  bucket = "setup-remote-state-s3-bucket"
+resource "aws_s3_bucket" "setup-remote-state-s3" {
+  bucket = "setup-remote-state-s3"
   acl    = "private"
 
   versioning {
@@ -49,8 +49,8 @@ resource "aws_s3_bucket" "setup-remote-state-s3-bucket" {
 
 #Avoid multiple developers change the state at the same time since it would cause race condition
 #Document: https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/dynamodb_table
-resource "aws_dynamodb_table" "setup-remote-state-dynamodb-table" {
-  name         = "setup-remote-state-dynamodb-table"
+resource "aws_dynamodb_table" "setup-remote-state-dynamodb" {
+  name         = "setup-remote-state-dynamodb"
   hash_key     = "LockID"
   billing_mode = "PAY_PER_REQUEST"
 
@@ -59,5 +59,5 @@ resource "aws_dynamodb_table" "setup-remote-state-dynamodb-table" {
     type = "S"
   }
 
-  depends_on = [aws_s3_bucket.setup-remote-state-s3-bucket]
+  depends_on = [aws_s3_bucket.setup-remote-state-s3]
 }
