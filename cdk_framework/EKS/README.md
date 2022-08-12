@@ -138,7 +138,7 @@ Sample templates of test case config files can be found in the `lib/config/test_
 
 ### Deployment
 
-1. Set the environment variables (listed [here](environment-variables)) to their desired values.
+1. Set the environment variables (listed [here](#environment-variables)) to their desired values.
 2. Call `cdk deploy --all` to deploy all the clusters specified in the configuration file. You could specify a specific cluster to deploy by calling `cdk deploy CLUSTERNAME` where CLUSTERNAME is the name of the cluster as set in the configuration file.
 
 #### Makefile
