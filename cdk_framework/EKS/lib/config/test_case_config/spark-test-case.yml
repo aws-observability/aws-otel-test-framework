@@ -25,6 +25,11 @@ test_case:
     exporters:
       logging:
         logLevel: debug
+      awsemf:
+        log_group_name: 'SparkSampleLogGroup'
+        log_stream_name: 'SparkSampleLogStream'
+        namespace: 'SparkSampleAppMetricNS'
+        dimension_rollup_option: 1
 
     service:
       pipelines:
@@ -35,6 +40,6 @@ test_case:
         metrics:
           receivers: [otlp]
           processors: [batch/metrics]
-          exporters: [logging]
+          exporters: [logging, awsemf]
 
       extensions: [health_check]

@@ -17,12 +17,17 @@ test_case:
     exporters:
       logging:
         logLevel: debug
+      awsemf:
+        log_group_name: 'PrometheusSampleLogGroup'
+        log_stream_name: 'PrometheusSampleLogStream'
+        namespace: 'PrometheusSampleAppMetricNS'
+        dimension_rollup_option: 1
         
     service:
       pipelines:
         metrics:
           receivers: [prometheus]
-          exporters: [logging]
+          exporters: [logging, awsemf]
       telemetry:
         logs:
           level: debug

@@ -4,7 +4,7 @@ import { ClusterStack } from './stacks/cluster-stack';
 import { validateTestcaseConfig } from './utils/validate-test-case-config';
 import { readFileSync } from 'fs';
 const yaml = require('js-yaml')
-import { TestCaseResourceDeploymentConstruct } from './resource_constructs/test-case-resource-deployment-construct';
+import { TestCaseResourceDeploymentConstruct } from './resource_constructs/general_constructs/test-case-resource-deployment-construct';
 
 
 export function deployResources(app: cdk.App, clusterStackMap: Map <string, ClusterStack>) {
