@@ -5,10 +5,6 @@
                 "platforms": ["EKS_ADOT_OPERATOR"]
             },
             {
-                "case_name": "prometheus_sd_adot_operator_awsprw",
-                "platforms": ["EKS_ADOT_OPERATOR"]
-            },
-            {
                 "case_name": "containerinsight_eks_prometheus",
                 "platforms": ["EKS"]
             },
