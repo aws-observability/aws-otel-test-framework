@@ -28,7 +28,7 @@ Since the code base in written in TypeScript, the CDK library has to be download
 2. Download from EKS directory the AWS CDK Library by typing `npm install aws-cdk-lib`. 
 3. In order to use the linter, the eslint dependency needs to be downloaded. This could be done by calling `npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin`. 
 
-### Environemnt Variables
+### Environment Variables
 
 There are a number of environment variables that should be defined before deploying the clusters:
 
@@ -37,14 +37,16 @@ There are a number of environment variables that should be defined before deploy
 
 In order to deploy resources onto the clusters the following environment variables must be set:
 
-* `CDK_EKS_RESOURCE_DEPLOY` - Must be set to value "true" in order for resource deployment to take place. Any other value would result in resources not being deployed.
+* `CDK_EKS_RESOURCE_DEPLOY` - Must be set to value "true" in order for resource deployment to take place. Any other value or leaving it unset results in resources not being deployed.
 * `TESTCASE_CONFIG_PATH` - The path for the test case configuration file - no default. 
 
-### Setting Config File
+### Defining Config Files
 
 The framework involves two configuration files, one pertaining to cluster deployment and the other pertaining to resource deployment.
 
-A sample template of what the cluster config file looks like can be found in the `lib/config/cluster_config` folder. The YAML must have a root key called `clusters` under which all of the desired cluster should be configured and have the following structure:
+#### Cluster Config
+
+The YAML must have a root key called `clusters` under which all of the desired cluster should be configured and have the following structure:
 
 * `clusters`:
     * `clusterName`: - This key should be set to the desired name for the cluster.
@@ -77,7 +79,11 @@ clusters:
 
 There are three different clusters being deployed in this example - amdCluster, fargateCluster, and t4gCluster. There are only 2 fields for each cluster - `launch_type` and `version`. Then, in `launch_type`, either `ec2` or `fargate` is specified. If `fargate` is specified, then it should be left empty as shown above. If `ec2` is specified, then both `ec2_instance` and `node_size` should be defined. 
 
-Sample templates for what test case config files look like can be found in the `lib/config/test_case_config` folder. The YAML must have a root key called `test_case` under which the test case should be configured and have the following structure:
+A sample template of a cluster config file can be found in the `lib/config/cluster_config` folder.
+
+#### Test Case Config
+
+The YAML must have a root key called `test_case` under which the test case should be configured and have the following structure:
 
 * `test_case`:
     * `cluster_name` - The name of the cluster onto which the resources should be deployed. Must match the name of a cluster in the configuration file that has either been deployed or will be deployed upon running the test case.
@@ -128,10 +134,11 @@ test_case:
       extensions: [health_check]
 ```
 
+Sample templates of test case config files can be found in the `lib/config/test_case_config` folder. 
 
 ### Deployment
 
-1. Set the `CDK_EKS_RESOURCE_DEPLOY` environment variable to "true" if resource deployment is desired. Any other value (or leaving it unset) will result in resource deployment not occurring.
+1. Set the environment variables (listed [here](environment-variables)) to their desired values.
 2. Call `cdk deploy --all` to deploy all the clusters specified in the configuration file. You could specify a specific cluster to deploy by calling `cdk deploy CLUSTERNAME` where CLUSTERNAME is the name of the cluster as set in the configuration file.
 
 #### Makefile
