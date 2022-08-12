@@ -126,6 +126,7 @@ test_case:
           exporters: [logging]
 
       extensions: [health_check]
+```
 
 
 ### Deployment
