@@ -8,9 +8,9 @@ clusters:
     launch_type: 
       fargate:
     version: 1.21
-  t4gCluster01:
-    launch_type: 
-      ec2:
-        ec2_instance: m5
-        node_size: large
-    version: 1.21
+  # t4gCluster01:
+  #   launch_type: 
+  #     ec2:
+  #       ec2_instance: m5
+  #       node_size: large
+  #   version: 1.21
