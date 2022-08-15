@@ -30,9 +30,12 @@
     "@aws-cdk/aws-eks": "^1.161.0",
     "@aws-cdk/aws-iam": "^1.161.0",
     "@aws-cdk/core": "^1.161.0",
+    "ajv": "^8.11.0",
+    "ajv-errors": "^3.0.0",
     "aws-cdk-lib": "2.29.0",
     "constructs": "^10.0.0",
     "js-yaml": "^4.1.0",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "yaml-schema-validator": "^1.2.3"
   }
 }

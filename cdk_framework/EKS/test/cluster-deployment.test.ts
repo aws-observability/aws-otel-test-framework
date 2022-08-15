@@ -2,7 +2,8 @@ import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { readFileSync} from 'fs';
 import { deployClusters } from '../lib/cluster-deployment';
-import { ClusterStack } from '../lib/stacks/cluster-stack';
+import { EC2Stack } from '../lib/stacks/ec2-cluster-stack';
+import { FargateStack } from '../lib/stacks/fargate-cluster-stack';
 
 const yaml = require('js-yaml')
 
@@ -15,7 +16,7 @@ test('ClusterTest', () => {
     const raw = readFileSync(route)
     const data = yaml.load(raw)
 
-    let clusterMap = new Map<string, ClusterStack>()
+    let clusterMap = new Map<string, FargateStack | EC2Stack>()
     const versionMap = new Map<string, string>()
 
     clusterMap = deployClusters(app)
