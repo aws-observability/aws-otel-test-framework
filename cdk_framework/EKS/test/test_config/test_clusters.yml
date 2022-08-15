@@ -1,0 +1,22 @@
+---
+clusters:
+  amdCluster:
+    launch_type: 
+      ec2:
+    version: 1.21
+  t4gCluster:
+    launch_type: 
+      ec2:
+        ec2_instance: t4g
+        node_size: large
+    version: 1.21
+  armCluster:
+    launch_type: 
+      ec2:
+        ec2_instance: m6g
+        node_size: large
+    version: 1.21
+  fargateCluster0:
+    launch_type: 
+      fargate:
+    version: 1.19
