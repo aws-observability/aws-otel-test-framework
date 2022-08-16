@@ -2,11 +2,11 @@ import { Stack, StackProps, aws_eks as eks} from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { KubernetesVersion} from 'aws-cdk-lib/aws-eks';
-import { Role } from 'aws-cdk-lib/aws-iam';
+import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
 
 export class FargateStack extends Stack {
-  cluster : eks.Cluster | eks.FargateCluster
+  cluster : eks.FargateCluster
 
   constructor(scope: Construct, id: string, props: FargateClusterStackProps) {
     super(scope, id, props);
@@ -18,6 +18,7 @@ export class FargateStack extends Stack {
       eks.ClusterLoggingTypes.CONTROLLER_MANAGER,
       eks.ClusterLoggingTypes.SCHEDULER,
     ]
+    
 
     this.cluster = new eks.FargateCluster(this, props.name, {
       clusterName: props.name,
@@ -25,7 +26,6 @@ export class FargateStack extends Stack {
       version: props.version,
       clusterLogging: logging
     });
-    
     this.cluster.awsAuth.addMastersRole(Role.fromRoleName(this, 'eks_admin_role', 'Admin'))
 
   }
