@@ -64,6 +64,9 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-logs'
     implementation 'com.amazonaws:aws-java-sdk-sts'
 
+    // aws ecs sdk
+    implementation 'com.amazonaws:aws-java-sdk-ecs'
+
     // https://mvnrepository.com/artifact/com.github.awslabs/aws-request-signing-apache-interceptor
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 

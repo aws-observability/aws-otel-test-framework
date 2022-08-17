@@ -47,6 +47,8 @@ public enum ExceptionCode {
   // clients failed
   CORTEX_CLIENT_REQUEST_FAILED(90001, "request to pull mode sample app failed"),
   PULL_MODE_SAMPLE_APP_CLIENT_REQUEST_FAILED(90001, "request to pull mode sample app failed"),
+  ECS_DESCRIBE_TASK_FAILED(100001, "ECS describe task returned blank"),
+  ECS_HEALTH_VALIDATION_FAILED(100002, "ECS Container is not healthy"),
 
   ;
   private int code;

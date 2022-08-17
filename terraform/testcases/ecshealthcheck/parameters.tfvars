@@ -1,5 +1,5 @@
 # data type will be emitted. Possible values: metric or trace
-validation_config = "heathcheck-metric-validation.yml"
+validation_config = "healthcheck-metric-validation.yml"
 
 soaking_data_mode = "metric"
 

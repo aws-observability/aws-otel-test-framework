@@ -49,6 +49,10 @@ public class ValidatorFactory {
         validator = new CWMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
+      case "ecs-describe-task":
+        validator = new ECSHealthCheckValidator();
+        expectedData = validationConfig.getExpectedMetricTemplate();
+        break;
       case "prom-static-metric":
         validator = new PrometheusStaticMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
