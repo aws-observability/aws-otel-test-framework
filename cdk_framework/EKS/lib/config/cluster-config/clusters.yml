@@ -3,8 +3,7 @@ clusters:
   - name: ec2Cluster
     version: "1.21"
     launch_type: ec2
-    ec2_instance: m5
-    node_size: large
+    instance_type: m5.large
   - name: fargateCluster
     version: "1.21"
     launch_type: fargate

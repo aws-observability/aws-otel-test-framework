@@ -30,16 +30,10 @@ const schema = {
                             type: 'launch_type must be a string'
                         }
                     },
-                    ec2_instance:  {
+                    instance_type:  {
                         type: "string",
                         errorMessage: {
                             type: 'ec2_instance must be a string'
-                        }
-                    },
-                    node_size: {
-                        type: "string",
-                        errorMessage: {
-                            type: 'Node_size must be a string'
                         }
                     },
                 },

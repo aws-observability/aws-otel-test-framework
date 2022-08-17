@@ -41,18 +41,17 @@ export function deployClusters(app: cdk.App) : Map<string, FargateStack | EC2Sta
       const versionKubernetes = eks.KubernetesVersion.of(clusterInterface.version);
       if(clusterInterface.launch_type === 'ec2'){
         const ec2Cluster = cluster as ec2ClusterInterface
-        stack = new EC2Stack(app, ec2Cluster.name + 'EKSCluster', {
+        stack = new EC2Stack(app, `${ec2Cluster.name}EKSCluster`, {
           name: ec2Cluster.name,
           vpc: vpcStack.vpc,
           version: versionKubernetes,
-          ec2_instance:  ec2Cluster.ec2_instance,
-          node_size:  ec2Cluster.node_size,
+          instance_type:  ec2Cluster.instance_type,
           env: {
             region: REGION
           },
         })
       } else {
-        stack = new FargateStack(app, clusterInterface.name + 'EKSCluster', {
+        stack = new FargateStack(app, `${clusterInterface.name}EKSCluster`, {
           name: clusterInterface.name,
           vpc: vpcStack.vpc,
           version: versionKubernetes,

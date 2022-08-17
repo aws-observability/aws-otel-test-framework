@@ -23,8 +23,6 @@ export class EC2Stack extends Stack {
       eks.ClusterLoggingTypes.SCHEDULER,
     ]
 
-    const ec2Instance = props.ec2_instance
-    const nodeSize = props.node_size
 
     const workerRole = new Role(this, 'EKSWorkerRole', {
       assumedBy: new ServicePrincipal('ec2.amazonaws.com'),
@@ -48,8 +46,8 @@ export class EC2Stack extends Stack {
     clusterLogging: logging,
     
     });
-    this.cluster.addNodegroupCapacity('ng-' + ec2Instance, {
-        instanceTypes: [new ec2.InstanceType(ec2Instance + '.' + nodeSize)],
+    this.cluster.addNodegroupCapacity(`ng-${props.instance_type}`, {
+        instanceTypes: [new ec2.InstanceType(props.instance_type)],
         minSize: 2,
         nodeRole: workerRole
     })
@@ -63,6 +61,5 @@ export interface EC2ClusterStackProps extends StackProps{
     name: string;
     vpc: Vpc;
     version: KubernetesVersion;
-    ec2_instance: string;
-    node_size: string
+    instance_type: string;
 }
