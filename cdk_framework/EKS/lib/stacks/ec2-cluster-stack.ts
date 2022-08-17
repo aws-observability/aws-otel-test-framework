@@ -4,10 +4,6 @@ import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { KubernetesVersion} from 'aws-cdk-lib/aws-eks';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 
-// not used right now but will be needed for when validation is done
-const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xlarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
-const supportedT4gInstances = new Set(['nano', 'micro', 'small', 'medium', 'large', 'xlarge', '2xlarge'])
-
 
 export class EC2Stack extends Stack {
   cluster : eks.Cluster
