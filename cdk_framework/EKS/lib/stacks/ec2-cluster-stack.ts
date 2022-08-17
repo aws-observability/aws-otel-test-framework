@@ -37,17 +37,20 @@ export class EC2Stack extends Stack {
         ManagedPolicy.fromAwsManagedPolicyName('AmazonEKS_CNI_Policy')
       ]
     });
+
+    const instance_type = props.instance_type.toLowerCase()
+
     this.cluster = new eks.Cluster(this, props.name, {
-    clusterName: props.name,
-    vpc: props.vpc,
-    vpcSubnets: [{subnetType: ec2.SubnetType.PUBLIC}],
-    defaultCapacity: 0,  // we want to manage capacity our selves
-    version: props.version,
-    clusterLogging: logging,
+      clusterName: props.name,
+      vpc: props.vpc,
+      vpcSubnets: [{subnetType: ec2.SubnetType.PUBLIC}],
+      defaultCapacity: 0,  // we want to manage capacity our selves
+      version: props.version,
+      clusterLogging: logging,
     
     });
-    this.cluster.addNodegroupCapacity(`ng-${props.instance_type}`, {
-        instanceTypes: [new ec2.InstanceType(props.instance_type)],
+    this.cluster.addNodegroupCapacity(`ng-${instance_type}`, {
+        instanceTypes: [new ec2.InstanceType(instance_type)],
         minSize: 2,
         nodeRole: workerRole
     })

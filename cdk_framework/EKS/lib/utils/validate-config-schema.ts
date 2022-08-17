@@ -35,7 +35,7 @@ const schema = {
                         errorMessage: {
                             type: 'ec2_instance must be a string'
                         }
-                    },
+                    }
                 },
                 required: ["name", "version", "launch_type"],
                 additionalProperties: false

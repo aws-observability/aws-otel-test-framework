@@ -9,6 +9,7 @@ import { FargateStack } from './stacks/fargate-cluster-stack';
 import { validateFileSchema } from './utils/validate-config-schema';
 import { ClusterInterface } from './interfaces/cluster-interface';
 import { ec2ClusterInterface } from './interfaces/ec2cluster-interface';
+import { validateInterface } from './utils/validate-interface-schema';
 const yaml = require('js-yaml')
 
 
@@ -41,6 +42,7 @@ export function deployClusters(app: cdk.App) : Map<string, FargateStack | EC2Sta
       const versionKubernetes = eks.KubernetesVersion.of(clusterInterface.version);
       if(clusterInterface.launch_type === 'ec2'){
         const ec2Cluster = cluster as ec2ClusterInterface
+        validateInterface(ec2Cluster)
         stack = new EC2Stack(app, `${ec2Cluster.name}EKSCluster`, {
           name: ec2Cluster.name,
           vpc: vpcStack.vpc,
@@ -51,6 +53,7 @@ export function deployClusters(app: cdk.App) : Map<string, FargateStack | EC2Sta
           },
         })
       } else {
+        validateInterface(clusterInterface)
         stack = new FargateStack(app, `${clusterInterface.name}EKSCluster`, {
           name: clusterInterface.name,
           vpc: vpcStack.vpc,
