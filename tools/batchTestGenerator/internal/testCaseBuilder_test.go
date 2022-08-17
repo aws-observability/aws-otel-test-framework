@@ -113,7 +113,6 @@ func TestBuildTestCaseEKS(t *testing.T) {
 			},
 			expectedTestCases: map[string]struct{}{
 				"prometheus_sd_adot_operator":        {},
-				"prometheus_sd_adot_operator_awsprw": {},
 			},
 			serviceType: "EKS_ADOT_OPERATOR",
 		},
@@ -128,7 +127,6 @@ func TestBuildTestCaseEKS(t *testing.T) {
 			expectedTestCases: map[string]struct{}{
 				"otlp_metric_adot_operator":          {},
 				"prometheus_static_adot_operator":    {},
-				"prometheus_sd_adot_operator_awsprw": {},
 			},
 			serviceType: "EKS_ADOT_OPERATOR_ARM64",
 		},

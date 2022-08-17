@@ -13,10 +13,6 @@
                 "platforms": ["EC2"]
             },
             {
-                "case_name": "otlp_metric_amp_awsprw",
-                "platforms": ["EC2"]
-            },
-            {
                 "case_name": "otlp_metric",
                 "platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "CANARY"]
             }
