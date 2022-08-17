@@ -69,3 +69,4 @@ test-case-batch
 # ignore java validator bin
 validator/bin
 
+.vscode
