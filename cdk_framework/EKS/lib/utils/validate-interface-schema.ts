@@ -42,14 +42,14 @@ export function validateInterface(cluster: ec2ClusterInterface | ClusterInterfac
 function checkLaunchType(val: string) {
     const adjustedType = val.toLowerCase()
     if(!supportedLaunchTypes.has(adjustedType)){
-        throw new Error("Wrong type")
+        throw new Error("")
     }
     return adjustedType
 }
 
 function validateVersion(version: string){
     if(!supportedVersions.has(version)){
-        throw new Error('Version needs to be a value of one of the following: ' + Array.from(supportedVersions).join(', '));
+        throw new Error(`Version needs to be a value of one of the following: ${Array.from(supportedVersions).join(', ')}`);
     }
     return version
 }

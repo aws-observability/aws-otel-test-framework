@@ -35,10 +35,14 @@ export function deployClusters(app: cdk.App) : Map<string, FargateStack | EC2Sta
       }
     })
 
-    // schemaValidator(configData)
+    const clusterNameSet = new Set()
     for(const cluster of configData['clusters']){
       let stack;
       const clusterInterface = cluster as ClusterInterface
+      if(clusterNameSet.has(clusterInterface.name)){
+        throw new Error(`Cluster name ${clusterInterface.name} is shared by two different clusters`)
+      }
+      clusterNameSet.add(clusterInterface.name)
       const versionKubernetes = eks.KubernetesVersion.of(clusterInterface.version);
       if(clusterInterface.launch_type === 'ec2'){
         const ec2Cluster = cluster as ec2ClusterInterface
