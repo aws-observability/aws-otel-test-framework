@@ -12,6 +12,8 @@ import com.amazonaws.services.ecs.model.DescribeTasksResult;
 import com.amazonaws.services.ecs.model.Task;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.concurrent.TimeUnit;
+
 @Log4j2
 public class ECSHealthCheckValidator implements IValidator {
   // TODO : need to verify default count
@@ -35,7 +37,7 @@ public class ECSHealthCheckValidator implements IValidator {
   public void validate() throws Exception {
     log.info("allow sample app load balancer to start");
     // TODO : check if following sleep is needed or not
-    //TimeUnit.SECONDS.sleep(60);
+    TimeUnit.SECONDS.sleep(60);
     log.info("[ECSHealthCheckValidator] start validating ECS Health Check");
 
     RetryHelper.retry(DEFAULT_MAX_RETRY_COUNT, CHECK_INTERVAL_IN_MILLI, true, () -> {
@@ -50,20 +52,13 @@ public class ECSHealthCheckValidator implements IValidator {
               return;
             }
           }
-          throw new BaseException(
-                  ExceptionCode.ECS_HEALTH_VALIDATION_FAILED,
-                  "[ECSHealthCheckValidator] Validation failed for Health check");
-        } else {
-          throw new BaseException(
-                  ExceptionCode.ECS_DESCRIBE_TASK_FAILED,
-                  "[ECSHealthCheckValidator] Validation failed for Health check");
         }
-      } else {
-        log.info("[ECSHealthCheckValidator] ECS task Arn is null!");
       }
+      log.info("[ECSHealthCheckValidator] Awaiting on ECS Resources to be ready");
+      throw new BaseException(
+              ExceptionCode.ECS_RESOURCES_NOT_READY,
+              "[ECSHealthCheckValidator] Awaiting on ECS Resources to be ready");
     });
-
-
     log.info("[ECSHealthCheckValidator] end validating ECS Health Check");
   }
 }
