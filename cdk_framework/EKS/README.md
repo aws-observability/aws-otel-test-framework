@@ -25,8 +25,11 @@ The `tsconfig.json` file is used to tell TypeScript how to configure the project
 Since the code base in written in TypeScript, the CDK library has to be downloaded using Node. 
 
 1. Make sure you have Node, so that you can use `npm` control. 
-2. Download from EKS directory the AWS CDK Library by typing `npm install aws-cdk-lib`. 
-3. In order to use the linter, the eslint dependency needs to be downloaded. This could be done by calling `npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin`. 
+2. Download from EKS directory the AWS CDK Library by typing `npm install aws-cdk-lib`.
+3. Download `yaml-schema-validator` by typing in command line `npm install yaml-schema-validator`.
+4. Download ajv library by typing in command line `npm install ajv`.
+5. Download ajv errors by typing in command line `npm install ajv-errors`.
+6. In order to use the linter, the eslint dependency needs to be downloaded. This could be done by calling `npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin`. 
 
 ### Environemnt Variables
 
@@ -40,34 +43,25 @@ There are a number of environment variables that should be defined before deploy
 Sample template of what config file looks like could be seen in the YAML files found in `lib/config` folder. Should create a category called `clusters`, where each desired cluster should be configured. The name of the cluster given should be the key name for each cluster. Then, there are a couple of fields that need to be addressed:
 
 * `clusters`:
-    * `launch_type` - choose either `ec2` or `fargate` subcategory - can't be both. Determines the launch type for the cluster to be deployed. This will act as the key to another list. 
-        * `ec2_instance` - This is the the CPU Architecture for `ec2` launch types. It is only useful information for `ec2` key. If the `launch_type` is `fargate`, then nothing will happen by providing an `ec2_instance`. The options are `m6g`, `t4g`, amd `m5`, otherwise, an error will be thrown. There can’t be any other characters. It is case insensitive.
-        * `node_size` - This determines the size of the cpu architecture (memory, vCPUs, etc). It is only useful information for `ec2` key. If the key is `fargate` nothing will happen by providing the `node_size`. The list of compatible sizes could be found here: [Compatible Node Sizes](https://www.amazonaws.cn/en/ec2/instance-types/). It is case insensitive.
+    * `name` - The name of the cluster. It needs to be a string. Can't have two clusters with the same name. 
+    * `launch_type` - choose either `ec2` or `fargate`. Determines the launch type for the cluster to be deployed. Case insensitive. 
     * `version` - Kubernetes Version. Supported Kubernetes versions are any versions between 1.18-1.21. This can be seen at [KubernetesVersion API](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_eks.KubernetesVersion.html). Additionally, specifying patch releases isn't an option as the CDK doesn't support it. Therefore, every input value must be the minor version. 
+    * `instance_type` - This is a string which is only required for ec2 clusters. There are 2 parts to the `instance_type`: ec2 instance which is the cpu architecture, and node size which is the size of the CPU. The options for ec2 instance are `m6g`, `t4g`, amd `m5` - each represent a different cpu architecture. There is a vast variety of node sizes. The list of compatible sizes could be found here: [Compatible Node Sizes](https://www.amazonaws.cn/en/ec2/instance-types/). The string for this should follow this template: "ec2_instance" + "." + "node_size". An example would be `m5.large`. It is case insensitive. 
 
 Here is a sample configuration file example:
 ```
 ---
 clusters:
-  armCluster:
-    launch_type: 
-      ec2:
-        ec2_instance: m6g
-        node_size: large
-    version: 1.21
-  fargateCluster:
-    launch_type: 
-      fargate:
-    version: 1.21
-  t4gCluster:
-    launch_type: 
-      ec2:
-        ec2_instance: t4g
-        node_size: large
-    version: 1.21
+  - name: ec2Cluster
+    version: "1.21"
+    launch_type: ec2
+    instance_type: m5.large
+  - name: fargateCluster
+    version: "1.20"
+    launch_type: fargate
 ```
 
-There are three different clusters being deployed in this example - amdCluster, fargateCluster, and t4gCluster. There are only 2 fields for each cluster - `launch_type` and `version`. Then, in `launch_type`, either `ec2` or `fargate` is specified. If `fargate` is specified, then it should be left empty as shown above. If `ec2` is specified, then both `ec2_instance` and `node_size` should be defined. 
+There are two different clusters being deployed in this example - amdCluster, fargateCluster, and t4gCluster. There are 4 fields for each cluster - `name`, `launch_type`, `version`, and `instance_type`. `instance_type` is only required for ec2 cluster. 
    
 
 ### Deploying clusters
@@ -93,26 +87,20 @@ Here is an example case of how to run a deployment. Let's say there are two clus
 ```
 ---
 clusters:
-  amdCluster:
-    launch_type: 
-      ec2:
-        ec2_instance: m5
-        node_size: large
-    version: 1.21
-  fargateCluster:
-    launch_type: 
-      fargate:
-    version: 1.21
+  - name: ec2Cluster
+    version: "1.21"
+    launch_type: ec2
+    instance_type: m5.large
+  - name: fargateCluster
+    version: "1.20"
+    launch_type: fargate
 ```
 Now that we have the configuration file set up, we want to make sure the CDK_CONFIG_PATH environment variable is set to the route to this configuration file. This only needs to be done if the clusters.yml file in /lib/config/cluster-config folder was not overriden. Once the variable is set, all that needs to be done is call `make EKS-infra` and all the clusters will be deployed. 
 
 ## Testing
 
-There are two different tests that are implemented:
 1. Fine-Grained Assertion Tests
     * These tests are used to test the template of the the cloudformation stacks that are being created. 
-2. Unit Tests
-    * These tests are created to ensure proper configuraiton validation. These are accomplished by using the table-driven approach. 
 
 In order to run these tests, use command `npm test`. 
 
