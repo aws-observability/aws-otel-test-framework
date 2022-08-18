@@ -26,4 +26,9 @@ public class ECSContext {
   private String ecsTaskDefFamily;
   private String ecsTaskDefVersion;
   private String ecsLaunchType;
+
+  public String toString() {
+    return "ecsClusterArn : " + ecsClusterArn + " " + "ecsTaskArn : " + ecsTaskArn;
+  }
+
 }

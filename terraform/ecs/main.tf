@@ -335,6 +335,8 @@ module "validator" {
     ecsTaskDefFamily : aws_ecs_task_definition.aoc[0].family
     ecsTaskDefVersion : aws_ecs_task_definition.aoc[0].revision
     ecsLaunchType : aws_ecs_service.aoc[0].launch_type
+    ecsTaskArn : aws_ecs_task_definition.aoc[0].arn
+
   })
 
   aws_access_key_id     = var.aws_access_key_id

@@ -41,9 +41,10 @@ public class ECSHealthCheckValidator implements IValidator {
     log.info("[ECSHealthCheckValidator] start validating ECS Health Check");
 
     RetryHelper.retry(DEFAULT_MAX_RETRY_COUNT, CHECK_INTERVAL_IN_MILLI, true, () -> {
-      if (context.getEcsContext() != null && context.getEcsContext().getEcsTaskArn() != null) {
+      log.info("[ECSHealthCheckValidator] Logging ECS Context: " + context.getEcsContext());
+      if (context.getEcsContext() != null && context.getEcsContext().getEcsClusterArn() != null) {
         DescribeTasksResult result =
-                taskService.describeTask(context.getEcsContext().getEcsTaskArn());
+                taskService.describeTask(context.getEcsContext().getEcsClusterArn());
         if (result != null && result.getTasks() != null && !result.getTasks().isEmpty()) {
           Task task = result.getTasks().get(0);
           if (task != null && !task.getContainers().isEmpty()) {

@@ -4,6 +4,8 @@ import com.amazonaws.services.ecs.AmazonECS;
 import com.amazonaws.services.ecs.AmazonECSClientBuilder;
 import com.amazonaws.services.ecs.model.DescribeTasksRequest;
 import com.amazonaws.services.ecs.model.DescribeTasksResult;
+import com.amazonaws.services.ecs.model.ListTasksRequest;
+import com.amazonaws.services.ecs.model.ListTasksResult;
 import lombok.extern.log4j.Log4j2;
 
 
@@ -18,8 +20,30 @@ public class TaskService {
     client = AmazonECSClientBuilder.standard().build();
   }
 
-  public DescribeTasksResult describeTask(String taskArn) {
+  /**
+   * Method to call Amazon AWS Describe task API.
+   * @param clusterArn Cluster Arn
+   * @return
+   */
+  public DescribeTasksResult describeTask(String clusterArn) {
+    String taskArn = this.listTasks(clusterArn);
+    log.info("[TaskService] Task Arn : " + taskArn);
     DescribeTasksRequest request = new DescribeTasksRequest().withTasks(taskArn);
+    log.info("[TaskService] DescribeTasksRequest : " + request);
     return client.describeTasks(request);
+  }
+
+  /**
+   * Method to call Amazon AWS listTask API.
+   * @param clusterArn Cluster Arn
+   * @return
+   */
+  public String listTasks(String clusterArn) {
+    ListTasksRequest listTasksRequest = new ListTasksRequest().withCluster(clusterArn);
+    ListTasksResult result =  client.listTasks(listTasksRequest);
+    if (result != null && !result.getTaskArns().isEmpty()) {
+      return result.getTaskArns().get(0);
+    }
+    return null;
   }
 }
