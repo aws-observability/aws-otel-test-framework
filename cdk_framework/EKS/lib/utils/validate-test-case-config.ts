@@ -1,6 +1,8 @@
 import { ClusterStack } from '../stacks/cluster-stack';
 const configKeys = new Set(['cluster_name', 'sample_app_image_uri', 'sample_app_mode', 'collector_config'])
-export function validateTestcaseConfig(info: any, clusterStackMap: Map <string, ClusterStack>){
+
+
+export function validateTestCaseConfig(info: any, clusterStackMap: Map <string, ClusterStack>){
     const data = Object(info)
     if (!data['test_case']) {
         throw new Error('No test_case field in the yaml file')
@@ -24,6 +26,7 @@ export function validateTestcaseConfig(info: any, clusterStackMap: Map <string, 
         validateValue(key, value, clusterStackMap)
     }
 }
+
 function validateValue(key: string, value: any, clusterStackMap: Map <string, ClusterStack>) {
     if (value == undefined) {
         throw Error(`No value provided for key ${key}`)

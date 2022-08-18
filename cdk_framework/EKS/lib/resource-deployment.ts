@@ -1,13 +1,12 @@
 import 'source-map-support/register';
-import * as cdk from 'aws-cdk-lib';
 import { ClusterStack } from './stacks/cluster-stack';
-import { validateTestcaseConfig } from './utils/validate-test-case-config';
+import { validateTestCaseConfig } from './utils/validate-test-case-config';
 import { readFileSync } from 'fs';
 const yaml = require('js-yaml')
 import { TestCaseResourceDeploymentConstruct } from './resource_constructs/general_constructs/test-case-resource-deployment-construct';
 
 
-export function deployResources(app: cdk.App, clusterStackMap: Map <string, ClusterStack>) {
+export function deployResources(clusterStackMap: Map <string, ClusterStack>) {
     const region = process.env.REGION || 'us-west-2'
     
     // load the file
@@ -24,7 +23,7 @@ export function deployResources(app: cdk.App, clusterStackMap: Map <string, Clus
     // load the data from the file
     const raw = readFileSync(testcaseConfigRoute, {encoding: 'utf-8'})
     const data = yaml.load(raw)
-    validateTestcaseConfig(data, clusterStackMap)
+    validateTestCaseConfig(data, clusterStackMap)
     const testcaseConfig = data['test_case']
 
     const clusterName = testcaseConfig['cluster_name']
