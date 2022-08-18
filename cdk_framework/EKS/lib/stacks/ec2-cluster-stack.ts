@@ -40,7 +40,7 @@ export class EC2Stack extends Stack {
       clusterName: props.name,
       vpc: props.vpc,
       vpcSubnets: [{subnetType: ec2.SubnetType.PUBLIC}],
-      defaultCapacity: 0,  // we want to manage capacity our selves
+      defaultCapacity: 0,  // we want to manage capacity ourselves
       version: props.version,
       clusterLogging: logging,
     
@@ -51,7 +51,6 @@ export class EC2Stack extends Stack {
         nodeRole: workerRole
     })
     this.cluster.awsAuth.addMastersRole(Role.fromRoleName(this, 'eks_admin_role', 'Admin'))
-    this.cluster.awsAuth.addMastersRole(Role.fromRoleName(this, 'he', 'Admin'))
 
   }
 }
