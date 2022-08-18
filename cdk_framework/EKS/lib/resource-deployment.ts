@@ -1,5 +1,6 @@
 import 'source-map-support/register';
 import { ClusterStack } from './stacks/cluster-stack';
+import { TestCaseConfigInterface } from './interfaces/test-case-config-interface';
 import { validateTestCaseConfig } from './utils/validate-test-case-config';
 import { readFileSync } from 'fs';
 const yaml = require('js-yaml')
@@ -23,24 +24,23 @@ export function deployResources(clusterStackMap: Map <string, ClusterStack>) {
     // load the data from the file
     const raw = readFileSync(testcaseConfigRoute, {encoding: 'utf-8'})
     const data = yaml.load(raw)
-    validateTestCaseConfig(data, clusterStackMap)
-    const testcaseConfig = data['test_case']
+    if (!data['test_case']) {
+        throw new Error('No test_case field in the yaml file')
+    }
+    const testCaseConfig = data['test_case'] as TestCaseConfigInterface
+    validateTestCaseConfig(testCaseConfig, clusterStackMap)
 
-    const clusterName = testcaseConfig['cluster_name']
-    const clusterStack = clusterStackMap.get(clusterName)
+    const clusterStack = clusterStackMap.get(testCaseConfig['cluster_name'])
     if (clusterStack == undefined) {
-        throw Error('Cluster name "' + clusterName + '" does not reference an existing cluster')
+        throw Error('Cluster name "' + testCaseConfig['cluster_name'] + '" does not reference an existing cluster')
     }
     const cluster = clusterStack.cluster
-    const sampleAppImageURI = testcaseConfig['sample_app_image_uri']
-    const sampleAppMode = testcaseConfig['sample_app_mode']
-    const collectorConfig = testcaseConfig['collector_config']
 
     new TestCaseResourceDeploymentConstruct(clusterStack, 'test-case-resource-deployment-construct', {
         cluster: cluster,
-        sampleAppImageURI: sampleAppImageURI,
-        sampleAppMode: sampleAppMode,
+        sampleAppImageURI: testCaseConfig['sample_app_image_uri'],
+        sampleAppMode: testCaseConfig['sample_app_mode'],
         region: region,
-        collectorConfig: collectorConfig
+        collectorConfig: testCaseConfig['collector_config']
     })
 }

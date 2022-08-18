@@ -1,46 +1,23 @@
+import { TestCaseConfigInterface } from '../interfaces/test-case-config-interface';
 import { ClusterStack } from '../stacks/cluster-stack';
-const configKeys = new Set(['cluster_name', 'sample_app_image_uri', 'sample_app_mode', 'collector_config'])
 
-
-export function validateTestCaseConfig(info: any, clusterStackMap: Map <string, ClusterStack>){
-    const data = Object(info)
-    if (!data['test_case']) {
-        throw new Error('No test_case field in the yaml file')
+export function validateTestCaseConfig(testCaseConfig: TestCaseConfigInterface, clusterStackMap: Map <string, ClusterStack>){
+    if (testCaseConfig['cluster_name'] == undefined) {
+        throw Error('No cluster_name specified')
     }
-    const testCaseConfig = data['test_case']
-    const providedKeys = new Set(Object.keys(testCaseConfig))
-    // validate that all provided keys are valid
-    providedKeys.forEach(key => {
-        if (!configKeys.has(key)) {
-            throw new Error(`Provided key ${key} is not valid`)
-        }
-    })
-    // validate that all required keys are provided
-    configKeys.forEach(key => {
-        if (!providedKeys.has(key)) {
-            throw new Error(`${key} must be specified`)
-        }
-    })
-    // validate each key-value pair
-    for (const [key, value] of Object.entries(testCaseConfig)) {
-        validateValue(key, value, clusterStackMap)
+    if (testCaseConfig['sample_app_image_uri'] == undefined) {
+        throw Error('No sample_app_image_uri specified')
     }
-}
-
-function validateValue(key: string, value: any, clusterStackMap: Map <string, ClusterStack>) {
-    if (value == undefined) {
-        throw Error(`No value provided for key ${key}`)
+    if (testCaseConfig['sample_app_mode'] == undefined) {
+        throw Error('No sample_app_mode specified')
     }
-    switch (key){
-        case 'cluster_name':
-            if (clusterStackMap.get(value) == undefined) {
-                throw Error(`Cluster name ${value} does not reference an existing cluster`)
-            }
-            break
-        case 'sample_app_mode':
-            if (value !== 'push' && value !== 'pull'){
-                throw new Error(`sampleAppMode must have value "push" or "push", "${value}" is invalid`)
-            }
-            break
+    if (testCaseConfig['collector_config'] == undefined) {
+        throw Error('No collector_config specified')
+    }
+    if (clusterStackMap.get(testCaseConfig['cluster_name']) == undefined) {
+        throw Error(`${testCaseConfig['cluster_name']} does not reference an existing cluster`)
+    }
+    if (testCaseConfig['sample_app_mode'] !== 'push' && testCaseConfig['sample_app_mode'] !== 'push') {
+        throw Error(`sample_app_mode must have value "push" or "pull", ${testCaseConfig['sample_app_mode']} is invalid`)
     }
 }
