@@ -25,19 +25,22 @@ export function deployResources(clusterStackMap: Map <string, ClusterStack>) {
     const raw = readFileSync(testcaseConfigRoute, {encoding: 'utf-8'})
     const data = yaml.load(raw)
     if (!data['test_case']) {
-        throw new Error('No test_case field in the yaml file')
+        throw new Error('No root test_case field in the yaml file')
     }
     const testCaseConfig = data['test_case'] as TestCaseConfigInterface
+
+    // validate the configuration
     validateTestCaseConfig(testCaseConfig, clusterStackMap)
 
     const clusterStack = clusterStackMap.get(testCaseConfig['cluster_name'])
+    // This was already checked in the validation function but needs to be checked again
+    // to avoid compilation errors
     if (clusterStack == undefined) {
         throw Error('Cluster name "' + testCaseConfig['cluster_name'] + '" does not reference an existing cluster')
     }
-    const cluster = clusterStack.cluster
 
     new TestCaseResourceDeploymentConstruct(clusterStack, 'test-case-resource-deployment-construct', {
-        cluster: cluster,
+        cluster: clusterStack.cluster,
         sampleAppImageURI: testCaseConfig['sample_app_image_uri'],
         sampleAppMode: testCaseConfig['sample_app_mode'],
         region: region,
