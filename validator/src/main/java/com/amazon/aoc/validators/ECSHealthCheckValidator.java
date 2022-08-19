@@ -53,14 +53,12 @@ public class ECSHealthCheckValidator implements IValidator {
                 taskService.describeTask(context.getEcsContext().getEcsClusterArn());
         if (result != null && result.getTasks() != null && !result.getTasks().isEmpty()) {
           Task task = result.getTasks().get(0);
-          log.info("[ECSHealthCheckValidator] Task: " + task);
           if (task != null && !task.getContainers().isEmpty()) {
             List<Container> containers = task.getContainers().stream()
                     .filter(container -> container.getName().equalsIgnoreCase("aoc-collector"))
                     .collect(Collectors.toList());
             for (Container container : containers) {
               if (container.getHealthStatus().equalsIgnoreCase("HEALTHY")) {
-                log.info("[ECSHealthCheckValidator] CheckStatus: " + container.getHealthStatus());
                 validationSuccessFlag.set(true);
                 break;
               }
