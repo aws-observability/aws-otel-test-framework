@@ -28,9 +28,11 @@ public class TaskService {
   public DescribeTasksResult describeTask(String clusterArn) {
     String taskArn = this.listTasks(clusterArn);
     log.info("[TaskService] Task Arn : " + taskArn);
-    DescribeTasksRequest request = new DescribeTasksRequest().withTasks(taskArn);
-    log.info("[TaskService] DescribeTasksRequest : " + request);
-    return client.describeTasks(request);
+    DescribeTasksRequest re = new DescribeTasksRequest().withTasks(taskArn).withCluster(clusterArn);
+    log.info("[TaskService] DescribeTasksRequest : " + re);
+    DescribeTasksResult result = client.describeTasks(re);
+    log.info("[TaskService] DescribeTasksResult : " + result);
+    return result;
   }
 
   /**

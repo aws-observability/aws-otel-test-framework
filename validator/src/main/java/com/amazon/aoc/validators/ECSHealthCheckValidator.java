@@ -8,11 +8,18 @@ import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.TaskService;
+import com.amazonaws.services.ecs.model.Container;
 import com.amazonaws.services.ecs.model.DescribeTasksResult;
 import com.amazonaws.services.ecs.model.Task;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 import java.util.concurrent.TimeUnit;
+
+
+
 
 @Log4j2
 public class ECSHealthCheckValidator implements IValidator {
@@ -36,29 +43,36 @@ public class ECSHealthCheckValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("allow sample app load balancer to start");
-    // TODO : check if following sleep is needed or not
-    TimeUnit.SECONDS.sleep(60);
+    TimeUnit.SECONDS.sleep(30);
     log.info("[ECSHealthCheckValidator] start validating ECS Health Check");
-
+    AtomicBoolean validationSuccessFlag = new AtomicBoolean(false);
     RetryHelper.retry(DEFAULT_MAX_RETRY_COUNT, CHECK_INTERVAL_IN_MILLI, true, () -> {
-      log.info("[ECSHealthCheckValidator] Logging ECS Context: " + context.getEcsContext());
-      if (context.getEcsContext() != null && context.getEcsContext().getEcsClusterArn() != null) {
+      if (context != null && context.getEcsContext() != null
+              && context.getEcsContext().getEcsClusterArn() != null) {
         DescribeTasksResult result =
                 taskService.describeTask(context.getEcsContext().getEcsClusterArn());
         if (result != null && result.getTasks() != null && !result.getTasks().isEmpty()) {
           Task task = result.getTasks().get(0);
+          log.info("[ECSHealthCheckValidator] Task: " + task);
           if (task != null && !task.getContainers().isEmpty()) {
-            String status = task.getContainers().get(1).getHealthStatus();
-            if (status.equalsIgnoreCase("healthy")) {
-              return;
+            List<Container> containers = task.getContainers().stream()
+                    .filter(container -> container.getName().equalsIgnoreCase("aoc-collector"))
+                    .collect(Collectors.toList());
+            for (Container container : containers) {
+              if (container.getHealthStatus().equalsIgnoreCase("HEALTHY")) {
+                log.info("[ECSHealthCheckValidator] CheckStatus: " + container.getHealthStatus());
+                validationSuccessFlag.set(true);
+                break;
+              }
             }
           }
         }
       }
-      log.info("[ECSHealthCheckValidator] Awaiting on ECS Resources to be ready");
-      throw new BaseException(
-              ExceptionCode.ECS_RESOURCES_NOT_READY,
-              "[ECSHealthCheckValidator] Awaiting on ECS Resources to be ready");
+      if (!validationSuccessFlag.get()) {
+        throw new BaseException(
+                ExceptionCode.ECS_RESOURCES_NOT_READY,
+                "[ECSHealthCheckValidator] Awaiting on ECS Resources to be ready");
+      }
     });
     log.info("[ECSHealthCheckValidator] end validating ECS Health Check");
   }
