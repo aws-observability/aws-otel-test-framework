@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ECSHealthCheckValidator implements IValidator {
   // TODO : need to verify default count
   private static final int DEFAULT_MAX_RETRY_COUNT = 5;
-  private static final int CHECK_INTERVAL_IN_MILLI = 10 * 1000;
+  private static final int CHECK_INTERVAL_IN_MILLI = 15 * 1000;
   private Context context;
   private int retryCount;
   private FileConfig expectedMetric;
@@ -44,7 +44,7 @@ public class ECSHealthCheckValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("allow sample app load balancer to start");
-    TimeUnit.SECONDS.sleep(10);
+    TimeUnit.SECONDS.sleep(15);
     log.info("[ECSHealthCheckValidator] start validating ECS Health Check");
     AtomicBoolean validationSuccessFlag = new AtomicBoolean(false);
     RetryHelper.retry((retryCount == 0 ? DEFAULT_MAX_RETRY_COUNT : retryCount),
@@ -55,7 +55,6 @@ public class ECSHealthCheckValidator implements IValidator {
                   taskService.describeTask(context.getEcsContext().getEcsClusterArn());
           if (result != null && result.getTasks() != null && !result.getTasks().isEmpty()) {
             Task task = result.getTasks().get(0);
-            log.info("[ECSHealthCheckValidator] Task: " + task);
             if (task != null && !task.getContainers().isEmpty()) {
               List<Container> containers = task.getContainers().stream()
                       .filter(container -> container.getName().equalsIgnoreCase("aoc-collector"))
