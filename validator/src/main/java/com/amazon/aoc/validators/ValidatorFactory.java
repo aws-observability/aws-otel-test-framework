@@ -22,6 +22,7 @@ import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
+import com.amazon.aoc.services.TaskService;
 
 public class ValidatorFactory {
   private Context context;
@@ -50,7 +51,7 @@ public class ValidatorFactory {
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
       case "ecs-describe-task":
-        validator = new ECSHealthCheckValidator();
+        validator = new ECSHealthCheckValidator(new TaskService(), 5);
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
       case "prom-static-metric":
