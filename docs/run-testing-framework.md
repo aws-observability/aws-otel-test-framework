@@ -72,8 +72,10 @@ cd terraform/imagebuild && terraform init && terraform apply -auto-approve
 ````
 this task will build and push the sample apps and mocked server images to the ecr repos,
  so that the following test could use them.
- 
+
 Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
+
+Note: Before building the sample apps and mocked server images, you may need to update variable `platform_os` at `/terraform/imagebuild/common.auto.tf` in accordance with the infrastructure's operating system/architecture where the test-suite is deployed. This is required to allow multi-arch image build.
 
 #### 2.1.4 Share Setup resources (Optional)
 **Prerequisite:**

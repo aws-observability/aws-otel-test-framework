@@ -56,7 +56,7 @@ resource "null_resource" "build_and_push_sample_apps" {
   count = length(local.sample_apps_dockerfile_list)
 
   provisioner "local-exec" {
-    command = "docker build -t ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.sample_apps_dockerfile_list, count.index))}-latest ../../sample-apps/${dirname(element(local.sample_apps_dockerfile_list, count.index))}/"
+    command = "docker buildx build --platform ${var.platform_arch} -t ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.sample_apps_dockerfile_list, count.index))}-latest ../../sample-apps/${dirname(element(local.sample_apps_dockerfile_list, count.index))}/"
   }
 
   provisioner "local-exec" {
@@ -71,7 +71,7 @@ resource "null_resource" "build_and_push_mocked_server" {
   count = length(local.mocked_servers_dockerfile_list)
 
   provisioner "local-exec" {
-    command = "docker build -t ${data.aws_ecr_repository.mocked_server.repository_url}:${dirname(element(local.mocked_servers_dockerfile_list, count.index))}-latest ../../mocked_servers/${dirname(element(local.mocked_servers_dockerfile_list, count.index))}/"
+    command = "docker buildx build --platform ${var.platform_arch} -t ${data.aws_ecr_repository.mocked_server.repository_url}:${dirname(element(local.mocked_servers_dockerfile_list, count.index))}-latest ../../mocked_servers/${dirname(element(local.mocked_servers_dockerfile_list, count.index))}/"
   }
 
   provisioner "local-exec" {
