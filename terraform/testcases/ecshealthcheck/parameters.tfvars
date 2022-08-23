@@ -5,8 +5,6 @@ soaking_data_mode = "metric"
 
 sample_app = "prometheus"
 
-soaking_sample_app = "prometheus"
-
 soaking_data_type = "prometheus"
 
 sample_app_mode = "pull"
