@@ -1,0 +1,24 @@
+[{
+  "http":{
+    "request": {
+      "url": "{{endpoint}}/aws-sdk-call",
+      "method": "GET"
+    },
+    "response":{
+      "status": 200
+    }
+  },
+  "subsegments": [
+    {
+      "name": "get-aws-s3-buckets",
+      "metadata": {
+        "default": {
+          "port": {{port}},
+          "host": {{host}},
+          "language": {{language}},
+          "signal": "trace"
+        }
+      }
+    }
+  ]
+}]
