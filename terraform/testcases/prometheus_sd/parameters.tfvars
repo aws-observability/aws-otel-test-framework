@@ -3,4 +3,6 @@ validation_config = "prometheus-sd-validation.yml"
 
 sample_app = "prometheus"
 
+sample_app_image = "public.ecr.aws/aws-otel-test/prometheus:latest"
+
 sample_app_mode = "pull"

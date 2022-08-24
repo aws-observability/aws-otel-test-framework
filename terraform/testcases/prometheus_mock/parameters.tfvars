@@ -3,6 +3,8 @@ validation_config = "default-mocked-server-prometheus-validation.yml"
 
 sample_app = "prometheus"
 
+sample_app_image = "public.ecr.aws/aws-otel-test/prometheus:latest"
+
 soaking_sample_app = "prometheus"
 
 soaking_data_type = "prometheus"
