@@ -36,6 +36,7 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   CONTAINER_INSIGHT_ECS_PROMETHEUS_METRIC(
       "/expected-data-template/container-insight/ecs/prometheus"),
   FARGATE_EXPECTED_METRIC("/expected-data-template/EKSFargateCWCIExpectedMetric.mustache"),
+  STANDARD_EXPECTED_METRIC("/expected-data-template/manual-instrumentation/standardExpectedMetric.mustache"),
 
 
   /**
@@ -69,6 +70,12 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   ),
   JS_SDK_AWSSDK_EXPECTED_TRACE(
     "/expected-data-template/js/jsAppExpectedAWSSDKTrace.mustache"
+  ),
+  STANDARD_MANUAL_SDK_HTTP_EXPECTED_TRACE(
+    "/expected-data-template/manual-instrumentation/standardExpectedHTTPTrace.mustache"
+  ),
+  STANDARD_MANUAL_AWSSDK_EXPECTED_TRACE(
+    "/expected-data-template/manual-instrumentation/standardExpectedAWSSDKTrace.mustache"
   ),
 
   /**

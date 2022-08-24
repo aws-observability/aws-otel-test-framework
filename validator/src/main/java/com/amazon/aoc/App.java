@@ -56,6 +56,15 @@ public class App implements Callable<Integer> {
   @CommandLine.Option(names = {"--endpoint"})
   private String endpoint;
 
+  @CommandLine.Option(names = {"--host"})
+  private String host;
+
+  @CommandLine.Option(names = {"--port"})
+  private String port;
+
+  @CommandLine.Option(names = {"--language"})
+  private String language;
+
   @CommandLine.Option(
       names = {"--region"},
       defaultValue = "us-west-2")
@@ -125,6 +134,9 @@ public class App implements Callable<Integer> {
     context.setAvailabilityZone(this.availabilityZone);
     context.setMetricNamespace(this.metricNamespace);
     context.setEndpoint(this.endpoint);
+    context.setHost(this.host);
+    context.setPort(this.port);
+    context.setLanguage(this.language);
     context.setEcsContext(buildJsonContext(ecsContext, ECSContext.class));
     context.setEc2Context(buildJsonContext(ec2Context, EC2Context.class));
     context.setCloudWatchContext(buildJsonContext(cloudWatchContext, CloudWatchContext.class));

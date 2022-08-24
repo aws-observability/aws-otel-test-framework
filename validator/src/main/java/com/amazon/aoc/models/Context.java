@@ -42,6 +42,12 @@ public class Context {
 
   private String endpoint;
 
+  private String host;
+  
+  private String port;
+
+  private String language;
+
   private ECSContext ecsContext;
 
   private CloudWatchContext cloudWatchContext;
