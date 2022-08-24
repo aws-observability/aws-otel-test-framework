@@ -36,7 +36,8 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   CONTAINER_INSIGHT_ECS_PROMETHEUS_METRIC(
       "/expected-data-template/container-insight/ecs/prometheus"),
   FARGATE_EXPECTED_METRIC("/expected-data-template/EKSFargateCWCIExpectedMetric.mustache"),
-  STANDARD_EXPECTED_METRIC("/expected-data-template/manual-instrumentation/standardExpectedMetric.mustache"),
+  STANDARD_EXPECTED_METRIC(
+    "/expected-data-template/manual-instrumentation/standardExpectedMetric.mustache"),
 
 
   /**
