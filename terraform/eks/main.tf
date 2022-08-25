@@ -155,8 +155,12 @@ resource "kubernetes_service_account" "aoc-role" {
   metadata {
     name      = "aoc-role-${module.common.testing_id}"
     namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    annotations = {
+      "eks.amazonaws.com/role-arn" : module.iam_assumable_role_admin.iam_role_arn
+    }
   }
 
+  depends_on                      = [module.iam_assumable_role_admin]
   automount_service_account_token = true
 }
 
@@ -185,6 +189,8 @@ module "iam_assumable_role_admin" {
     "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
     "arn:aws:iam::aws:policy/AWSXrayFullAccess",
     "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+    "arn:aws:iam::aws:policy/AmazonPrometheusRemoteWriteAccess",
+    "arn:aws:iam::aws:policy/AWSAppMeshEnvoyAccess",
   ]
   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
   version = "4.7.0"
