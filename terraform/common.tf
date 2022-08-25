@@ -83,7 +83,3 @@ variable "aoc_vpc_name" {
 variable "aoc_vpc_security_group" {
   default = "aoc-vpc-security-group"
 }
-
-variable "platform_arch" {
-  default = "linux/amd64"
-}
