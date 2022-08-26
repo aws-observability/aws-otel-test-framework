@@ -229,8 +229,10 @@ module "adot_operator" {
   count  = replace(var.testcase, "_adot_operator", "") == var.testcase ? 0 : 1
   source = "./adot-operator"
 
-  testing_id = module.common.testing_id
-  kubeconfig = local_file.kubeconfig.filename
+  testing_id          = module.common.testing_id
+  kubeconfig          = local_file.kubeconfig.filename
+  operator_repository = var.operator_repository
+  operator_tag        = var.operator_tag
 }
 
 
