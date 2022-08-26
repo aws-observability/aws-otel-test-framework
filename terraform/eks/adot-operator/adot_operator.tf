@@ -24,11 +24,9 @@ variable "kubeconfig" {
 }
 
 variable "operator_repository" {
-  default = "ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator"
 }
 
 variable "operator_tag" {
-  default = "latest"
 }
 
 resource "helm_release" "adot-operator" {
