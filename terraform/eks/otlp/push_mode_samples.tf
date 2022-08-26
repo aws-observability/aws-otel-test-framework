@@ -57,6 +57,7 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
 
       spec {
         # sample app
+        service_account_name = var.sample_app_service_account_name
         container {
           name              = "sample-app"
           image             = local.eks_pod_config["image"]
