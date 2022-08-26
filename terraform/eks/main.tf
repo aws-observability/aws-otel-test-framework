@@ -225,6 +225,8 @@ module "adot_operator" {
 
   testing_id = module.common.testing_id
   kubeconfig = local_file.kubeconfig.filename
+  operator_repository = var.operator_repository
+  operator_tag = var.operator_tag
 }
 
 
