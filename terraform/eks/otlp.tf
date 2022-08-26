@@ -28,6 +28,38 @@ module "basic_components" {
   sample_app_listen_address_port = module.common.sample_app_lb_port
 }
 
+# crete an IAM role here so that we can reference the clusters OIDC Provider
+# this will be used for the push mode sample app since it needs to make a call to s3.listBuckets()
+module "iam_assumable_role_sample_app" {
+  create_role = true
+
+  role_name = "push-mode-sample-app--${module.common.testing_id}"
+
+  provider_url = trimprefix(data.aws_eks_cluster.testing_cluster.identity[0].oidc[0].issuer, "https://")
+
+  role_policy_arns = [
+    "arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+  ]
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role-with-oidc"
+  version = "4.7.0"
+}
+
+# servic acount name will be passed to the otlp module for use in the push mode sample app
+resource "kubernetes_service_account" "sample-app-sa" {
+  metadata {
+    name      = "sample-app-sa-${module.common.testing_id}"
+    namespace = kubernetes_namespace.aoc_ns.metadata[0].name
+    annotations = {
+      "eks.amazonaws.com/role-arn" : module.iam_assumable_role_sample_app.iam_role_arn
+    }
+  }
+
+  automount_service_account_token = true
+  depends_on = [
+    module.iam_assumable_role_sample_app
+  ]
+}
+
 module "aoc_oltp" {
   source = "./otlp"
   count  = var.aoc_base_scenario == "oltp" ? 1 : 0
@@ -50,8 +82,9 @@ module "aoc_oltp" {
     udp_port  = module.common.udp_port
     http_port = module.common.http_port
   }
-  is_adot_operator = replace(var.testcase, "_adot_operator", "") != var.testcase
-  depends_on       = [aws_eks_fargate_profile.test_profile]
+  sample_app_service_account_name = kubernetes_service_account.sample-app-sa.metadata.0.name
+  is_adot_operator                = replace(var.testcase, "_adot_operator", "") != var.testcase
+  depends_on                      = [aws_eks_fargate_profile.test_profile, module.iam_assumable_role_sample_app]
 }
 
 locals {
@@ -70,7 +103,7 @@ resource "kubernetes_config_map" "aoc_config_map" {
   data = {
     "aoc-config.yml" = module.basic_components.0.otconfig_content
   }
-  depends_on = [aws_eks_fargate_profile.test_profile]
+  depends_on = [aws_eks_fargate_profile.test_profile, kubernetes_service_account.sample-app-sa]
 }
 
 # load the faked cert for mocked server
