@@ -75,6 +75,8 @@ this task will build and push the sample apps and mocked server images to the ec
 
 Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
 
+Note: imagebuild publishes multi-arch images to ECR that are compatible with linux/amd64 and linux/amr64 architectures.
+
 #### 2.1.4 Share Setup resources (Optional)
 **Prerequisite:**
 - you are required to run the [setup basic components](setup-basic-components-in-aws-account.md#2-setup-basic-components) once if you and other developers did not setup these components before.
