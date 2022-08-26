@@ -28,8 +28,8 @@ module "basic_components" {
   sample_app_listen_address_port = module.common.sample_app_lb_port
 }
 
-# crete an IAM role here so that we can reference the clusters OIDC Provider
-# this will be used for the push mode sample app since it needs to make a call to s3.listBuckets()
+# create an IAM role here so that we can reference the clusters OIDC Provider.
+# This will be used for the push mode sample app since it needs to make a call to s3.listBuckets()
 module "iam_assumable_role_sample_app" {
   create_role = true
 
@@ -44,7 +44,7 @@ module "iam_assumable_role_sample_app" {
   version = "4.7.0"
 }
 
-# servic acount name will be passed to the otlp module for use in the push mode sample app
+# service acount name will be passed to the otlp module for use in the push mode sample app
 resource "kubernetes_service_account" "sample-app-sa" {
   metadata {
     name      = "sample-app-sa-${module.common.testing_id}"
