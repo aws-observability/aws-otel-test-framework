@@ -57,9 +57,11 @@ variable "fargate_sample_app_lb_port" {
 }
 
 variable "operator_repository" {
+  type    = string
   default = "ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator"
 }
 
 variable "operator_tag" {
+  type    = string
   default = "latest"
 }
