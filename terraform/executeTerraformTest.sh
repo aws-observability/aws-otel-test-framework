@@ -91,7 +91,7 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     fi
 
     case "$service" in
-        "EKS_FARGATE" | "EKS_ADOT_OPERATOR" | "EKS_ADOT_OPERATOR_ARM64") terraform destroy --auto-approve $opts;
+        "EKS_FARGATE" | "EKS_ARM64" | "EKS_ADOT_OPERATOR" | "EKS_ADOT_OPERATOR_ARM64") terraform destroy --auto-approve $opts;
         ;;
     *)
         terraform destroy --auto-approve;

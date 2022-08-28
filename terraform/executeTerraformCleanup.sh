@@ -41,8 +41,12 @@ case "$service" in
     ;;
     "EKS_ARM64") TEST_FOLDER="./eks/"
         arm_64_region=$(echo $3 | cut -d \| -f 1);
+        arm_64_clustername=$(echo $3 | cut -d \| -f 2);
+        arm_64_amp=$(echo $3 | cut -d \| -f 3);
         export AWS_REGION=${arm_64_region};
         opts+=" -var=region=${arm_64_region}";
+        opts+=" -var=cortex_instance_endpoint=${arm_64_amp}";
+        opts+=" -var=eks_cluster_name=${arm_64_clustername}";
     ;;
     "EKS_FARGATE") TEST_FOLDER="./eks/";
     ;;
@@ -63,7 +67,7 @@ esac
 
 
 case "$service" in
-    "EKS_FARGATE" | "EKS_ADOT_OPERATOR" | "EKS_ADOT_OPERATOR_ARM64") terraform destroy --auto-approve $opts;
+    "EKS_FARGATE" | "EKS_ARM64" | "EKS_ADOT_OPERATOR" | "EKS_ADOT_OPERATOR_ARM64") terraform destroy --auto-approve $opts;
     ;;
 *)
     terraform destroy --auto-approve;
