@@ -23,7 +23,6 @@ type TestCaseInfo struct {
 
 var ec2AMIs = []string{
 	"amazonlinux2",
-	"amazonlinux",
 	"ubuntu18",
 	"ubuntu16",
 	"debian10",
