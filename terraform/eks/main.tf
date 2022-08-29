@@ -109,46 +109,12 @@ resource "kubernetes_namespace" "aoc_fargate_ns" {
   }
 }
 
-resource "aws_iam_role" "fargate_profile_file" {
-  name                = "fargate-profile-role-${module.common.testing_id}"
-  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"]
-
-  # Terraform's "jsonencode" function converts a
-  # Terraform expression result to valid JSON syntax.
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "eks-fargate-pods.amazonaws.com"
-        }
-      },
-    ]
-  })
-}
-
 data "aws_subnet_ids" "private_subnets" {
   vpc_id = data.aws_eks_cluster.testing_cluster.vpc_config[0].vpc_id
   filter {
     name   = "mapPublicIpOnLaunch"
     values = ["false"] # insert values here
   }
-}
-
-resource "aws_eks_fargate_profile" "test_profile" {
-  count                  = var.deployment_type == "fargate" ? 1 : 0
-  cluster_name           = var.eks_cluster_name
-  fargate_profile_name   = "fp-aoc-${module.common.testing_id}"
-  pod_execution_role_arn = aws_iam_role.fargate_profile_file.arn
-  subnet_ids             = data.aws_subnet_ids.private_subnets.ids
-
-  selector {
-    namespace = kubernetes_namespace.aoc_fargate_ns.metadata[0].name
-  }
-
-  depends_on = [aws_iam_role.fargate_profile_file, kubernetes_namespace.aoc_fargate_ns]
 }
 
 resource "kubernetes_service_account" "aoc-role" {
