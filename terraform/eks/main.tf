@@ -134,14 +134,14 @@ resource "kubernetes_service_account" "aoc-fargate-role" {
   count = var.deployment_type == "fargate" ? 1 : 0
   metadata {
     name      = "aoc-fargate-role-${module.common.testing_id}"
-    namespace = tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace
+    namespace = kubernetes_namespace.aoc_fargate_ns.metadata[0].name
     annotations = {
       "eks.amazonaws.com/role-arn" : module.iam_assumable_role_admin.iam_role_arn
     }
   }
 
   automount_service_account_token = true
-  depends_on                      = [module.iam_assumable_role_admin, aws_eks_fargate_profile.test_profile]
+  depends_on                      = [module.iam_assumable_role_admin]
 }
 
 module "iam_assumable_role_admin" {
@@ -175,20 +175,18 @@ resource "kubernetes_cluster_role_binding" "aoc-role-binding" {
   subject {
     kind      = "ServiceAccount"
     name      = var.deployment_type == "fargate" ? "aoc-fargate-role-${module.common.testing_id}" : "aoc-role-${module.common.testing_id}"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
   }
-  depends_on = [aws_eks_fargate_profile.test_profile]
 }
 
 resource "kubernetes_service_account" "aoc-agent-role" {
   count = 1
   metadata {
     name      = "aoc-agent-${module.common.testing_id}"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
   automount_service_account_token = true
-  depends_on                      = [aws_eks_fargate_profile.test_profile]
 }
 
 module "adot_operator" {
