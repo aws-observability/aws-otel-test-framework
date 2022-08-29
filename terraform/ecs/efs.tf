@@ -77,7 +77,7 @@ resource "aws_instance" "collector_efs_ec2" {
   }
 
   tags = {
-    Name  = "Integ-test-aoc"
+    Name = "Integ-test-aoc"
   }
 
   depends_on = [aws_efs_mount_target.collector_efs_mount, aws_key_pair.aws_ssh_key]
