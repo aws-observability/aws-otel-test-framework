@@ -183,21 +183,6 @@ EOF
       arch               = "amd64"
       login_user         = "Administrator"
     }
-    amazonlinux = {
-      os_family          = "amazon_linux"
-      ami_search_pattern = "amzn-ami-hvm-????.??.?.????????-x86_64-gp2"
-      ami_owner          = "amazon"
-      ami_id             = "ami-08d489468314a58df"
-      ami_product_code   = []
-      family             = "linux"
-      arch               = "amd64"
-      login_user         = "ec2-user"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-sudo restart amazon-ssm-agent
-EOF
-    }
     suse15 = {
       os_family          = "suse"
       ami_search_pattern = "suse-sles-15*"
