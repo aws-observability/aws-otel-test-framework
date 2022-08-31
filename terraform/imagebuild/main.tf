@@ -56,11 +56,11 @@ resource "null_resource" "build_and_push_sample_apps" {
   count = length(local.sample_apps_dockerfile_list)
 
   provisioner "local-exec" {
-    command = "docker build -t ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.sample_apps_dockerfile_list, count.index))}-latest ../../sample-apps/${dirname(element(local.sample_apps_dockerfile_list, count.index))}/"
-  }
-
-  provisioner "local-exec" {
-    command = "docker push ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.sample_apps_dockerfile_list, count.index))}-latest"
+    command = <<-EOT
+      docker buildx create --use --name sapbuilder.${count.index} --platform=linux/arm64,linux/amd64 --driver  docker-container --bootstrap
+      docker buildx build --builder=sapbuilder.${count.index} --push --platform=linux/amd64,linux/arm64 -t ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.sample_apps_dockerfile_list, count.index))}-latest ../../sample-apps/${dirname(element(local.sample_apps_dockerfile_list, count.index))}/
+      docker buildx rm sapbuilder.${count.index}
+    EOT
   }
 
   depends_on = [null_resource.login_ecr]
@@ -71,11 +71,11 @@ resource "null_resource" "build_and_push_mocked_server" {
   count = length(local.mocked_servers_dockerfile_list)
 
   provisioner "local-exec" {
-    command = "docker build -t ${data.aws_ecr_repository.mocked_server.repository_url}:${dirname(element(local.mocked_servers_dockerfile_list, count.index))}-latest ../../mocked_servers/${dirname(element(local.mocked_servers_dockerfile_list, count.index))}/"
-  }
-
-  provisioner "local-exec" {
-    command = "docker push ${data.aws_ecr_repository.mocked_server.repository_url}:${dirname(element(local.mocked_servers_dockerfile_list, count.index))}-latest"
+    command = <<-EOT
+      docker buildx create --use --name msgbuilder.${count.index} --platform=linux/arm64,linux/amd64 --driver docker-container --bootstrap
+      docker buildx build --builder=msgbuilder.${count.index} --push --platform=linux/amd64,linux/arm64 -t ${data.aws_ecr_repository.mocked_server.repository_url}:${dirname(element(local.mocked_servers_dockerfile_list, count.index))}-latest ../../mocked_servers/${dirname(element(local.mocked_servers_dockerfile_list, count.index))}/
+      docker buildx rm msgbuilder.${count.index}
+    EOT
   }
 
   depends_on = [null_resource.login_ecr]
