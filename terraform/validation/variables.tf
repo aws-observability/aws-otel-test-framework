@@ -74,13 +74,6 @@ variable "ec2_context_json" {
   default = "{}"
 }
 
-variable "aws_access_key_id" {
-  default = ""
-}
-
-variable "aws_secret_access_key" {
-  default = ""
-}
 
 variable "cortex_instance_endpoint" {
   default = ""
