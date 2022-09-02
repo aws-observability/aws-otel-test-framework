@@ -8,6 +8,8 @@ import com.amazonaws.services.ecs.model.ListTasksRequest;
 import com.amazonaws.services.ecs.model.ListTasksResult;
 import lombok.extern.log4j.Log4j2;
 
+import java.util.List;
+
 
 /**
  * a wrapper of ecs service client.
@@ -25,9 +27,9 @@ public class TaskService {
    * @param clusterArn Cluster Arn
    * @return
    */
-  public DescribeTasksResult describeTask(String clusterArn) {
-    String taskArn = this.listTasks(clusterArn);
-    DescribeTasksRequest re = new DescribeTasksRequest().withTasks(taskArn).withCluster(clusterArn);
+  public DescribeTasksResult describeTask(List<String> taskArns, String clusterArn) {
+    DescribeTasksRequest re = new DescribeTasksRequest()
+            .withTasks(taskArns).withCluster(clusterArn);
     DescribeTasksResult result = client.describeTasks(re);
     return result;
   }
@@ -37,11 +39,11 @@ public class TaskService {
    * @param clusterArn Cluster Arn
    * @return
    */
-  public String listTasks(String clusterArn) {
+  public List<String> listTasks(String clusterArn) {
     ListTasksRequest listTasksRequest = new ListTasksRequest().withCluster(clusterArn);
     ListTasksResult result =  client.listTasks(listTasksRequest);
     if (result != null && !result.getTaskArns().isEmpty()) {
-      return result.getTaskArns().get(0);
+      return result.getTaskArns();
     }
     return null;
   }

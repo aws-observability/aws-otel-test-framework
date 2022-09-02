@@ -51,7 +51,7 @@ public class ValidatorFactory {
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
       case "ecs-describe-task":
-        validator = new ECSHealthCheckValidator(new TaskService(), 5);
+        validator = new ECSHealthCheckValidator(new TaskService(), 10);
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
       case "prom-static-metric":

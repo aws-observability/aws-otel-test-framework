@@ -14,15 +14,11 @@ import com.amazonaws.services.ecs.model.Task;
 import lombok.extern.log4j.Log4j2;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
-import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public class ECSHealthCheckValidator implements IValidator {
-  // TODO : need to verify default count
-  private static final int DEFAULT_MAX_RETRY_COUNT = 5;
-  private static final int CHECK_INTERVAL_IN_MILLI = 15 * 1000;
+  private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
   private Context context;
   private int retryCount;
   private FileConfig expectedMetric;
@@ -43,36 +39,69 @@ public class ECSHealthCheckValidator implements IValidator {
 
   @Override
   public void validate() throws Exception {
-    log.info("allow sample app load balancer to start");
-    TimeUnit.SECONDS.sleep(15);
     log.info("[ECSHealthCheckValidator] start validating ECS Health Check");
-    AtomicBoolean validationSuccessFlag = new AtomicBoolean(false);
-    RetryHelper.retry((retryCount == 0 ? DEFAULT_MAX_RETRY_COUNT : retryCount),
+    RetryHelper.retry(retryCount,
         CHECK_INTERVAL_IN_MILLI, true, () -> {
-        if (context != null && context.getEcsContext() != null
-                && context.getEcsContext().getEcsClusterArn() != null) {
-          DescribeTasksResult result =
-                  taskService.describeTask(context.getEcsContext().getEcsClusterArn());
-          if (result != null && result.getTasks() != null && !result.getTasks().isEmpty()) {
-            Task task = result.getTasks().get(0);
-            if (task != null && !task.getContainers().isEmpty()) {
-              List<Container> containers = task.getContainers().stream()
-                      .filter(container -> container.getName().equalsIgnoreCase("aoc-collector"))
-                      .collect(Collectors.toList());
-              for (Container container : containers) {
-                if (container.getHealthStatus().equalsIgnoreCase("HEALTHY")) {
-                  log.info("[ECSHealthCheckValidator] CheckStatus: " + container.getHealthStatus());
-                  validationSuccessFlag.set(true);
-                  break;
-                }
-              }
-            }
-          }
+        if (context == null || context.getEcsContext() == null
+                || context.getEcsContext().getEcsClusterArn() == null) {
+            throw new BaseException(
+                    ExceptionCode.ECS_RESOURCES_NOT_FOUND,
+                    "[ECSHealthCheckValidator] ECSContext is not set");
         }
-        if (!validationSuccessFlag.get()) {
-          throw new BaseException(
-                  ExceptionCode.ECS_RESOURCES_NOT_READY,
-                  "[ECSHealthCheckValidator] Awaiting on ECS Resources to be ready");
+
+        // get all the taskARNs running inside the cluster (set in ECSContext)
+        List<String> taskArns =
+            taskService.listTasks(context.getEcsContext().getEcsClusterArn());
+
+        if (taskArns == null || taskArns.isEmpty()) {
+            throw new BaseException(
+                      ExceptionCode.ECS_RESOURCES_NOT_FOUND,
+                      "[ECSHealthCheckValidator] ListTask service returned null tasks");
+        }
+        // get details of all tasks running inside the cluster (as set in ECSContext)
+        DescribeTasksResult result =
+            taskService.describeTask(taskArns, context.getEcsContext().getEcsClusterArn());
+
+        if (result == null || result.getTasks() == null || result.getTasks().isEmpty()) {
+            throw new BaseException(
+                ExceptionCode.ECS_RESOURCES_NOT_FOUND,
+                "[ECSHealthCheckValidator] DescribeTask service returned null result");
+        }
+        // filter tasks with task definition (as set in ECSContext) and has 'running' status
+        List<Task> aocTasks =
+            result.getTasks().stream().filter(t -> t.getTaskDefinitionArn()
+                    .equalsIgnoreCase(context.getEcsContext().getEcsTaskDefArn())
+                    && t.getLastStatus().equalsIgnoreCase("RUNNING"))
+                    .collect(Collectors.toList());
+
+        if (aocTasks == null  || aocTasks.isEmpty()) {
+            throw new BaseException(
+                ExceptionCode.ECS_RESOURCES_NOT_FOUND,
+                "[ECSHealthCheckValidator] running tasks with specified taskdef "
+                        + "were not found");
+        }
+
+        // Validating the status of one of the aocTasks found with the specified task definition
+        Task task = aocTasks.get(0);
+        // get the 'aoc-collector' containers running inside the task
+        List<Container> containers = task.getContainers().stream()
+              .filter(container -> container.getName().equalsIgnoreCase("aoc-collector"))
+              .collect(Collectors.toList());
+
+        if (containers == null  || containers.isEmpty()) {
+            throw new BaseException(
+                ExceptionCode.ECS_RESOURCES_NOT_FOUND,
+                "[ECSHealthCheckValidator] no 'aoc-collector' containers were "
+                        + "found inside the specified task");
+        }
+
+        // check the health_status of 'aoc-containers'
+        for (Container container : containers) {
+            if (!container.getHealthStatus().equalsIgnoreCase("HEALTHY")) {
+                throw new BaseException(
+                    ExceptionCode.HEALTH_STATUS_NOT_MATCHED,
+                    "[ECSHealthCheckValidator] health_status was not found healthy");
+            }
         }
       });
     log.info("[ECSHealthCheckValidator] end validating ECS Health Check");

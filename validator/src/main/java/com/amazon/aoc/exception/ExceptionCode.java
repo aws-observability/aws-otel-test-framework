@@ -32,6 +32,7 @@ public enum ExceptionCode {
   DATA_EMITTER_UNAVAILABLE(50005, "the data emitter is unavailable to ping"),
   EMPTY_LIST(50007, "list is empty or null"),
   LOG_FORMAT_NOT_MATCHED(50008, "log format not matched"),
+  HEALTH_STATUS_NOT_MATCHED(50009, "health_check status not matched"),
 
   // build validator
   VALIDATION_TYPE_NOT_EXISTED(60001, "validation type not existed"),
@@ -47,8 +48,9 @@ public enum ExceptionCode {
   // clients failed
   CORTEX_CLIENT_REQUEST_FAILED(90001, "request to pull mode sample app failed"),
   PULL_MODE_SAMPLE_APP_CLIENT_REQUEST_FAILED(90001, "request to pull mode sample app failed"),
-  ECS_RESOURCES_NOT_READY(100001, "Awaiting on ECS resources"),
 
+  // ecs resource
+  ECS_RESOURCES_NOT_FOUND(100001, "awaiting on ECS resources to be ready"),
   ;
   private int code;
   private String message;

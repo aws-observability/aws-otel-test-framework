@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class ECSHealthCheckValidatorTest {
@@ -33,7 +34,9 @@ public class ECSHealthCheckValidatorTest {
     Container container = prepareContainer("HEALTHY");
     Task task = prepareTask(container);
     DescribeTasksResult result = prepareDescribeTasksResult(task);
-    doReturn(result).when(taskService).describeTask("DummyClusterArn");
+    List<String> anyArnList = new ArrayList<String>(Arrays.asList("anyArn"));
+    doReturn(anyArnList).when(taskService).listTasks("DummyClusterArn");
+    doReturn(result).when(taskService).describeTask(anyArnList, "DummyClusterArn");
     ecsHealthCheckValidator.validate();
   }
 
@@ -41,7 +44,8 @@ public class ECSHealthCheckValidatorTest {
   public void testECSHealthCheckWhenDescribeTaskResultIsNull() throws Exception {
     ecsHealthCheckValidator.init(initContext(), null, null, null);
     DescribeTasksResult result = prepareDescribeTasksResult(null);
-    doReturn(result).when(taskService).describeTask("DummyClusterArn");
+    List<String> anyArnList = new ArrayList<String>(Arrays.asList("anyArn"));
+    doReturn(result).when(taskService).describeTask(anyArnList, "DummyClusterArn");
     ecsHealthCheckValidator.validate();
   }
 
@@ -50,7 +54,8 @@ public class ECSHealthCheckValidatorTest {
     ecsHealthCheckValidator.init(initContext(), null, null, null);
     Task task = prepareTask(null);
     DescribeTasksResult result = prepareDescribeTasksResult(task);
-    doReturn(result).when(taskService).describeTask("DummyClusterArn");
+    List<String> anyArnList = new ArrayList<String>(Arrays.asList("anyArn"));
+    doReturn(result).when(taskService).describeTask(anyArnList, "DummyClusterArn");
     ecsHealthCheckValidator.validate();
   }
 
@@ -60,7 +65,8 @@ public class ECSHealthCheckValidatorTest {
     Container container = prepareContainer("UNKNOWN");
     Task task = prepareTask(container);
     DescribeTasksResult result = prepareDescribeTasksResult(task);
-    doReturn(result).when(taskService).describeTask("DummyClusterArn");
+    List<String> anyArnList = new ArrayList<String>(Arrays.asList("anyArn"));
+    doReturn(result).when(taskService).describeTask(anyArnList, "DummyClusterArn");
     ecsHealthCheckValidator.validate();
   }
 
@@ -82,13 +88,14 @@ public class ECSHealthCheckValidatorTest {
   }
 
   private Task prepareTask(Container container) {
-    final DescribeTasksResult result = new DescribeTasksResult();
     Task task = new Task();
     List<Container> containers = new ArrayList<>();
     if (container != null) {
       containers.add(container);
     }
     task.setContainers(containers);
+    task.setTaskDefinitionArn("DummyTaskDefArn");
+    task.setLastStatus("RUNNING");
     return task;
   }
 
@@ -106,6 +113,7 @@ public class ECSHealthCheckValidatorTest {
     );
     ECSContext ecsContext = new ECSContext();
     ecsContext.setEcsClusterArn("DummyClusterArn");
+    ecsContext.setEcsTaskDefArn("DummyTaskDefArn");
     context.setEcsContext(ecsContext);
     return context;
   }

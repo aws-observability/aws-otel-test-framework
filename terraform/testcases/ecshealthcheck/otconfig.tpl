@@ -1,12 +1,7 @@
 extensions:
   health_check:
-  health_check/1:
     endpoint: "localhost:13133"
     path: "/health/status"
-    check_collector_pipeline:
-      enabled: true
-      interval: "5m"
-      exporter_failure_threshold: 5
 receivers:
   prometheus:
     config:

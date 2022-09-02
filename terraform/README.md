@@ -270,7 +270,7 @@ Below are the placeholders you can use in the expected data pattern.
 * metricNamespace
 * testingId
 * ecsContext.ecsClusterName
-* ecsContext.ecsTaskArn
+* ecsContext.ecsTaskDefArn
 * ecsContext.ecsTaskDefFamily
 * ecsContext.ecsTaskDefVersion
 

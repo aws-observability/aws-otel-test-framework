@@ -120,7 +120,7 @@
         "interval": 5,
         "timeout": 6,
         "retries": 5,
-        "startPeriod": 6
+        "startPeriod": 1
       }
     },
     {
