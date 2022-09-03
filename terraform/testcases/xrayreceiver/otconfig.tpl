@@ -25,4 +25,4 @@ service:
   extensions: [pprof]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}

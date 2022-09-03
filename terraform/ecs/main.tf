@@ -40,6 +40,8 @@ module "basic_components" {
   sample_app_listen_address_port = module.common.sample_app_listen_address_port
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
+
+  debug = var.debug
 }
 
 locals {

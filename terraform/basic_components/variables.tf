@@ -51,3 +51,8 @@ variable "sample_app_listen_address_host" {
 variable "sample_app_listen_address_port" {
   default = ""
 }
+
+variable "debug" {
+  type = bool
+  default = false
+}

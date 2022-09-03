@@ -29,6 +29,7 @@ module "basic_components" {
   mocked_endpoint = var.mock_endpoint
   sample_app      = var.sample_app
   mocked_server   = var.mocked_server
+  debug           = var.debug
 }
 
 # launch ec2

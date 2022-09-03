@@ -80,6 +80,7 @@ data "template_file" "otconfig" {
     cortex_instance_endpoint       = var.cortex_instance_endpoint
     sample_app_listen_address_host = var.sample_app_listen_address_host
     sample_app_listen_address_port = var.sample_app_listen_address_port
+    log_level                      = var.debug ? "debug" : "info"
 
     mock_endpoint = var.mocked_endpoint
   }

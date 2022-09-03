@@ -44,6 +44,8 @@ module "basic_components" {
   sample_app_listen_address_host = aws_instance.sidecar.public_ip
 
   sample_app_listen_address_port = module.common.sample_app_lb_port
+
+  debug = var.debug
 }
 
 provider "aws" {

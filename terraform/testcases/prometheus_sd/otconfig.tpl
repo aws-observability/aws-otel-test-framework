@@ -32,4 +32,4 @@ service:
   extensions: [sigv4auth]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}
