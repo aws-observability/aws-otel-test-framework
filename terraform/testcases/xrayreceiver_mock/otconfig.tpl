@@ -19,7 +19,6 @@ exporters:
     endpoint: "${mock_endpoint}"
 
 service:
-  extensions:
   pipelines:
     traces:
       receivers: [awsxray]
@@ -28,4 +27,4 @@ service:
   extensions: [pprof]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}

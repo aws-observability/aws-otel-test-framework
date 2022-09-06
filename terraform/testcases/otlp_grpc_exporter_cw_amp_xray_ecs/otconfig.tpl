@@ -149,4 +149,4 @@ service:
   extensions: [pprof, sigv4auth]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}
