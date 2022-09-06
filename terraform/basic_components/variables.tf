@@ -53,6 +53,6 @@ variable "sample_app_listen_address_port" {
 }
 
 variable "debug" {
-  type = bool
+  type    = bool
   default = false
 }
