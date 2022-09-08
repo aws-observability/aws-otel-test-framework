@@ -5,11 +5,11 @@
       "cpu": 10,
       "memory": 256,
       "portMappings": [
-          {
-            "containerPort": 4567,
-            "hostPort": 4567,
-            "protocol": "tcp"
-          }
+        {
+          "containerPort": 4567,
+          "hostPort": 4567,
+          "protocol": "tcp"
+        }
       ],
       "command": [],
       "environment": [
@@ -97,11 +97,11 @@
       "cpu": 10,
       "memory": 256,
       "portMappings": [
-           {
-             "containerPort": 8080,
-             "hostPort": 8080,
-             "protocol": "tcp"
-           }
+        {
+          "containerPort": 8080,
+          "hostPort": 8080,
+          "protocol": "tcp"
+        }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
