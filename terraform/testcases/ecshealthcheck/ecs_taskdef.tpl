@@ -14,50 +14,18 @@
       "command": [],
       "environment": [
         {
-          "name": "OTEL_EXPORTER_OTLP_ENDPOINT",
-          "value": "http://127.0.0.1:${grpc_port}"
-        },
-        {
-           "name": "AWS_XRAY_DAEMON_ADDRESS",
-           "value": "127.0.0.1:${udp_port}"
-        },
-        {
-           "name": "COLLECTOR_UDP_ADDRESS",
-           "value": "127.0.0.1:${udp_port}"
-        },
-        {
-            "name": "AWS_REGION",
-            "value": "${region}"
-        },
-        {
           "name": "INSTANCE_ID",
           "value": "${testing_id}"
         },
         {
-        "name": "OTEL_RESOURCE_ATTRIBUTES",
-        "value": "service.namespace=${otel_service_namespace},service.name=${otel_service_name}"
-        },
-        {
-            "name": "LISTEN_ADDRESS",
-            "value": "${sample_app_listen_address}"
-        },
-        {
-        "name": "JAEGER_RECEIVER_ENDPOINT",
-        "value": "127.0.0.1:${http_port}"
-        },
-        {
-        "name": "ZIPKIN_RECEIVER_ENDPOINT",
-        "value": "127.0.0.1:${http_port}"
-        },
-        {
-        "name": "OTEL_METRICS_EXPORTER",
-        "value": "otlp"
+          "name": "LISTEN_ADDRESS",
+          "value": "${sample_app_listen_address}"
         }
       ],
       "dependsOn": [
         {
-            "containerName": "aoc-collector",
-            "condition": "START"
+          "containerName": "aoc-collector",
+          "condition": "START"
         }
       ],
       "logConfiguration": {
@@ -82,21 +50,21 @@
           "protocol": "tcp"
         },
         {
-           "containerPort": 2000,
-           "hostPort": 2000
+          "containerPort": 2000,
+          "hostPort": 2000
         }
       ],
       "secrets": [
         {
-            "name": "AOT_CONFIG_CONTENT",
-            "valueFrom": "${ssm_parameter_arn}"
+          "name": "AOT_CONFIG_CONTENT",
+          "valueFrom": "${ssm_parameter_arn}"
         }
       ],
       "mountPoints": [
-          {
-              "sourceVolume": "efs",
-              "containerPath": "/etc/pki/tls/certs"
-          }
+        {
+          "sourceVolume": "efs",
+          "containerPath": "/etc/pki/tls/certs"
+        }
       ],
       "essential": true,
       "entryPoint": [],

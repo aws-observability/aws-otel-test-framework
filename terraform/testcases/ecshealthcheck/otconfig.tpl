@@ -22,4 +22,4 @@ service:
   extensions: [health_check]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}
