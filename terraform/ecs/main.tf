@@ -337,9 +337,6 @@ module "validator" {
     ecsLaunchType : aws_ecs_service.aoc[0].launch_type
   })
 
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
-
   depends_on = [aws_ecs_service.aoc]
 }
 
@@ -362,9 +359,6 @@ module "validator_without_sample_app" {
 
   cloudwatch_context_json = data.template_file.cloudwatch_context.rendered
 
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
-
   depends_on = [aws_ecs_service.aoc_without_sample_app, aws_ecs_service.extra_apps]
 }
 
@@ -386,8 +380,6 @@ module "validator_without_sample_app_for_bridge" {
     ecsTaskDefVersion : aws_ecs_task_definition.aoc_bridge[0].revision
   })
 
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
   depends_on = [
   aws_ecs_service.aoc_without_sample_app_for_bridge]
 }

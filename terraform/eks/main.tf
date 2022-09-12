@@ -243,9 +243,6 @@ module "validator" {
   cortex_instance_endpoint = var.cortex_instance_endpoint
   rollup                   = var.rollup
 
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
-
   depends_on = [
     module.aoc_oltp,
     module.adot_operator,

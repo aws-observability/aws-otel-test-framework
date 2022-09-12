@@ -53,9 +53,6 @@ module "ec2_setup" {
   # install cwagent
   install_cwagent = false
 
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
-
   patch = true
 
   ssm_package_name       = "AWSDistroOTel-Collector"

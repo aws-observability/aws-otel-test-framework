@@ -18,7 +18,6 @@
 locals {
   docker_compose_path = "validator_docker_compose.yml"
 
-  provide_credentials_via_env_vars = var.aws_access_key_id != "" && var.aws_secret_access_key != ""
 }
 
 ## render docker compose file
@@ -61,24 +60,6 @@ resource "local_file" "docker_compose_file" {
 
   depends_on = [data.template_file.docker_compose]
 }
-
-# render credentials env file if the credentials env vars are provided,
-# this will be mainly used in github workflow where there's no ~/.aws folder
-data "template_file" "env_file_template" {
-  template = file("../templates/defaults/credentials-env.tpl")
-
-  vars = {
-    aws_access_key_id     = var.aws_access_key_id
-    aws_secret_access_key = var.aws_secret_access_key
-    region                = var.region
-  }
-}
-resource "local_file" "env_file" {
-  filename = "creds.env"
-
-  content = local.provide_credentials_via_env_vars ? data.template_file.env_file_template.rendered : ""
-}
-
 
 resource "null_resource" "validator" {
   provisioner "local-exec" {
