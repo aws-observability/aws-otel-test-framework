@@ -163,7 +163,7 @@ EOF
       os_family          = "amazon_linux"
       ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
       ami_owner          = "amazon"
-      ami_id             = "ami-0d08ef957f0e4722b"
+      ami_id             = "ami-0c2ab3b8efb09f272"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
@@ -287,7 +287,7 @@ EOF
       os_family          = "amazon_linux"
       ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-arm64-gp2"
       ami_owner          = "amazon"
-      ami_id             = "ami-0d3c51ccaa76cbe2b"
+      ami_id             = "ami-07c02c38124bd75bd"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
@@ -389,7 +389,7 @@ EOF
       os_family          = "amazon_linux"
       ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
       ami_owner          = "amazon"
-      ami_id             = "ami-0d08ef957f0e4722b"
+      ami_id             = "ami-0c2ab3b8efb09f272"
       ami_product_code   = []
       family             = "amazon_linux"
       arch               = "amd64"
@@ -407,7 +407,7 @@ EOF
       os_family          = "amazon_linux"
       ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
       ami_owner          = "amazon"
-      ami_id             = "ami-0d08ef957f0e4722b"
+      ami_id             = "ami-0c2ab3b8efb09f272"
       ami_product_code   = []
       family             = "amazon_linux"
       arch               = "amd64"
