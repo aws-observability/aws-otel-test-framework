@@ -65,7 +65,7 @@ case "$service" in
     ;;
 esac
 
-
+cd ${TEST_FOLDER};
 case "$service" in
     "EKS_FARGATE" | "EKS_ARM64" | "EKS_ADOT_OPERATOR" | "EKS_ADOT_OPERATOR_ARM64") terraform destroy --auto-approve $opts;
     ;;
