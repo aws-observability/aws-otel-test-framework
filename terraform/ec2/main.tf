@@ -96,8 +96,11 @@ resource "aws_instance" "sidecar" {
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
   tags = {
-    Name  = "Integ-test-Sample-App"
-    Patch = var.patch
+    Name      = "Integ-test-Sample-App"
+    Patch     = var.patch
+    TestCase  = var.testcase
+    TestID    = module.common.testing_id
+    ephemeral = "true"
   }
 }
 
@@ -114,8 +117,11 @@ resource "aws_instance" "aoc" {
   user_data                   = local.user_data
 
   tags = {
-    Name  = "Integ-test-aoc"
-    Patch = var.patch
+    Name      = "Integ-test-aoc"
+    Patch     = var.patch
+    TestCase  = var.testcase
+    TestID    = module.common.testing_id
+    ephemeral = "true"
   }
 }
 
