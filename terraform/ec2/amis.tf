@@ -161,7 +161,7 @@ EOF
     }
     amazonlinux2 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel-5.10-hvm-2.0.????????.?-x86_64-gp2"
+      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
       ami_owner          = "amazon"
       ami_id             = "ami-0c2ab3b8efb09f272"
       ami_product_code   = []
@@ -285,7 +285,7 @@ EOF
     # arm amis
     arm_amazonlinux2 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel-5.10-hvm-2.0.????????.?-arm64-gp2"
+      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-arm64-gp2"
       ami_owner          = "amazon"
       ami_id             = "ami-07c02c38124bd75bd"
       ami_product_code   = []
@@ -387,7 +387,7 @@ EOF
     }
     canary_linux = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel-5.10-hvm-2.0.????????.?-x86_64-gp2"
+      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
       ami_owner          = "amazon"
       ami_id             = "ami-0c2ab3b8efb09f272"
       ami_product_code   = []
@@ -405,7 +405,7 @@ EOF
     }
     soaking_linux = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel-5.10-hvm-2.0.????????.?-x86_64-gp2"
+      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
       ami_owner          = "amazon"
       ami_id             = "ami-0c2ab3b8efb09f272"
       ami_product_code   = []
@@ -428,7 +428,7 @@ data "aws_ami" "amazonlinux2" {
   filter {
     name = "name"
     values = [
-    "amzn2-ami-kernel-5.10-hvm-2.0.????????.?-x86_64-gp2"]
+    "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"]
   }
 
   filter {
