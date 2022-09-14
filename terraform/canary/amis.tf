@@ -61,7 +61,7 @@ variable "amis" {
     }
     canary_linux = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel-5.10-hvm-2.0.????????.?-x86_64-gp2"
+      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
       ami_owner          = "amazon"
       ami_id             = "ami-0c2ab3b8efb09f272"
       ami_product_code   = []
