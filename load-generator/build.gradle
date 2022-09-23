@@ -30,13 +30,12 @@ dependencies {
 
     implementation "io.grpc:grpc-netty-shaded:1.47.0"
 
-    implementation platform("io.opentelemetry:opentelemetry-bom:1.12.0")
+    implementation platform("io.opentelemetry:opentelemetry-bom:1.18.0")
     implementation "io.opentelemetry:opentelemetry-api"
-    implementation "io.opentelemetry:opentelemetry-sdk-metrics:1.18.0"
-    implementation "io.opentelemetry:opentelemetry-exporter-otlp:1.18.0"
-    implementation "io.opentelemetry:opentelemetry-semconv:1.18.0-alpha"
-    implementation "io.opentelemetry:opentelemetry-sdk:1.18.0"
+    implementation "io.opentelemetry:opentelemetry-sdk"
+    implementation "io.opentelemetry:opentelemetry-exporter-otlp"
 
+    implementation "io.opentelemetry:opentelemetry-semconv:1.18.0-alpha"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
     implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.11.2"
     implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.11.2"
