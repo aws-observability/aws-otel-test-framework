@@ -15,17 +15,22 @@
 
 package com.amazon.opentelemetry.load.generator.emitter;
 
-import com.amazon.opentelemetry.load.generator.factory.AwsTracerConfigurer;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
-import io.grpc.ManagedChannelBuilder;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.trace.SpanKind;
-import io.opentelemetry.api.trace.TracerProvider;
 import io.opentelemetry.exporter.otlp.trace.OtlpGrpcSpanExporter;
+import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
+import io.opentelemetry.sdk.extension.aws.trace.AwsXrayIdGenerator;
+import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
+import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
+
 import java.time.Duration;
 import java.util.UUID;
 
@@ -46,20 +51,24 @@ public class OtlpTraceEmitter extends TraceEmitter {
 
   @Override
   public void setupProvider() throws Exception {
-    OtlpGrpcSpanExporter spanExporter = OtlpGrpcSpanExporter.builder()
-        .setChannel(
-            ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
-        .setTimeout(Duration.ofMillis(10))
-        .build();
 
-    SdkTracerProviderBuilder builder = SdkTracerProvider.builder();
-    new AwsTracerConfigurer().configure(builder);
-    builder.addSpanProcessor(SimpleSpanProcessor.create(spanExporter));
-    TracerProvider tracerProvider = builder.build();
+    Resource resource = Resource.getDefault().merge(
+            Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, "load-generator")));
+
+    OpenTelemetrySdk.builder()
+            .setTracerProvider(
+            SdkTracerProvider.builder()
+                    .addSpanProcessor(
+                            BatchSpanProcessor.builder(OtlpGrpcSpanExporter.getDefault()).build())
+                    .setIdGenerator(AwsXrayIdGenerator.getInstance())
+                    .setResource(resource)
+                    .build())
+            .buildAndRegisterGlobal();
 
     tracer =
-        tracerProvider.get("aws-otel-load-generator-trace", "semver:0.1.0");
-
+            GlobalOpenTelemetry.tracerBuilder("aws-otel-load-generator-trace")
+                    .setInstrumentationVersion("semver:0.1.0")
+                    .build();
   }
 
   @Override
