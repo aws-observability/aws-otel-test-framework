@@ -75,7 +75,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
 
     Meter meter =
             GlobalOpenTelemetry.meterBuilder("aws-otel-load-generator-metric")
-                    .setInstrumentationVersion("1.0")
+                    .setInstrumentationVersion("0.1.0")
                     .build();
 
     apiBytesSentCounter =

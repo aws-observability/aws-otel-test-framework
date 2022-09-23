@@ -35,10 +35,9 @@ dependencies {
     implementation "io.opentelemetry:opentelemetry-sdk-metrics:1.18.0"
     implementation "io.opentelemetry:opentelemetry-exporter-otlp:1.18.0"
     implementation "io.opentelemetry:opentelemetry-semconv:1.18.0-alpha"
+    implementation "io.opentelemetry:opentelemetry-sdk:1.18.0"
 
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
-    implementation "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:1.4.1-alpha"
-
     implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.11.2"
     implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.11.2"
 
