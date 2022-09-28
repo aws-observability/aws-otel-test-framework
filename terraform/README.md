@@ -375,6 +375,7 @@ below is an example in the aoc repo workflow, you can also configure it in your 
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.ASSUMABLE_ROLE_ARN }}
+          role-session-name: RelevantNameForWorkflow
           aws-region: us-west-2
           
       - name: Set up JDK 1.11
