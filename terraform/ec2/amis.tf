@@ -230,7 +230,7 @@ sudo dpkg -i amazon-ssm-agent.deb
 sudo systemctl enable amazon-ssm-agent
 EOF
     }
-    arm_debian11 = {
+    arm_debian10 = {
       os_family          = "debian"
       ami_search_pattern = "debian-10-*"
       ami_owner          = "aws-marketplace"
