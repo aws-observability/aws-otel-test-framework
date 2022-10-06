@@ -111,7 +111,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "ubuntu"
-      instance_type      = "t4g.nano"
+      instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
 sudo snap refresh amazon-ssm-agent
@@ -138,7 +138,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "ubuntu"
-      instance_type      = "t4g.nano"
+      instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
 sudo snap refresh amazon-ssm-agent
@@ -165,7 +165,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "ubuntu"
-      instance_type      = "t4g.nano"
+      instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
 sudo snap refresh amazon-ssm-agent
@@ -199,7 +199,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "admin"
-      instance_type      = "t4g.nano"
+      instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
@@ -238,7 +238,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "admin"
-      instance_type      = "t4g.nano"
+      instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
@@ -272,7 +272,7 @@ EOF
       family             = "linux"
       arch               = "arm64"
       login_user         = "ec2-user"
-      instance_type      = "t4g.nano"
+      instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
@@ -324,7 +324,7 @@ EOF
       family             = "linux"
       login_user         = "ec2-user"
       arch               = "arm64"
-      instance_type      = "t4g.nano"
+      instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
