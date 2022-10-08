@@ -60,7 +60,7 @@ variable "amis" {
     }
     canary_linux = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel.5*"
+      ami_search_pattern = "amzn2-ami-kernel-5*"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "amazon_linux"
