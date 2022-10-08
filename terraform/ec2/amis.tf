@@ -253,7 +253,7 @@ EOF
     #AL2
     amazonlinux2 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel.5*"
+      ami_search_pattern = "amzn2-ami-kernel-5*"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
@@ -266,7 +266,7 @@ EOF
     }
     arm_amazonlinux2 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel.5*"
+      ami_search_pattern = "amzn2-ami-kernel-5*"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
