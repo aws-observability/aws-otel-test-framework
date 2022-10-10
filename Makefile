@@ -16,6 +16,5 @@ go-test:
 	@set -ex; for dir in $(ALL_GO_MOD_DIRS); do \
 	  (cd "$${dir}" && \
 	    go list ./... \
-		  | grep -v third_party \
 		  | xargs -n 10 $(GOTEST) $(GOTEST_OPT)) ; \
 	done
