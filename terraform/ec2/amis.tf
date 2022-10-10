@@ -398,7 +398,7 @@ data "aws_ami" "selected" {
 
   filter {
     name   = "architecture"
-    values = [var.amis[var.testing_ami]["arch"]]
+    values = [local.arch]
   }
 
   filter {
