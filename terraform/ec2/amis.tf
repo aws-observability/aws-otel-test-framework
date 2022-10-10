@@ -93,7 +93,7 @@ variable "amis" {
     ubuntu18 = {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
-      owners             = "aws-marketplace"
+      ami_owner          = "aws-marketplace"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -106,7 +106,7 @@ EOF
     arm_ubuntu18 = {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
-      owners             = "aws-marketplace"
+      ami_owner          = "aws-marketplace"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
