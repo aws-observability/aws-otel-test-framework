@@ -25,7 +25,7 @@ var ec2AMIs = []string{
 	"ubuntu18",
 	"arm_ubuntu18",
 	"ubuntu20",
-	"arm_ubuntu20"
+	"arm_ubuntu20",
 	"ubuntu22",
 	"arm_ubuntu22",
 	"debain11",
@@ -39,7 +39,7 @@ var ec2AMIs = []string{
 	"suse15",
 	"suse12",
 	"redhat8",
-	"arm_redhat8"
+	"arm_redhat8",
 }
 
 var ecsLaunchTypes = []string{"EC2", "FARGATE"}
