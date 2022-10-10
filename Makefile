@@ -13,7 +13,7 @@ list-mod:
 
 .PHONY: go-test
 go-test:
-	@set -ex; for dir in $(ALL_GO_MOD_DIRS); do \
+	@set -e; for dir in $(ALL_GO_MOD_DIRS); do \
 	  (cd "$${dir}" && \
 	    go list ./... \
 		  | xargs -n 10 $(GOTEST) $(GOTEST_OPT)) ; \
