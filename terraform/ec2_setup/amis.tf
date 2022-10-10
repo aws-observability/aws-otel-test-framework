@@ -68,7 +68,7 @@ variable "amis" {
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "windows"
-      arch               = "x86_64"
+      arch               = "amd64"
     }
     soaking_linux = {
       os_family          = "amazon_linux"
@@ -76,7 +76,7 @@ variable "amis" {
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "amazon_linux"
-      arch               = "x86_64"
+      arch               = "amd64"
     }
   }
 }

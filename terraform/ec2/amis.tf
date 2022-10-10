@@ -96,7 +96,7 @@ variable "amis" {
       owners             = "aws-marketplace"
       ami_product_code   = []
       family             = "debian"
-      arch               = "x86_64"
+      arch               = "amd64"
       login_user         = "ubuntu"
       user_data          = <<EOF
 #! /bin/bash
@@ -123,7 +123,7 @@ EOF
       ami_owner          = "aws-marketplace"
       ami_product_code   = []
       family             = "debian"
-      arch               = "x86_64"
+      arch               = "amd64"
       login_user         = "ubuntu"
       user_data          = <<EOF
 #! /bin/bash
@@ -150,7 +150,7 @@ EOF
       ami_owner          = "aws-marketplace"
       ami_product_code   = []
       family             = "debian"
-      arch               = "x86_64"
+      arch               = "amd64"
       login_user         = "ubuntu"
       user_data          = <<EOF
 #! /bin/bash
@@ -178,7 +178,7 @@ EOF
       ami_owner          = "aws-marketplace"
       ami_product_code   = []
       family             = "debian"
-      arch               = "x86_64"
+      arch               = "amd64"
       login_user         = "admin"
       user_data          = <<EOF
 #! /bin/bash
@@ -217,7 +217,7 @@ EOF
       ami_owner          = "aws-marketplace"
       ami_product_code   = []
       family             = "debian"
-      arch               = "x86_64"
+      arch               = "amd64"
       login_user         = "admin"
       user_data          = <<EOF
 #! /bin/bash
@@ -257,7 +257,7 @@ EOF
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
-      arch               = "x86_64"
+      arch               = "amd64"
       login_user         = "ec2-user"
       user_data          = <<EOF
 #! /bin/bash
@@ -285,7 +285,7 @@ EOF
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "windows"
-      arch               = "x86_64"
+      arch               = "amd64"
       login_user         = "Administrator"
     }
     windows2019 = {
@@ -295,7 +295,7 @@ EOF
       ami_id             = "ami-0297fbf7e83dd1209"
       ami_product_code   = []
       family             = "windows"
-      arch               = "x86_64"
+      arch               = "amd64"
       login_user         = "Administrator"
     }
     # Suse Distribution
@@ -306,7 +306,7 @@ EOF
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
-      arch               = "x86_64"
+      arch               = "amd64"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
@@ -339,7 +339,7 @@ EOF
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
-      arch               = "x86_64"
+      arch               = "amd64"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
@@ -356,7 +356,7 @@ EOF
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
-      arch               = "x86_64"
+      arch               = "amd64"
       user_data          = <<EOF
 #! /bin/bash
 sudo dnf install -y python3
@@ -380,6 +380,10 @@ EOF
   }
 }
 
+# Local variables only apply to aws_ami for the customized filter input
+locals {
+  arch = var.amis[var.testing_ami]["arch"] == "amd64" ? "x86_64" : var.amis[var.testing_ami]["arch"]
+}
 
 data "aws_ami" "selected" {
   most_recent = true
