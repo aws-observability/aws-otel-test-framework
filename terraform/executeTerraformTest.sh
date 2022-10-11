@@ -1,11 +1,11 @@
 #!/bin/bash
 ##########################################
-# This script is used to execute a
-# terraform test. A destroy will 
-# alway be ran no matter if terraform was 
-# successful or not. 
+# This script is used to execute a terraform test case. It is primarily for use 
+# with the Batch Test Generator. The script expects two to three arguments
+# depending on the aws_service type. The script also expects certain enviornment 
+# variables to be set. Expected inputs and env variables are listed below.
 #
-# ENV:
+# Expected env variables:
 # TF_VAR_aoc_version
 # DDB_TABLE_NAME
 # TTL_DATE time insert for TTL item in cache
@@ -18,7 +18,6 @@
 # $2: testcase 
 # $3: ECS/EC2 only - ami/ecs launch type 
 # $3: For EKS-arm64 we expect region|clustername
-
 ##########################################
 
 set -x
