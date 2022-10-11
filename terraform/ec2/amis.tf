@@ -93,7 +93,7 @@ variable "amis" {
     ubuntu18 = {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -106,7 +106,7 @@ EOF
     arm_ubuntu18 = {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
@@ -120,7 +120,7 @@ EOF
     ubuntu20 = {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-focal*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -133,7 +133,7 @@ EOF
     arm_ubuntu20 = {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-focal*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
@@ -147,7 +147,7 @@ EOF
     ubuntu22 = {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-jammy*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -160,7 +160,7 @@ EOF
     arm_ubuntu22 = {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-jammy*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
@@ -175,7 +175,7 @@ EOF
     debian11 = {
       os_family          = "debian"
       ami_search_pattern = "debian-11-*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -194,7 +194,7 @@ EOF
     arm_debian11 = {
       os_family          = "debian"
       ami_search_pattern = "debian-11-*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
@@ -214,7 +214,7 @@ EOF
     debian10 = {
       os_family          = "debian"
       ami_search_pattern = "debian-10-*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -233,7 +233,7 @@ EOF
     arm_debian10 = {
       os_family          = "debian"
       ami_search_pattern = "debian-10-*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
@@ -301,7 +301,7 @@ EOF
     suse15 = {
       os_family          = "suse"
       ami_search_pattern = "suse-sles-15*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
@@ -318,7 +318,7 @@ EOF
     arm_suse15 = {
       os_family          = "suse"
       ami_search_pattern = "suse-sles-15*"
-      ami_owner          = "aws-marketplace"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
