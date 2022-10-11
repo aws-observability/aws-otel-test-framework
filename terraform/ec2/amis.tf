@@ -82,7 +82,7 @@ EOF
 ##
 ## os_family, which will be used to construct the downloading url of collector on s3
 ## ami_search_pattern, which will be used to search the amis from aws
-## ami_owner, could be "amazon" , "aws-marketplace" or a dedicated account number, for example, redhat amis are distributed by this account 309956199498(Redhat Inc)
+## ami_owner, could be "amazon", "aws-marketplace", or a dedicated account number, for example, redhat amis are distributed by this account 309956199498(Redhat Inc)
 ## family, could be "linux", "debian", "windows"
 ## arch, which will be used to construct the downloading url of collector on s3
 ## login_user, which will be taken first, if null then the take from family.
