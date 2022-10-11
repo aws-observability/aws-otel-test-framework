@@ -15,8 +15,16 @@
     1. --dataFormat -d (eg, otlp, prometheus, xray)
 
 ### OTLP Metrics Load Test Sample Command,
+
+The following is a list of optional command line flags for configuration of OTLP metrics:
+* `--flushInterval, -f` : (default=1000)the metric collection export interval
+* `--metric_count, -m`: (default=1) the number of metrics that should be created for each metric type
+* `--datapointCount, -dp`: (default=1) the number of datapoints that should be created for each metric.
+* `--observationInterval, -o`: (default=1000) the interval at which metric observations/values are updated.
+* `--metricType, -mt`: (default=counter) Specify the type of metric - counter or gauge.
+
 ```
-./gradlew :load-generator:run --args="metric -r=10000 -u=localhost:4317 -d=otlp -f=10000"
+./gradlew :load-generator:run --args="metric -m=100 -dp=10 -u=localhost:4317 -d=otlp -f=1000 -mt=counter"
 ```
 
 ### OTLP Trace Load Test Sample Command,
