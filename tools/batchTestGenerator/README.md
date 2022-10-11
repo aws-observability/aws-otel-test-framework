@@ -15,18 +15,6 @@ Users should provide identical values for `EKS` and `EKS_ARM_64` flags that were
 ### Globally Available flags
 #### --testCaseFilePath
 Path to test case file. Defaults to `./testcases.json`
-#### --eksarm64amp
-Endpoint for EKS ARM 64 AMP workspace.
-#### --eksarm64cluster
-Cluster name for EKS ARM 64 tests.
-#### --eksarm64region
-Region for EKS ARM 64 tests.
-#### --eksamp
-Endpoint for EKS AMP workspace.
-#### --ekscluster
-Cluster name for EKS tests.
-#### --eksregion
-Region for EKS tests.
 #### --include
 List of services to include. If not provided will default to all.
 Valid values are as follows "EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS_FARGATE"

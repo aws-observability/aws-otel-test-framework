@@ -82,7 +82,6 @@ func TestBuildTestCasesEC2ECS(t *testing.T) {
 }
 
 func TestBuildTestCaseEKS(t *testing.T) {
-	expectedAdditionalVars := "field1|field2|field3"
 	tests := []struct {
 		testname          string
 		runConfig         RunConfig
@@ -92,7 +91,6 @@ func TestBuildTestCaseEKS(t *testing.T) {
 		{
 			testname: "eksarm64test",
 			runConfig: RunConfig{
-				EksARM64Vars: expectedAdditionalVars,
 				IncludedServices: map[string]struct{}{
 					"EKS_ARM64": {},
 				},
@@ -107,7 +105,6 @@ func TestBuildTestCaseEKS(t *testing.T) {
 		{
 			testname: "eksoperatortest",
 			runConfig: RunConfig{
-				EksVars: expectedAdditionalVars,
 				IncludedServices: map[string]struct{}{
 					"EKS_ADOT_OPERATOR": {},
 				},
@@ -120,7 +117,6 @@ func TestBuildTestCaseEKS(t *testing.T) {
 		{
 			testname: "eksoperatorarm64test",
 			runConfig: RunConfig{
-				EksVars: expectedAdditionalVars,
 				IncludedServices: map[string]struct{}{
 					"EKS_ADOT_OPERATOR_ARM64": {},
 				},
@@ -134,7 +130,6 @@ func TestBuildTestCaseEKS(t *testing.T) {
 		{
 			testname: "eksfargatetest",
 			runConfig: RunConfig{
-				EksVars: expectedAdditionalVars,
 				IncludedServices: map[string]struct{}{
 					"EKS_FARGATE": {},
 				},
@@ -148,7 +143,6 @@ func TestBuildTestCaseEKS(t *testing.T) {
 		{
 			testname: "ekstest",
 			runConfig: RunConfig{
-				EksVars: expectedAdditionalVars,
 				IncludedServices: map[string]struct{}{
 					"EKS": {},
 				},
@@ -172,9 +166,9 @@ func TestBuildTestCaseEKS(t *testing.T) {
 				expectedMap := make(map[TestCaseInfo]int)
 				for tn := range test.expectedTestCases {
 					e := TestCaseInfo{
-						testcaseName:  tn,
-						serviceType:   test.serviceType,
-						additionalVar: expectedAdditionalVars,
+						testcaseName: tn,
+						serviceType:  test.serviceType,
+						//additionalVar: expectedAdditionalVars,
 					}
 					expectedMap[e] = 0
 				}

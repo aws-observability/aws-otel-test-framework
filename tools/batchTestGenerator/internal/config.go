@@ -11,8 +11,6 @@ type RunConfig struct {
 	IncludedServices map[string]struct{}
 	MaxBatches       int
 	TestCaseFilePath string
-	EksARM64Vars     string
-	EksVars          string
 	TestCaseInput    Tests
 }
 

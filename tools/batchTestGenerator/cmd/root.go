@@ -2,14 +2,11 @@ package cmd
 
 import (
 	"fmt"
+	batch "github.com/aws-observability/aws-otel-test-frameowrk/batchTestGenerator/internal"
+	"github.com/spf13/cobra"
 	"log"
 	"os"
 	"path/filepath"
-	"regexp"
-	"strings"
-
-	batch "github.com/aws-observability/aws-otel-test-frameowrk/batchTestGenerator/internal"
-	"github.com/spf13/cobra"
 )
 
 type eksFields struct {
@@ -68,18 +65,6 @@ func newCommandConfig() *commandConfig {
 			}
 			c.runConfig.TestCaseFilePath = filepath.Join(defaultFileLoc, "testcases.json")
 		}
-
-		eks64vars, err := transformEKSvars(c.eksARM64Flags)
-		if err != nil {
-			return fmt.Errorf("failed to transform eks arm 64 vars: %w", err)
-		}
-		c.runConfig.EksARM64Vars = eks64vars
-
-		eksVars, err := transformEKSvars(c.eksFlags)
-		if err != nil {
-			return fmt.Errorf("failed to transform eks vars: %w", err)
-		}
-		c.runConfig.EksVars = eksVars
 
 		if c.runConfig.MaxBatches < 1 {
 			return fmt.Errorf("max batches must be greater than 0")
@@ -165,12 +150,6 @@ func init() {
 	// Persistent Flags
 	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.runConfig.TestCaseFilePath, "testCaseFilePath", "", `path to JSON test case file`)
 	comCfg.rootCommand.PersistentFlags().StringSliceVar(&comCfg.includeFlags, "include", []string{}, "list of commma separated services to include. See README for list of valid values.")
-	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.eksARM64Flags.ampEndpoint, "eksarm64amp", "", "AMP endpoint for EKS ARM64 tests")
-	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.eksARM64Flags.clusterName, "eksarm64cluster", "", "Cluster name for EKS ARM64 tests")
-	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.eksARM64Flags.region, "eksarm64region", "", "Region for EKS ARM64 tests")
-	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.eksFlags.ampEndpoint, "eksamp", "", "AMP endpoint for EKS tests")
-	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.eksFlags.clusterName, "ekscluster", "", "Cluster name for EKS tests")
-	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.eksFlags.region, "eksregion", "", "Region for EKS tests")
 
 	// githubflags only
 	comCfg.githubCommand.Flags().IntVar(&comCfg.runConfig.MaxBatches, "maxBatch", 40, "Maxium number of batches allowed.")
@@ -199,25 +178,4 @@ func transformInclude(includedServices []string) (map[string]struct{}, error) {
 		}
 	}
 	return output, nil
-}
-
-func transformEKSvars(fields eksFields) (string, error) {
-	outputStr := strings.Join([]string{fields.region, fields.clusterName, fields.ampEndpoint}, "|")
-	// verifies pattern matches region|clustername|amp:endpoint
-	regexPattern := `^[a-z]{2}[-][a-z]+[-]\d+[\|][^\|]+[\|][^\|]+$`
-	matched, err := regexp.MatchString(regexPattern, outputStr)
-	if err != nil {
-		return "", fmt.Errorf("error while performing regex check: %w", err)
-	}
-	if !matched {
-		// not an error to provide no values to field
-		if outputStr == "||" {
-			return "nil", nil
-		} else {
-			// it is an erorr if 0 < # of provided values < 3
-			return "nil", fmt.Errorf("must provide all three eks field values: %w", err)
-		}
-	}
-	return outputStr, nil
-
 }
