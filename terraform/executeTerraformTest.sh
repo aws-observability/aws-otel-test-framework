@@ -17,7 +17,7 @@
 # $1: aws_service
 # $2: testcase 
 # $3: ECS/EC2 only - ami/ecs launch type 
-# $3: For EKS-arm64 we expect region|clustername|amp_endoint
+# $3: For EKS-arm64 we expect region|clustername
 
 ##########################################
 
@@ -44,10 +44,8 @@ case "$service" in
     "EKS_ARM64") TEST_FOLDER="./eks/"
         arm_64_region=$(echo $3 | cut -d \| -f 1);
         arm_64_clustername=$(echo $3 | cut -d \| -f 2);
-        arm_64_amp=$(echo $3 | cut -d \| -f 3);
         export AWS_REGION=${arm_64_region};
         opts+=" -var=region=${arm_64_region}";
-        opts+=" -var=cortex_instance_endpoint=${arm_64_amp}";
         opts+=" -var=eks_cluster_name=${arm_64_clustername}";
     ;;
     "EKS_FARGATE") TEST_FOLDER="./eks/";
@@ -64,6 +62,13 @@ case "$service" in
     *)
     echo "service ${service} is not valid";
     exit 1;
+    ;;
+esac
+
+case ${AWS_REGION} in
+    "us-east-2") export TF_VAR_cortex_instance_endpoint="https://aps-workspaces.us-east-2.amazonaws.com/workspaces/ws-1de68e95-0680-42bb-8e55-67e7fd5d0861";
+    ;;
+    "us-west-2") export TF_VAR_cortex_instance_endpoint="https://aps-workspaces.us-west-2.amazonaws.com/workspaces/ws-e0c3c74f-7fdf-4e90-87d2-a61f52df40cd";
     ;;
 esac
 
