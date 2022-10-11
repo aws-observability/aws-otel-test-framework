@@ -94,6 +94,7 @@ variable "amis" {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
       owners             = "amazon"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -107,6 +108,7 @@ EOF
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
       owners             = "amazon"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
