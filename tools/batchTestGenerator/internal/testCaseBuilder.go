@@ -25,6 +25,12 @@ var ec2AMIs = []string{
 	"arm_redhat8",
 }
 
+type TestCaseInfo struct {
+	testcaseName  string
+	serviceType   string
+	additionalVar string
+}
+
 var ecsLaunchTypes = []string{"EC2", "FARGATE"}
 
 func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {

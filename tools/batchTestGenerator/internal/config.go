@@ -15,7 +15,8 @@ type RunConfig struct {
 }
 
 type Tests struct {
-	Tests []Test `json:"tests"`
+	Tests          []Test          `json:"tests"`
+	ClusterTargets []ClusterTarget `json:"clustertargets"`
 }
 
 type Test struct {
@@ -23,10 +24,14 @@ type Test struct {
 	Platforms []string `json:"platforms"`
 }
 
-type TestCaseInfo struct {
-	testcaseName  string
-	serviceType   string
-	additionalVar string
+type ClusterTarget struct {
+	Type    string   `json:"type"`
+	Targets []Target `json:"targets"`
+}
+
+type Target struct {
+	Name   string `json:"name"`
+	Region string `json:"region"`
 }
 
 func (r *RunConfig) ParseInputFile() error {
