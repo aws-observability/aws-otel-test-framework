@@ -47,7 +47,8 @@ func TestBuildTestCasesEC2ECS(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.testName, func(t *testing.T) {
 			test.runConfig.TestCaseFilePath = fmt.Sprintf("./mock_test_data/%s.json", test.testName)
-
+			err := test.runConfig.ParseInputFile()
+			assert.NoError(t, err, "error parsing input file")
 			actual, err := buildTestCases(test.runConfig)
 			if assert.NoError(t, err) {
 				expectedTotal := len(test.expectedTestCases) * len(test.matrixModifier)
@@ -112,7 +113,7 @@ func TestBuildTestCaseEKS(t *testing.T) {
 				},
 			},
 			expectedTestCases: map[string]struct{}{
-				"prometheus_sd_adot_operator":        {},
+				"prometheus_sd_adot_operator": {},
 			},
 			serviceType: "EKS_ADOT_OPERATOR",
 		},
@@ -125,8 +126,8 @@ func TestBuildTestCaseEKS(t *testing.T) {
 				},
 			},
 			expectedTestCases: map[string]struct{}{
-				"otlp_metric_adot_operator":          {},
-				"prometheus_static_adot_operator":    {},
+				"otlp_metric_adot_operator":       {},
+				"prometheus_static_adot_operator": {},
 			},
 			serviceType: "EKS_ADOT_OPERATOR_ARM64",
 		},
@@ -163,6 +164,8 @@ func TestBuildTestCaseEKS(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.testname, func(t *testing.T) {
 			test.runConfig.TestCaseFilePath = fmt.Sprintf("./mock_test_data/%s.json", test.testname)
+			err := test.runConfig.ParseInputFile()
+			assert.NoError(t, err, "error parsing input file")
 
 			actual, err := buildTestCases(test.runConfig)
 			if assert.NoError(t, err) {

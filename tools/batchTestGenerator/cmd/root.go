@@ -85,6 +85,11 @@ func newCommandConfig() *commandConfig {
 			return fmt.Errorf("max batches must be greater than 0")
 		}
 
+		err = c.runConfig.ParseInputFile()
+		if err != nil {
+			return fmt.Errorf("error parsing input file: %w", err)
+		}
+
 		return nil
 	}
 

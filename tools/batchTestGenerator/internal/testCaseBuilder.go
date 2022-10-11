@@ -1,25 +1,8 @@
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
 )
-
-type Tests struct {
-	Tests []Test `json:"tests"`
-}
-
-type Test struct {
-	CaseName  string   `json:"case_name"`
-	Platforms []string `json:"platforms"`
-}
-
-type TestCaseInfo struct {
-	testcaseName  string
-	serviceType   string
-	additionalVar string
-}
 
 var ec2AMIs = []string{
 	"ubuntu18",
@@ -46,17 +29,7 @@ var ecsLaunchTypes = []string{"EC2", "FARGATE"}
 
 func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 	testCases := []TestCaseInfo{}
-	var tests Tests
-
-	testCaseFile, err := os.ReadFile(runConfig.TestCaseFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read test cases file: %w", err)
-	}
-
-	err = json.Unmarshal(testCaseFile, &tests)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal test case file: %w", err)
-	}
+	tests := runConfig.TestCaseInput
 
 	// iterate through all test cases to build output info
 	for _, test := range tests.Tests {
