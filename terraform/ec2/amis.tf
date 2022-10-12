@@ -333,7 +333,7 @@ EOF
     }
     suse12 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-12*"
+      ami_search_pattern = "suse-sles-12-sp5-v????????-hvm-ssd-x86_64"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
