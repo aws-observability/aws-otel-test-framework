@@ -2,10 +2,10 @@
 
 ### Parameters for Metric Generation:
 1. Metric Count\
-   --metric_count, -m  : (default=1) the number of metrics that should be generated for each metric type. This amount of metrics will be updated and exported per period. 
+   --metricCount, -m  : (default=1) the number of metrics that should be generated for each metric type. This amount of metrics will be updated/exported per period. 
 
 2. Datapoint Count\
-   --flushInterval, -f : (default=1) the number of datapoints that should be created for each metric. Number of datapoints updated/exported per period shall be equal to Metric Count * Datapoint Count.
+   --datapointCount, -dp : (default=1) the number of data-points that should be created for each metric. Number of data-points updated/exported per period shall be equal to Metric Count * Datapoint Count.
 
 3. Observation Interval\
    --observationInterval, -o : (default=1000 ms) the interval (in ms) at which metric observations/values are updated.
@@ -34,7 +34,7 @@ The following is a list of additional optional command line arguments applicable
 * `--metricType, -mt`: (default=counter) Specify the type of metric - counter or gauge.
 
 ```
-./gradlew :load-generator:run --args="metric -m=100 -dp=10 -u=localhost:4317 -d=otlp -f=1000 -mt=counter"
+./gradlew :load-generator:run --args="metric --metricCount=100 --datapointCount=10 --observationInterval=1000 --flushInterval =1000 --metricType=counter -u=localhost:4317 -d=otlp"
 ```
 
 ### OTLP Trace Load Test Sample Command,
@@ -49,7 +49,7 @@ The following is a list of additional optional command line arguments applicable
 
 ### StatsD Metrics Load Test Sample Command,
 ```
-./gradlew :load-generator:run --args="metric -m=100 -dp=10 -u=localhost:8125 -d=statsd"
+./gradlew :load-generator:run --args="metric --metricCount=100 --datapointCount=10 --observationInterval=1000 -u=localhost:8125 -d=statsd"
 ```
 
 ### Zipkin Trace Load Test Sample Command,
