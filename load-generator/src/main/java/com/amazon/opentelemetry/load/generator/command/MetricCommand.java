@@ -39,7 +39,7 @@ public class MetricCommand implements Runnable {
   @Option(names = {"-f", "--flushInterval"},
       description = "the metric collection export interval (in ms)",
       defaultValue = "1000")
-  private long flushIntervalMillis = TimeUnit.SECONDS.toMillis(1);
+  private long flushIntervalMillis;
 
   @Option(names = {"-m", "--metricCount"},
           description = "the number of metrics that should be created for each metric type",
@@ -54,7 +54,7 @@ public class MetricCommand implements Runnable {
   @Option(names = {"-o", "--observationInterval"},
           description = "the interval (in ms) at which metric observations/values are updated",
           defaultValue = "1000")
-  private long observationIntervalMillis = TimeUnit.SECONDS.toMillis(1);
+  private long observationIntervalMillis;
 
   @Option(names = {"-mt", "--metricType"},
           description = "Specify the type of metric - counter or gauge",
