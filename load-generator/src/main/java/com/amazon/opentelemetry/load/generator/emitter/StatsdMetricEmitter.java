@@ -16,14 +16,16 @@
 package com.amazon.opentelemetry.load.generator.emitter;
 
 import com.amazon.opentelemetry.load.generator.model.Parameter;
+import lombok.extern.log4j.Log4j2;
 
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.concurrent.ThreadLocalRandom;
 
-
+@Log4j2
 public class StatsdMetricEmitter extends MetricEmitter{
 
     InetAddress ipAddress;
@@ -43,9 +45,11 @@ public class StatsdMetricEmitter extends MetricEmitter{
 
     @Override
     public void setupProvider() throws Exception {
+        log.info("Setting up Statsd metric emitter to generate load...");
         ipAddress = InetAddress.getByName(param.getEndpoint().split(":",2)[0]);
         portAddress = Integer.parseInt(param.getEndpoint().split(":",2)[1]);
         socket = new DatagramSocket();
+        log.info("Finished Setting up Statsd metric emitter.");
     }
 
     @Override
@@ -53,14 +57,25 @@ public class StatsdMetricEmitter extends MetricEmitter{
         try {
             sendStatsd();
         } catch (IOException e) {
+            log.error("Error occurred while sending the packet!");
             e.printStackTrace();
         }
     }
 
     public void sendStatsd() throws IOException {
         byte buf[];
-        String payload = "statsdTestMetric1:1|g|#mykey:myvalue,mykey2:myvalue2";
-        buf = payload.getBytes();
+        StringBuilder payload;
+        payload = new StringBuilder();
+        String attributes = "#mykey:myvalue,datapoint_id:";
+        log.debug("Updating metrics...");
+        for (int i = 0; i < this.param.getMetricCount(); i++) {
+            for (int id = 0; id < this.param.getDatapointCount(); id++) {
+                payload.append("statsdTestMetric").append(i).append(":")
+                        .append(ThreadLocalRandom.current().nextInt(-100,100))
+                        .append("|g|").append(attributes).append(id).append("\n");
+            }
+        }
+        buf = payload.toString().getBytes();
         DatagramPacket packet = new DatagramPacket(buf, buf.length, ipAddress, portAddress);
         socket.send(packet);
     }

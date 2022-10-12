@@ -1,4 +1,4 @@
-FROM gradle:7.5.1-jdk18 as builder
+FROM gradle:7.3.3-jdk11 as builder
 
 # build
 WORKDIR /app

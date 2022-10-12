@@ -56,7 +56,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
 
   @Override
   public void nextDataPoint() {
-    log.info("Updating metrics for : {}" , param.getMetricType());
+    log.debug("Updating metrics for : {}" , param.getMetricType());
 
     switch (param.getMetricType()) {
       case "counter":

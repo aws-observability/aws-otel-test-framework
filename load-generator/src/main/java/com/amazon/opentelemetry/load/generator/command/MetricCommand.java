@@ -37,7 +37,7 @@ public class MetricCommand implements Runnable {
   CommonOption commonOption = new CommonOption();
 
   @Option(names = {"-f", "--flushInterval"},
-      description = "the metric collection export interval",
+      description = "the metric collection export interval (in ms)",
       defaultValue = "1000")
   private long flushIntervalMillis = TimeUnit.SECONDS.toMillis(1);
 
@@ -52,7 +52,7 @@ public class MetricCommand implements Runnable {
   private int datapointCount;
 
   @Option(names = {"-o", "--observationInterval"},
-          description = "the interval at which metric observations/values are updated",
+          description = "the interval (in ms) at which metric observations/values are updated",
           defaultValue = "1000")
   private long observationIntervalMillis = TimeUnit.SECONDS.toMillis(1);
 
