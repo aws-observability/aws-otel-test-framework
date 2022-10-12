@@ -1,44 +1,92 @@
 {
-    "tests": [
-            {
-                "case_name": "prometheus_sd_adot_operator",
-                "platforms": ["EKS_ADOT_OPERATOR"]
-            },
-            {
-                "case_name": "containerinsight_eks_prometheus",
-                "platforms": ["EKS"]
-            },
-            {
-                "case_name": "containerinsight_eks",
-                "platforms": ["EKS", "EKS_ARM64"]
-            },
-            {
-                "case_name": "zipkin_mock",
-                "platforms": ["LOCAL", "EC2", "ECS", "EKS", "EKS_ARM64", "PERF"]
-            },
-            {
-                "case_name": "jaeger_mock",
-                "platforms": ["LOCAL", "EC2", "ECS", "EKS", "EKS_ARM64", "PERF"]
-            },
-            {
-                "case_name": "logzio_exporter_trace_mock",
-                "platforms": ["LOCAL", "EC2", "ECS", "EKS", "EKS_ARM64", "PERF"]
-            },
-            {
-                "case_name": "ssm_package",
-                "platforms": ["EC2", "CANARY"]
-            },
-            {
-                "case_name": "ecs_instance_metrics",
-                "platforms": ["ECS"]
-            },
-            {
-                "case_name": "eks_containerinsights_fargate",
-                "platforms": ["EKS_FARGATE"]
-            },
-            {
-                "case_name": "eks_containerinsights_fargate_metric",
-                "platforms": ["EKS_FARGATE"]
-            }
-        ]
+  "clustertargets": [
+    {
+      "type": "EKS_ADOT_OPERATOR",
+      "targets": [
+        {
+          "name": "eks-operator-cluster-1",
+          "region": "us-west-2"
+        }
+      ]
     }
+  ],
+  "tests": [
+    {
+      "case_name": "prometheus_sd_adot_operator",
+      "platforms": [
+        "EKS_ADOT_OPERATOR"
+      ]
+    },
+    {
+      "case_name": "containerinsight_eks_prometheus",
+      "platforms": [
+        "EKS"
+      ]
+    },
+    {
+      "case_name": "containerinsight_eks",
+      "platforms": [
+        "EKS",
+        "EKS_ARM64"
+      ]
+    },
+    {
+      "case_name": "zipkin_mock",
+      "platforms": [
+        "LOCAL",
+        "EC2",
+        "ECS",
+        "EKS",
+        "EKS_ARM64",
+        "PERF"
+      ]
+    },
+    {
+      "case_name": "jaeger_mock",
+      "platforms": [
+        "LOCAL",
+        "EC2",
+        "ECS",
+        "EKS",
+        "EKS_ARM64",
+        "PERF"
+      ]
+    },
+    {
+      "case_name": "logzio_exporter_trace_mock",
+      "platforms": [
+        "LOCAL",
+        "EC2",
+        "ECS",
+        "EKS",
+        "EKS_ARM64",
+        "PERF"
+      ]
+    },
+    {
+      "case_name": "ssm_package",
+      "platforms": [
+        "EC2",
+        "CANARY"
+      ]
+    },
+    {
+      "case_name": "ecs_instance_metrics",
+      "platforms": [
+        "ECS"
+      ]
+    },
+    {
+      "case_name": "eks_containerinsights_fargate",
+      "platforms": [
+        "EKS_FARGATE"
+      ]
+    },
+    {
+      "case_name": "eks_containerinsights_fargate_metric",
+      "platforms": [
+        "EKS_FARGATE"
+      ]
+    }
+  ]
+}

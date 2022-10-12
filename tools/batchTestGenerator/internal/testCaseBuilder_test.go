@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -87,6 +88,7 @@ func TestBuildTestCaseEKS(t *testing.T) {
 		runConfig         RunConfig
 		expectedTestCases map[string]struct{}
 		serviceType       string
+		clusters          []Target
 	}{
 		{
 			testname: "eksarm64test",
@@ -101,6 +103,10 @@ func TestBuildTestCaseEKS(t *testing.T) {
 				"statsd_mock":  {},
 			},
 			serviceType: "EKS_ARM64",
+			clusters: []Target{
+				{Name: "eks-cluster-arm64-1", Region: "us-west-2"},
+				{Name: "eks-cluster-arm64-2", Region: "us-east-2"},
+			},
 		},
 		{
 			testname: "eksoperatortest",
@@ -113,6 +119,9 @@ func TestBuildTestCaseEKS(t *testing.T) {
 				"prometheus_sd_adot_operator": {},
 			},
 			serviceType: "EKS_ADOT_OPERATOR",
+			clusters: []Target{
+				{Name: "eks-operator-cluster-1", Region: "us-west-2"},
+			},
 		},
 		{
 			testname: "eksoperatorarm64test",
@@ -126,6 +135,10 @@ func TestBuildTestCaseEKS(t *testing.T) {
 				"prometheus_static_adot_operator": {},
 			},
 			serviceType: "EKS_ADOT_OPERATOR_ARM64",
+			clusters: []Target{
+				{Name: "eks-operator-arm64-cluster-1", Region: "us-west-2"},
+				{Name: "eks-operator-arm64-cluster-2", Region: "us-east-2"},
+			},
 		},
 		{
 			testname: "eksfargatetest",
@@ -139,6 +152,10 @@ func TestBuildTestCaseEKS(t *testing.T) {
 				"eks_containerinsights_fargate_metric": {},
 			},
 			serviceType: "EKS_FARGATE",
+			clusters: []Target{
+				{Name: "eks-fargate-cluster-1", Region: "us-west-2"},
+				{Name: "eks-fargate-cluster-2", Region: "us-east-2"},
+			},
 		},
 		{
 			testname: "ekstest",
@@ -152,6 +169,9 @@ func TestBuildTestCaseEKS(t *testing.T) {
 				"otlp_metric":  {},
 			},
 			serviceType: "EKS",
+			clusters: []Target{
+				{Name: "eks-cluster-1", Region: "us-west-2"},
+			},
 		},
 	}
 
@@ -164,13 +184,16 @@ func TestBuildTestCaseEKS(t *testing.T) {
 			actual, err := buildTestCases(test.runConfig)
 			if assert.NoError(t, err) {
 				expectedMap := make(map[TestCaseInfo]int)
-				for tn := range test.expectedTestCases {
-					e := TestCaseInfo{
-						testcaseName: tn,
-						serviceType:  test.serviceType,
-						//additionalVar: expectedAdditionalVars,
+				for testName := range test.expectedTestCases {
+					for _, clustertarget := range test.clusters {
+						e := TestCaseInfo{
+							testcaseName:  testName,
+							serviceType:   test.serviceType,
+							additionalVar: strings.Join([]string{clustertarget.Region, clustertarget.Name}, "|"),
+						}
+						expectedMap[e] = 0
 					}
-					expectedMap[e] = 0
+
 				}
 
 				assert.Equal(t, len(expectedMap), len(actual))
@@ -178,12 +201,11 @@ func TestBuildTestCaseEKS(t *testing.T) {
 					expectedMap[a] = expectedMap[a] + 1
 				}
 
-				for tcaseinfo, count := range expectedMap {
-					assert.Equal(t, 1, count, fmt.Sprintf("failed for testcase: %v", tcaseinfo))
+				for testcaseinfo, count := range expectedMap {
+					assert.Equal(t, 1, count, fmt.Sprintf("failed for testcase: %v", testcaseinfo))
 				}
 
 			}
 		})
-
 	}
 }

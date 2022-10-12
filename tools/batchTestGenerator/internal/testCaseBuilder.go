@@ -2,6 +2,7 @@ package internal
 
 import (
 	"fmt"
+	"strings"
 )
 
 var ec2AMIs = []string{
@@ -36,7 +37,7 @@ var ecsLaunchTypes = []string{"EC2", "FARGATE"}
 func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 	testCases := []TestCaseInfo{}
 	tests := runConfig.TestCaseInput
-
+	clusterMaps := clusterMap(tests.ClusterTargets)
 	// iterate through all test cases to build output info
 	for _, test := range tests.Tests {
 		// iterate through platforms in test case
@@ -64,20 +65,20 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 						}
 						newTests = append(newTests, newTest)
 					}
-				case "EKS_ARM64":
-					newTest := TestCaseInfo{
-						testcaseName: test.CaseName,
-						serviceType:  testPlatform,
-						//additionalVar: runConfig.EksARM64Vars,
+				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS", "EKS_ARM64":
+					if clusterList, ok := clusterMaps[testPlatform]; ok {
+						for _, cluster := range clusterList {
+							newTest := TestCaseInfo{
+								testcaseName:  test.CaseName,
+								serviceType:   testPlatform,
+								additionalVar: strings.Join([]string{cluster.Region, cluster.Name}, "|"),
+							}
+							newTests = append(newTests, newTest)
+						}
+					} else {
+						return nil, fmt.Errorf("no clusters defined for %s plaftorm in test input file", testPlatform)
 					}
-					newTests = append(newTests, newTest)
-				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS":
-					newTest := TestCaseInfo{
-						testcaseName: test.CaseName,
-						serviceType:  testPlatform,
-						//additionalVar: runConfig.EksVars,
-					}
-					newTests = append(newTests, newTest)
+
 				default:
 					return nil, fmt.Errorf("platform not recognized: %s", testPlatform)
 				}
@@ -85,6 +86,13 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 			}
 		}
 	}
-
 	return testCases, nil
+}
+
+func clusterMap(inputTargets []ClusterTarget) map[string][]Target {
+	outputMap := make(map[string][]Target)
+	for _, clusterTarget := range inputTargets {
+		outputMap[clusterTarget.Type] = clusterTarget.Targets
+	}
+	return outputMap
 }

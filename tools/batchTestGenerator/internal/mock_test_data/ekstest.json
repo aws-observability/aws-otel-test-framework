@@ -1,20 +1,47 @@
 {
-    "tests": [
-            {
-                "case_name": "xrayreceiver",
-                "platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "CANARY"]
-            },
-            {
-                "case_name": "xrayreceiver_mock",
-                "platforms": ["PERF"]
-            },
-            {
-                "case_name": "otlp_metric_amp",
-                "platforms": ["EC2"]
-            },
-            {
-                "case_name": "otlp_metric",
-                "platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "CANARY"]
-            }
-        ]
+  "clustertargets": [
+    {
+      "type": "EKS",
+      "targets": [
+        {
+          "name": "eks-cluster-1",
+          "region": "us-west-2"
+        }
+      ]
     }
+  ],
+  "tests": [
+    {
+      "case_name": "xrayreceiver",
+      "platforms": [
+        "EC2",
+        "ECS",
+        "EKS",
+        "EKS_ARM64",
+        "CANARY"
+      ]
+    },
+    {
+      "case_name": "xrayreceiver_mock",
+      "platforms": [
+        "PERF"
+      ]
+    },
+    {
+      "case_name": "otlp_metric_amp",
+      "platforms": [
+        "EC2"
+      ]
+    },
+    {
+      "case_name": "otlp_metric",
+      "platforms": [
+        "EC2",
+        "ECS",
+        "EKS",
+        "EKS_ARM64",
+        "CANARY"
+      ]
+    }
+  ]
+}
