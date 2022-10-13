@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"fmt"
-	batch "github.com/aws-observability/aws-otel-test-frameowrk/batchTestGenerator/internal"
+	batch "github.com/aws-observability/aws-otel-test-framework/batchTestGenerator/internal"
 	"github.com/spf13/cobra"
 	"log"
 	"os"
