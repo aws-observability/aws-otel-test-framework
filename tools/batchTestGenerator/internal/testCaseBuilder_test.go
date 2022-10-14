@@ -75,11 +75,8 @@ func TestBuildTestCasesEC2ECS(t *testing.T) {
 					assert.Equal(t, 1, count)
 				}
 			}
-
 		})
-
 	}
-
 }
 
 func TestBuildTestCaseEKS(t *testing.T) {
