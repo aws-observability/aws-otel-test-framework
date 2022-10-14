@@ -1,20 +1,30 @@
 {
-    "tests": [
-            {
-                "case_name": "xrayreceiver",
-                "platforms": [ "ECS"]
-            },
-            {
-                "case_name": "xrayreceiver_mock",
-                "platforms": ["PERF"]
-            },
-            {
-                "case_name": "otlp_metric_amp",
-                "platforms": ["EC2"]
-            },
-            {
-                "case_name": "statsd",
-                "platforms": ["ECS", "EKS", "EKS_ARM64"]
-            }
-        ]
+  "tests": [
+    {
+      "case_name": "xrayreceiver",
+      "platforms": [
+        "ECS"
+      ]
+    },
+    {
+      "case_name": "xrayreceiver_mock",
+      "platforms": [
+        "PERF"
+      ]
+    },
+    {
+      "case_name": "otlp_metric_amp",
+      "platforms": [
+        "EC2"
+      ]
+    },
+    {
+      "case_name": "statsd",
+      "platforms": [
+        "ECS",
+        "EKS",
+        "EKS_ARM64"
+      ]
     }
+  ]
+}
