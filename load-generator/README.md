@@ -34,7 +34,7 @@ The following is a list of additional optional command line arguments applicable
 * `--metricType, -mt`: (default=counter) Specify the type of metric - counter or gauge.
 
 ```
-./gradlew :load-generator:run --args="metric --metricCount=100 --datapointCount=10 --observationInterval=1000 --flushInterval =1000 --metricType=counter -u=localhost:4317 -d=otlp"
+./gradlew :load-generator:run --args="metric --metricCount=100 --datapointCount=10 --observationInterval=1000 --flushInterval=1000 --metricType=counter -u=localhost:4317 -d=otlp"
 ```
 
 ### OTLP Trace Load Test Sample Command,
