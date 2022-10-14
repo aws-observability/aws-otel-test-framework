@@ -70,7 +70,7 @@ func newCommandConfig() *commandConfig {
 			return fmt.Errorf("max batches must be greater than 0")
 		}
 
-		err = c.runConfig.ParseInputFile()
+		err = c.runConfig.UnmarshalInputFile()
 		if err != nil {
 			return fmt.Errorf("error parsing input file: %w", err)
 		}

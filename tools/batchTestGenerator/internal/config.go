@@ -34,7 +34,7 @@ type Target struct {
 	Region string `json:"region"`
 }
 
-func (r *RunConfig) ParseInputFile() error {
+func (r *RunConfig) UnmarshalInputFile() error {
 
 	testCaseFile, err := os.ReadFile(r.TestCaseFilePath)
 	if err != nil {
