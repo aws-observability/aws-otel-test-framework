@@ -25,14 +25,14 @@ type commandConfig struct {
 	eksARM64Flags   eksFields
 	eksFlags        eksFields
 	// used in the validate command
-	// DyanmoDB Table that was used a successful test cache
+	// DynamoDB Table that was used a successful test cache
 	DynamoDBTable string
 	// Name of ADOT Collector image that was used. Will be used
 	// as sort key when querying cache.
 	AocVersion string
 }
 
-var includeAllowlist map[string]struct{} = map[string]struct{}{
+var includeAllowlist = map[string]struct{}{
 	"EKS":                     {},
 	"EKS_ARM64":               {},
 	"ECS":                     {},
@@ -113,7 +113,7 @@ func newCommandConfig() *commandConfig {
 
 	c.githubCommand = cobra.Command{
 		Use:   "github",
-		Short: "Genereate two outputs for GitHub Actions",
+		Short: "Generate two outputs for GitHub Actions",
 		Long: `This command generates a batch-test-key and batch-test-values
 		output for use in GitHub Actions. See README for example usage.`,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -124,7 +124,7 @@ func newCommandConfig() *commandConfig {
 	c.validateCommand = cobra.Command{
 		Use:   "validate",
 		Short: "Validate all test cases are present in the cache",
-		Long: `This command verifies that all tests succesffully passed
+		Long: `This command verifies that all tests successfully passed
 		and are thus present in the DynamoDB table name that was provided.
 		EKS and EKS_ARM64 additional vars that are identical to the ones passed
 		into the github command must be provided also.`,
@@ -154,10 +154,10 @@ func Execute() {
 func init() {
 	// Persistent Flags
 	comCfg.rootCommand.PersistentFlags().StringVar(&comCfg.runConfig.TestCaseFilePath, "testCaseFilePath", "", `path to JSON test case file`)
-	comCfg.rootCommand.PersistentFlags().StringSliceVar(&comCfg.includeFlags, "include", []string{}, "list of commma separated services to include. See README for list of valid values.")
+	comCfg.rootCommand.PersistentFlags().StringSliceVar(&comCfg.includeFlags, "include", []string{}, "list of comma separated services to include. See README for list of valid values.")
 
 	// githubflags only
-	comCfg.githubCommand.Flags().IntVar(&comCfg.runConfig.MaxBatches, "maxBatch", 40, "Maxium number of batches allowed.")
+	comCfg.githubCommand.Flags().IntVar(&comCfg.runConfig.MaxBatches, "maxBatch", 40, "Maximum number of batches allowed.")
 
 	// local flags only
 	comCfg.localCommand.Flags().StringVar(&comCfg.runConfig.OutputLocation, "output", "", "Output location for test-case-batch file.")
