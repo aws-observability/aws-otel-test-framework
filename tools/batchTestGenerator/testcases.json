@@ -1,160 +1,388 @@
 {
-"tests": [
+	"clustertargets": [
+		{
+			"type": "EKS",
+			"targets": [
+				{
+					"name": "aws-otel-testing-framework-eks-2",
+					"region": "us-west-2"
+				}
+			]
+		},
+		{
+			"type": "EKS_ARM64",
+			"targets": [
+				{
+					"name": "integ-test-arm64-cluster",
+					"region": "us-east-2"
+				}
+			]
+		},
+		{
+			"type": "EKS_ADOT_OPERATOR",
+			"targets": [
+				{
+					"name": "adot-op-cluster",
+					"region": "us-west-2"
+				}
+			]
+		},
+		{
+			"type": "EKS_ADOT_OPERATOR_ARM64",
+			"targets": [
+				{
+					"name": "arm64-adot-op-cluster",
+					"region": "us-west-2"
+				}
+			]
+		},
+		{
+			"type": "EKS_FARGATE",
+			"targets": [
+				{
+					"name": "Fargate-Integ-Test-Cluster",
+					"region": "us-west-2"
+				}
+			]
+		}
+	],
+	"tests": [
 		{
 			"case_name": "xrayreceiver",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "CANARY"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"CANARY"
+			]
 		},
 		{
 			"case_name": "xrayreceiver_mock",
-			"platforms": ["PERF"]
+			"platforms": [
+				"PERF"
+			]
 		},
 		{
 			"case_name": "otlp_metric_amp",
-			"platforms": ["EC2"]
+			"platforms": [
+				"EC2"
+			]
 		},
 		{
 			"case_name": "statsd",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
 		},
 		{
 			"case_name": "statsd_mock",
-			"platforms": ["LOCAL", "EC2", "ECS", "EKS", "EKS_ARM64", "PERF"]
+			"platforms": [
+				"LOCAL",
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "otlp_metric",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "CANARY"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"CANARY"
+			]
 		},
 		{
 			"case_name": "otlp_metric_mock",
-			"platforms": ["LOCAL", "PERF"]
+			"platforms": [
+				"LOCAL",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "otlp_metric_adot_operator",
-			"platforms": ["EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64"]
+			"platforms": [
+				"EKS_ADOT_OPERATOR",
+				"EKS_ADOT_OPERATOR_ARM64"
+			]
 		},
 		{
 			"case_name": "otlp_trace",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "CANARY"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"CANARY"
+			]
 		},
 		{
 			"case_name": "otlp_trace_adot_operator",
-			"platforms": ["EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64"]
+			"platforms": [
+				"EKS_ADOT_OPERATOR",
+				"EKS_ADOT_OPERATOR_ARM64"
+			]
 		},
 		{
 			"case_name": "otlp_trace_resourcedetection_ec2",
-			"platforms": ["EC2"]
+			"platforms": [
+				"EC2"
+			]
 		},
 		{
 			"case_name": "otlp_trace_resourcedetection_ecs",
-			"platforms": ["ECS"]
+			"platforms": [
+				"ECS"
+			]
 		},
 		{
 			"case_name": "otlp_trace_resourcedetection_eks",
-			"platforms": ["EKS", "EKS_ARM64"]
+			"platforms": [
+				"EKS",
+				"EKS_ARM64"
+			]
 		},
 		{
 			"case_name": "otlp_mock",
-			"platforms": ["LOCAL", "PERF", "CANARY"]
+			"platforms": [
+				"LOCAL",
+				"PERF",
+				"CANARY"
+			]
 		},
 		{
 			"case_name": "ecsmetrics",
-			"platforms": ["ECS"]
+			"platforms": [
+				"ECS"
+			]
 		},
 		{
 			"case_name": "otlp_grpc_exporter_cw_amp_xray_ecs",
-			"platforms": ["ECS"]
+			"platforms": [
+				"ECS"
+			]
 		},
 		{
 			"case_name": "otlp_grpc_exporter_metric_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF", "CANARY"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF",
+				"CANARY"
+			]
 		},
 		{
 			"case_name": "otlp_grpc_exporter_trace_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF", "CANARY"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF",
+				"CANARY"
+			]
 		},
 		{
 			"case_name": "otlp_http_exporter_metric_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF", "CANARY"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF",
+				"CANARY"
+			]
 		},
 		{
 			"case_name": "otlp_http_exporter_trace_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF", "CANARY"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF",
+				"CANARY"
+			]
 		},
 		{
 			"case_name": "sapm_exporter_trace_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "signalfx_exporter_metric_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "dynatrace_exporter_metric_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "datadog_exporter_metric_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "datadog_exporter_trace_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "prometheus_mock",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64", "LOCAL", "PERF"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"LOCAL",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "prometheus_static",
-			"platforms": ["EC2", "ECS", "EKS", "EKS_ARM64"]
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
 		},
 		{
 			"case_name": "prometheus_static_adot_operator",
-			"platforms": ["EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64"]
+			"platforms": [
+				"EKS_ADOT_OPERATOR",
+				"EKS_ADOT_OPERATOR_ARM64"
+			]
 		},
 		{
 			"case_name": "prometheus_sd",
-			"platforms": ["EKS", "EKS_ARM64"]
+			"platforms": [
+				"EKS",
+				"EKS_ARM64"
+			]
 		},
 		{
 			"case_name": "prometheus_sd_adot_operator",
-			"platforms": ["EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64"]
+			"platforms": [
+				"EKS_ADOT_OPERATOR",
+				"EKS_ADOT_OPERATOR_ARM64"
+			]
 		},
 		{
 			"case_name": "containerinsight_eks_prometheus",
-			"platforms": ["EKS"]
+			"platforms": [
+				"EKS"
+			]
 		},
 		{
 			"case_name": "containerinsight_eks",
-			"platforms": ["EKS", "EKS_ARM64"]
+			"platforms": [
+				"EKS",
+				"EKS_ARM64"
+			]
 		},
 		{
 			"case_name": "zipkin_mock",
-			"platforms": ["LOCAL", "EC2", "ECS", "EKS", "EKS_ARM64", "PERF"]
+			"platforms": [
+				"LOCAL",
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "jaeger_mock",
-			"platforms": ["LOCAL", "EC2", "ECS", "EKS", "EKS_ARM64", "PERF"]
+			"platforms": [
+				"LOCAL",
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "logzio_exporter_trace_mock",
-			"platforms": ["LOCAL", "EC2", "ECS", "EKS", "EKS_ARM64", "PERF"]
+			"platforms": [
+				"LOCAL",
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64",
+				"PERF"
+			]
 		},
 		{
 			"case_name": "ssm_package",
-			"platforms": ["EC2", "CANARY"]
+			"platforms": [
+				"EC2",
+				"CANARY"
+			]
 		},
 		{
 			"case_name": "ecs_instance_metrics",
-			"platforms": ["ECS"]
+			"platforms": [
+				"ECS"
+			]
 		},
 		{
 			"case_name": "eks_containerinsights_fargate",
-			"platforms": ["EKS_FARGATE"]
+			"platforms": [
+				"EKS_FARGATE"
+			]
 		},
 		{
 			"case_name": "eks_containerinsights_fargate_metric",
-			"platforms": ["EKS_FARGATE"]
+			"platforms": [
+				"EKS_FARGATE"
+			]
 		}
 	]
 }
