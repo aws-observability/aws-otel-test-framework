@@ -167,8 +167,14 @@ func init() {
 	// validate flags only
 	comCfg.validateCommand.Flags().StringVar(&comCfg.DynamoDBTable, "ddbtable", "", "name of the DynamoDB table that was used a successful test cache")
 	comCfg.validateCommand.Flags().StringVar(&comCfg.AocVersion, "aocVersion", "", "name of the ADOT Collector Image used in testing")
-	comCfg.validateCommand.MarkFlagRequired("ddbtable")
-	comCfg.validateCommand.MarkFlagRequired("aocVersion")
+	err := comCfg.validateCommand.MarkFlagRequired("ddbtable")
+	if err != nil {
+		panic(err)
+	}
+	err = comCfg.validateCommand.MarkFlagRequired("aocVersion")
+	if err != nil {
+		panic(err)
+	}
 }
 
 // transform array slice into map
