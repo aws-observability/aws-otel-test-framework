@@ -28,7 +28,7 @@ dependencies {
     implementation "io.grpc:grpc-bom:1.47.0"
     implementation "io.grpc:grpc-api:1.47.0"
 
-    implementation "io.grpc:grpc-netty-shaded:1.47.0"
+    implementation "io.grpc:grpc-netty-shaded:1.50.0"
 
     implementation platform("io.opentelemetry:opentelemetry-bom:1.18.0")
     implementation "io.opentelemetry:opentelemetry-api"
