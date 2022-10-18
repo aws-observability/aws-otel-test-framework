@@ -203,7 +203,7 @@ EOF
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_arm64/amazon-ssm-agent.deb
 while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
    echo 'Waiting for dpkg lock...' && sleep 1
 done
@@ -242,7 +242,7 @@ EOF
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_arm64/amazon-ssm-agent.deb
 while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
    echo 'Waiting for dpkg lock...' && sleep 1
 done
