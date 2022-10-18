@@ -1,0 +1,35 @@
+---
+testcase:
+  cluster_name: amdCluster
+  sample_app_image_uri: "public.ecr.aws/aws-otel-test/aws-otel-java-spark:latest"
+  sample_app_mode: push
+  collector_config:
+    extensions:
+      health_check:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:4317
+          http:
+            endpoint: 0.0.0.0:4318
+    processors:
+      batch/traces:
+        timeout: 1s
+        send_batch_size: 50
+      batch/metrics:
+        timeout: 60s
+    exporters:
+      logging:
+        logLevel: debug
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          processors: [batch/traces]
+          exporters: [logging]
+        metrics:
+          receivers: [otlp]
+          processors: [batch/metrics]
+          exporters: [logging]
+      extensions: [health_check]

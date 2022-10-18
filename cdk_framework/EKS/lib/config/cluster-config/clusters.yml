@@ -1,0 +1,9 @@
+---
+clusters:
+  - name: ec2Cluster
+    version: "1.21"
+    launch_type: ec2
+    instance_type: m5.large
+  - name: fargateCluster
+    version: "1.20"
+    launch_type: fargate
