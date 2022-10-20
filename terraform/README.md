@@ -15,7 +15,7 @@ the testing framework is built based on terraform, every time you run your testi
 
 ### 1.2 Parameter override
 
-All the parameters defined under `ec2/variables.tf`, `ecs/variables.tf`, `eks/variables.tf` could be overrided. When you run the terraform command, give it a `-var-file=xxx.tfvars`, so that all the parameters in xxx.tfvars will override their default value in variables.tf. 
+All the parameters defined under `ec2/variables.tf`, `ecs/variables.tf`, `eks/variables.tf` could be overriden. When you run the terraform command, give it a `-var-file=xxx.tfvars`, so that all the parameters in xxx.tfvars will override their default value in variables.tf. 
 
 ## 2. Parameters to override
 
@@ -340,7 +340,7 @@ below is the requirement for sample app.
 
 * Web application/Docker image: *The data emitter needs to be a web application serving a http endpoint, and needs to be able to built as a Docker image and run for testing as a Docker app. A Dockerfile needs to be provided.
 
-* Integrate with SDK Repo workflow: *For each new code commit you make in the SDK, you will need to build a new Docker image. Every new Docker image should have a unique tag (you can use the code commit as the tag). Also maintain a “latest” tag for this image which builds with the released SDK. This will help theAOC (https://github.com/aws-observability/aws-otel-collector) repo to use the latest tag image to test with the latest version of the SDK. The SDK workflow sends a dispatch event with the built image link.
+* Integrate with SDK Repo workflow: *For each new code commit you make in the SDK, you will need to build a new Docker image. Every new Docker image should have a unique tag (you can use the code commit as the tag). Also maintain a “latest” tag for this image which builds with the released SDK. This will help the ADOT Collector (https://github.com/aws-observability/aws-otel-collector) repo to use the latest tag image to test with the latest version of the SDK. The SDK workflow sends a dispatch event with the built image link.
 
 * Response pattern: The response of each URL path need to be followed using the data structure listed below i.e. you just need to return the traceid. [json/application]
 ```json
@@ -374,8 +374,8 @@ below is an example in the aoc repo workflow, you can also configure it in your 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.INTEG_TEST_AWS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.INTEG_TEST_AWS_KEY_SECRET }}
+          role-to-assume: ${{ secrets.ASSUMABLE_ROLE_ARN }}
+          role-session-name: RelevantNameForWorkflow
           aws-region: us-west-2
           
       - name: Set up JDK 1.11

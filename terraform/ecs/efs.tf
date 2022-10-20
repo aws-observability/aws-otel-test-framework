@@ -61,6 +61,10 @@ resource "tls_private_key" "ssh_key" {
 resource "aws_key_pair" "aws_ssh_key" {
   key_name   = "testing-${module.common.testing_id}"
   public_key = tls_private_key.ssh_key.public_key_openssh
+  tags = {
+    "ephemeral" : "true",
+    "TestCase" : var.testcase,
+  }
 }
 
 resource "aws_instance" "collector_efs_ec2" {

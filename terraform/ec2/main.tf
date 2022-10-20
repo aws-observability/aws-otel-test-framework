@@ -64,7 +64,7 @@ locals {
   docker_compose_path  = var.soaking_compose_file != "" ? var.soaking_compose_file : fileexists("${var.testcase}/docker_compose.tpl") ? "${var.testcase}/docker_compose.tpl" : module.common.default_docker_compose_path
   selected_ami         = var.amis[var.testing_ami]
   ami_family           = var.ami_family[local.selected_ami["family"]]
-  ami_id               = var.amis[var.testing_ami]["ami_id"]
+  ami_id               = data.aws_ami.selected.id
   instance_type        = lookup(local.selected_ami, "instance_type", local.ami_family["instance_type"])
   otconfig_destination = local.ami_family["otconfig_destination"]
   login_user           = lookup(local.selected_ami, "login_user", local.ami_family["login_user"])
@@ -96,8 +96,11 @@ resource "aws_instance" "sidecar" {
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
   tags = {
-    Name  = "Integ-test-Sample-App"
-    Patch = var.patch
+    Name      = "Integ-test-Sample-App"
+    Patch     = var.patch
+    TestCase  = var.testcase
+    TestID    = module.common.testing_id
+    ephemeral = "true"
   }
 }
 
@@ -114,8 +117,11 @@ resource "aws_instance" "aoc" {
   user_data                   = local.user_data
 
   tags = {
-    Name  = "Integ-test-aoc"
-    Patch = var.patch
+    Name      = "Integ-test-aoc"
+    Patch     = var.patch
+    TestCase  = var.testcase
+    TestID    = module.common.testing_id
+    ephemeral = "true"
   }
 }
 
@@ -136,14 +142,6 @@ resource "null_resource" "check_patch" {
     command = <<-EOT
      "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id}" --ignore-error
      "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}" --ignore-error
-    EOT
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.sidecar_id}" --ignore-error
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.aoc_id}" --ignore-error
     EOT
   }
 }
@@ -465,9 +463,6 @@ module "validator" {
     name : aws_instance.aoc.private_dns
     instanceType : aws_instance.aoc.instance_type
   })
-
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]
 }

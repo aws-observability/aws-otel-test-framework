@@ -7,8 +7,12 @@ services:
     volumes:
       - ~/.aws:/root/.aws
       - ./output:/var/output
-    env_file:
-      - creds.env
+    environment:
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
+      - AWS_REGION
+      - AWS_DEFAULT_REGION
     command:
       - "-c=${validation_config}"
       - "-t=${testing_id}"

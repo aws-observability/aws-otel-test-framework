@@ -107,8 +107,5 @@ module "validator" {
   testing_id        = module.ec2_setup.testing_id
   metric_namespace  = var.performance_metric_namespace
 
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
-
   depends_on = [time_sleep.wait_until_metrics_collected]
 }

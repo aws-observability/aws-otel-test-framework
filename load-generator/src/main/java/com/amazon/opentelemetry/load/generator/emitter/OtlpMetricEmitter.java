@@ -16,23 +16,29 @@
 package com.amazon.opentelemetry.load.generator.emitter;
 
 import com.amazon.opentelemetry.load.generator.model.Parameter;
-import io.grpc.ManagedChannelBuilder;
-import io.opentelemetry.api.metrics.GlobalMeterProvider;
-import io.opentelemetry.api.metrics.common.Labels;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.common.AttributeKey;
+import io.opentelemetry.api.common.Attributes;
 import io.opentelemetry.api.metrics.LongCounter;
-import io.opentelemetry.api.metrics.LongValueRecorder;
 import io.opentelemetry.api.metrics.Meter;
+
 import io.opentelemetry.exporter.otlp.metrics.OtlpGrpcMetricExporter;
+import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.metrics.SdkMeterProvider;
-import io.opentelemetry.sdk.metrics.export.IntervalMetricReader;
-import io.opentelemetry.sdk.metrics.export.MetricExporter;
-import java.util.Collections;
+import io.opentelemetry.sdk.metrics.export.PeriodicMetricReader;
+import io.opentelemetry.sdk.resources.Resource;
+import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
+
+import java.util.concurrent.ThreadLocalRandom;
+import java.time.Duration;
 
 public class OtlpMetricEmitter extends MetricEmitter {
 
   private final static String API_NAME = "loadTest";
+  private final static Attributes METRIC_ATTRIBUTES = Attributes.of(AttributeKey.stringKey(DIMENSION_API_NAME), API_NAME,
+          AttributeKey.stringKey(DIMENSION_STATUS_CODE), "200");
   LongCounter apiBytesSentCounter;
-  LongValueRecorder apiLatencyRecorder;
+  Long apiLatency;
 
   public OtlpMetricEmitter(Parameter param) {
     super();
@@ -47,43 +53,46 @@ public class OtlpMetricEmitter extends MetricEmitter {
 
   @Override
   public void nextDataPoint() {
-    apiLatencyRecorder.record(200, Labels
-        .of(DIMENSION_API_NAME, API_NAME, DIMENSION_STATUS_CODE, "200"));
-
     apiBytesSentCounter
-        .add(100, Labels.of(DIMENSION_API_NAME, API_NAME, DIMENSION_STATUS_CODE, "200"));
+            .add(10, METRIC_ATTRIBUTES);
+    mutateApiLatency();
   }
 
   @Override
   public void setupProvider() {
-    MetricExporter metricExporter =
-        OtlpGrpcMetricExporter.builder()
-            .setChannel(
-                ManagedChannelBuilder.forTarget(param.getEndpoint()).usePlaintext().build())
-            .build();
+    Resource resource = Resource.getDefault().merge(
+            Resource.create(Attributes.of(ResourceAttributes.SERVICE_NAME, "load-generator")));
 
-    IntervalMetricReader.builder()
-        .setMetricProducers(
-            Collections.singleton(SdkMeterProvider.builder().buildAndRegisterGlobal()))
-        .setExportIntervalMillis(param.getFlushInterval())
-        .setMetricExporter(metricExporter)
-        .build();
+    OpenTelemetrySdk.builder().setMeterProvider(
+                    SdkMeterProvider.builder()
+                            .registerMetricReader(
+                                    PeriodicMetricReader.builder(OtlpGrpcMetricExporter.builder().setEndpoint("http://" + param.getEndpoint()).build())
+                                            .setInterval(Duration.ofMillis(param.getFlushInterval())).build())
+                            .setResource(resource)
 
-    Meter meter = GlobalMeterProvider.getMeter("aws-otel-load-generator-metric", "0.1.0");
+                            .build())
+            .buildAndRegisterGlobal();
 
+    Meter meter =
+            GlobalOpenTelemetry.meterBuilder("aws-otel-load-generator-metric")
+                    .setInstrumentationVersion("0.1.0")
+                    .build();
 
-    apiBytesSentCounter = meter
-        .longCounterBuilder(API_COUNTER_METRIC)
-        .setDescription("API request load sent in bytes")
-        .setUnit("one")
-        .build();
+    apiBytesSentCounter =
+            meter.counterBuilder(API_COUNTER_METRIC)
+                    .setDescription("API request load sent in bytes")
+                    .setUnit("one")
+                    .build();
 
-    apiLatencyRecorder =
-        meter
-            .longValueRecorderBuilder(API_LATENCY_METRIC)
+    meter.gaugeBuilder(API_LATENCY_METRIC)
             .setDescription("API latency time")
             .setUnit("ms")
-            .build();
+            .ofLongs()
+            .buildWithCallback(measurement -> measurement.record(
+                    apiLatency, METRIC_ATTRIBUTES));
   }
 
+  private void mutateApiLatency() {
+    this.apiLatency = ThreadLocalRandom.current().nextLong(-100,100);
+  }
 }

@@ -72,5 +72,5 @@ variable "testing_type" {
 }
 
 variable "patch" {
-  default = false
+  default = true
 }

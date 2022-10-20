@@ -171,11 +171,15 @@ func (s *SSMWrapper) WaitPatchReported(ctx context.Context, instanceId string, t
 		}
 		var patchTime, reportTime time.Time
 		for _, assoc := range infos {
-			switch aws.ToString(assoc.Name) {
-			case SSMPatchDocument:
-				patchTime = aws.ToTime(assoc.ExecutionDate)
-			case SSMReportDocument:
-				reportTime = aws.ToTime(assoc.ExecutionDate)
+			status := aws.ToString(assoc.Status)
+			switch status {
+			case "Success":
+				switch aws.ToString(assoc.Name) {
+				case SSMPatchDocument:
+					patchTime = aws.ToTime(assoc.ExecutionDate)
+				case SSMReportDocument:
+					reportTime = aws.ToTime(assoc.ExecutionDate)
+				}
 			}
 		}
 		logger.Info("waiting patch report", zap.Time("PatchTime", patchTime), zap.Time("ReportTime", reportTime))

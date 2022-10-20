@@ -102,7 +102,7 @@ variable "canary" {
 # also set a patch tag onto the instance so that the instance get picked by the ssm patching process.
 # and then start the installation of collector.
 variable "patch" {
-  default = false
+  default = true
 }
 
 ######################
