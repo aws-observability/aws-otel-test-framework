@@ -22,23 +22,24 @@ type TestCaseInfo struct {
 }
 
 var ec2AMIs = []string{
-	"amazonlinux2",
 	"ubuntu18",
-	"ubuntu16",
+	"arm_ubuntu18",
+	"ubuntu20",
+	"arm_ubuntu20",
+	"ubuntu22",
+	"arm_ubuntu22",
+	"debian11",
+	"arm_debian11",
 	"debian10",
-	"debian9",
+	"arm_debian10",
+	"amazonlinux2",
+	"arm_amazonlinux2",
+	"windows2022",
+	"windows2019",
 	"suse15",
 	"suse12",
 	"redhat8",
-	"redhat7",
-	"centos7",
-	"windows2019",
-	"arm_amazonlinux2",
-	"arm_suse15",
 	"arm_redhat8",
-	"arm_redhat7",
-	"arm_ubuntu18",
-	"arm_ubuntu16",
 }
 
 var ecsLaunchTypes = []string{"EC2", "FARGATE"}

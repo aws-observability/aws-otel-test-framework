@@ -64,18 +64,16 @@ variable "amis" {
   default = {
     soaking_windows = {
       os_family          = "windows"
-      ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
+      ami_search_pattern = "Windows_Server-2022-English-Full-Base*"
       ami_owner          = "amazon"
-      ami_id             = "ami-0297fbf7e83dd1209"
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
     }
     soaking_linux = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
+      ami_search_pattern = "amzn2-ami-kernel-5*"
       ami_owner          = "amazon"
-      ami_id             = "ami-0c2ab3b8efb09f272"
       ami_product_code   = []
       family             = "amazon_linux"
       arch               = "amd64"
