@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	go.opentelemetry.io/proto/otlp v0.18.0
-	google.golang.org/grpc v1.47.0
+	google.golang.org/grpc v1.50.1
 )
 
 require (
