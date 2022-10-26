@@ -78,7 +78,7 @@ checkCache(){
 
 checkCache $1 $2 $3
 # Used as a retry mechanic.
-ATTEMPTS_LEFT=1
+ATTEMPTS_LEFT=2
 cd ${TEST_FOLDER};
 while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     terraform init;
