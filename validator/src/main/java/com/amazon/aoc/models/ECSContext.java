@@ -22,7 +22,7 @@ public class ECSContext {
   // ecs related context
   private String ecsClusterName;
   private String ecsClusterArn;
-  private String ecsTaskArn;
+  private String ecsTaskDefArn;
   private String ecsTaskDefFamily;
   private String ecsTaskDefVersion;
   private String ecsLaunchType;

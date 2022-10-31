@@ -2,10 +2,10 @@ plugins {
     id 'java'
 
     id 'application'
-    id 'com.google.cloud.tools.jib' version "3.2.1"
+    id 'com.google.cloud.tools.jib' version "3.3.0"
 
     // lombok
-    id "io.freefair.lombok" version "6.4.3.1"
+    id "io.freefair.lombok" version "6.5.1"
 
     // check style
     id 'checkstyle'
@@ -63,6 +63,9 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-xray'
     implementation 'com.amazonaws:aws-java-sdk-logs'
     implementation 'com.amazonaws:aws-java-sdk-sts'
+
+    // aws ecs sdk
+    implementation 'com.amazonaws:aws-java-sdk-ecs'
 
     // https://mvnrepository.com/artifact/com.github.awslabs/aws-request-signing-apache-interceptor
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
