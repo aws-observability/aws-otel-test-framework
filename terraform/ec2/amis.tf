@@ -193,7 +193,7 @@ EOF
     }
     arm_debian11 = {
       os_family          = "debian"
-      ami_search_pattern = "debian-11-*"
+      ami_search_pattern = "debian-11-arm64*"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
@@ -232,7 +232,7 @@ EOF
     }
     arm_debian10 = {
       os_family          = "debian"
-      ami_search_pattern = "debian-10-*"
+      ami_search_pattern = "debian-10-arm64*"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
