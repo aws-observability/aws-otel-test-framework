@@ -23,7 +23,7 @@ import picocli.CommandLine.Option;
 public class CommonOption {
 
   @Option(names = {"-u", "--url"},
-      description = "aws-otel-collector receiver endpoint",
+      description = "adot-collector receiver endpoint",
       defaultValue = "localhost:4317")
   private String endpoint;
 
