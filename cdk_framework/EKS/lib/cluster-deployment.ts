@@ -10,6 +10,7 @@ import { validateFileSchema } from './utils/validate-config-schema';
 import { ClusterInterface } from './interfaces/cluster-interface';
 import { ec2ClusterInterface } from './interfaces/ec2cluster-interface';
 import { validateInterface } from './utils/validate-interface-schema';
+
 const yaml = require('js-yaml')
 
 
@@ -44,6 +45,7 @@ export function deployClusters(app: cdk.App) : Map<string, FargateStack | EC2Sta
       }
       clusterNameSet.add(clusterInterface.name)
       const versionKubernetes = eks.KubernetesVersion.of(clusterInterface.version);
+
       if(clusterInterface.launch_type === 'ec2'){
         const ec2Cluster = cluster as ec2ClusterInterface
         validateInterface(ec2Cluster)

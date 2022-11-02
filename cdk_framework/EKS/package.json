@@ -18,19 +18,26 @@
     "@types/prettier": "2.6.0",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
+    "ajv": "^8.11.0",
+    "ajv-errors": "^3.0.0",
     "aws-cdk": "2.29.0",
     "eslint": "^8.20.0",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.8.1",
-    "typescript": "~3.9.7"
+    "typescript": "~3.9.7",
+    "yaml-schema-validator": "^1.2.3"
   },
   "dependencies": {
     "@aws-cdk/aws-ec2": "^1.161.0",
     "@aws-cdk/aws-eks": "^1.161.0",
     "@aws-cdk/aws-iam": "^1.161.0",
     "@aws-cdk/core": "^1.161.0",
-    "aws-cdk-lib": "2.29.0",
+    "@aws-cdk/lambda-layer-kubectl": "^1.179.0",
+    "@aws-cdk/lambda-layer-kubectl-v21": "^0.0.6",
+    "@aws-cdk/lambda-layer-kubectl-v22": "^2.0.0",
+    "@aws-cdk/lambda-layer-kubectl-v23": "^2.0.0",
+    "aws-cdk-lib": "^2.50.0",
     "constructs": "^10.0.0",
     "js-yaml": "^4.1.0",
     "source-map-support": "^0.5.21"
