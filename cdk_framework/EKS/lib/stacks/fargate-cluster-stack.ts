@@ -24,7 +24,7 @@ export class FargateStack extends Stack {
       vpc: props.vpc,
       version: props.version,
       clusterLogging: logging,
-      kubectlLayer: GetLayer(this,props.version.version),
+      kubectlLayer: GetLayer(this,props.version),
 
     });
     this.cluster.awsAuth.addMastersRole(Role.fromRoleName(this, 'eks_admin_role', 'Admin'))

@@ -27,7 +27,7 @@ export class EC2Stack extends Stack {
       defaultCapacity: 0,  // we want to manage capacity ourselves
       version: props.version,
       clusterLogging: logging,
-      kubectlLayer: GetLayer(this,props.version.version),
+      kubectlLayer: GetLayer(this,props.version),
     });
     this.cluster.addNodegroupCapacity(`ng-${instance_type}`, {
         instanceTypes: [new ec2.InstanceType(instance_type)],
