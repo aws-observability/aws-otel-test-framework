@@ -66,7 +66,7 @@ variable "amis" {
       os_family          = "windows"
       ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
       ami_owner          = "amazon"
-      ami_id             = "ami-026bb75827bd3d68d"
+      ami_id             = "ami-0101b5782d8fe3fbe"
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
