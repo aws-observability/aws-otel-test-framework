@@ -76,6 +76,10 @@ public class StatsdMetricEmitter extends MetricEmitter{
             }
         }
         buf = payload.toString().getBytes();
+        log.debug("Payload size: %d", buf.length);
+        if (buf.length >= 64000) {
+            throw new RuntimeException ("Reduce the number of metrics/data-points. UDP packets have size limitation of 64k");
+        }
         DatagramPacket packet = new DatagramPacket(buf, buf.length, ipAddress, portAddress);
         socket.send(packet);
     }

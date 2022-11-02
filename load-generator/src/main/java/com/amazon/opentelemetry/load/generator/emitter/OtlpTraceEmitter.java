@@ -66,7 +66,7 @@ public class OtlpTraceEmitter extends TraceEmitter {
             .buildAndRegisterGlobal();
 
     tracer =
-            GlobalOpenTelemetry.tracerBuilder("aws-otel-load-generator-trace")
+            GlobalOpenTelemetry.tracerBuilder("adot-load-generator-trace")
                     .setInstrumentationVersion("semver:0.1.0")
                     .build();
   }

@@ -39,8 +39,8 @@ public class OtlpMetricEmitter extends MetricEmitter {
 
   private final static String API_NAME = "loadTest";
   private final static String DataPointID = "datapoint_id";
-  private List<LongCounter> counters;
-  private List<Long> gaugeValues;
+  private LongCounter[] counters;
+  private long[] gaugeValues;
 
 
   public OtlpMetricEmitter(Parameter param) {
@@ -70,7 +70,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
       case "gauge":
         for(int i=0 ; i < param.getMetricCount(); i++) {
           for (int id = 0; id < param.getDatapointCount(); id++) {
-            this.gaugeValues.add(id, ThreadLocalRandom.current().nextLong(-100, 100));
+            this.gaugeValues[id] = ThreadLocalRandom.current().nextLong(-100, 100);
           }
         }
         break;
@@ -101,7 +101,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
             .buildAndRegisterGlobal();
 
     Meter meter =
-            GlobalOpenTelemetry.meterBuilder("aws-otel-load-generator-metric")
+            GlobalOpenTelemetry.meterBuilder("adot-load-generator-metric")
                     .setInstrumentationVersion("0.1.0")
                     .build();
     log.info("Finished Setting up metric provider.");
@@ -118,12 +118,12 @@ public class OtlpMetricEmitter extends MetricEmitter {
   private void createCounters(Meter meter) {
     if(meter!= null) {
       log.info("Registering counter metrics...");
-      counters = new ArrayList<>();
+      counters = new LongCounter[param.getDatapointCount()];
       for(int id=0 ; id < param.getMetricCount(); id++) {
-        counters.add(meter.counterBuilder(API_COUNTER_METRIC + id)
+        counters[id] = meter.counterBuilder(API_COUNTER_METRIC + id)
                 .setDescription("API request load sent in bytes")
                 .setUnit("one")
-                .build());
+                .build();
       }
     } else {
       log.error("Metric provider was not found!");
@@ -133,7 +133,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
   private void createGauges(Meter meter) {
     if(meter != null) {
       log.info("Registering gauge metrics...");
-      gaugeValues = new ArrayList<Long>();
+      gaugeValues = new long[param.getDatapointCount()];
       for (int i = 0; i < param.getMetricCount(); i++) {
         meter.gaugeBuilder(API_LATENCY_METRIC + i)
                 .setDescription("API latency time")
@@ -142,7 +142,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
                         {
                           for (int id = 0; id < param.getDatapointCount(); id++) {
                             Attributes datapointAttributes = getDataPointAttributes(id);
-                            measurement.record(gaugeValues.get(id), datapointAttributes);
+                            measurement.record(gaugeValues[id], datapointAttributes);
                           }
                         }
                 );
