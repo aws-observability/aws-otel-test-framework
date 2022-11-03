@@ -317,9 +317,9 @@ EOF
 
     arm_redhat8 = {
       os_family          = "redhat"
-      ami_search_pattern = "RHEL-8.0.0_HVM-20190426-arm64*"
+      ami_search_pattern = "RHEL-8.6.0_HVM-20220503-arm64*"
       ami_owner          = "309956199498"
-      ami_id             = "ami-0f7a968a2c17fb48b"
+      ami_id             = "ami-0bb199dd39edd7d71"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
