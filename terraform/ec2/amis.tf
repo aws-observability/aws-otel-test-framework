@@ -300,13 +300,13 @@ EOF
 
     arm_suse15 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-15-sp2-v20200721-hvm-ssd-arm64*"
+      ami_search_pattern = "suse-sles-15*"
       ami_owner          = "amazon"
-      ami_id             = "ami-0bfc92b18fd79372c"
       ami_product_code   = []
       family             = "linux"
+      login_user         = "ec2-user"
       arch               = "arm64"
-      instance_type      = "t4g.nano"
+      instance_type      = "t4g.micro"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
