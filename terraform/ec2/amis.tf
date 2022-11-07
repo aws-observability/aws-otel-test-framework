@@ -204,9 +204,9 @@ EOF
     suse12 = {
       os_family          = "suse"
       ami_search_pattern = "suse-sles-12*"
-      ami_owner          = "amazon"
+      ami_owner          = "013907871322"
       ami_product_code   = []
-      ami_id             = "ami-088a78f435ef7f78a"
+      ami_id             = "ami-045fab2f0a419b67b"
       family             = "linux"
       login_user         = "ec2-user"
       arch               = "amd64"
