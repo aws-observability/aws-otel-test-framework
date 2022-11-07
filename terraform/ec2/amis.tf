@@ -300,9 +300,9 @@ EOF
 
     arm_suse15 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-15-sp2-v20200721-hvm-ssd-arm64*"
-      ami_owner          = "amazon"
-      ami_id             = "ami-0bfc92b18fd79372c"
+      ami_search_pattern = "suse-sles-15-sp2-v20210212-hvm-ssd-arm64*"
+      ami_owner          = "013907871322"
+      ami_id             = "ami-0b704e615e7364682"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
