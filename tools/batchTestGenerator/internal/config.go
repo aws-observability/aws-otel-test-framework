@@ -65,7 +65,7 @@ func NewDefaultRunConfig() RunConfig {
 
 func (r *RunConfig) ValidateTestCaseInput() error {
 	// validate clustertargets array
-	awsRegionRegex, err := regexp.Compile("^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\\d$")
+	awsRegionRegex, err := regexp.Compile(`^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$`)
 	allPlatformsSet := stringArrayToMap(allPlatforms)
 	if err != nil {
 		return fmt.Errorf("failed to build regex: %w", err)
