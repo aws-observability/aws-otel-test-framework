@@ -8,8 +8,26 @@ import (
 	"strings"
 )
 
-var defaultPlatforms = []string{"EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS_FARGATE"}
-var allPlatforms = []string{"EKS", "ECS", "EC2", "EKS_ARM64", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS_FARGATE", "CANARY", "PERF", "LOCAL"}
+var defaultPlatformSet = map[string]struct{}{
+	"EKS":                     {},
+	"ECS":                     {},
+	"EC2":                     {},
+	"EKS_ARM64":               {},
+	"EKS_ADOT_OPERATOR":       {},
+	"EKS_ADOT_OPERATOR_ARM64": {},
+	"EKS_FARGATE":             {},
+}
+var allPlatformsSet = map[string]struct{}{"EKS": {},
+	"ECS":                     {},
+	"EC2":                     {},
+	"EKS_ARM64":               {},
+	"EKS_ADOT_OPERATOR":       {},
+	"EKS_ADOT_OPERATOR_ARM64": {},
+	"EKS_FARGATE":             {},
+	"CANARY":                  {},
+	"PERF":                    {},
+	"LOCAL":                   {},
+}
 
 type RunConfig struct {
 	OutputLocation   string
@@ -54,10 +72,8 @@ func (r *RunConfig) UnmarshalInputFile() error {
 }
 
 func NewDefaultRunConfig() RunConfig {
-
-	ism := stringArrayToMap(defaultPlatforms)
 	rc := RunConfig{
-		IncludedServices: ism,
+		IncludedServices: defaultPlatformSet,
 		MaxBatches:       40,
 	}
 	return rc
@@ -66,12 +82,11 @@ func NewDefaultRunConfig() RunConfig {
 func (r *RunConfig) ValidateTestCaseInput() error {
 	// validate clustertargets array
 	awsRegionRegex, err := regexp.Compile(`^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$`)
-	allPlatformsSet := stringArrayToMap(allPlatforms)
 	if err != nil {
 		return fmt.Errorf("failed to build regex: %w", err)
 	}
 	for _, clusterTarget := range r.TestCaseInput.ClusterTargets {
-		if _, ok := allPlatformsSet[clusterTarget.Type]; !ok || !strings.HasPrefix(clusterTarget.Type, "EKS") {
+		if !isValidClusterType(clusterTarget.Type) {
 			return fmt.Errorf("cluster target type %s is invalid", clusterTarget.Type)
 		}
 
@@ -99,11 +114,13 @@ func (r *RunConfig) ValidateTestCaseInput() error {
 	return nil
 }
 
-func stringArrayToSet(input []string) map[string]struct{} {
-	//build set for default services
-	output := make(map[string]struct{})
-	for _, val := range input {
-		output[val] = struct{}{}
+func isValidClusterType(targetTypeInput string) bool {
+	if _, ok := allPlatformsSet[targetTypeInput]; !ok {
+		return false
 	}
-	return output
+
+	if !strings.HasPrefix(targetTypeInput, "EKS") {
+		return false
+	}
+	return true
 }
