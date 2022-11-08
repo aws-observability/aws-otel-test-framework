@@ -2,9 +2,10 @@ package internal
 
 import (
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"path/filepath"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestRunConfig_ValidateTestCaseInput(t *testing.T) {
