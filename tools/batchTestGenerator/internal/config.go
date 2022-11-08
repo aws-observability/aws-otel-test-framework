@@ -29,7 +29,7 @@ var allPlatformsSet = map[string]struct{}{"EKS": {},
 	"LOCAL":                   {},
 }
 
-var awsRegionRegex = regexp.MustCompile(`^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$`)
+var awsRegionRegex = regexp.MustCompile(`^(?:us(?:-gov)?|ap|ca|cn|eu|sa)-(?:central|(?:north|south)?(?:east|west)?)-\d$`)
 
 type RunConfig struct {
 	OutputLocation   string
