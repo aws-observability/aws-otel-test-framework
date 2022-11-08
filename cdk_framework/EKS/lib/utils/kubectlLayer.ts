@@ -9,12 +9,12 @@ export function GetLayer(
   scope: Construct,
   k8sVersion: aws_eks.KubernetesVersion
 ): ILayerVersion {
-  switch (k8sVersion) {
-    case aws_eks.KubernetesVersion.V1_22:
+  switch (k8sVersion.version) {
+    case '1.22':
       return new KubectlV22Layer(scope, 'v22Layer');
-    case aws_eks.KubernetesVersion.V1_23:
+    case '1.23':
       return new KubectlV23Layer(scope, 'v23Layer');
-    case aws_eks.KubernetesVersion.V1_21:
+    case '1.21':
       return new KubectlLayer(scope, 'v21Layer');
     default:
       throw new Error(`invalid kubernetes version: ${k8sVersion.version}`);
