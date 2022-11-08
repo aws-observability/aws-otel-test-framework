@@ -120,8 +120,8 @@ EOF
     debian10 = {
       os_family          = "debian"
       ami_search_pattern = "debian-10-amd64*"
-      ami_owner          = "679593333241"
-      ami_id             = "ami-0900b247bf638c13f"
+      ami_owner          = "debian"
+      ami_id             = "ami-080c692d2eb1d9fd0"
       # NOTE: we need product code to pick the right debian 10.
       ami_product_code = [
       "auhljmclkudu651zy27rih2x2"]
@@ -137,6 +137,7 @@ while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/d
 done
 sudo dpkg -i amazon-ssm-agent.deb
 sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
 EOF
     }
     debian9 = {
@@ -157,6 +158,7 @@ while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/d
 done
 sudo dpkg -i amazon-ssm-agent.deb
 sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
 EOF
     }
     amazonlinux2 = {
@@ -235,9 +237,9 @@ EOF
     }
     redhat7 = {
       os_family          = "redhat"
-      ami_search_pattern = "RHEL-7.7_HVM*"
+      ami_search_pattern = "RHEL-7.7_HVM-*-x86_64*"
       ami_owner          = "309956199498"
-      ami_id             = "ami-0c2dfd42fa1fbb52c"
+      ami_id             = "ami-078a6a18fb73909b2"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
@@ -245,20 +247,24 @@ EOF
 #! /bin/bash
 sudo yum install -y python3
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
 EOF
     }
     centos7 = {
       login_user         = "centos"
       os_family          = "centos"
-      ami_search_pattern = "CentOS Linux 7 x86_64*"
-      ami_owner          = "679593333241"
-      ami_id             = "ami-0bc06212a56393ee1"
+      ami_search_pattern = "CentOS-7-*x86_64*"
+      ami_owner          = "amazon"
+      ami_id             = "ami-08c191625cfb7ee61"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
       user_data          = <<EOF
 #! /bin/bash
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
 EOF
     }
     #centos6 is not used in testing anymore
@@ -346,6 +352,8 @@ EOF
 #! /bin/bash
 sudo yum install -y python3
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl enable amazon-ssm-agent
 EOF
     }
 
