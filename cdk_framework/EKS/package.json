@@ -9,7 +9,8 @@
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "prettier-format": "prettier --config .prettierrc 'lib/**/*.ts' 'test/**/*.ts' --write"
   },
   "devDependencies": {
     "@types/jest": "^27.5.2",
@@ -23,6 +24,7 @@
     "aws-cdk": "2.29.0",
     "eslint": "^8.20.0",
     "jest": "^27.5.1",
+    "prettier": "^2.7.1",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.8.1",
     "typescript": "~3.9.7",
