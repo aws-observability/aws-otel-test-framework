@@ -22,7 +22,7 @@ test('ClusterTest', () => {
 
   clusterMap = deployClusters(app);
 
-  for (const cluster of data['clusters']){
+  for (const cluster of data['clusters']) {
     const clusterInterface = cluster as ClusterInterface;
     versionMap.set(clusterInterface.name, clusterInterface.version);
   }
