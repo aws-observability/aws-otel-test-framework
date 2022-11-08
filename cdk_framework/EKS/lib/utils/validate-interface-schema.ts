@@ -4,7 +4,7 @@ import { ec2ClusterInterface } from "../interfaces/ec2cluster-interface"
 const validateSchema = require('yaml-schema-validator')
 
 const supportedLaunchTypes = new Set(['fargate', 'ec2'])
-const supportedVersions = new Set(['1.18', '1.19', '1.20', '1.21']);
+const supportedVersions = new Set(['1.21','1.22','1.23']);
 const supportedCPUArchitectures = new Set(['m5', 'm6g', 't4g']);
 const supportedNodeSizes = new Set(['medium', 'large', 'xlarge', '2xlarge', '4xlarge', '8xlarge', '12xlarge', '16xlarge', '24xlarge', 'metal']);
 const supportedT4gInstances = new Set(['nano', 'micro', 'small', 'medium', 'large', 'xlarge', '2xlarge'])

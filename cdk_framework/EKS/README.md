@@ -25,11 +25,24 @@ The `tsconfig.json` file is used to tell TypeScript how to configure the project
 Since the code base in written in TypeScript, the CDK library has to be downloaded using Node. 
 
 1. Make sure you have Node, so that you can use `npm` control. 
-2. Download from EKS directory the AWS CDK Library by typing `npm install aws-cdk-lib`.
-3. Download `yaml-schema-validator` by typing in command line `npm install yaml-schema-validator`.
-4. Download ajv library by typing in command line `npm install ajv`.
-5. Download ajv errors by typing in command line `npm install ajv-errors`.
-6. In order to use the linter, the eslint dependency needs to be downloaded. This could be done by calling `npm install --save-dev eslint @typescript-eslint/parser @typescript-eslint/eslint-plugin`. 
+2. `npm i`
+
+### Deploying clusters
+
+1. Call `cdk synth` to synthesize the clusters to be deployed. This also makes sure everything was configured properly. 
+2. Call `cdk deploy --all` to dpeloy all the clusters. You could specify the cluster to deploy by the name calling `cdk deploy CLUSTERNAME`. CLUSTERNAME is the name of the cluster you passed in. It is important to note that the stack name is the name provided for the cluster in the configuration file, plus "EKSCluster" at the end. So, if you named a Cluster "cluster_example", then the stack name is "cluster_exampleEKSCluster". 
+3. Call `cdk destroy --all` to destroy all the clusters. You could specify the cluster to be destroyed by calling `cdk destroy CLUSTERNAME` where CLUSTERNAME is the name of the cluster stack. Same rules for cluster stack name as above. 
+
+#### Updating Clusters
+
+In order to update clusters, just change the config file and then call `make -j #number_of_clusters deploy-clusters` where #number_of_clusters is the number of clusters in configuration file. There are some limitations in what could be updated:
+1. Can't downgrade a version. 
+2. Can't change launch_types without changing Cluster name
+
+#### Makefile
+
+The makefile is used to deploy the clusters in parallel. It determines how many clusters are configured, and then sets that number to the number of processes to run to deploy all the clusters simultaneously. In order to accomplish this, after saving the configuration file and setting all appropriate envrionment variables, call `make EKS-infra` and all the clusters should be deployed. This call will first call `deploy-VPC` which will call `cdk synth` and then create the VPC by calling `cdk deploy EKSVpc`. After the VPC is deployed, it then calls `deploy-clusters` where all the EKS clusters that were configured are deployed. The way it calls `deploy-clusters` is by calling `make -j #processes deploy-clusters`, where #processes is the number of clusters being deployed. 
+
 
 ### Environemnt Variables
 
@@ -64,21 +77,6 @@ clusters:
 There are two different clusters being deployed in this example - amdCluster, fargateCluster, and t4gCluster. There are 4 fields for each cluster - `name`, `launch_type`, `version`, and `instance_type`. `instance_type` is only required for ec2 cluster. 
    
 
-### Deploying clusters
-
-1. Call `cdk synth` to synthesize the clusters to be deployed. This also makes sure everything was configured properly. 
-2. Call `cdk deploy --all` to dpeloy all the clusters. You could specify the cluster to deploy by the name calling `cdk deploy CLUSTERNAME`. CLUSTERNAME is the name of the cluster you passed in. It is important to note that the stack name is the name provided for the cluster in the configuration file, plus "EKSCluster" at the end. So, if you named a Cluster "cluster_example", then the stack name is "cluster_exampleEKSCluster". 
-3. Call `cdk destroy --all` to destroy all the clusters. You could specify the cluster to be destroyed by calling `cdk destroy CLUSTERNAME` where CLUSTERNAME is the name of the cluster stack. Same rules for cluster stack name as above. 
-
-#### Updating Clusters
-
-In order to update clusters, just change the config file and then call `make -j #number_of_clusters deploy-clusters` where #number_of_clusters is the number of clusters in configuration file. There are some limitations in what could be updated:
-1. Can't downgrade a version. 
-2. Can't change launch_types without changing Cluster name
-
-#### Makefile
-
-The makefile is used to deploy the clusters in parallel. It determines how many clusters are configured, and then sets that number to the number of processes to run to deploy all the clusters simultaneously. In order to accomplish this, after saving the configuration file and setting all appropriate envrionment variables, call `make EKS-infra` and all the clusters should be deployed. This call will first call `deploy-VPC` which will call `cdk synth` and then create the VPC by calling `cdk deploy EKSVpc`. After the VPC is deployed, it then calls `deploy-clusters` where all the EKS clusters that were configured are deployed. The way it calls `deploy-clusters` is by calling `make -j #processes deploy-clusters`, where #processes is the number of clusters being deployed. 
 
 ### Example Deployment
 

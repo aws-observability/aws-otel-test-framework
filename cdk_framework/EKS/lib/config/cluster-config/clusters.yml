@@ -1,9 +1,17 @@
 ---
 clusters:
-  - name: ec2Cluster
+  - name: ec2Cluster121
     version: "1.21"
     launch_type: ec2
     instance_type: m5.large
+  - name: ec2Cluster122
+    version: "1.22"
+    launch_type: ec2
+    instance_type: m5.large
+  - name: ec2Cluster123
+    version: "1.23"
+    launch_type: ec2
+    instance_type: m5.large
   - name: fargateCluster
-    version: "1.20"
+    version: "1.23"
     launch_type: fargate
