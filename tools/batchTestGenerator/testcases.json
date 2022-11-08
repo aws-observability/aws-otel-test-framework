@@ -383,6 +383,12 @@
 			"platforms": [
 				"EKS_FARGATE"
 			]
+		},
+		{
+			"case_name": "ecshealthcheck",
+			"platforms": [
+				"ECS"
+			]
 		}
 	]
 }
