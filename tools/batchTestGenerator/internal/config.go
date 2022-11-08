@@ -99,7 +99,7 @@ func (r *RunConfig) ValidateTestCaseInput() error {
 	return nil
 }
 
-func stringArrayToMap(input []string) map[string]struct{} {
+func stringArrayToSet(input []string) map[string]struct{} {
 	//build set for default services
 	output := make(map[string]struct{})
 	for _, val := range input {
