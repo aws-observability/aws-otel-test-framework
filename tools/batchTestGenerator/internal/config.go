@@ -29,6 +29,8 @@ var allPlatformsSet = map[string]struct{}{"EKS": {},
 	"LOCAL":                   {},
 }
 
+var awsRegionRegex = regexp.MustCompile(`^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$`)
+
 type RunConfig struct {
 	OutputLocation   string
 	IncludedServices map[string]struct{}
@@ -80,11 +82,6 @@ func NewDefaultRunConfig() RunConfig {
 }
 
 func (r *RunConfig) ValidateTestCaseInput() error {
-	// validate clustertargets array
-	awsRegionRegex, err := regexp.Compile(`^(us(-gov)?|ap|ca|cn|eu|sa)-(central|(north|south)?(east|west)?)-\d$`)
-	if err != nil {
-		return fmt.Errorf("failed to build regex: %w", err)
-	}
 	for _, clusterTarget := range r.TestCaseInput.ClusterTargets {
 		if !isValidClusterType(clusterTarget.Type) {
 			return fmt.Errorf("cluster target type %s is invalid", clusterTarget.Type)
