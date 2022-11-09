@@ -2,6 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { readFileSync } from 'fs';
 import { deployClusters } from '../lib/cluster-deployment';
+import { ClusterInterface } from '../lib/interfaces/cluster-interface';
 import { EC2Stack } from '../lib/stacks/ec2-cluster-stack';
 import { FargateStack } from '../lib/stacks/fargate-cluster-stack';
 
@@ -21,9 +22,9 @@ test('ClusterTest', () => {
 
   clusterMap = deployClusters(app);
 
-  for (const [key, value] of Object.entries(data['clusters'])) {
-    const val = Object(value);
-    versionMap.set(key, String(val['version']));
+  for (const cluster of data['clusters']) {
+    const clusterInterface = cluster as ClusterInterface;
+    versionMap.set(clusterInterface.name, clusterInterface.version);
   }
 
   for (const [key, st] of clusterMap) {
