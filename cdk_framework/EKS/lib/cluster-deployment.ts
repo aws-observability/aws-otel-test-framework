@@ -10,6 +10,7 @@ import { validateFileSchema } from './utils/validate-config-schema';
 import { ClusterInterface } from './interfaces/cluster-interface';
 import { ec2ClusterInterface } from './interfaces/ec2cluster-interface';
 import { validateInterface } from './utils/validate-interface-schema';
+import { ClusterAuth } from './constructs/clusterAuthConstruct';
 
 const yaml = require('js-yaml');
 
@@ -41,7 +42,7 @@ export function deployClusters(
 
   const clusterNameSet = new Set();
   for (const cluster of configData['clusters']) {
-    let stack;
+    let clusterStack;
     const clusterInterface = cluster as ClusterInterface;
     if (clusterNameSet.has(clusterInterface.name)) {
       throw new Error(
@@ -56,7 +57,7 @@ export function deployClusters(
     if (clusterInterface.launch_type === 'ec2') {
       const ec2Cluster = cluster as ec2ClusterInterface;
       validateInterface(ec2Cluster);
-      stack = new EC2Stack(app, `${ec2Cluster.name}EKSCluster`, {
+      clusterStack = new EC2Stack(app, `${ec2Cluster.name}EKSCluster`, {
         name: ec2Cluster.name,
         vpc: vpcStack.vpc,
         version: versionKubernetes,
@@ -67,7 +68,7 @@ export function deployClusters(
       });
     } else {
       validateInterface(clusterInterface);
-      stack = new FargateStack(app, `${clusterInterface.name}EKSCluster`, {
+      clusterStack = new FargateStack(app, `${clusterInterface.name}EKSCluster`, {
         name: clusterInterface.name,
         vpc: vpcStack.vpc,
         version: versionKubernetes,
@@ -76,7 +77,10 @@ export function deployClusters(
         }
       });
     }
-    eksClusterMap.set(cluster['name'], stack);
+    new ClusterAuth(clusterStack, `${clusterInterface.name}ClusterAuth`, {
+      cluster: clusterStack.cluster
+    });
+    eksClusterMap.set(cluster['name'], clusterStack);
   }
 
   return eksClusterMap;
