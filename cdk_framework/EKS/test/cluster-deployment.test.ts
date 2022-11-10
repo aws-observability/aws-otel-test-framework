@@ -51,6 +51,6 @@ test('ClusterTest', () => {
         }
       }
     });
-    template.resourceCountIs('Custom::AWSCDK-EKS-KubernetesResource',2)
+    template.resourceCountIs('Custom::AWSCDK-EKS-KubernetesResource', 2);
   }
 });

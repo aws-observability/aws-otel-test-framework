@@ -68,14 +68,18 @@ export function deployClusters(
       });
     } else {
       validateInterface(clusterInterface);
-      clusterStack = new FargateStack(app, `${clusterInterface.name}EKSCluster`, {
-        name: clusterInterface.name,
-        vpc: vpcStack.vpc,
-        version: versionKubernetes,
-        env: {
-          region: REGION
+      clusterStack = new FargateStack(
+        app,
+        `${clusterInterface.name}EKSCluster`,
+        {
+          name: clusterInterface.name,
+          vpc: vpcStack.vpc,
+          version: versionKubernetes,
+          env: {
+            region: REGION
+          }
         }
-      });
+      );
     }
     new ClusterAuth(clusterStack, `${clusterInterface.name}ClusterAuth`, {
       cluster: clusterStack.cluster

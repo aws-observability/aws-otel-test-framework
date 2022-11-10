@@ -13,8 +13,8 @@ export class ClusterAuth extends Construct {
   constructor(scope: Construct, id: string, props: ClusterAuthConstructProps) {
     super(scope, id);
     this.cluster = props.cluster;
-    this.applyClusterAuthMap()
-    this.applyClusterRbac()
+    this.applyClusterAuthMap();
+    this.applyClusterRbac();
   }
   applyClusterAuthMap() {
     const clusterReadOnlyRole = Role.fromRoleName(
