@@ -16,8 +16,11 @@
 package com.amazon.opentelemetry.load.generator.emitter;
 
 import com.amazon.opentelemetry.load.generator.model.Parameter;
+import lombok.extern.log4j.Log4j2;
+
 import java.util.concurrent.TimeUnit;
 
+@Log4j2
 public abstract class MetricEmitter implements Emitter {
 
   protected static final String DIMENSION_API_NAME = "apiName";
@@ -29,8 +32,8 @@ public abstract class MetricEmitter implements Emitter {
 
   @Override
   public void start(Runnable emitter) {
-    scheduler.scheduleAtFixedRate(emitter, TimeUnit.SECONDS.toMillis(5000),
-        TimeUnit.SECONDS.toNanos(1) / this.param.getRate(), TimeUnit.NANOSECONDS);
+    log.info("Generating metrics at a rate of(ms) : {}" , this.param.getObservationInterval());
+    scheduler.scheduleAtFixedRate(emitter, 0, this.param.getObservationInterval(), TimeUnit.MILLISECONDS);
   };
 
 }
