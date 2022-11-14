@@ -1,0 +1,23 @@
+name: Update Test Images
+on:
+  push:
+    branches: ['terraform']
+    
+    # List of paths that should be considered when triggering the workflow
+    paths: ['mocked_servers/**']
+jobs:
+  run-image-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: ${{ secrets.COLLECTOR_ASSUMABLE_ROLE_ARN }}
+          aws-region: us-west-2
+      - name: Set up terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: run imagebuild
+        working-directory: terraform/imagebuild
+        run: |
+          terraform init && terraform apply --auto-approve
