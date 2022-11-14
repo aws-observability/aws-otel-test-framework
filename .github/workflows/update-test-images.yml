@@ -1,5 +1,6 @@
 name: Update Test Images
 on:
+  workflow_dispatch:
   push:
     branches: ['terraform']
 
