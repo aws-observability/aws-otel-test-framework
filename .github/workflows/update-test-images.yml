@@ -1,0 +1,32 @@
+name: Update Test Images
+on:
+  push:
+    branches: ['terraform']
+
+    # List of paths that should be considered when triggering the workflow
+    paths: ['mocked_servers/**', 'sample-apps/**']
+jobs:
+  run-image-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: ${{ secrets.TEST_FW_ASSUMABLE_ROLE_ARN }}
+          aws-region: us-west-2
+          role-duration-seconds: 7200
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - uses: gradle/wrapper-validation-action@v1
+      - name: Build locally with gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: build
+      - name: Set up terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: run imagebuild
+        working-directory: terraform/imagebuild
+        run: |
+          terraform init && terraform apply --auto-approve
