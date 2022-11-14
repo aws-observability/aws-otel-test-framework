@@ -5,6 +5,11 @@ on:
 
     # List of paths that should be considered when triggering the workflow
     paths: ['mocked_servers/**', 'sample-apps/**']
+
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   run-image-build:
     runs-on: ubuntu-latest
