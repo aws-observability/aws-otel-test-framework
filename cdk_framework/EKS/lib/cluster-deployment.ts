@@ -11,6 +11,7 @@ import { ClusterInterface } from './interfaces/cluster-interface';
 import { ec2ClusterInterface } from './interfaces/ec2cluster-interface';
 import { validateInterface } from './utils/validate-interface-schema';
 import { ClusterAuth } from './constructs/clusterAuthConstruct';
+import { OpenIdConnectProvider } from 'aws-cdk-lib/aws-eks';
 
 const yaml = require('js-yaml');
 
@@ -84,6 +85,14 @@ export function deployClusters(
     new ClusterAuth(clusterStack, `${clusterInterface.name}ClusterAuth`, {
       cluster: clusterStack.cluster
     });
+
+    new OpenIdConnectProvider(
+      clusterStack,
+      `${clusterInterface.name}-oidc-provider`,
+      {
+        url: clusterStack.cluster.clusterOpenIdConnectIssuerUrl
+      }
+    );
     eksClusterMap.set(cluster['name'], clusterStack);
   }
 
