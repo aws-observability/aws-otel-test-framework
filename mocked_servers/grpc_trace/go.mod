@@ -1,6 +1,6 @@
 module github.com/aws-observability/aws-otel-test-framework/mockedservers/grpc/trace
 
-go 1.17
+go 1.19
 
 require (
 	go.opentelemetry.io/proto/otlp v0.19.0
