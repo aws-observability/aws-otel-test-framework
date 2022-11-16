@@ -71,14 +71,9 @@ func newCommandConfig() *commandConfig {
 			return fmt.Errorf("max batches must be greater than 0")
 		}
 
-		err = c.runConfig.UnmarshalInputFile()
+		err = c.runConfig.InitInputFile()
 		if err != nil {
-			return fmt.Errorf("error parsing input file: %w", err)
-		}
-
-		err = c.runConfig.ValidateTestCaseInput()
-		if err != nil {
-			return fmt.Errorf("input file validation failed: %w", err)
+			return fmt.Errorf("failed to initialize input file: %w", err)
 		}
 
 		return nil

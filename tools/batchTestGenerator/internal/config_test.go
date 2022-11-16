@@ -42,9 +42,7 @@ func TestRunConfig_ValidateTestCaseInput(t *testing.T) {
 	for _, test := range tests {
 		rc := NewDefaultRunConfig()
 		rc.TestCaseFilePath = filepath.Join(".", "mock_test_data", "config", fmt.Sprintf("%s.json", test.testname))
-		err := rc.UnmarshalInputFile()
-		assert.NoError(t, err)
-		actual := rc.ValidateTestCaseInput()
+		actual := rc.InitInputFile()
 		test.expectedFunc(t, actual)
 	}
 }

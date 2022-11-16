@@ -60,7 +60,7 @@ type Target struct {
 	Region string `json:"region"`
 }
 
-func (r *RunConfig) UnmarshalInputFile() error {
+func (r *RunConfig) unmarshalInputFile() error {
 
 	testCaseFile, err := os.ReadFile(r.TestCaseFilePath)
 	if err != nil {
@@ -82,7 +82,7 @@ func NewDefaultRunConfig() RunConfig {
 	return rc
 }
 
-func (r *RunConfig) ValidateTestCaseInput() error {
+func (r *RunConfig) validateTestCaseInput() error {
 	for _, clusterTarget := range r.TestCaseInput.ClusterTargets {
 		if !isValidClusterType(clusterTarget.Type) {
 			return fmt.Errorf("cluster target type %s is invalid", clusterTarget.Type)
@@ -108,6 +108,19 @@ func (r *RunConfig) ValidateTestCaseInput() error {
 				return fmt.Errorf("not a valid platform: %s", platform)
 			}
 		}
+	}
+	return nil
+}
+
+func (r *RunConfig) InitInputFile() error {
+	err := r.unmarshalInputFile()
+	if err != nil {
+		return fmt.Errorf("error parsing input file: %w", err)
+	}
+
+	err = r.validateTestCaseInput()
+	if err != nil {
+		return fmt.Errorf("input file validation failed: %w", err)
 	}
 	return nil
 }
