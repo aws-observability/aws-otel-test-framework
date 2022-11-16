@@ -32,9 +32,6 @@ export class EC2Stack extends Stack {
       instanceTypes: [new ec2.InstanceType(instance_type)],
       minSize: 2
     });
-    this.cluster.awsAuth.addMastersRole(
-      Role.fromRoleName(this, 'eks_admin_role', 'Admin')
-    );
   }
 }
 
