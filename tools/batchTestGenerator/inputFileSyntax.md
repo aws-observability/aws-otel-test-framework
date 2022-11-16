@@ -44,7 +44,8 @@
 
 ### clustertargets
 Define a set of clusters to dispatch EKS tests to. Each EKS platform that is included in your
-test case platforms must have cluster targets defined. Defining a test case with `EKS_FARGATE` tests
+test case platforms must have cluster targets defined. A test will be run against all corresponding
+cluster targets if that service is included in the batch generation. Defining a test case with `EKS_FARGATE` tests
 without defining a cluster target with type `EKS_FARGATE` will result in an error. 
 
 ### tests
