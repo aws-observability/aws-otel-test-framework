@@ -46,6 +46,9 @@ const requiredSchema = {
   instance_type: {
     type: String,
     use: { validateInstanceType }
+  },
+  cert_manager: {
+    type: Boolean
   }
 };
 
