@@ -4,7 +4,8 @@ import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import {
   CapacityType,
   KubectlProvider,
-  KubernetesVersion
+  KubernetesVersion,
+  Nodegroup
 } from 'aws-cdk-lib/aws-eks';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { GetLayer } from '../utils/kubectlLayer';
@@ -32,11 +33,14 @@ export class EC2Stack extends Stack {
       clusterLogging: logging,
       kubectlLayer: GetLayer(this, props.version)
     });
-    this.cluster.addNodegroupCapacity(`ng-${instance_type}`, {
+    const clusterNodeGroup = new Nodegroup(this, 'managed-ng', {
       instanceTypes: [new ec2.InstanceType(instance_type)],
-      minSize: 2,
-      capacityType: CapacityType.ON_DEMAND
+      cluster: this.cluster,
+      minSize: 2
     });
+    clusterNodeGroup.role.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')
+    );
   }
 }
 
