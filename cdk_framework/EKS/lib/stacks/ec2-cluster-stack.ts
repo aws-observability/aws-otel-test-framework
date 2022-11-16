@@ -1,7 +1,12 @@
 import { Stack, StackProps, aws_eks as eks, aws_ec2 as ec2 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { KubectlProvider, KubernetesVersion } from 'aws-cdk-lib/aws-eks';
+import {
+  CapacityType,
+  KubectlProvider,
+  KubernetesVersion,
+  Nodegroup
+} from 'aws-cdk-lib/aws-eks';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { GetLayer } from '../utils/kubectlLayer';
 
@@ -28,12 +33,13 @@ export class EC2Stack extends Stack {
       clusterLogging: logging,
       kubectlLayer: GetLayer(this, props.version)
     });
-    this.cluster.addNodegroupCapacity(`ng-${instance_type}`, {
+    const clusterNodeGroup = new Nodegroup(this, 'managed-ng', {
       instanceTypes: [new ec2.InstanceType(instance_type)],
+      cluster: this.cluster,
       minSize: 2
     });
-    this.cluster.awsAuth.addMastersRole(
-      Role.fromRoleName(this, 'eks_admin_role', 'Admin')
+    clusterNodeGroup.role.addManagedPolicy(
+      ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')
     );
   }
 }
