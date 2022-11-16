@@ -1,7 +1,7 @@
 import { Stack, StackProps, aws_eks as eks, aws_ec2 as ec2 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import { KubectlProvider, KubernetesVersion } from 'aws-cdk-lib/aws-eks';
+import { CapacityType, KubectlProvider, KubernetesVersion } from 'aws-cdk-lib/aws-eks';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
 import { GetLayer } from '../utils/kubectlLayer';
 
@@ -30,7 +30,8 @@ export class EC2Stack extends Stack {
     });
     this.cluster.addNodegroupCapacity(`ng-${instance_type}`, {
       instanceTypes: [new ec2.InstanceType(instance_type)],
-      minSize: 2
+      minSize: 2,
+      capacityType: CapacityType.SPOT
     });
   }
 }
