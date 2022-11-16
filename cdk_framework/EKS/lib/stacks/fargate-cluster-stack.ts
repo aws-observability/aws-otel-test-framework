@@ -28,6 +28,11 @@ export class FargateStack extends Stack {
     this.cluster.awsAuth.addMastersRole(
       Role.fromRoleName(this, 'eks_admin_role', 'Admin')
     );
+    // test clusters do not need any specific configuration.
+    // this profile ensures that all namespaces have an attached profile.
+    this.cluster.addFargateProfile('default-profile', {
+      selectors: [{ namespace: '?*' }]
+    });
   }
 }
 
