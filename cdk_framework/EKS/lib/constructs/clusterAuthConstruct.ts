@@ -66,12 +66,12 @@ export class ClusterAuth extends Construct {
         {
           apiGroups: ['admissionregistration.k8s.io'],
           resources: ['*'],
-          verbs: ['get','list','watch']
+          verbs: ['get', 'list', 'watch']
         },
         {
           apiGroups: [''],
           resources: ['nodes'],
-          verbs: ['get','list','watch']
+          verbs: ['get', 'list', 'watch']
         }
       ]
     };
