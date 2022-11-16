@@ -47,7 +47,7 @@ func TestBuildTestCasesEC2ECS(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.testName, func(t *testing.T) {
-			test.runConfig.TestCaseFilePath = fmt.Sprintf("./mock_test_data/%s.json", test.testName)
+			test.runConfig.TestCaseFilePath = fmt.Sprintf("./mock_test_data/testCaseBuilder/%s.json", test.testName)
 			err := test.runConfig.UnmarshalInputFile()
 			assert.NoError(t, err, "error parsing input file")
 			actual, err := buildTestCases(test.runConfig)
@@ -174,7 +174,7 @@ func TestBuildTestCaseEKS(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.testname, func(t *testing.T) {
-			test.runConfig.TestCaseFilePath = fmt.Sprintf("./mock_test_data/%s.json", test.testname)
+			test.runConfig.TestCaseFilePath = fmt.Sprintf("./mock_test_data/testCaseBuilder/%s.json", test.testname)
 			err := test.runConfig.UnmarshalInputFile()
 			assert.NoError(t, err, "error parsing input file")
 
