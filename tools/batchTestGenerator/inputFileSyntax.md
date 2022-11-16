@@ -1,4 +1,9 @@
 # Input File Syntax
+The input file represents a set of test cases, platforms, and EKS cluster targets. Each test case can result a 1 to many
+combination of `case_name` to `platform`. In the case of EKS platforms additional permutations are created for each 
+`clustertarget` that is attached to that EKS platform type. This input file is read in by the batch test generator to
+create these permutations and then break them up into smaller batches. 
+
 ## Example
 ```json
 {
