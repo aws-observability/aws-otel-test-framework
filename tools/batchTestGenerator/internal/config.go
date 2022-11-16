@@ -36,10 +36,11 @@ type RunConfig struct {
 	IncludedServices map[string]struct{}
 	MaxBatches       int
 	TestCaseFilePath string
-	TestCaseInput    Tests
+	TestCaseInput    TestSuite
 }
 
-type Tests struct {
+// TestSuite is used to store unmarshalled testing input file data into.
+type TestSuite struct {
 	Tests          []Test          `json:"tests"`
 	ClusterTargets []ClusterTarget `json:"clustertargets"`
 }
