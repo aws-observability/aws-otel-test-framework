@@ -35,7 +35,7 @@ export class EC2Stack extends Stack {
     this.cluster.addNodegroupCapacity(`ng-${instance_type}`, {
       instanceTypes: [new ec2.InstanceType(instance_type)],
       minSize: 2,
-      capacityType: CapacityType.SPOT
+      capacityType: CapacityType.ON_DEMAND
     });
   }
 }
