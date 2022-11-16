@@ -100,7 +100,7 @@ export function deployClusters(
          * the node id for the stack can contain an incompatible format.
          * Force default release name instead.
          */
-        release: 'cert-manager-2',
+        release: 'cert-manager',
         // values should be passed as objects
         // https://github.com/aws/aws-cdk/issues/11475#issuecomment-855220507
         values: {
