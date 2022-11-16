@@ -60,6 +60,7 @@ Sample template of what config file looks like could be seen in the YAML files f
     * `launch_type` - choose either `ec2` or `fargate`. Determines the launch type for the cluster to be deployed. Case insensitive. 
     * `version` - Kubernetes Version. Supported Kubernetes versions are any versions between 1.18-1.21. This can be seen at [KubernetesVersion API](https://docs.aws.amazon.com/cdk/api/v2/docs/aws-cdk-lib.aws_eks.KubernetesVersion.html). Additionally, specifying patch releases isn't an option as the CDK doesn't support it. Therefore, every input value must be the minor version. 
     * `instance_type` - This is a string which is only required for ec2 clusters. There are 2 parts to the `instance_type`: ec2 instance which is the cpu architecture, and node size which is the size of the CPU. The options for ec2 instance are `m6g`, `t4g`, amd `m5` - each represent a different cpu architecture. There is a vast variety of node sizes. The list of compatible sizes could be found here: [Compatible Node Sizes](https://www.amazonaws.cn/en/ec2/instance-types/). The string for this should follow this template: "ec2_instance" + "." + "node_size". An example would be `m5.large`. It is case insensitive. 
+    * `cert_manager` - `bool` - Setting this value to true will use helm to install cert-manager on the cluster. 
 
 Here is a sample configuration file example:
 ```
@@ -72,6 +73,7 @@ clusters:
   - name: fargateCluster
     version: "1.20"
     launch_type: fargate
+    cert_manager: true
 ```
 
 There are two different clusters being deployed in this example - amdCluster, fargateCluster, and t4gCluster. There are 4 fields for each cluster - `name`, `launch_type`, `version`, and `instance_type`. `instance_type` is only required for ec2 cluster. 
