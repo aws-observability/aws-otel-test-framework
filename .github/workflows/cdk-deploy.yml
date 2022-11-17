@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  run-image-build:
+  run-cdk-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
