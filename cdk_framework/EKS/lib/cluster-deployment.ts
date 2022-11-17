@@ -11,6 +11,7 @@ import { ClusterInterface } from './interfaces/cluster-interface';
 import { ec2ClusterInterface } from './interfaces/ec2cluster-interface';
 import { validateInterface } from './utils/validate-interface-schema';
 import { ClusterAuth } from './constructs/clusterAuthConstruct';
+import { HelmChart } from 'aws-cdk-lib/aws-eks';
 import { OpenIdConnectProvider } from 'aws-cdk-lib/aws-eks';
 
 const yaml = require('js-yaml');
@@ -86,6 +87,32 @@ export function deployClusters(
       cluster: clusterStack.cluster
     });
 
+    if (clusterInterface.cert_manager) {
+      const certManagerHelm = new HelmChart(clusterStack, 'cert-manager', {
+        cluster: clusterStack.cluster,
+        createNamespace: true,
+        namespace: 'cert-manager',
+        repository: 'https://charts.jetstack.io',
+        version: 'v1.10.0',
+        chart: 'cert-manager',
+        /**
+         * Default release name relies on the cfn node id but
+         * the node id for the stack can contain an incompatible format.
+         * Force default release name instead.
+         */
+        release: 'cert-manager',
+        // values should be passed as objects
+        // https://github.com/aws/aws-cdk/issues/11475#issuecomment-855220507
+        values: {
+          installCRDs: 'true',
+          // https://github.com/cert-manager/cert-manager/issues/3237#issuecomment-827523656
+          webhook: {
+            securePort: 10260
+          }
+        }
+      });
+      certManagerHelm.node.addDependency(clusterStack.cluster);
+    }
     new OpenIdConnectProvider(
       clusterStack,
       `${clusterInterface.name}-oidc-provider`,

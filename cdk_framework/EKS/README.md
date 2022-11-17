@@ -49,6 +49,7 @@ clusters:
   - name: fargateCluster
     version: "1.20"
     launch_type: fargate
+    cert_manager: true
 ```
 ### Example Deployment
 

@@ -35,6 +35,12 @@ const schema = {
             errorMessage: {
               type: 'ec2_instance must be a string'
             }
+          },
+          cert_manager: {
+            type: 'boolean',
+            errorMessage: {
+              type: 'cert_manager must be true or false'
+            }
           }
         },
         required: ['name', 'version', 'launch_type'],
