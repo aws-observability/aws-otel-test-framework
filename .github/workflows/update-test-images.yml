@@ -1,4 +1,8 @@
 name: Update Test Images
+
+# We should execute only one workflow run at a time
+concurrency: test_images_concurrency
+
 on:
   workflow_dispatch:
   push:
