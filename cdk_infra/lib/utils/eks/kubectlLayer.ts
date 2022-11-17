@@ -18,7 +18,7 @@ export function GetLayer(
     case '1.23':
       return new KubectlV23Layer(scope, 'v23Layer');
     case '1.24':
-      return new KubectlV24Layer(scope, 'v24Layer')
+      return new KubectlV24Layer(scope, 'v24Layer');
     default:
       throw new Error(`invalid kubernetes version: ${k8sVersion.version}`);
   }
