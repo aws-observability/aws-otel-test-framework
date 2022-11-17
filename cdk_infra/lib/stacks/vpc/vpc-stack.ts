@@ -6,9 +6,6 @@ export class VPCStack extends Stack {
 
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
-
-    const REGION = process.env.CDK_DEFAULT_REGION || 'us-west-2';
-
     this.vpc = new ec2.Vpc(this, 'EKSVpc', {
       cidr: '10.0.0.0/16',
       natGateways: 1,
