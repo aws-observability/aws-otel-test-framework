@@ -2,9 +2,9 @@ import * as cdk from 'aws-cdk-lib';
 import { Template } from 'aws-cdk-lib/assertions';
 import { readFileSync } from 'fs';
 import { deployClusters } from '../lib/cluster-deployment';
-import { ClusterInterface } from '../lib/interfaces/cluster-interface';
-import { EC2Stack } from '../lib/stacks/ec2-cluster-stack';
-import { FargateStack } from '../lib/stacks/fargate-cluster-stack';
+import { ClusterInterface } from '../lib/interfaces/eks/cluster-interface';
+import { EC2Stack } from '../lib/stacks/eks/ec2-cluster-stack';
+import { FargateStack } from '../lib/stacks/eks/fargate-cluster-stack';
 
 const yaml = require('js-yaml');
 

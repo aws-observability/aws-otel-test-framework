@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { VPCStack } from './stacks/vpc-stack';
+import { VPCStack } from './stacks/vpc/vpc-stack';
 import { aws_eks as eks } from 'aws-cdk-lib';
 import { readFileSync } from 'fs';
-import { EC2Stack } from './stacks/ec2-cluster-stack';
-import { FargateStack } from './stacks/fargate-cluster-stack';
-import { validateFileSchema } from './utils/validate-config-schema';
-import { ClusterInterface } from './interfaces/cluster-interface';
-import { ec2ClusterInterface } from './interfaces/ec2cluster-interface';
-import { validateInterface } from './utils/validate-interface-schema';
-import { ClusterAuth } from './constructs/clusterAuthConstruct';
+import { EC2Stack } from './stacks/eks/ec2-cluster-stack';
+import { FargateStack } from './stacks/eks/fargate-cluster-stack';
+import { validateFileSchema } from './utils/eks/validate-config-schema';
+import { ClusterInterface } from './interfaces/eks/cluster-interface';
+import { ec2ClusterInterface } from './interfaces/eks/ec2cluster-interface';
+import { validateInterface } from './utils/eks/validate-interface-schema';
+import { ClusterAuth } from './constructs/eks/clusterAuthConstruct';
 import { HelmChart } from 'aws-cdk-lib/aws-eks';
 import { OpenIdConnectProvider } from 'aws-cdk-lib/aws-eks';
 

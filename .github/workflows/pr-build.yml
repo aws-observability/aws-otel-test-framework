@@ -53,7 +53,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-node-
     - name: test
-      working-directory: cdk_framework/EKS
+      working-directory: cdk_infra/
       run: |
         npm install
         npm run test

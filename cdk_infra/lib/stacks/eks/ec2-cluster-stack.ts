@@ -8,7 +8,7 @@ import {
   Nodegroup
 } from 'aws-cdk-lib/aws-eks';
 import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
-import { GetLayer } from '../utils/kubectlLayer';
+import { GetLayer } from '../../utils/eks/kubectlLayer';
 
 export class EC2Stack extends Stack {
   cluster: eks.Cluster;

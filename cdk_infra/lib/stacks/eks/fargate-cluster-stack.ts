@@ -1,7 +1,7 @@
 import { Stack, StackProps, aws_eks as eks } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Role } from 'aws-cdk-lib/aws-iam';
-import { GetLayer } from '../utils/kubectlLayer';
+import { GetLayer } from '../../utils/eks/kubectlLayer';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
 import { KubernetesVersion } from 'aws-cdk-lib/aws-eks';
 
