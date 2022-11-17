@@ -48,3 +48,8 @@ updates:
     directory: "/trace-java-client"
     schedule:
       interval: "weekly"
+  
+  - package-ecosystem: "npm"
+    directory: "cdk_infra"
+    schedule:
+      interval: "weekly"
