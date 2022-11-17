@@ -1,17 +1,14 @@
 ---
 clusters:
-  - name: ec2Cluster121
+  - name: collector-ci-arm64-1-21
     version: "1.21"
     launch_type: ec2
-    instance_type: m5.large
-  - name: ec2Cluster122
-    version: "1.22"
+    instance_type: m6g.medium
+  - name: collector-ci-arm64-1-24
+    version: "1.24"
     launch_type: ec2
-    instance_type: m5.large
-  - name: ec2Cluster123
-    version: "1.23"
+    instance_type: m6g.medium
+  - name: collector-ci-amd64-1-24
+    version: "1.24"
     launch_type: ec2
-    instance_type: m5.large
-  - name: fargateCluster
-    version: "1.23"
-    launch_type: fargate
+    instance_type: "m5.large"
