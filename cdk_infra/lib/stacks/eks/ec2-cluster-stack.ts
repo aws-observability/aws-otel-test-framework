@@ -1,13 +1,8 @@
 import { Stack, StackProps, aws_eks as eks, aws_ec2 as ec2 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Vpc } from 'aws-cdk-lib/aws-ec2';
-import {
-  CapacityType,
-  KubectlProvider,
-  KubernetesVersion,
-  Nodegroup
-} from 'aws-cdk-lib/aws-eks';
-import { ManagedPolicy, Role, ServicePrincipal } from 'aws-cdk-lib/aws-iam';
+import { KubernetesVersion, Nodegroup } from 'aws-cdk-lib/aws-eks';
+import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { GetLayer } from '../../utils/eks/kubectlLayer';
 
 export class EC2Stack extends Stack {

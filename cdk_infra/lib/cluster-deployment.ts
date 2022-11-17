@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { VPCStack } from './stacks/vpc/vpc-stack';
-import { aws_eks as eks } from 'aws-cdk-lib';
+import { aws_eks as eks, StackProps } from 'aws-cdk-lib';
 import { readFileSync } from 'fs';
 import { EC2Stack } from './stacks/eks/ec2-cluster-stack';
 import { FargateStack } from './stacks/eks/fargate-cluster-stack';
@@ -13,14 +12,15 @@ import { validateInterface } from './utils/eks/validate-interface-schema';
 import { ClusterAuth } from './constructs/eks/clusterAuthConstruct';
 import { HelmChart } from 'aws-cdk-lib/aws-eks';
 import { OpenIdConnectProvider } from 'aws-cdk-lib/aws-eks';
+import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
 const yaml = require('js-yaml');
 
 export function deployClusters(
-  app: cdk.App
+  app: cdk.App,
+  vpc: Vpc,
+  envInput?: StackProps['env']
 ): Map<string, FargateStack | EC2Stack> {
-  const REGION = process.env.REGION || 'us-west-2';
-
   const route =
     process.env.CDK_CONFIG_PATH ||
     __dirname + '/config/cluster-config/clusters.yml';
@@ -35,12 +35,6 @@ export function deployClusters(
   validateFileSchema(configData);
 
   const eksClusterMap = new Map<string, FargateStack | EC2Stack>();
-
-  const vpcStack = new VPCStack(app, 'EKSVpc', {
-    env: {
-      region: REGION
-    }
-  });
 
   const clusterNameSet = new Set();
   for (const cluster of configData['clusters']) {
@@ -61,12 +55,10 @@ export function deployClusters(
       validateInterface(ec2Cluster);
       clusterStack = new EC2Stack(app, `${ec2Cluster.name}EKSCluster`, {
         name: ec2Cluster.name,
-        vpc: vpcStack.vpc,
+        vpc: vpc,
         version: versionKubernetes,
         instance_type: ec2Cluster.instance_type,
-        env: {
-          region: REGION
-        }
+        env: envInput
       });
     } else {
       validateInterface(clusterInterface);
@@ -75,11 +67,9 @@ export function deployClusters(
         `${clusterInterface.name}EKSCluster`,
         {
           name: clusterInterface.name,
-          vpc: vpcStack.vpc,
+          vpc: vpc,
           version: versionKubernetes,
-          env: {
-            region: REGION
-          }
+          env: envInput
         }
       );
     }
@@ -122,6 +112,5 @@ export function deployClusters(
     );
     eksClusterMap.set(cluster['name'], clusterStack);
   }
-
   return eksClusterMap;
 }
