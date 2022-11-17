@@ -1,9 +1,6 @@
 {
-  "name": "my-project",
+  "name": "adot-test-framework-cdk-infra",
   "version": "0.1.0",
-  "bin": {
-    "my-project": "bin/my-project.js"
-  },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
