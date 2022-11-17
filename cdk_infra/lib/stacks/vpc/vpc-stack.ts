@@ -14,7 +14,7 @@ export class VPCStack extends Stack {
       natGateways: 1,
       vpnGateway: true,
       //https://github.com/aws/aws-cdk/issues/21690
-      availabilityZones: Stack.of(this).availabilityZones.sort().slice(0,1),
+      availabilityZones: Stack.of(this).availabilityZones.sort().slice(0, 1),
       subnetConfiguration: [
         {
           cidrMask: 24,

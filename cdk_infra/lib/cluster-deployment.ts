@@ -17,7 +17,11 @@ import { Vpc } from 'aws-cdk-lib/aws-ec2';
 
 const yaml = require('js-yaml');
 
-export function deployClusters(app: cdk.App, vpc: Vpc, envInput?: StackProps["env"]): Map<string, FargateStack | EC2Stack> {
+export function deployClusters(
+  app: cdk.App,
+  vpc: Vpc,
+  envInput?: StackProps['env']
+): Map<string, FargateStack | EC2Stack> {
   const route =
     process.env.CDK_CONFIG_PATH ||
     __dirname + '/config/cluster-config/clusters.yml';

@@ -20,8 +20,8 @@ test('ClusterTest', () => {
 
   let clusterMap = new Map<string, FargateStack | EC2Stack>();
   const versionMap = new Map<string, string>();
-  const vpc = new VPCStack(app,'testVPC')
-  clusterMap = deployClusters(app,vpc.vpc);
+  const vpc = new VPCStack(app, 'testVPC');
+  clusterMap = deployClusters(app, vpc.vpc);
   for (const cluster of data['clusters']) {
     const clusterInterface = cluster as ClusterInterface;
     versionMap.set(clusterInterface.name, clusterInterface.version);
