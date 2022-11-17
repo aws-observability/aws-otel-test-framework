@@ -5,6 +5,7 @@ import { deployClusters } from '../lib/cluster-deployment';
 import { ClusterInterface } from '../lib/interfaces/eks/cluster-interface';
 import { EC2Stack } from '../lib/stacks/eks/ec2-cluster-stack';
 import { FargateStack } from '../lib/stacks/eks/fargate-cluster-stack';
+import { VPCStack } from '../lib/stacks/vpc/vpc-stack';
 
 const yaml = require('js-yaml');
 
@@ -19,9 +20,8 @@ test('ClusterTest', () => {
 
   let clusterMap = new Map<string, FargateStack | EC2Stack>();
   const versionMap = new Map<string, string>();
-
-  clusterMap = deployClusters(app);
-
+  const vpc = new VPCStack(app,'testVPC')
+  clusterMap = deployClusters(app,vpc.vpc);
   for (const cluster of data['clusters']) {
     const clusterInterface = cluster as ClusterInterface;
     versionMap.set(clusterInterface.name, clusterInterface.version);
