@@ -7,13 +7,14 @@ export class VPCStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const REGION = process.env.REGION || 'us-west-2';
+    const REGION = process.env.CDK_DEFAULT_REGION || 'us-west-2';
 
     this.vpc = new ec2.Vpc(this, 'EKSVpc', {
       cidr: '10.0.0.0/16',
       natGateways: 1,
       vpnGateway: true,
-      availabilityZones: [REGION + 'a', REGION + 'b', REGION + 'c'],
+      //https://github.com/aws/aws-cdk/issues/21690
+      availabilityZones: Stack.of(this).availabilityZones.sort().slice(0,1),
       subnetConfiguration: [
         {
           cidrMask: 24,
