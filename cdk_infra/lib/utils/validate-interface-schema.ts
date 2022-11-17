@@ -1,5 +1,5 @@
-import { ClusterInterface } from '../interfaces/cluster-interface';
-import { ec2ClusterInterface } from '../interfaces/ec2cluster-interface';
+import { ClusterInterface } from '../interfaces/eks/cluster-interface';
+import { ec2ClusterInterface } from '../interfaces/eks/ec2cluster-interface';
 
 const validateSchema = require('yaml-schema-validator');
 
