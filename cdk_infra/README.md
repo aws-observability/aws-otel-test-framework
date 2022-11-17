@@ -28,7 +28,6 @@ In order to update clusters, just change the config file and then call `make -j 
 There are a number of environment variables that should be defined before deploying the clusters:
 
 * `CDK_CONFIG_PATH` - This is the path for which the cluster configuration file is located - default is `clusters.yml` in `lib/config/cluster-config` folder.
-* `REGION` - This is the region for which the clusters should be deployed - default is `us-west-2`.
 
 ### Cluster Configuration
 
@@ -78,6 +77,10 @@ In order to run these tests, use command `npm run test`.
 ### Linter
 
 ESLint is used to make sure formatting is done well. To run the linter, call `npm run lint`. 
+
+### cdk.context.json
+
+The app relies on `CDK_DEFAULT_ACCOUNT` and `CDK_DEFAULT_REGION` to set their [environment](https://docs.aws.amazon.com/cdk/v2/guide/environments.html). The CDK documentation suggestions that [runtime context](https://docs.aws.amazon.com/cdk/v2/guide/context.html#context_construct) files should be checked into source control. A readonly IAM role is required to run `cdk synth` on all accounts that this app will be subsequently deployed to. 
 
 ## Useful commands
 
