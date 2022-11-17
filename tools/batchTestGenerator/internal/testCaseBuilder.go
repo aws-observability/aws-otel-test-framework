@@ -1,25 +1,9 @@
 package internal
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
+	"strings"
 )
-
-type Tests struct {
-	Tests []Test `json:"tests"`
-}
-
-type Test struct {
-	CaseName  string   `json:"case_name"`
-	Platforms []string `json:"platforms"`
-}
-
-type TestCaseInfo struct {
-	testcaseName  string
-	serviceType   string
-	additionalVar string
-}
 
 var ec2AMIs = []string{
 	"ubuntu18",
@@ -42,22 +26,18 @@ var ec2AMIs = []string{
 	"arm_redhat8",
 }
 
+type TestCaseInfo struct {
+	testcaseName  string
+	serviceType   string
+	additionalVar string
+}
+
 var ecsLaunchTypes = []string{"EC2", "FARGATE"}
 
 func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 	testCases := []TestCaseInfo{}
-	var tests Tests
-
-	testCaseFile, err := os.ReadFile(runConfig.TestCaseFilePath)
-	if err != nil {
-		return nil, fmt.Errorf("failed to read test cases file: %w", err)
-	}
-
-	err = json.Unmarshal(testCaseFile, &tests)
-	if err != nil {
-		return nil, fmt.Errorf("failed to unmarshal test case file: %w", err)
-	}
-
+	tests := runConfig.TestCaseInput
+	clusterMaps := clusterMap(tests.ClusterTargets)
 	// iterate through all test cases to build output info
 	for _, test := range tests.Tests {
 		// iterate through platforms in test case
@@ -85,20 +65,20 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 						}
 						newTests = append(newTests, newTest)
 					}
-				case "EKS_ARM64":
-					newTest := TestCaseInfo{
-						testcaseName:  test.CaseName,
-						serviceType:   testPlatform,
-						additionalVar: runConfig.EksARM64Vars,
+				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS", "EKS_ARM64":
+					if clusterList, ok := clusterMaps[testPlatform]; ok && len(clusterList) > 0 {
+						for _, cluster := range clusterList {
+							newTest := TestCaseInfo{
+								testcaseName:  test.CaseName,
+								serviceType:   testPlatform,
+								additionalVar: strings.Join([]string{cluster.Region, cluster.Name}, "|"),
+							}
+							newTests = append(newTests, newTest)
+						}
+					} else {
+						return nil, fmt.Errorf("no clusters defined for %s plaftorm in test input file", testPlatform)
 					}
-					newTests = append(newTests, newTest)
-				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS":
-					newTest := TestCaseInfo{
-						testcaseName:  test.CaseName,
-						serviceType:   testPlatform,
-						additionalVar: runConfig.EksVars,
-					}
-					newTests = append(newTests, newTest)
+
 				default:
 					return nil, fmt.Errorf("platform not recognized: %s", testPlatform)
 				}
@@ -106,6 +86,13 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 			}
 		}
 	}
-
 	return testCases, nil
+}
+
+func clusterMap(inputTargets []ClusterTarget) map[string][]Target {
+	outputMap := make(map[string][]Target)
+	for _, clusterTarget := range inputTargets {
+		outputMap[clusterTarget.Type] = clusterTarget.Targets
+	}
+	return outputMap
 }
