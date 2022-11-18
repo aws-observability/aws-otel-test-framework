@@ -17,7 +17,7 @@
 # $1: aws_service
 # $2: testcase 
 # $3: ECS/EC2 only - ami/ecs launch type 
-# $3: For EKS-arm64 we expect region|clustername
+# $3: For all EKS tests we expect region|clustername
 ##########################################
 
 set -x
@@ -35,27 +35,17 @@ TEST_FOLDER=""
 service="$1"
 export AWS_REGION=us-west-2
 case "$service" in
-    "EC2") TEST_FOLDER="./ec2/";
+    EC2) TEST_FOLDER="./ec2/";
         opts+=" -var=testing_ami=$3";
     ;;
-    "EKS") TEST_FOLDER="./eks/";
+    EKS*) TEST_FOLDER="./eks/"
+        region=$(echo $3 | cut -d \| -f 1);
+        clustername=$(echo $3 | cut -d \| -f 2);
+        export AWS_REGION=${region};
+        opts+=" -var=region=${region}";
+        opts+=" -var=eks_cluster_name=${clustername}";
     ;;
-    "EKS_ARM64") TEST_FOLDER="./eks/"
-        arm_64_region=$(echo $3 | cut -d \| -f 1);
-        arm_64_clustername=$(echo $3 | cut -d \| -f 2);
-        export AWS_REGION=${arm_64_region};
-        opts+=" -var=region=${arm_64_region}";
-        opts+=" -var=eks_cluster_name=${arm_64_clustername}";
-    ;;
-    "EKS_FARGATE") TEST_FOLDER="./eks/";
-    ;;
-    "EKS_ADOT_OPERATOR") TEST_FOLDER="./eks/";
-        opts+=" -var=eks_cluster_name=adot-op-cluster";
-    ;;
-    "EKS_ADOT_OPERATOR_ARM64") TEST_FOLDER="./eks/"
-        opts+=" -var=eks_cluster_name=arm64-adot-op-cluster";
-    ;;
-    "ECS") TEST_FOLDER="./ecs/";
+    ECS) TEST_FOLDER="./ecs/";
         opts+=" -var=ecs_launch_type=$3";
     ;;
     *)
@@ -95,7 +85,7 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     fi
 
     case "$service" in
-        "EKS_FARGATE" | "EKS_ARM64" | "EKS_ADOT_OPERATOR" | "EKS_ADOT_OPERATOR_ARM64") terraform destroy --auto-approve $opts;
+        EKS*) terraform destroy --auto-approve $opts;
         ;;
     *)
         terraform destroy --auto-approve;
