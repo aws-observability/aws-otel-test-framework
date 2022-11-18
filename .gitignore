@@ -73,3 +73,5 @@ validator/bin
 
 #reports
 coverage.txt
+
+*.class
