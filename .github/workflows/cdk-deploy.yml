@@ -1,0 +1,45 @@
+name: Deploy cdk infra
+on:
+  workflow_dispatch:
+  push:
+    branches: ['terraform']
+    # List of paths that should be considered when triggering the workflow
+    paths: ['cdk_infra/**']
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  run-cdk-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1-node16
+        with:
+          role-to-assume: ${{ secrets.TEST_FW_ASSUMABLE_ROLE_ARN }}
+          aws-region: us-west-2
+          role-duration-seconds: 21600
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: |
+          echo "dir=$(npm config get cache)" >> $GITHUB_OUTPUT
+      - uses: actions/cache@v3
+        id: npm-cache
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - name: npm install
+        working-directory: cdk_infra
+        run: |
+          npm i
+      - name: run cdk deploy
+        working-directory: cdk_infra
+        run: |
+          make deploy-infra
