@@ -10,6 +10,7 @@ permissions:
   id-token: write
   contents: read
 
+concurrency: cdk_infra_deploy
 jobs:
   run-cdk-deploy:
     runs-on: ubuntu-latest
@@ -35,6 +36,9 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      - name: install cdk
+        run: |
+          npm install -g aws-cdk
       - name: npm install
         working-directory: cdk_infra
         run: |
