@@ -6,6 +6,10 @@
 				{
 					"name": "aws-otel-testing-framework-eks-2",
 					"region": "us-west-2"
+				},
+				{
+					"name": "collector-ci-amd64-1-24",
+					"region": "us-west-2"
 				}
 			]
 		},
@@ -15,6 +19,14 @@
 				{
 					"name": "integ-test-arm64-cluster",
 					"region": "us-east-2"
+				},
+				{
+					"name": "collector-ci-arm64-1-21",
+					"region": "us-west-2"
+				},
+				{
+					"name": "collector-ci-arm64-1-24",
+					"region": "us-west-2"
 				}
 			]
 		},
