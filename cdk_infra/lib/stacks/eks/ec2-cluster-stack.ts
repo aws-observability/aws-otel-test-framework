@@ -31,7 +31,8 @@ export class EC2Stack extends Stack {
     const clusterNodeGroup = new Nodegroup(this, `${props.name}-managed-ng`, {
       instanceTypes: [new ec2.InstanceType(instance_type)],
       cluster: this.cluster,
-      minSize: 2
+      minSize: 2,
+      subnets: { subnetType: ec2.SubnetType.PUBLIC }
     });
     clusterNodeGroup.role.addManagedPolicy(
       ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')
