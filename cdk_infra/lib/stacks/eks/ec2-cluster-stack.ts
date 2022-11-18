@@ -28,7 +28,7 @@ export class EC2Stack extends Stack {
       clusterLogging: logging,
       kubectlLayer: GetLayer(this, props.version)
     });
-    const clusterNodeGroup = new Nodegroup(this, 'managed-ng', {
+    const clusterNodeGroup = new Nodegroup(this, '{props.name}-managed-ng', {
       instanceTypes: [new ec2.InstanceType(instance_type)],
       cluster: this.cluster,
       minSize: 2
