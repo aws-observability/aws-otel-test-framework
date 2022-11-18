@@ -10,6 +10,7 @@ permissions:
   id-token: write
   contents: read
 
+concurrency: cdk_infra_deploy
 jobs:
   run-cdk-deploy:
     runs-on: ubuntu-latest
