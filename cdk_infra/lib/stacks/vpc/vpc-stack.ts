@@ -15,6 +15,11 @@ export class VPCStack extends Stack {
       subnetConfiguration: [
         {
           cidrMask: 24,
+          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+          name: 'private_subnet'
+        },
+        {
+          cidrMask: 24,
           subnetType: ec2.SubnetType.PUBLIC,
           name: 'public_subnet'
         }
