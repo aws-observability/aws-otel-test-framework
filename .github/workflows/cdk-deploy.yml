@@ -35,6 +35,9 @@ jobs:
           key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
+      - name: install cdk
+        run: |
+          npm install -g aws-cdk
       - name: npm install
         working-directory: cdk_infra
         run: |
