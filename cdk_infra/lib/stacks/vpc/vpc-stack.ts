@@ -8,16 +8,11 @@ export class VPCStack extends Stack {
     super(scope, id, props);
     this.vpc = new ec2.Vpc(this, 'EKSVpc', {
       cidr: '10.0.0.0/16',
-      natGateways: 1,
-      vpnGateway: true,
+      natGateways: 0,
+      vpnGateway: false,
       //https://github.com/aws/aws-cdk/issues/21690
       availabilityZones: Stack.of(this).availabilityZones.sort().slice(0, 1),
       subnetConfiguration: [
-        {
-          cidrMask: 24,
-          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
-          name: 'private_subnet'
-        },
         {
           cidrMask: 24,
           subnetType: ec2.SubnetType.PUBLIC,
