@@ -43,7 +43,7 @@ export class ClusterAuth extends Construct {
       'aws-obs-collector-gha'
     );
     this.cluster.awsAuth.addRoleMapping(repoWorkflowRole, {
-      groups: ['adot-workflow'],
+      groups: ['adot-workflow-admin'],
       username: 'adot-workflow'
     });
   }
