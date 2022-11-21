@@ -23,7 +23,7 @@ variable "ami_family" {
     windows = {
       login_user                         = "Administrator"
       install_package                    = "aws-otel-collector.msi"
-      instance_type                      = "t3.medium"
+      instance_type                      = "c5a.large"
       otconfig_destination               = "C:\\ot-default.yml"
       download_command_pattern           = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
       install_command                    = "msiexec /i C:\\aws-otel-collector.msi"

@@ -18,7 +18,7 @@ variable "ami_family" {
     debian = {
       login_user               = "ubuntu"
       install_package          = "aws-otel-collector.deb"
-      instance_type            = "t2.micro"
+      instance_type            = "c5a.large"
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
       install_command          = "while sudo fuser /var/cache/apt/archives/lock /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend; do echo 'Waiting for dpkg lock...' && sleep 1; done; echo 'No dpkg lock and install collector.' && sudo dpkg -i aws-otel-collector.deb"
@@ -32,7 +32,7 @@ variable "ami_family" {
     linux = {
       login_user               = "ec2-user"
       install_package          = "aws-otel-collector.rpm"
-      instance_type            = "t2.micro"
+      instance_type            = "c5a.large"
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "curl %s --output aws-otel-collector.rpm"
       install_command          = "sudo rpm -Uvh aws-otel-collector.rpm"
@@ -46,7 +46,7 @@ variable "ami_family" {
     windows = {
       login_user               = "Administrator"
       install_package          = "aws-otel-collector.msi"
-      instance_type            = "t3.medium"
+      instance_type            = "c5a.large"
       otconfig_destination     = "C:\\ot-default.yml"
       download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
       install_command          = "msiexec /i C:\\aws-otel-collector.msi"
@@ -111,7 +111,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "ubuntu"
-      instance_type      = "t4g.micro"
+      instance_type      = "c6g.large"
       user_data          = <<EOF
 #! /bin/bash
 sudo snap refresh amazon-ssm-agent
@@ -138,7 +138,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "ubuntu"
-      instance_type      = "t4g.micro"
+      instance_type      = "c6g.large"
       user_data          = <<EOF
 #! /bin/bash
 sudo snap refresh amazon-ssm-agent
@@ -165,7 +165,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "ubuntu"
-      instance_type      = "t4g.micro"
+      instance_type      = "c6g.large"
       user_data          = <<EOF
 #! /bin/bash
 sudo snap refresh amazon-ssm-agent
@@ -199,7 +199,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "admin"
-      instance_type      = "t4g.micro"
+      instance_type      = "c6g.large"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
@@ -238,7 +238,7 @@ EOF
       family             = "debian"
       arch               = "arm64"
       login_user         = "admin"
-      instance_type      = "t4g.micro"
+      instance_type      = "c6g.large"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
@@ -272,7 +272,7 @@ EOF
       family             = "linux"
       arch               = "arm64"
       login_user         = "ec2-user"
-      instance_type      = "t4g.micro"
+      instance_type      = "c6g.large"
       user_data          = <<EOF
 #! /bin/bash
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
@@ -323,7 +323,7 @@ EOF
       family             = "linux"
       login_user         = "ec2-user"
       arch               = "arm64"
-      instance_type      = "t4g.micro"
+      instance_type      = "c6g.large"
       user_data          = <<EOF
 #! /bin/bash
 cd /tmp
@@ -371,7 +371,7 @@ EOF
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
-      instance_type      = "t4g.micro"
+      instance_type      = "c6g.large"
       user_data          = <<EOF
 #! /bin/bash
 sudo yum install -y python3
