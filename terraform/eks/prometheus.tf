@@ -44,7 +44,7 @@ resource "kubernetes_deployment" "standalone_aoc_deployment" {
             value = "ClusterName=${var.eks_cluster_name}"
           }
           resources {
-            limits {
+            limits = {
               cpu    = "0.2"
               memory = "256Mi"
             }

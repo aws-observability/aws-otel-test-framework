@@ -191,7 +191,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
           "--config=/aoc/aoc-config.yml"]
 
           resources {
-            limits {
+            limits = {
               cpu    = "0.2"
               memory = "256Mi"
             }

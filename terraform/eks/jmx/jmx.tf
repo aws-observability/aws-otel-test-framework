@@ -71,7 +71,7 @@ resource "kubernetes_deployment" "jmx_metric_deployment" {
               cpu    = "100m"
               memory = "180Mi"
             }
-            limits {
+            limits = {
               cpu    = "300m"
               memory = "300Mi"
             }
