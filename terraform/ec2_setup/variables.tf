@@ -17,7 +17,7 @@ variable "testing_ami" {
 }
 
 variable "sidecar_instance_type" {
-  default = "t3.medium"
+  default = "c5a.large"
 }
 
 variable "soaking_sample_app_image" {
