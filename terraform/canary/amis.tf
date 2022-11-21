@@ -3,7 +3,7 @@ variable "ami_family" {
     amazon_linux = {
       login_user               = "ec2-user"
       install_package          = "aws-otel-collector.rpm"
-      instance_type            = "t3.small"
+      instance_type            = "c5a.large"
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
       install_command          = "sudo rpm -Uvh aws-otel-collector.rpm"
