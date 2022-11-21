@@ -209,11 +209,11 @@ module "validator" {
   region            = var.region
   testing_id        = module.common.testing_id
   metric_namespace  = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-  sample_app_endpoint = (length(kubernetes_ingress.app) > 0 && var.deployment_type == "fargate" ? "http://${kubernetes_ingress.app.0.load_balancer_ingress.0.hostname}:${var.fargate_sample_app_lb_port}" : (
-    length(kubernetes_service.sample_app_service) > 0 ? "http://${kubernetes_service.sample_app_service.0.load_balancer_ingress.0.hostname}:${module.common.sample_app_lb_port}" : ""
+  sample_app_endpoint = (length(kubernetes_ingress.app) > 0 && var.deployment_type == "fargate" ? "http://${kubernetes_ingress.app.status[0].load_balancer[0].ingress[0].hostname}:${var.fargate_sample_app_lb_port}" : (
+    length(kubernetes_service.sample_app_service) > 0 ? "http://${kubernetes_service.sample_app_service.status[0].load_balancer[0].ingress[0].hostname}:${module.common.sample_app_lb_port}" : ""
     )
   )
-  mocked_server_validating_url = length(kubernetes_service.mocked_server_service) > 0 ? "http://${kubernetes_service.mocked_server_service.0.load_balancer_ingress.0.hostname}/check-data" : ""
+  mocked_server_validating_url = length(kubernetes_service.mocked_server_service) > 0 ? "http://${kubernetes_service.mocked_server_service.status[0].load_balancer[0].ingress[0].hostname}/check-data" : ""
   cloudwatch_context_json = var.aoc_base_scenario == "prometheus" ? jsonencode({
     clusterName : var.eks_cluster_name
     #    appMesh : {

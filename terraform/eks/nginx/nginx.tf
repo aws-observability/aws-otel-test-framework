@@ -83,7 +83,7 @@ data "template_file" "traffic_deployment_file" {
   template = file("./nginx/nginx_traffic_sample.tpl")
   vars = {
     NAMESPACE   = kubernetes_namespace.traffic_ns.metadata[0].name
-    EXTERNAL_IP = data.kubernetes_service.nginx_ingress_sample.load_balancer_ingress.0.hostname
+    EXTERNAL_IP = data.kubernetes_service.nginx_ingress_sample.status[0].load_balancer[0].ingress[0].hostname
   }
 }
 
