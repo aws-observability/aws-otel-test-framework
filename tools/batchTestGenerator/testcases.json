@@ -8,6 +8,14 @@
 					"region": "us-west-2"
 				},
 				{
+					"name": "collector-ci-amd64-1-22",
+					"region": "us-west-2"
+				},
+				{
+					"name": "collector-ci-amd64-1-23",
+					"region": "us-west-2"
+				},
+				{
 					"name": "collector-ci-amd64-1-24",
 					"region": "us-west-2"
 				}
@@ -18,6 +26,14 @@
 			"targets": [
 				{
 					"name": "collector-ci-arm64-1-21",
+					"region": "us-west-2"
+				},
+				{
+					"name": "collector-ci-arm64-1-22",
+					"region": "us-west-2"
+				},
+				{
+					"name": "collector-ci-arm64-1-23",
 					"region": "us-west-2"
 				},
 				{
