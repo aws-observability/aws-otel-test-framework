@@ -184,7 +184,11 @@ resource "kubernetes_service_account" "aoc-agent-role" {
   metadata {
     name      = "aoc-agent-${module.common.testing_id}"
     namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
+    annotations = {
+      "eks.amazonaws.com/role-arn" : module.iam_assumable_role_admin.iam_role_arn
+    }
   }
+  depends_on = [module.iam_assumable_role_admin]
 
   automount_service_account_token = true
 }
