@@ -12,7 +12,7 @@ processors:
   resourcedetection:
       detectors: [env, eks]
       timeout: 2s
-      override: false
+      override: true
 
 exporters:
   logging:
