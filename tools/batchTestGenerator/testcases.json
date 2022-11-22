@@ -17,10 +17,6 @@
 			"type": "EKS_ARM64",
 			"targets": [
 				{
-					"name": "integ-test-arm64-cluster",
-					"region": "us-east-2"
-				},
-				{
 					"name": "collector-ci-arm64-1-21",
 					"region": "us-west-2"
 				},
