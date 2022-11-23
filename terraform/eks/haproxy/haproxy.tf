@@ -33,7 +33,7 @@ resource "helm_release" "haproxy" {
 
   repository = "https://haproxy-ingress.github.io/charts"
   chart      = "haproxy-ingress"
-  version    = "0.11.4"
+  version    = "0.13.9"
 
   set {
     name  = "defaultBackend.enabled"
