@@ -1,1 +1,0 @@
-Executing: ["/bin/sh" "-c" "docker buildx create --use --name msgbuilder.1 --platform=linux/arm64,linux/amd64 --driver docker-container --bootstrap\ndocker buildx build --builder=msgbuilder.1 --push --platform=linux/amd64,linux/arm64 -t 766286727518.dkr.ecr.us-west-2.amazonaws.com/otel-test/mocked-server:grpc_trace-latest ../../mocked_servers/grpc_trace/\n
