@@ -109,7 +109,7 @@ resource "helm_release" "eks" {
   }
 
   provisioner "local-exec" {
-    command = "kubectl --kubeconfig=${var.kubeconfig} apply -k \"github.com/aws/eks-charts/stable/appmesh-controller//crds?ref=master\""
+    command = "kubectl --kubeconfig=${var.kubeconfig} apply -k \"github.com/aws/eks-charts/stable/appmesh-controller/crds?ref=v0.0.116\""
   }
 
   wait = true
