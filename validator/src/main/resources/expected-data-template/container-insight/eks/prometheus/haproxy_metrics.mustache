@@ -116,7 +116,7 @@
     - name: Service
       value: {{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-metrics
     - name: backend
-      value: _default_backend
+      value: {{cloudWatchContext.haproxy.namespace}}_{{cloudWatchContext.haproxy.namespace}}-haproxy-ingress-default-backend_http
     - name: code
       value: 2xx
 - metricName: haproxy_frontend_http_responses_total
