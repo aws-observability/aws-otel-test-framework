@@ -81,24 +81,32 @@ spec:
 
 ---
 
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ingress-nginx-demo
   namespace: ${NAMESPACE}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
   - host: ${EXTERNAL_IP}
     http:
       paths:
         - path: /apple
+          pathType: ImplementationSpecific
           backend:
-            serviceName: apple-service
-            servicePort: 5678
+            service:
+              name: apple-service
+              port: 
+                number: 5678
         - path: /banana
+          pathType: ImplementationSpecific
           backend:
-            serviceName: banana-service
-            servicePort: 5678
+            service:
+              name: banana-service
+              port:
+                number: 5678
 
 ---
 apiVersion: apps/v1
