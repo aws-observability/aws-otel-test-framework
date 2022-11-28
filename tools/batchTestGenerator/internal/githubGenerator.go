@@ -42,9 +42,9 @@ func GithubGenerator(config RunConfig) error {
 		return fmt.Errorf("failed to marshal batch values object: %w", err)
 	}
 
-	fmt.Printf(`"name=batch-keys::%s" >> $GITHUB_OUTPUT`, githubBatchKeys)
+	fmt.Printf(`batch-keys=%s >> $GITHUB_OUTPUT`, githubBatchKeys)
 	fmt.Printf("\n")
-	fmt.Printf(`"name=batch-values::%s" >> $GITHUB_OUTPUT`, githubBatchValues)
+	fmt.Printf(`batch-values=%s >> $GITHUB_OUTPUT`, githubBatchValues)
 	fmt.Printf("\n")
 
 	return nil

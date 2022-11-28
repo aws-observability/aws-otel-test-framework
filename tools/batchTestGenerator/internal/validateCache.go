@@ -54,7 +54,7 @@ func ValidateCache(rc RunConfig, ddbTableName string, aocVersion string) error {
 		fmt.Println(strings.Join(cacheMisses, "\n"))
 		succcess = "false"
 	}
-	fmt.Printf(`"name=release-candidate-ready::%s" >> $GITHUB_OUTPUT`, succcess)
+	fmt.Printf(`release-candidate-ready=%s >> $GITHUB_OUTPUT`, succcess)
 	fmt.Printf("\n")
 
 	return nil
