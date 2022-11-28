@@ -4,6 +4,10 @@ clusters:
     version: "1.21"
     launch_type: ec2
     instance_type: m6g.medium
+  - name: collector-ci-amd64-1-21
+    version: "1.21"
+    launch_type: ec2
+    instance_type: m5.large
   - name: collector-ci-fargate-1-21
     version: "1.21"
     launch_type: fargate
