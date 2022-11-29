@@ -33,11 +33,11 @@ spec:
               value: "ClusterName=${ClusterName}"
           resources:
             limits:
-              cpu: 2
-              memory: 2Gi
+              cpu: 500m
+              memory: 1000Mi
             requests:
-              cpu: 200m
-              memory: 400Mi
+              cpu: 500m
+              memory: 1000Mi
           volumeMounts:
             - name: adot-collector-config-volume
               mountPath: /conf

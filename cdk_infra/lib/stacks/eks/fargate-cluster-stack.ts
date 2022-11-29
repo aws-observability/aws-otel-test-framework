@@ -21,7 +21,7 @@ export class FargateStack extends Stack {
     this.cluster = new eks.FargateCluster(this, props.name, {
       clusterName: props.name,
       vpc: props.vpc,
-      vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_ISOLATED }],
+      vpcSubnets: [{ subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS }],
       version: props.version,
       clusterLogging: logging,
       kubectlLayer: GetLayer(this, props.version)
