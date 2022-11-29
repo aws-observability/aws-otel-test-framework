@@ -64,10 +64,6 @@
 			"type": "EKS_FARGATE",
 			"targets": [
 				{
-					"name": "Fargate-Integ-Test-Cluster",
-					"region": "us-west-2"
-				},
-				{
 					"name": "collector-ci-fargate-1-21",
 					"region": "us-west-2"
 				},
