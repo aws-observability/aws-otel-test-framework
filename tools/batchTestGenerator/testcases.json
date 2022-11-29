@@ -4,7 +4,7 @@
 			"type": "EKS",
 			"targets": [
 				{
-					"name": "aws-otel-testing-framework-eks-2",
+					"name": "collector-ci-amd64-1-21",
 					"region": "us-west-2"
 				},
 				{
@@ -56,7 +56,15 @@
 			"type": "EKS_FARGATE",
 			"targets": [
 				{
-					"name": "Fargate-Integ-Test-Cluster",
+					"name": "collector-ci-fargate-1-21",
+					"region": "us-west-2"
+				},
+				{
+					"name": "collector-ci-fargate-1-22",
+					"region": "us-west-2"
+				},
+				{
+					"name": "collector-ci-fargate-1-23",
 					"region": "us-west-2"
 				}
 			]
