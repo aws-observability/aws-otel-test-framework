@@ -249,5 +249,7 @@ module "validator" {
   depends_on = [
     module.aoc_oltp,
     module.adot_operator,
-  kubectl_manifest.logs_sample_fargate_deploy]
+    kubectl_manifest.logs_sample_fargate_deploy,
+    null_resource.prom_base_ready_check
+  ]
 }

@@ -97,3 +97,20 @@ module "demo_haproxy" {
 
   testing_id = module.common.testing_id
 }
+
+// Stops validator from starting until all assets are deployed. Validator has a dependency on this null resource.
+resource "null_resource" "prom_base_ready_check" {
+  count = var.aoc_base_scenario == "prometheus" ? 1 : 0
+  depends_on = [
+    module.demo_haproxy,
+    module.demo_memcached,
+    module.demo_jmx,
+    module.demo_appmesh,
+    module.demo_nginx,
+    kubernetes_deployment.standalone_aoc_deployment
+  ]
+
+  provisioner "local-exec" {
+    command = "echo prom assets deployed"
+  }
+}
