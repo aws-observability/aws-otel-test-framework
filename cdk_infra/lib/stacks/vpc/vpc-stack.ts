@@ -8,13 +8,13 @@ export class VPCStack extends Stack {
     super(scope, id, props);
     this.vpc = new ec2.Vpc(this, 'EKSVpc', {
       cidr: '10.0.0.0/16',
-      natGateways: 0,
+      natGateways: 3,
       maxAzs: 3,
       vpnGateway: false,
       subnetConfiguration: [
         {
           cidrMask: 24,
-          subnetType: ec2.SubnetType.PRIVATE_ISOLATED,
+          subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           name: 'private_subnet'
         },
         {
