@@ -16,6 +16,11 @@ clusters:
     launch_type: ec2
     instance_type: m5.large
     cert_manager: true
+  - name: operator-ci-arm64-1-21
+    version: "1.21"
+    launch_type: ec2
+    instance_type: m6g.medium
+    cert_manager: true
   - name: collector-ci-amd64-1-22
     version: "1.22"
     launch_type: ec2
@@ -32,6 +37,11 @@ clusters:
     launch_type: ec2
     instance_type: m5.large
     cert_manager: true
+  - name: operator-ci-arm64-1-22
+    version: "1.22"
+    launch_type: ec2
+    instance_type: m6g.medium
+    cert_manager: true
   - name: collector-ci-arm64-1-23
     version: "1.23"
     launch_type: ec2
@@ -47,6 +57,11 @@ clusters:
     version: "1.23"
     launch_type: ec2
     instance_type: m5.large
+    cert_manager: true
+  - name: operator-ci-arm64-1-23
+    version: "1.23"
+    launch_type: ec2
+    instance_type: m6g.medium
     cert_manager: true
   - name: collector-ci-arm64-1-24
     version: "1.24"
