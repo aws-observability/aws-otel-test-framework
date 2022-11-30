@@ -10,7 +10,7 @@ COPY ./build/ ./build/
 # default 1.0
 ARG VER=1.0
 
-RUN gradle build
+# assume app is already built since it will not build in docker container
 RUN tar -xvf build/distributions/load-generator-${VER}.tar
 
 FROM amazoncorretto:11

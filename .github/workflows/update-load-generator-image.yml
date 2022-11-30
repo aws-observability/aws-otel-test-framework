@@ -1,0 +1,56 @@
+# This workflow uses GHA to build a Java project with Gradle 'load-generator', and build and push multi-arch docker image of this project to the Amazon ECR.
+
+name: Update Load-Generator Image
+
+# Should execute only one workflow run at a time
+concurrency:
+  group: build-and-push-load-generator-image
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['terraform']
+
+    # List of paths that should be considered when triggering the workflow
+    paths: ['load-generator/**']
+
+permissions:
+  id-token: write
+  contents: write
+
+jobs:
+  create-and-push-load-generator-image-on-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+          role-duration-seconds: 7200
+      - name: Login to Amazon ECR Public
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew :load-generator:build
+      - name: Build, tag, and push docker image to Amazon ECR Public
+        env:
+          REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          REGISTRY_ALIAS: aws-otel-test
+          REPOSITORY: aws-otel-load-generator
+          IMAGE_TAG: latest
+        run: |
+          docker buildx create --use --name lgbuilder --platform=linux/arm64,linux/amd64 --driver  docker-container --bootstrap
+          docker buildx build --push --platform=linux/amd64,linux/arm64 -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG ./load-generator
+          docker buildx rm lgbuilder
