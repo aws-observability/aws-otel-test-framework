@@ -57,9 +57,11 @@ resource "null_resource" "build_and_push_sample_apps" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      docker buildx create --use --name sapbuilder.${count.index} --platform=linux/arm64,linux/amd64 --driver  docker-container --bootstrap
+      docker buildx create --use --name sapbuilder.${count.index} --platform=linux/arm64,linux/amd64 --driver  docker-container --bootstrap && \
       docker buildx build --builder=sapbuilder.${count.index} --push --platform=linux/amd64,linux/arm64 -t ${data.aws_ecr_repository.sample_app.repository_url}:${dirname(element(local.sample_apps_dockerfile_list, count.index))}-latest ../../sample-apps/${dirname(element(local.sample_apps_dockerfile_list, count.index))}/
+      RESULT=$?
       docker buildx rm sapbuilder.${count.index}
+      exit $RESULT
     EOT
   }
 
@@ -72,9 +74,11 @@ resource "null_resource" "build_and_push_mocked_server" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      docker buildx create --use --name msgbuilder.${count.index} --platform=linux/arm64,linux/amd64 --driver docker-container --bootstrap
+      docker buildx create --use --name msgbuilder.${count.index} --platform=linux/arm64,linux/amd64 --driver docker-container --bootstrap && \
       docker buildx build --builder=msgbuilder.${count.index} --push --platform=linux/amd64,linux/arm64 -t ${data.aws_ecr_repository.mocked_server.repository_url}:${dirname(element(local.mocked_servers_dockerfile_list, count.index))}-latest ../../mocked_servers/${dirname(element(local.mocked_servers_dockerfile_list, count.index))}/
+      RESULT=$?
       docker buildx rm msgbuilder.${count.index}
+      exit $RESULT
     EOT
   }
 
