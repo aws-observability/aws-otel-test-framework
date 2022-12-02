@@ -356,7 +356,8 @@
 		{
 			"case_name": "containerinsight_eks_prometheus",
 			"platforms": [
-				"EKS"
+				"EKS",
+				"EKS_ARM64"
 			]
 		},
 		{
