@@ -33,7 +33,7 @@
     "@aws-cdk/aws-iam": "^1.161.0",
     "@aws-cdk/core": "^1.161.0",
     "@aws-cdk/lambda-layer-kubectl": "^1.179.0",
-    "@aws-cdk/lambda-layer-kubectl-v21": "^0.0.6",
+    "@aws-cdk/lambda-layer-kubectl-v21": "^0.0.7",
     "@aws-cdk/lambda-layer-kubectl-v22": "^2.0.0",
     "@aws-cdk/lambda-layer-kubectl-v23": "^2.0.0",
     "@aws-cdk/lambda-layer-kubectl-v24": "^2.0.39",
