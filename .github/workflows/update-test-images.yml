@@ -1,7 +1,9 @@
 name: Update Test Images
 
 # We should execute only one workflow run at a time
-concurrency: test_images_concurrency
+concurrency: 
+  group: test_images_concurrency
+  cancel-in-progress: false
 
 on:
   workflow_dispatch:
