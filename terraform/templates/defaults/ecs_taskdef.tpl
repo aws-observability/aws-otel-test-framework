@@ -48,6 +48,10 @@
         {
         "name": "ZIPKIN_RECEIVER_ENDPOINT",
         "value": "127.0.0.1:${http_port}"
+        },
+        {
+        "name": "OTEL_METRICS_EXPORTER",
+        "value": "otlp"
         }
       ],
       "dependsOn": [

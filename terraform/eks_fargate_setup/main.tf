@@ -86,6 +86,14 @@ module "eks" {
         }
       ]
     }
+    adot-collector-test = {
+      name = "adot-collector-test"
+      selectors = [
+        {
+          namespace = "aoc-fargate-ns-*"
+        }
+      ]
+    }
   }
 
   manage_aws_auth = false

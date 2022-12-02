@@ -23,7 +23,7 @@ variable "ami_family" {
     windows = {
       login_user                         = "Administrator"
       install_package                    = "aws-otel-collector.msi"
-      instance_type                      = "t3.medium"
+      instance_type                      = "c5a.large"
       otconfig_destination               = "C:\\ot-default.yml"
       download_command_pattern           = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
       install_command                    = "msiexec /i C:\\aws-otel-collector.msi"
@@ -40,7 +40,10 @@ variable "ami_family" {
       user_data                          = <<EOF
 <powershell>
 winrm quickconfig -q
-winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="300"}'
+winrm set winrm/config/winrs '@{MaxShellsPerUser="100"}'
+winrm set winrm/config/winrs '@{MaxConcurrentUsers="30"}'
+winrm set winrm/config/winrs '@{MaxProcessesPerShell="100"}'
+winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
 winrm set winrm/config '@{MaxTimeoutms="1800000"}'
 winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 winrm set winrm/config/service/auth '@{Basic="true"}'
@@ -61,7 +64,7 @@ variable "amis" {
   default = {
     soaking_windows = {
       os_family          = "windows"
-      ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
+      ami_search_pattern = "Windows_Server-2022-English-Full-Base*"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "windows"
@@ -69,7 +72,7 @@ variable "amis" {
     }
     soaking_linux = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
+      ami_search_pattern = "amzn2-ami-kernel-5*"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "amazon_linux"

@@ -1,14 +1,24 @@
 # Setup basic components in aws account
 
 To run any types of test rather than the `mock folder`, the testing framework will need to create resources in your aws account. 
-there're some basic components needed before run the tests.
+there are some basic components needed to run the tests.
 
 ## 1. Setup your aws credentials
 Refer to: https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html
 
 Please ensure the default profile in your ~/.aws/credentials has Admin permission.
 
-## 2. Setup basic components
+## 2. Setup unique bucket ID
+
+First create a unique S3 bucket identifier that will be appened to your S3 bucket names. This will
+ensure that the S3 bucket name is globally unique. The UUID can be generated with any method of your
+choosing.
+See [here](https://docs.aws.amazon.com/AmazonS3/latest/userguide/bucketnamingrules.html) for S3 bucket naming rules.
+```shell
+export TF_VAR_bucketUUID=$(dd if=/dev/urandom bs=1k count=1k | shasum | cut -b 1-8)
+```
+
+## 3. Setup basic components
 Setup only needs to be run once, it creates:
 
 1. one iam role
@@ -18,13 +28,15 @@ Setup only needs to be run once, it creates:
 5. one amazon managed service for prometheus endpoint.
 6. one s3 bucket, one dynamodb table
 
+
+
 ```shell
 cd aws-otel-test-framework/terraform/setup 
 terraform init
 terraform apply
 ```
 
-###2.1 Share Setup resources (Optional)
+###3.1 Share Setup resources (Optional)
 **Prerequisite:** 
 - you are required to run the [setup basic components](setup-basic-components-in-aws-account.md#2-setup-basic-components) once if you and other developers did not setup these components before.
 - Uncomment the [backend configuration](https://github.com/khanhntd/aws-otel-test-framework/blob/support_s3_bucket_setup/terraform/setup/backend.tf#L17-L25) to share the setup's terraform state
@@ -48,4 +60,4 @@ terraform init
 terraform apply
 ```
 
-Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
+Remember, if you have made any changes on sample apps or the mocked server, you need to rerun this imagebuild task.

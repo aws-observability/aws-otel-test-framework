@@ -60,3 +60,18 @@ terraform.rc
 !gradle/wrapper/gradle-wrapper.jar
 
 **/.DS_Store
+
+# ignore built binary
+tools/batchTestGenerator/batchTestGenerator
+# ignore any generated test-case-batch files
+test-case-batch
+
+# ignore java validator bin
+validator/bin
+
+.vscode
+
+#reports
+coverage.txt
+
+*.class

@@ -91,7 +91,7 @@ resource "helm_release" "eks" {
 
   repository = "https://aws.github.io/eks-charts"
   chart      = "appmesh-controller"
-  version    = "1.4"
+  version    = "1.9.0"
 
   set {
     name  = "serviceAccount.create"
@@ -109,7 +109,7 @@ resource "helm_release" "eks" {
   }
 
   provisioner "local-exec" {
-    command = "kubectl --kubeconfig=${var.kubeconfig} apply -k \"github.com/aws/eks-charts/stable/appmesh-controller/crds?ref=v0.0.47\""
+    command = "kubectl --kubeconfig=${var.kubeconfig} apply -k \"github.com/aws/eks-charts/stable/appmesh-controller/crds?ref=v0.0.116\""
   }
 
   wait = true

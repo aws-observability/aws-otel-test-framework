@@ -3,7 +3,7 @@ plugins {
 
     // Apply the application plugin to add support for building a CLI application.
     id 'application'
-    id 'com.google.cloud.tools.jib' version "3.1.4"
+    id 'com.google.cloud.tools.jib' version "3.3.0"
 }
 
 group 'com.amazon.sampleapp'
@@ -37,8 +37,8 @@ application {
 dependencies {
     implementation "com.sparkjava:spark-core:2.9.3"
     implementation "com.squareup.okhttp3:okhttp:4.9.3"
-    implementation "software.amazon.awssdk:s3:2.17.112"
-    implementation "io.grpc:grpc-api:1.43.2"
+    implementation "software.amazon.awssdk:s3:2.18.1"
+    implementation "io.grpc:grpc-api:1.47.0"
     implementation "io.grpc:grpc-netty-shaded:1.43.2"
     implementation "org.slf4j:slf4j-simple:1.7.32"
 

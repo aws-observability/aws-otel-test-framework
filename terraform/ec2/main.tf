@@ -44,6 +44,8 @@ module "basic_components" {
   sample_app_listen_address_host = aws_instance.sidecar.public_ip
 
   sample_app_listen_address_port = module.common.sample_app_lb_port
+
+  debug = var.debug
 }
 
 provider "aws" {
@@ -94,8 +96,11 @@ resource "aws_instance" "sidecar" {
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
   tags = {
-    Name  = "Integ-test-Sample-App"
-    Patch = var.patch
+    Name      = "Integ-test-Sample-App"
+    Patch     = var.patch
+    TestCase  = var.testcase
+    TestID    = module.common.testing_id
+    ephemeral = "true"
   }
 }
 
@@ -112,8 +117,11 @@ resource "aws_instance" "aoc" {
   user_data                   = local.user_data
 
   tags = {
-    Name  = "Integ-test-aoc"
-    Patch = var.patch
+    Name      = "Integ-test-aoc"
+    Patch     = var.patch
+    TestCase  = var.testcase
+    TestID    = module.common.testing_id
+    ephemeral = "true"
   }
 }
 
@@ -134,14 +142,6 @@ resource "null_resource" "check_patch" {
     command = <<-EOT
      "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id}" --ignore-error
      "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}" --ignore-error
-    EOT
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.sidecar_id}" --ignore-error
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.aoc_id}" --ignore-error
     EOT
   }
 }
@@ -463,9 +463,6 @@ module "validator" {
     name : aws_instance.aoc.private_dns
     instanceType : aws_instance.aoc.instance_type
   })
-
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]
 }

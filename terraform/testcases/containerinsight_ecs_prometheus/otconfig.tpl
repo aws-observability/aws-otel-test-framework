@@ -160,7 +160,7 @@ exporters:
 service:
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}
   extensions: [ ecs_observer ]
   pipelines:
     metrics:

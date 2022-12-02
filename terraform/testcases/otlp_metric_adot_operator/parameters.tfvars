@@ -2,4 +2,4 @@ validation_config = "spark-otel-metric-validation.yml"
 
 sample_app = "spark"
 
-eks_cluster_name = "adot-op-cluster"
+sample_app_image = "public.ecr.aws/aws-otel-test/aws-otel-java-spark:latest"

@@ -67,11 +67,11 @@ resource "kubernetes_deployment" "jmx_metric_deployment" {
           image             = local.jmx_sample_app_image
           image_pull_policy = "Always"
           resources {
-            requests {
+            requests = {
               cpu    = "100m"
               memory = "180Mi"
             }
-            limits {
+            limits = {
               cpu    = "300m"
               memory = "300Mi"
             }

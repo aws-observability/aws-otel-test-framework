@@ -180,8 +180,6 @@ module "validator" {
   mem_alarm              = aws_cloudwatch_metric_alarm.mem_alarm.alarm_name
   incoming_packets_alarm = aws_cloudwatch_metric_alarm.incoming_bytes.alarm_name
 
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [time_sleep.wait_until_metric_is_sufficient]
 }

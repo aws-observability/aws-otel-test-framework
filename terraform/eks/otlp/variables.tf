@@ -46,3 +46,7 @@ variable "aoc_service" {
     http_port = string
   })
 }
+
+variable "sample_app_service_account_name" {
+  type = string
+}

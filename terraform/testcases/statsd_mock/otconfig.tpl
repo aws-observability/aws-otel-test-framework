@@ -16,4 +16,4 @@ service:
       exporters: [otlphttp]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}

@@ -12,6 +12,8 @@ services:
     build:
       context: ../../../aws-otel-collector
       dockerfile: cmd/awscollector/Dockerfile
+      args:
+        BUILDMODE: copy
 
     command: ["--config=/tmp/otconfig.yaml"]
     volumes:
@@ -45,5 +47,6 @@ services:
       - COLLECTOR_UDP_ADDRESS=aws-ot-collector:${udp_port}
       - JAEGER_RECEIVER_ENDPOINT=aws-ot-collector:${http_port}
       - ZIPKIN_RECEIVER_ENDPOINT=aws-ot-collector:${http_port}
+      - OTEL_METRICS_EXPORTER=otlp
     depends_on:
       - aws-ot-collector

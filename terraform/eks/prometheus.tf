@@ -2,7 +2,7 @@ resource "kubernetes_deployment" "standalone_aoc_deployment" {
   count = var.aoc_base_scenario == "prometheus" ? 1 : 0
   metadata {
     name      = "aoc"
-    namespace = var.deployment_type == "fargate" ? tolist(aws_eks_fargate_profile.test_profile[count.index].selector)[0].namespace : kubernetes_namespace.aoc_ns.metadata[0].name
+    namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
     labels = {
       app = "aoc"
     }
@@ -44,7 +44,7 @@ resource "kubernetes_deployment" "standalone_aoc_deployment" {
             value = "ClusterName=${var.eks_cluster_name}"
           }
           resources {
-            requests {
+            limits = {
               cpu    = "0.2"
               memory = "256Mi"
             }
@@ -96,4 +96,21 @@ module "demo_haproxy" {
   source = "./haproxy"
 
   testing_id = module.common.testing_id
+}
+
+// Stops validator from starting until all assets are deployed. Validator has a dependency on this null resource.
+resource "null_resource" "prom_base_ready_check" {
+  count = var.aoc_base_scenario == "prometheus" ? 1 : 0
+  depends_on = [
+    module.demo_haproxy,
+    module.demo_memcached,
+    module.demo_jmx,
+    module.demo_appmesh,
+    module.demo_nginx,
+    kubernetes_deployment.standalone_aoc_deployment
+  ]
+
+  provisioner "local-exec" {
+    command = "echo prom assets deployed"
+  }
 }

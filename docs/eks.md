@@ -2,14 +2,14 @@
 
 ## Overview
 
-There is only on EKS EC2 cluster (for now), the cluster is created manually using `eksctl`
+There is only one EKS EC2 cluster (for now), the cluster is created manually using `eksctl`
 
 ## Create Cluster
 
 The IAM policy is pretty big because it supports the following backends
 
 - CloudWatch
-- Xray
+- X-Ray
 - Managed Grafana
 
 We need SSM for [patching](aws-patch.md)
@@ -23,7 +23,7 @@ kind: ClusterConfig
 metadata:
   name: aws-otel-testing-framework-eks
   region: us-west-2
-  version: '1.18'
+  version: '1.19'
 
 # You can remove vpc section and eksctl will create a new one
 vpc:

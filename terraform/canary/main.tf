@@ -29,6 +29,7 @@ module "basic_components" {
   mocked_endpoint = var.mock_endpoint
   sample_app      = var.sample_app
   mocked_server   = var.mocked_server
+  debug           = var.debug
 }
 
 # launch ec2
@@ -51,9 +52,6 @@ module "ec2_setup" {
 
   # install cwagent
   install_cwagent = false
-
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
 
   patch = true
 

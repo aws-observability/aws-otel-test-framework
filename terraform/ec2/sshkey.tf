@@ -26,6 +26,10 @@ resource "aws_key_pair" "aws_ssh_key" {
   count      = var.ssh_key_name == "" ? 1 : 0
   key_name   = "testing-${module.common.testing_id}"
   public_key = tls_private_key.ssh_key[0].public_key_openssh
+  tags = {
+    "ephemeral" : "true",
+    "TestCase" : var.testcase,
+  }
 }
 
 ## get the ssh private key

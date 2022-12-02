@@ -2,10 +2,10 @@ plugins {
     id 'java'
 
     id 'application'
-    id 'com.google.cloud.tools.jib' version "3.1.4"
+    id 'com.google.cloud.tools.jib' version "3.3.0"
 
     // lombok
-    id "io.freefair.lombok" version "6.3.0"
+    id "io.freefair.lombok" version "6.5.1"
 
     // check style
     id 'checkstyle'
@@ -35,14 +35,14 @@ dependencies {
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.22.0'
 
     // log
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.16.0'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
 
     // mustache template
     implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.8.9'
 
     // apache io utils
-    implementation group: 'commons-io', name: 'commons-io', version: '2.4'
+    implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
 
     // yaml reader
     implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.11.1'
@@ -52,31 +52,34 @@ dependencies {
     implementation group: 'com.github.fge', name: 'json-schema-validator', version: '2.0.0'
 
     // command cli
-    implementation 'info.picocli:picocli:4.3.2'
+    implementation 'info.picocli:picocli:4.6.3'
 
-    compileOnly 'info.picocli:picocli-codegen:4.3.2'
+    compileOnly 'info.picocli:picocli-codegen:4.6.3'
 
     // aws sdk
-    implementation platform('com.amazonaws:aws-java-sdk-bom:1.11.811')
+    implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.174')
     implementation 'com.amazonaws:aws-java-sdk-s3'
     implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
     implementation 'com.amazonaws:aws-java-sdk-xray'
     implementation 'com.amazonaws:aws-java-sdk-logs'
     implementation 'com.amazonaws:aws-java-sdk-sts'
 
+    // aws ecs sdk
+    implementation 'com.amazonaws:aws-java-sdk-ecs'
+
     // https://mvnrepository.com/artifact/com.github.awslabs/aws-request-signing-apache-interceptor
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
     // http client
-    implementation("com.squareup.okhttp3:okhttp:4.9.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
 
     // command cli
-    implementation 'info.picocli:picocli:4.3.2'
+    implementation 'info.picocli:picocli:4.6.3'
 
-    compileOnly 'info.picocli:picocli-codegen:4.3.2'
+    compileOnly 'info.picocli:picocli-codegen:4.6.3'
 
     // mockito
-    testImplementation "org.mockito:mockito-core:3.+"
+    testImplementation "org.mockito:mockito-core:4.+"
 }
 
 application {

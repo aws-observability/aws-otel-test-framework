@@ -49,4 +49,4 @@ service:
       exporters: [awsemf,logging]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}

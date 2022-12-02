@@ -1,0 +1,53 @@
+{
+  "clustertargets": [
+    {
+      "type": "EKS_FARGATE",
+      "targets": [
+        {
+          "name": "eks-fargate-cluster-1",
+          "region": "us-west-2"
+        },
+        {
+          "name": "eks-fargate-cluster-2",
+          "region": "us-east-2"
+        }
+      ]
+    }
+  ],
+  "tests": [
+    {
+      "case_name": "xrayreceiver",
+      "platforms": [
+        "EC2",
+        "ECS",
+        "EKS",
+        "EKS_ARM64",
+        "CANARY"
+      ]
+    },
+    {
+      "case_name": "xrayreceiver_mock",
+      "platforms": [
+        "PERF"
+      ]
+    },
+    {
+      "case_name": "otlp_metric_amp",
+      "platforms": [
+        "EC2"
+      ]
+    },
+    {
+      "case_name": "eks_containerinsights_fargate",
+      "platforms": [
+        "EKS_FARGATE"
+      ]
+    },
+    {
+      "case_name": "eks_containerinsights_fargate_metric",
+      "platforms": [
+        "EKS_FARGATE"
+      ]
+    }
+  ]
+}

@@ -17,6 +17,7 @@ exporters:
     endpoint: ${mock_endpoint}
     tls:
       insecure: true
+    compression: none
 
 service:
   pipelines:
@@ -27,4 +28,4 @@ service:
   extensions: [pprof]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}

@@ -1,6 +1,10 @@
 extensions:
   pprof:
     endpoint: 0.0.0.0:1777
+  sigv4auth:
+    region: ${region}
+    service: "aps"
+
 receivers:
   awsecscontainermetrics:
   otlp:
@@ -37,28 +41,28 @@ processors:
   #Expected metric: https://github.com/aws-observability/aws-otel-test-framework/blob/terraform/validator/src/main/resources/expected-data-template/ecsContainerExpectedMetric.mustache
   metricstransform:
     transforms:
-      - metric_name: ecs.task.memory.reserved
+      - include: ecs.task.memory.reserved
         action: update
         new_name: ecs.task.memory.reserved_${testing_id}
-      - metric_name: ecs.task.memory.utilized
+      - include: ecs.task.memory.utilized
         action: update
         new_name: ecs.task.memory.utilized_${testing_id}
-      - metric_name: ecs.task.cpu.reserved
+      - include: ecs.task.cpu.reserved
         action: update
         new_name: ecs.task.cpu.reserved_${testing_id}
-      - metric_name: ecs.task.cpu.utilized
+      - include: ecs.task.cpu.utilized
         action: update
         new_name: ecs.task.cpu.utilized_${testing_id}
-      - metric_name: ecs.task.network.rate.rx
+      - include: ecs.task.network.rate.rx
         action: update
         new_name: ecs.task.network.rate.rx_${testing_id}
-      - metric_name: ecs.task.network.rate.tx
+      - include: ecs.task.network.rate.tx
         action: update
         new_name: ecs.task.network.rate.tx_${testing_id}
-      - metric_name: ecs.task.storage.read_bytes
+      - include: ecs.task.storage.read_bytes
         action: update
         new_name: ecs.task.storage.read_bytes_${testing_id}
-      - metric_name: ecs.task.storage.write_bytes
+      - include: ecs.task.storage.write_bytes
         action: update
         new_name: ecs.task.storage.write_bytes_${testing_id}
   #Delete some metrics' dimension exporting to the cloudwatch or amp
@@ -108,13 +112,12 @@ exporters:
     region: '${region}'
     resource_to_telemetry_conversion:
       enabled: true
-  awsprometheusremotewrite:
+  prometheusremotewrite:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     resource_to_telemetry_conversion:
       enabled: true
-    aws_auth:
-      region: ${region}
-      service: "aps"
+    auth:
+      authenticator: sigv4auth
   awsxray:
     local_mode: true
     region: '${region}'
@@ -130,7 +133,7 @@ service:
     metrics/container/amp:
       receivers: [ awsecscontainermetrics ]
       processors: [ filter, metricstransform, resource, batch ]
-      exporters: [ awsprometheusremotewrite,logging ]
+      exporters: [ prometheusremotewrite, logging ]
     metrics/application/cw:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
@@ -138,12 +141,12 @@ service:
     metrics/application/amp:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
-      exporters: [ awsprometheusremotewrite,logging]
+      exporters: [ prometheusremotewrite, logging ]
     traces/application/xray:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
       exporters: [ awsxray ]
-  extensions: [pprof]
+  extensions: [pprof, sigv4auth]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}

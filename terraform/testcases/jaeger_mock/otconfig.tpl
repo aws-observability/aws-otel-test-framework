@@ -20,7 +20,6 @@ exporters:
 
 
 service:
-  extensions:
   pipelines:
     traces:
       receivers: [jaeger]
@@ -29,4 +28,4 @@ service:
   extensions: [pprof]
   telemetry:
     logs:
-      level: debug
+      level: ${log_level}

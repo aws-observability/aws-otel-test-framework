@@ -1,4 +1,8 @@
-receivers:
+extensions:
+      sigv4auth:
+        region: ${region}
+        service: "aps"
+    receivers:
       prometheus:
         config:
           global:
@@ -8,17 +12,17 @@ receivers:
             static_configs:
             - targets: [ ${sample_app_listen_address_host}:${sample_app_listen_address_port} ]
     exporters:
-      awsprometheusremotewrite:
+      prometheusremotewrite:
         endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
-        aws_auth:
-          region: ${region}
-          service: "aps"
         timeout: 15s
+        auth:
+          authenticator: sigv4auth
     service:
       pipelines:
         metrics:
           receivers: [prometheus]
-          exporters: [awsprometheusremotewrite]
+          exporters: [prometheusremotewrite]
+      extensions: [sigv4auth]
       telemetry:
         logs:
-          level: debug
+          level: ${log_level}

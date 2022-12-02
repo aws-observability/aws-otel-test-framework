@@ -18,7 +18,7 @@ variable "ami_family" {
     debian = {
       login_user               = "ubuntu"
       install_package          = "aws-otel-collector.deb"
-      instance_type            = "t2.micro"
+      instance_type            = "c5a.large"
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
       install_command          = "while sudo fuser /var/cache/apt/archives/lock /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend; do echo 'Waiting for dpkg lock...' && sleep 1; done; echo 'No dpkg lock and install collector.' && sudo dpkg -i aws-otel-collector.deb"
@@ -32,7 +32,7 @@ variable "ami_family" {
     linux = {
       login_user               = "ec2-user"
       install_package          = "aws-otel-collector.rpm"
-      instance_type            = "t2.micro"
+      instance_type            = "c5a.large"
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "curl %s --output aws-otel-collector.rpm"
       install_command          = "sudo rpm -Uvh aws-otel-collector.rpm"
@@ -46,7 +46,7 @@ variable "ami_family" {
     windows = {
       login_user               = "Administrator"
       install_package          = "aws-otel-collector.msi"
-      instance_type            = "t3.medium"
+      instance_type            = "c5a.large"
       otconfig_destination     = "C:\\ot-default.yml"
       download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
       install_command          = "msiexec /i C:\\aws-otel-collector.msi"
@@ -57,7 +57,10 @@ variable "ami_family" {
       user_data                = <<EOF
 <powershell>
 winrm quickconfig -q
-winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="300"}'
+winrm set winrm/config/winrs '@{MaxShellsPerUser="100"}'
+winrm set winrm/config/winrs '@{MaxConcurrentUsers="30"}'
+winrm set winrm/config/winrs '@{MaxProcessesPerShell="100"}'
+winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
 winrm set winrm/config '@{MaxTimeoutms="1800000"}'
 winrm set winrm/config/service '@{AllowUnencrypted="true"}'
 winrm set winrm/config/service/auth '@{Basic="true"}'
@@ -86,23 +89,11 @@ EOF
 ########################################
 variable "amis" {
   default = {
-    ubuntu16 = {
-      os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*"
-      ami_owner          = "099720109477"
-      ami_product_code   = []
-      family             = "debian"
-      arch               = "amd64"
-      login_user         = "ubuntu"
-      user_data          = <<EOF
-#! /bin/bash
-sudo snap refresh amazon-ssm-agent
-EOF
-    }
+    # Ubuntu Distribution
     ubuntu18 = {
       os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server*"
-      ami_owner          = "099720109477"
+      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -112,31 +103,79 @@ EOF
 sudo snap refresh amazon-ssm-agent
 EOF
     }
-    debian10 = {
-      os_family          = "debian"
-      ami_search_pattern = "debian-10-amd64*"
-      ami_owner          = "679593333241"
-      # NOTE: we need product code to pick the right debian 10.
-      ami_product_code = [
-      "auhljmclkudu651zy27rih2x2"]
-      family     = "debian"
-      arch       = "amd64"
-      login_user = "admin"
-      user_data  = <<EOF
+    arm_ubuntu18 = {
+      os_family          = "ubuntu"
+      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "debian"
+      arch               = "arm64"
+      login_user         = "ubuntu"
+      instance_type      = "c6g.large"
+      user_data          = <<EOF
 #! /bin/bash
-cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
-while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
-   echo 'Waiting for dpkg lock...' && sleep 1
-done
-sudo dpkg -i amazon-ssm-agent.deb
-sudo systemctl enable amazon-ssm-agent
+sudo snap refresh amazon-ssm-agent
 EOF
     }
-    debian9 = {
+    ubuntu20 = {
+      os_family          = "ubuntu"
+      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-focal*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "debian"
+      arch               = "amd64"
+      login_user         = "ubuntu"
+      user_data          = <<EOF
+#! /bin/bash
+sudo snap refresh amazon-ssm-agent
+EOF
+    }
+    arm_ubuntu20 = {
+      os_family          = "ubuntu"
+      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-focal*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "debian"
+      arch               = "arm64"
+      login_user         = "ubuntu"
+      instance_type      = "c6g.large"
+      user_data          = <<EOF
+#! /bin/bash
+sudo snap refresh amazon-ssm-agent
+EOF
+    }
+    ubuntu22 = {
+      os_family          = "ubuntu"
+      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-jammy*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "debian"
+      arch               = "amd64"
+      login_user         = "ubuntu"
+      user_data          = <<EOF
+#! /bin/bash
+sudo snap refresh amazon-ssm-agent
+EOF
+    }
+    arm_ubuntu22 = {
+      os_family          = "ubuntu"
+      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-jammy*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "debian"
+      arch               = "arm64"
+      login_user         = "ubuntu"
+      instance_type      = "c6g.large"
+      user_data          = <<EOF
+#! /bin/bash
+sudo snap refresh amazon-ssm-agent
+EOF
+    }
+    # Debian Distribution
+    debian11 = {
       os_family          = "debian"
-      ami_search_pattern = "debian-stretch-hvm-x86_64-gp2*"
-      ami_owner          = "679593333241"
+      ami_search_pattern = "debian-11-*"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -152,9 +191,69 @@ sudo dpkg -i amazon-ssm-agent.deb
 sudo systemctl enable amazon-ssm-agent
 EOF
     }
+    arm_debian11 = {
+      os_family          = "debian"
+      ami_search_pattern = "debian-11-arm64*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "debian"
+      arch               = "arm64"
+      login_user         = "admin"
+      instance_type      = "c6g.large"
+      user_data          = <<EOF
+#! /bin/bash
+cd /tmp
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_arm64/amazon-ssm-agent.deb
+while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
+   echo 'Waiting for dpkg lock...' && sleep 1
+done
+sudo dpkg -i amazon-ssm-agent.deb
+sudo systemctl enable amazon-ssm-agent
+EOF
+    }
+    debian10 = {
+      os_family          = "debian"
+      ami_search_pattern = "debian-10-*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "debian"
+      arch               = "amd64"
+      login_user         = "admin"
+      user_data          = <<EOF
+#! /bin/bash
+cd /tmp
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_amd64/amazon-ssm-agent.deb
+while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
+   echo 'Waiting for dpkg lock...' && sleep 1
+done
+sudo dpkg -i amazon-ssm-agent.deb
+sudo systemctl enable amazon-ssm-agent
+EOF
+    }
+    arm_debian10 = {
+      os_family          = "debian"
+      ami_search_pattern = "debian-10-arm64*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "debian"
+      arch               = "arm64"
+      login_user         = "admin"
+      instance_type      = "c6g.large"
+      user_data          = <<EOF
+#! /bin/bash
+cd /tmp
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_arm64/amazon-ssm-agent.deb
+while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
+   echo 'Waiting for dpkg lock...' && sleep 1
+done
+sudo dpkg -i amazon-ssm-agent.deb
+sudo systemctl enable amazon-ssm-agent
+EOF
+    }
+    #AL2
     amazonlinux2 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"
+      ami_search_pattern = "amzn2-ami-kernel-5*"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
@@ -164,6 +263,30 @@ EOF
 #! /bin/bash
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 EOF
+    }
+    arm_amazonlinux2 = {
+      os_family          = "amazon_linux"
+      ami_search_pattern = "amzn2-ami-kernel-5*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "linux"
+      arch               = "arm64"
+      login_user         = "ec2-user"
+      instance_type      = "c6g.large"
+      user_data          = <<EOF
+#! /bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
+EOF
+    }
+    # Windows Distribution
+    windows2022 = {
+      os_family          = "windows"
+      ami_search_pattern = "Windows_Server-2022-English-Full-Base*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "windows"
+      arch               = "amd64"
+      login_user         = "Administrator"
     }
     windows2019 = {
       os_family          = "windows"
@@ -174,20 +297,7 @@ EOF
       arch               = "amd64"
       login_user         = "Administrator"
     }
-    amazonlinux = {
-      os_family          = "amazon_linux"
-      ami_search_pattern = "amzn-ami-hvm-????.??.?.????????-x86_64-gp2"
-      ami_owner          = "amazon"
-      ami_product_code   = []
-      family             = "linux"
-      arch               = "amd64"
-      login_user         = "ec2-user"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-sudo restart amazon-ssm-agent
-EOF
-    }
+    # Suse Distribution
     suse15 = {
       os_family          = "suse"
       ami_search_pattern = "suse-sles-15*"
@@ -205,9 +315,27 @@ sudo systemctl enable amazon-ssm-agent
 sudo systemctl start amazon-ssm-agent
 EOF
     }
+    arm_suse15 = {
+      os_family          = "suse"
+      ami_search_pattern = "suse-sles-15*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "linux"
+      login_user         = "ec2-user"
+      arch               = "arm64"
+      instance_type      = "c6g.large"
+      user_data          = <<EOF
+#! /bin/bash
+cd /tmp
+sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
+sudo rpm -Uvh amazon-ssm-agent.rpm
+sudo systemctl enable amazon-ssm-agent
+sudo systemctl start amazon-ssm-agent
+EOF
+    }
     suse12 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-12*"
+      ami_search_pattern = "suse-sles-12-sp5-v????????-hvm-ssd-x86_64"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
@@ -222,10 +350,11 @@ sudo systemctl enable amazon-ssm-agent
 sudo systemctl start amazon-ssm-agent
 EOF
     }
+    # Redhat Distribution
     redhat8 = {
       os_family          = "redhat"
-      ami_search_pattern = "RHEL-8.0.0_HVM*"
-      ami_owner          = "309956199498"
+      ami_search_pattern = "RHEL-8.6.0_HVM*"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
@@ -235,138 +364,18 @@ sudo dnf install -y python3
 sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
 EOF
     }
-    redhat7 = {
-      os_family          = "redhat"
-      ami_search_pattern = "RHEL-7.7_HVM*"
-      ami_owner          = "309956199498"
-      ami_product_code   = []
-      family             = "linux"
-      arch               = "amd64"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y python3
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-EOF
-    }
-    centos7 = {
-      login_user         = "centos"
-      os_family          = "centos"
-      ami_search_pattern = "CentOS Linux 7 x86_64*"
-      ami_owner          = "679593333241"
-      ami_product_code   = []
-      family             = "linux"
-      arch               = "amd64"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-EOF
-    }
-    centos6 = {
-      login_user         = "centos"
-      os_family          = "centos"
-      ami_search_pattern = "CentOS Linux 6 x86_64 HVM EBS 2002*"
-      ami_owner          = "679593333241"
-      ami_product_code   = []
-      family             = "linux"
-      arch               = "amd64"
-      user_data          = <<EOF
-#! /bin/bash
-sudo iptables -I INPUT -p tcp -m tcp --dport 4317 -j ACCEPT
-sudo iptables -I INPUT -p udp -m udp --dport 55690 -j ACCEPT
-sudo service iptables save
-cd /tmp
-sudo curl https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -o amazon-ssm-agent.rpm
-sudo rpm -ivh amazon-ssm-agent.rpm
-EOF
-    }
-
-
-    # arm amis
-    arm_amazonlinux2 = {
-      os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-hvm-2.0.????????.?-arm64-gp2"
-      ami_owner          = "amazon"
-      ami_product_code   = []
-      family             = "linux"
-      arch               = "arm64"
-      instance_type      = "t4g.nano"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-EOF
-    }
-
-    arm_suse15 = {
-      os_family          = "suse"
-      ami_search_pattern = "suse-sles-15-sp2-v20200721-hvm-ssd-arm64*"
-      ami_owner          = "amazon"
-      ami_product_code   = []
-      family             = "linux"
-      arch               = "arm64"
-      instance_type      = "t4g.nano"
-      user_data          = <<EOF
-#! /bin/bash
-cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-sudo rpm -ivh amazon-ssm-agent.rpm
-EOF
-    }
-
     arm_redhat8 = {
       os_family          = "redhat"
-      ami_search_pattern = "RHEL-8.0.0_HVM-20190426-arm64*"
-      ami_owner          = "309956199498"
+      ami_search_pattern = "RHEL-8.6.0_HVM*"
+      ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
-      instance_type      = "t4g.micro"
-      user_data          = <<EOF
-#! /bin/bash
-sudo dnf install -y python3
-sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-EOF
-    }
-
-    arm_redhat7 = {
-      os_family          = "redhat"
-      ami_search_pattern = "RHEL-7.6_HVM_GA-20181122-arm64*"
-      ami_owner          = "309956199498"
-      ami_product_code   = []
-      family             = "linux"
-      arch               = "arm64"
-      instance_type      = "t4g.micro"
+      instance_type      = "c6g.large"
       user_data          = <<EOF
 #! /bin/bash
 sudo yum install -y python3
 sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-EOF
-    }
-
-    arm_ubuntu18 = {
-      os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-arm64*"
-      ami_owner          = "099720109477"
-      ami_product_code   = []
-      family             = "debian"
-      arch               = "arm64"
-      instance_type      = "t4g.nano"
-      user_data          = <<EOF
-#! /bin/bash
-sudo snap refresh amazon-ssm-agent
-EOF
-    }
-
-    arm_ubuntu16 = {
-      os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-arm64*"
-      ami_owner          = "099720109477"
-      ami_product_code   = []
-      family             = "debian"
-      arch               = "arm64"
-      instance_type      = "t4g.nano"
-      user_data          = <<EOF
-#! /bin/bash
-sudo snap refresh amazon-ssm-agent
 EOF
     }
   }
@@ -379,6 +388,9 @@ locals {
 
 data "aws_ami" "selected" {
   most_recent = true
+
+  owners = [
+  var.amis[var.testing_ami]["ami_owner"]]
 
   filter {
     name = "name"
@@ -397,22 +409,7 @@ data "aws_ami" "selected" {
     "available"]
   }
 
-  # Only apply product code filter for some AMI, e.g. debian10
-  # https://www.terraform.io/docs/language/expressions/dynamic-blocks.html
-  dynamic "filter" {
-    for_each = var.amis[var.testing_ami]["ami_product_code"]
-    content {
-      name = "product-code"
-      values = [
-        filter.value
-      ]
-    }
-  }
-
-  owners = [
-  var.amis[var.testing_ami]["ami_owner"]]
 }
-
 
 # this ami is used to launch the emitter instance
 data "aws_ami" "amazonlinux2" {
@@ -422,7 +419,7 @@ data "aws_ami" "amazonlinux2" {
   filter {
     name = "name"
     values = [
-    "amzn2-ami-hvm-2.0.????????.?-x86_64-gp2"]
+    "amzn2-ami-kernel*"]
   }
 
   filter {
