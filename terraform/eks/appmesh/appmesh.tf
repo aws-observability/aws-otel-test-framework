@@ -154,8 +154,8 @@ data "template_file" "traffic_deployment_file" {
   vars = {
     APP_NAMESPACE   = kubernetes_namespace.traffic_ns.metadata[0].name
     MESH_NAME       = local.mesh_name
-    FRONT_APP_IMAGE = "${var.sample_app_image_repo}:feapp"
-    COLOR_APP_IMAGE = "${var.sample_app_image_repo}:colorapp"
+    FRONT_APP_IMAGE = "${var.sample_app_image_repo}:feapp-latest"
+    COLOR_APP_IMAGE = "${var.sample_app_image_repo}:colorapp-latest"
   }
 
   depends_on = [
