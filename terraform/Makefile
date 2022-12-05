@@ -26,7 +26,7 @@ checkCacheHits:
 
 .PHONY: terraformCleanup
 terraformCleanup: test-case-batch
-	cat test-case-batch | xargs -L1 ./executeTerraformCleanup.sh 
+	cat test-case-batch | xargs -L1 -P1 ./executeTerraformCleanup.sh 
 
  
 
