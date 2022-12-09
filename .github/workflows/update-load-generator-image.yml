@@ -16,7 +16,7 @@ on:
 
 permissions:
   id-token: write
-  contents: write
+  contents: read
 
 jobs:
   create-and-push-load-generator-image-on-push:
@@ -27,9 +27,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
+          role-to-assume: ${{ secrets.TEST_FW_ASSUMABLE_ROLE_ARN }}
+          aws-region: us-west-2
           role-duration-seconds: 7200
       - name: Login to Amazon ECR Public
         id: login-ecr-public
@@ -40,17 +39,11 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 11
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew :load-generator:build
-      - name: Build, tag, and push docker image to Amazon ECR Public
+      - name: Build image with jib
+        uses: burrunan/gradle-cache-action@v1
+        with:
+          arguments: :load-generator:jib
         env:
-          REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
-          REGISTRY_ALIAS: aws-otel-test
-          REPOSITORY: aws-otel-load-generator
-          IMAGE_TAG: latest
-        run: |
-          docker buildx create --use --name lgbuilder --platform=linux/arm64,linux/amd64 --driver  docker-container --bootstrap
-          docker buildx build --push --platform=linux/amd64,linux/arm64 -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG ./load-generator
-          docker buildx rm lgbuilder
+          COMMIT_HASH: ${{ github.sha }}
+
+
