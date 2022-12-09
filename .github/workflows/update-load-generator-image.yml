@@ -29,7 +29,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.TEST_FW_ASSUMABLE_ROLE_ARN }}
-          aws-region: us-west-2
+          aws-region: us-east-1
           role-duration-seconds: 7200
       - name: Login to Amazon ECR Public
         id: login-ecr-public
