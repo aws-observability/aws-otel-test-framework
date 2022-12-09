@@ -5,6 +5,7 @@ name: Update Load-Generator Image
 # Should execute only one workflow run at a time
 concurrency:
   group: build-and-push-load-generator-image
+  cancel-in-progress: false
 
 on:
   workflow_dispatch:
@@ -40,7 +41,7 @@ jobs:
         with:
           java-version: 11
       - name: Build image with jib
-        uses: burrunan/gradle-cache-action@v1
+        uses: gradle/gradle-build-action@v2
         with:
           arguments: :load-generator:jib
         env:
