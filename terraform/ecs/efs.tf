@@ -70,7 +70,7 @@ resource "aws_key_pair" "aws_ssh_key" {
 resource "aws_instance" "collector_efs_ec2" {
   ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = "c5a.large"
-  subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
+  subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
