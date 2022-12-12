@@ -78,9 +78,6 @@ locals {
   # get ecr login domain
   ecr_login_domain = split("/", data.aws_ecr_repository.sample_app.repository_url)[0]
 
-  # get instance subnet, use separate subnet for soaking and performance test as it takes more instances and some times eat up all the available ip address in the subnet
-  instance_subnet = var.testing_type == "e2e" ? tolist(module.basic_components.aoc_public_subnet_ids)[1] : tolist(module.basic_components.aoc_public_subnet_ids)[0]
-
   # get SSM package version, latest is the default version
   ssm_package_version = var.aoc_version == "latest" ? "\"\"" : var.aoc_version
   testcase_name       = split("/", var.testcase)[2]
@@ -90,7 +87,7 @@ locals {
 resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = var.sidecar_instance_type
-  subnet_id                   = local.instance_subnet
+  subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
@@ -108,7 +105,7 @@ resource "aws_instance" "sidecar" {
 resource "aws_instance" "aoc" {
   ami                         = local.ami_id
   instance_type               = local.instance_type
-  subnet_id                   = local.instance_subnet
+  subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
