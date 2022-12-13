@@ -25,7 +25,7 @@ locals {
 
   subnet_ids_list = tolist(data.aws_subnet_ids.aoc_public_subnet_ids.ids)
 
-  subnet_ids_random_index = random_id.subnetSelector.dec % length(subnet_ids_list)
+  subnet_ids_random_index = random_id.subnetSelector.dec % length(local.subnet_ids_list)
 
   random_instance_subnet_id = local.subnet_ids_list[local.subnet_ids_random_index]
 }
