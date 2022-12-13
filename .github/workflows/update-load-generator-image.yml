@@ -1,0 +1,50 @@
+# This workflow uses GHA to build a Java project with Gradle 'load-generator', and build and push multi-arch docker image of this project to the Amazon ECR.
+
+name: Update Load-Generator Image
+
+# Should execute only one workflow run at a time
+concurrency:
+  group: build-and-push-load-generator-image
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ['terraform']
+
+    # List of paths that should be considered when triggering the workflow
+    paths: ['load-generator/**']
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  create-and-push-load-generator-image-on-push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ secrets.TEST_FW_ASSUMABLE_ROLE_ARN }}
+          aws-region: us-east-1
+          role-duration-seconds: 7200
+      - name: Login to Amazon ECR Public
+        id: login-ecr-public
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registry-type: public
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Build image with jib
+        uses: gradle/gradle-build-action@v2
+        with:
+          arguments: :load-generator:jib
+        env:
+          COMMIT_HASH: ${{ github.sha }}
+
+
