@@ -33,7 +33,7 @@ dependencies {
 
     implementation "io.grpc:grpc-netty-shaded:1.50.2"
 
-    implementation platform("io.opentelemetry:opentelemetry-bom:1.18.0")
+    implementation platform("io.opentelemetry:opentelemetry-bom:1.21.0")
     implementation "io.opentelemetry:opentelemetry-api"
     implementation "io.opentelemetry:opentelemetry-sdk"
     implementation "io.opentelemetry:opentelemetry-exporter-otlp"
