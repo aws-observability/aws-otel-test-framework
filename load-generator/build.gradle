@@ -40,7 +40,7 @@ dependencies {
 
     implementation "io.opentelemetry:opentelemetry-semconv:1.18.0-alpha"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
-    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.11.2"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.13.0"
     implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.11.2"
 
     // Use JUnit test framework
