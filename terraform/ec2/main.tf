@@ -99,6 +99,11 @@ resource "aws_instance" "sidecar" {
     TestID    = module.common.testing_id
     ephemeral = "true"
   }
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens = "required"
+  }
 }
 
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
@@ -119,6 +124,11 @@ resource "aws_instance" "aoc" {
     TestCase  = var.testcase
     TestID    = module.common.testing_id
     ephemeral = "true"
+  }
+  
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens = "required"
   }
 }
 
