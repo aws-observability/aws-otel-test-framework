@@ -102,7 +102,8 @@ resource "aws_instance" "sidecar" {
 
   metadata_options {
     http_endpoint = "enabled"
-    http_tokens = "required"
+    http_tokens   = "required"
+    
     # Use 2 hops because some of the test services run inside docker in the instance.
     # That counts as an extra hop to access the IMDS. The default value is 1.
     http_put_response_hop_limit = 2
@@ -131,7 +132,7 @@ resource "aws_instance" "aoc" {
   
   metadata_options {
     http_endpoint = "enabled"
-    http_tokens = "required"
+    http_tokens   = "required"
   }
 }
 
