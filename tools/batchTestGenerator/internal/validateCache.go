@@ -3,6 +3,8 @@ package internal
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -54,8 +56,19 @@ func ValidateCache(rc RunConfig, ddbTableName string, aocVersion string) error {
 		fmt.Println(strings.Join(cacheMisses, "\n"))
 		succcess = "false"
 	}
-	fmt.Printf(`release-candidate-ready=%s >> $GITHUB_OUTPUT`, succcess)
-	fmt.Printf("\n")
+
+	ghOutputFile := os.Getenv("GITHUB_OUTPUT")
+	ghEnv, err := os.OpenFile(ghOutputFile, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0600)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer ghEnv.Close()
+
+	//Writing into the gh env fie
+	_, err = ghEnv.WriteString(fmt.Sprintf(`release-candidate-ready=%s`, succcess))
+	if err != nil {
+		fmt.Printf("error writing githubBatchKeys in GITHUB_OUTPUT env: %v", err)
+	}
 
 	return nil
 }
