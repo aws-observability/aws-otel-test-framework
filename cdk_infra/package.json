@@ -30,7 +30,7 @@
   "dependencies": {
     "@aws-cdk/aws-ec2": "^1.161.0",
     "@aws-cdk/aws-eks": "^1.182.0",
-    "@aws-cdk/aws-iam": "^1.183.0",
+    "@aws-cdk/aws-iam": "^1.187.0",
     "@aws-cdk/core": "^1.186.1",
     "@aws-cdk/lambda-layer-kubectl": "^1.183.0",
     "@aws-cdk/lambda-layer-kubectl-v21": "^0.0.9",
