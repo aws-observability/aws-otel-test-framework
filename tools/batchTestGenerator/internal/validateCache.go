@@ -65,7 +65,7 @@ func ValidateCache(rc RunConfig, ddbTableName string, aocVersion string) error {
 	defer ghEnv.Close()
 
 	//Writing into the gh env fie
-	_, err = ghEnv.WriteString(fmt.Sprintf(`release-candidate-ready=%s`, succcess))
+	_, err = ghEnv.WriteString(fmt.Sprintf("release-candidate-ready=%s\n", succcess))
 	if err != nil {
 		return fmt.Errorf("error writing githubBatchKeys in GITHUB_OUTPUT env: %v", err)
 	}
