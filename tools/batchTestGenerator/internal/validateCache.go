@@ -3,7 +3,6 @@ package internal
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 	"strings"
 
@@ -60,8 +59,10 @@ func ValidateCache(rc RunConfig, ddbTableName string, aocVersion string) error {
 	ghOutputFile := os.Getenv("GITHUB_OUTPUT")
 	ghEnv, err := os.OpenFile(ghOutputFile, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0600)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Println("Could not open GITHUB_OUTPUT env file")
+		return err
 	}
+
 	defer ghEnv.Close()
 
 	//Writing into the gh env fie
