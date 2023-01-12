@@ -28,11 +28,22 @@ export class EC2Stack extends Stack {
       clusterLogging: logging,
       kubectlLayer: GetLayer(this, props.version)
     });
+    const lt = new ec2.LaunchTemplate(this, `${props.name}-launch-template`, {
+      requireImdsv2: true,
+      httpEndpoint: true,
+      httpPutResponseHopLimit: 2,
+      httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
+      
+    })
     const clusterNodeGroup = new Nodegroup(this, `${props.name}-managed-ng`, {
       instanceTypes: [new ec2.InstanceType(instance_type)],
       cluster: this.cluster,
       minSize: 2,
-      subnets: { subnetType: ec2.SubnetType.PUBLIC }
+      subnets: { subnetType: ec2.SubnetType.PUBLIC },
+      launchTemplateSpec: {
+        id: lt.launchTemplateId as string,
+        version: lt.latestVersionNumber,
+      }
     });
     clusterNodeGroup.role.addManagedPolicy(
       ManagedPolicy.fromAwsManagedPolicyName('AmazonSSMManagedInstanceCore')
