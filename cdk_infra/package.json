@@ -28,7 +28,7 @@
     "yaml-schema-validator": "^1.2.3"
   },
   "dependencies": {
-    "@aws-cdk/aws-ec2": "^1.188.0",
+    "@aws-cdk/aws-ec2": "^1.189.0",
     "@aws-cdk/aws-eks": "^1.182.0",
     "@aws-cdk/aws-iam": "^1.188.0",
     "@aws-cdk/core": "^1.186.1",
