@@ -250,6 +250,7 @@ module "validator" {
     module.aoc_oltp,
     module.adot_operator,
     kubectl_manifest.logs_sample_fargate_deploy,
-    null_resource.prom_base_ready_check
+    null_resource.prom_base_ready_check,
+    kubernetes_deployment.aoc_deployment
   ]
 }
