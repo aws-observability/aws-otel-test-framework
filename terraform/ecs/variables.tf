@@ -58,3 +58,11 @@ variable "ecs_extra_apps" {
   default = {}
 }
 
+variable "scheduling_strategy" {
+  default = "REPLICA"
+}
+
+variable "rollup" {
+  type    = bool
+  default = true
+}

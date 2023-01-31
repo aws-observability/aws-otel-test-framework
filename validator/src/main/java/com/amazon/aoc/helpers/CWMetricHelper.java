@@ -20,18 +20,15 @@ import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.models.Context;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-/**
- * helper class for getting expected metrics from templates.
- */
+/** helper class for getting expected metrics from templates. */
 public class CWMetricHelper {
   private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
   MustacheHelper mustacheHelper = new MustacheHelper();
@@ -39,36 +36,112 @@ public class CWMetricHelper {
   /**
    * get expected metrics from template with injecting context.
    *
-   * @param context        testing context
+   * @param context testing context
    * @param expectedMetric expected template
-   * @param caller         http caller, none caller, could be null
+   * @param caller http caller, none caller, could be null
    * @return list of metrics
    * @throws Exception when caller throws exception or template can not be found
    */
   public List<Metric> listExpectedMetrics(
-      Context context,
-      FileConfig expectedMetric,
-      ICaller caller
-  ) throws Exception {
+      Context context, FileConfig expectedMetric, ICaller caller) throws Exception {
     // call endpoint
     if (caller != null) {
       caller.callSampleApp();
     }
 
     // get expected metrics as yaml from config
-    String yamlExpectedMetrics = mustacheHelper.render(expectedMetric, context);
 
-    // load metrics from yaml
+    String yamlExpectedMetrics = null;
+    List<Metric> expectedMetricList = null;
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    List<Metric> expectedMetricList = mapper.readValue(
-          yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
-          new TypeReference<List<Metric>>() {});
+
+    if (context != null
+        && context.getTestcase() != null
+        && context.getTestcase().contains("hostmetrics_receiver")) {
+      if (context.getHostmetricsContext() != null) {
+        yamlExpectedMetrics = mustacheHelper.render(expectedMetric, context);
+        List<com.amazon.aoc.models.cwmodel.Metric> expectedMetricsForHostMetrics =
+            mapper.readValue(
+                yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
+                new TypeReference<List<com.amazon.aoc.models.cwmodel.Metric>>() {});
+        expectedMetricList = this.parseCWModel(mapper, expectedMetricsForHostMetrics);
+      }
+    } else {
+      yamlExpectedMetrics = mustacheHelper.render(expectedMetric, context);
+      expectedMetricList =
+          mapper.readValue(
+              yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
+              new TypeReference<List<Metric>>() {});
+    }
 
     if (context.getIsRollup()) {
       return this.rollupMetric(expectedMetricList);
     }
-
     return expectedMetricList;
+  }
+
+  private List<Metric> parseCWModel(
+      ObjectMapper mapper, List<com.amazon.aoc.models.cwmodel.Metric> expectedMetricsForHostMetrics)
+      throws JsonProcessingException {
+    List<Metric> metrics = new ArrayList<>();
+    Stack<com.amazon.aoc.models.cwmodel.Metric> dpParentStack = new Stack<>();
+    Stack<com.amazon.aoc.models.cwmodel.Metric> dpChildStack = new Stack<>();
+
+    for (com.amazon.aoc.models.cwmodel.Metric hostMetricDataPoint : expectedMetricsForHostMetrics) {
+      dpParentStack.push(hostMetricDataPoint);
+      if (hostMetricDataPoint.getDimensions()
+          != null) {
+        int dimensionsSize = hostMetricDataPoint.getDimensions().size();
+        if (dimensionsSize > 0) {
+          for (int i = 0; i < dimensionsSize; i++) { // iterate over each dimension
+            while (!dpParentStack.isEmpty()) {
+              com.amazon.aoc.models.cwmodel.Metric dataPoint = dpParentStack.pop();
+              List<String> listValues = dataPoint.getDimensions().get(i).getValue();
+              for (String str : listValues) {
+                com.amazon.aoc.models.cwmodel.Metric hostMetricDP =
+                    mapper.readValue(
+                        mapper.writeValueAsString(dataPoint),
+                        com.amazon.aoc.models.cwmodel.Metric.class);
+                String key = dataPoint.getDimensions().get(i).getName();
+                List<String> val = new ArrayList<>(Collections.singleton(str));
+                hostMetricDP
+                    .getDimensions()
+                    .set(
+                        i,
+                        com.amazon.aoc.models.cwmodel.Dimension.builder()
+                            .name(key)
+                            .value(val)
+                            .build());
+                dpChildStack.push(hostMetricDP);
+              }
+            }
+            dpParentStack.addAll(dpChildStack);
+            dpChildStack.removeAllElements();
+          }
+        }
+      }
+      while (!dpParentStack.isEmpty()) {
+        metrics.add(convertToCwSdkMetric(dpParentStack.pop()));
+      }
+    }
+    return metrics;
+  }
+
+  private Metric convertToCwSdkMetric(com.amazon.aoc.models.cwmodel.Metric hmMetric) {
+
+    Metric metric = new Metric();
+    metric.setMetricName(hmMetric.getMetricName());
+    metric.setNamespace(hmMetric.getNamespace());
+    List<Dimension> dimensions = new ArrayList<>();
+    for (com.amazon.aoc.models.cwmodel.Dimension hmDimension : hmMetric.getDimensions()) {
+      Dimension dim = new Dimension();
+      dim.setName(hmDimension.getName());
+      dim.setValue(hmDimension.getValue().get(0));
+      dimensions.add(dim);
+    }
+
+    metric.setDimensions(dimensions);
+    return metric;
   }
 
   /**
@@ -112,9 +185,9 @@ public class CWMetricHelper {
         allDimensionsMetric
             .getDimensions()
             .add(
-              new Dimension()
-                .withName(otellibDimension.getName())
-                .withValue(otellibDimension.getValue()));
+                new Dimension()
+                    .withName(otellibDimension.getName())
+                    .withValue(otellibDimension.getValue()));
       }
       rollupMetricList.add(allDimensionsMetric);
 
@@ -126,9 +199,9 @@ public class CWMetricHelper {
       if (otelLibDimensionExisted) {
         zeroDimensionMetric.setDimensions(
             Arrays.asList(
-              new Dimension()
-                .withName(otellibDimension.getName())
-                .withValue(otellibDimension.getValue())));
+                new Dimension()
+                    .withName(otellibDimension.getName())
+                    .withValue(otellibDimension.getValue())));
       }
       rollupMetricList.add(zeroDimensionMetric);
 
@@ -140,9 +213,9 @@ public class CWMetricHelper {
         if (otelLibDimensionExisted) {
           singleDimensionMetric.setDimensions(
               Arrays.asList(
-                new Dimension()
-                  .withName(otellibDimension.getName())
-                  .withValue(otellibDimension.getValue())));
+                  new Dimension()
+                      .withName(otellibDimension.getName())
+                      .withValue(otellibDimension.getValue())));
         }
         singleDimensionMetric.getDimensions().add(dimension);
         rollupMetricList.add(singleDimensionMetric);

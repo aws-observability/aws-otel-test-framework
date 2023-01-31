@@ -67,4 +67,10 @@ public class Context {
   cortex parameters
    */
   private String cortexInstanceEndpoint;
+
+  /*
+  hostMetrics parameters
+   */
+  private HostmetricsContext hostmetricsContext;
+
 }

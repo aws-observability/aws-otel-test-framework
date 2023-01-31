@@ -27,6 +27,7 @@ services:
       - "--cloudwatch-context=${cloudwatch_context_json}"
       - "--ecs-context=${ecs_context_json}"
       - "--ec2-context=${ec2_context_json}"
+      - "--hostmetrics-context=${hostmetrics_context_json}"
       - "--alarm-names=${cpu_alarm}"
       - "--alarm-names=${mem_alarm}"
       - "--alarm-names=${incoming_packets_alarm}"
