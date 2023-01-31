@@ -83,3 +83,7 @@ variable "rollup" {
   type    = bool
   default = true
 }
+
+variable "hostmetrics_context_json" {
+  default = "{}"
+}

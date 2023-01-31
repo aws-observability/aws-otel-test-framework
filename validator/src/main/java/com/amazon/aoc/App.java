@@ -103,6 +103,10 @@ public class App implements Callable<Integer> {
   private String cortexInstanceEndpoint;
 
   @CommandLine.Option(
+      names = {"--hostmetrics-context"})
+  private String hostmetricsContext;
+
+  @CommandLine.Option(
           names = {"--rollup"},
           defaultValue = "true")
   private boolean isRollup;
@@ -132,6 +136,8 @@ public class App implements Callable<Integer> {
     context.setMockedServerValidatingUrl(mockedServerValidatingUrl);
     context.setCortexInstanceEndpoint(this.cortexInstanceEndpoint);
     context.setTestcase(testcase);
+    context.setHostmetricsContext(
+        buildJsonContext(this.hostmetricsContext, HostmetricsContext.class));
 
     log.info(context);
 
@@ -149,7 +155,7 @@ public class App implements Callable<Integer> {
   }
 
   private void validate(Context context, List<ValidationConfig> validationConfigList)
-          throws Exception {
+      throws Exception {
     CloudWatchService cloudWatchService = new CloudWatchService(region);
     Dimension dimension = new Dimension().withName(TEST_CASE_DIM_KEY).withValue(this.testcase);
     int maxValidationCycles = 1;
@@ -163,21 +169,23 @@ public class App implements Callable<Integer> {
           validatorFactory.launchValidator(validationConfigItem).validate();
         } catch (Exception e) {
           if (this.isCanary) {
-            //emit metric
+            // emit metric
             cloudWatchService.putMetricData(CANARY_NAMESPACE, CANARY_METRIC_NAME, 0.0, dimension);
           }
           throw e;
         }
       }
       if (maxValidationCycles - cycle - 1 > 0) {
-        log.info("Completed {} validation cycle for current canary test. "
-                        + "Still need to validate {} cycles. Sleep 1 minute then proceed.",
-                cycle + 1, maxValidationCycles - cycle - 1);
+        log.info(
+            "Completed {} validation cycle for current canary test. "
+                + "Still need to validate {} cycles. Sleep 1 minute then proceed.",
+            cycle + 1,
+            maxValidationCycles - cycle - 1);
         TimeUnit.MINUTES.sleep(1);
       }
     }
     if (this.isCanary) {
-      //emit metric
+      // emit metric
       cloudWatchService.putMetricData(CANARY_NAMESPACE, CANARY_METRIC_NAME, 1.0, dimension);
     }
   }
@@ -190,7 +198,7 @@ public class App implements Callable<Integer> {
   }
 
   private <T> T buildJsonContext(String metricContext, Class<T> clazz)
-          throws JsonProcessingException {
+      throws JsonProcessingException {
     if (metricContext == null || metricContext.isEmpty()) {
       return null;
     }

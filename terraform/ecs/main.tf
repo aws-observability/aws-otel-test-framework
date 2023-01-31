@@ -75,6 +75,23 @@ module "ecs_cluster" {
   // TODO(pingleig): pass patch tag for canary and soaking (if any)
 }
 
+data "aws_instances" "ecs_instances" {
+  filter {
+    name   = "tag:Name"
+    values = ["cluster-worker-aoc-testing-${module.common.testing_id}"]
+  }
+  filter {
+    name   = "tag:ClusterName"
+    values = [module.common.testing_id]
+  }
+  depends_on = [module.ecs_cluster]
+}
+
+data "aws_instance" "get_specific_instance" {
+  instance_id = data.aws_instances.ecs_instances.ids[0]
+  depends_on  = [data.aws_instances.ecs_instances]
+}
+
 # This is a hack for known issue https://github.com/hashicorp/terraform-provider-aws/issues/4852
 # We always create ECS cluster with active EC2 instances, so when destroy we need to scale down
 # the asg so the cluster can be destroyed.
@@ -287,7 +304,7 @@ resource "aws_ecs_service" "aoc" {
 
 # remove lb since there's no callable sample app, some test cases will drop in here, for example, ecsmetadata receiver test
 resource "aws_ecs_service" "aoc_without_sample_app" {
-  count            = !var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
+  count            = !var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" && var.scheduling_strategy != "DAEMON" ? 1 : 0
   name             = "aocservice-${module.common.testing_id}"
   cluster          = module.ecs_cluster.cluster_id
   task_definition  = "${aws_ecs_task_definition.aoc[0].family}:1"
@@ -312,6 +329,29 @@ resource "aws_ecs_service" "aoc_without_sample_app_for_bridge" {
   depends_on      = [null_resource.scale_down_asg, aws_ecs_task_definition.aoc_bridge]
 }
 
+resource "aws_ecs_service" "aoc_without_sample_app_daemon_scheduling" {
+  count                 = !var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" && var.scheduling_strategy == "DAEMON" && var.ecs_launch_type != "FARGATE" ? 1 : 0
+  name                  = "aocservice-${module.common.testing_id}"
+  cluster               = module.ecs_cluster.cluster_id
+  task_definition       = "${aws_ecs_task_definition.aoc[0].family}:1"
+  launch_type           = var.ecs_launch_type
+  scheduling_strategy   = "DAEMON"
+  wait_for_steady_state = true
+
+  network_configuration {
+    subnets         = module.basic_components.aoc_private_subnet_ids
+    security_groups = [module.basic_components.aoc_security_group_id]
+  }
+  depends_on = [aws_ecs_task_definition.aoc]
+}
+
+# wait for task to get deployed and metrics have been received by cloudwatch
+resource "time_sleep" "wait_60_seconds" {
+  count      = endswith(var.testcase, "hostmetrics_receiver") ? 1 : 0
+  depends_on = [aws_ecs_service.aoc_without_sample_app_daemon_scheduling]
+
+  create_duration = "60s"
+}
 ##########################################
 # Validation
 ##########################################
@@ -350,6 +390,8 @@ module "validator_without_sample_app" {
   testing_id                   = module.common.testing_id
   metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   mocked_server_validating_url = var.disable_mocked_server ? "" : "http://${aws_lb.mocked_server_lb[0].dns_name}:${module.common.mocked_server_lb_port}/check-data"
+  testcase                     = var.testcase
+  rollup                       = var.rollup
 
   ecs_context_json = jsonencode({
     ecsClusterName : module.ecs_cluster.cluster_name
@@ -360,7 +402,25 @@ module "validator_without_sample_app" {
 
   cloudwatch_context_json = data.template_file.cloudwatch_context.rendered
 
-  depends_on = [aws_ecs_service.aoc_without_sample_app, aws_ecs_service.extra_apps]
+  # hostmetrics_receiver related variables
+  hostmetrics_context_json = !endswith(var.testcase, "hostmetrics_receiver") ? null : jsonencode({
+    hostId : data.aws_instances.ecs_instances.ids
+    cpuNames : ["cpu0", "cpu1"] # t2.medium is hardcoded, so cpu_count is not fetched using data_sources
+    diskDevices : ["vda", "vda1"]
+    filesystemDevices : tolist([
+      (tolist(data.aws_instance.get_specific_instance.root_block_device)[0]).device_name
+    ])
+    mountpointModes : ["rw"]
+    mountpoints : ["/etc/resolv.conf", "/etc/hostname", "/etc/hosts"]
+    networkInterfaces : ["lo", "eth0", "ecs-eth0"]
+    processCommand : ["/awscollector"]                                    # as given in container definition (ADOT collector dockerfile)
+    processCommandLine : ["/awscollector --config=/etc/otel-config.yaml"] # as given in container definition (cmd)
+    processExecutableName : ["awscollector"]                              # as given in container definition (ADOT collector dockerfile)
+    processCommand : ["/awscollector"]                                    # as given in container definition
+    processExecutablePath : ["/awscollector"]                             # as given in container definition(ADOT collector dockerfile entrypoint)
+  })
+
+  depends_on = [aws_ecs_service.aoc_without_sample_app, aws_ecs_service.aoc_without_sample_app_daemon_scheduling, aws_ecs_service.extra_apps, time_sleep.wait_60_seconds]
 }
 
 module "validator_without_sample_app_for_bridge" {
