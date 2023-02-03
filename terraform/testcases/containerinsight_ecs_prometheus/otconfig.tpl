@@ -62,6 +62,8 @@ exporters:
     # FIXME: we hard code the log stream name for now
     log_stream_name: 'ecssd'
     dimension_rollup_option: NoDimensionRollup
+    resource_to_telemetry_conversion:
+      enabled: true
     metric_declarations:
       # nginx
       - dimensions: [ [ ClusterName, TaskDefinitionFamily, ServiceName ] ]

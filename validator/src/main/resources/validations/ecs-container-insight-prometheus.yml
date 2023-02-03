@@ -1,6 +1,6 @@
 - validationType: "container-insight-ecs-prometheus-logs"
   shouldValidateMetricValue: false
-  # NOTE: the value here matches enum ExpectedLogStructure under fileconfigs pacakge
+  # NOTE: the value here matches enum ExpectedLogStructure under fileconfigs package
   expectedLogStructureTemplate: "CONTAINER_INSIGHT_ECS_PROMETHEUS_LOG"
 - validationType: "container-insight-ecs-prometheus-metrics"
   shouldValidateMetricValue: false

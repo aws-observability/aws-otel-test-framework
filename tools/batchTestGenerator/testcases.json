@@ -210,6 +210,12 @@
 			]
 		},
 		{
+			"case_name": "containerinsight_ecs_prometheus",
+			"platforms": [
+				"ECS"
+			]
+		},
+		{
 			"case_name": "otlp_grpc_exporter_metric_mock",
 			"platforms": [
 				"EC2",
