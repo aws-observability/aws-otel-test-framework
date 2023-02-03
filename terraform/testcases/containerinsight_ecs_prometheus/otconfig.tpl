@@ -57,8 +57,7 @@ receivers:
 exporters:
   awsemf:
     namespace: ECS/ContainerInsights/Prometheus
-    # TODO: can we inject cluster name down from the pipeline
-    log_group_name: "/aws/ecs/containerinsights/aoc-testing-${testing_id}/prometheus"
+    log_group_name: "/aws/ecs/containerinsights/{ClusterName}/prometheus"
     # FIXME: we hard code the log stream name for now
     log_stream_name: 'ecssd'
     dimension_rollup_option: NoDimensionRollup

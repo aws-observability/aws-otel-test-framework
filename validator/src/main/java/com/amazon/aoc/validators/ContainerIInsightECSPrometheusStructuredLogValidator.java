@@ -42,8 +42,8 @@ public class ContainerIInsightECSPrometheusStructuredLogValidator
   @Override
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     // /aws/ecs/containerinsights/aoc-prometheus-dashboard-1/prometheus
-    logGroupName = String.format("/aws/ecs/containerinsights/%s/%s",
-        context.getCloudWatchContext().getClusterName(), "prometheus");
+    logGroupName = String.format("/aws/ecs/containerinsights/%s/prometheus",
+        context.getCloudWatchContext().getClusterName());
     log.info("log group name is {}", logGroupName);
 
     // It's almost same as EKS prometheus but we use different key to find schema.
