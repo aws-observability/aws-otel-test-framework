@@ -18,7 +18,7 @@
     "@typescript-eslint/parser": "^5.31.0",
     "ajv": "^8.11.2",
     "ajv-errors": "^3.0.0",
-    "aws-cdk": "2.52.0",
+    "aws-cdk": "2.63.1",
     "eslint": "^8.31.0",
     "jest": "^27.5.1",
     "prettier": "^2.8.1",
