@@ -99,6 +99,15 @@ resource "aws_instance" "sidecar" {
     TestID    = module.common.testing_id
     ephemeral = "true"
   }
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+
+    # Use 2 hops because some of the test services run inside docker in the instance.
+    # That counts as an extra hop to access the IMDS. The default value is 1.
+    http_put_response_hop_limit = 2
+  }
 }
 
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
@@ -119,6 +128,11 @@ resource "aws_instance" "aoc" {
     TestCase  = var.testcase
     TestID    = module.common.testing_id
     ephemeral = "true"
+  }
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
 }
 

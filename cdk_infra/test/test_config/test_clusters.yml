@@ -1,14 +1,14 @@
 ---
 clusters:
-  - name: amdCluster
+  - name: m5-amd64-Cluster
+    launch_type: ec2
+    instance_type: m5.large
+    version: "1.21"
+  - name: t4g-arm64-Cluster
     launch_type: ec2
     instance_type: t4g.large
     version: "1.21"
-  - name: t4gCluster
-    launch_type: ec2
-    instance_type: t4g.large
-    version: "1.21"
-  - name: armCluster
+  - name: m6g-arm64-Cluster
     launch_type: ec2
     instance_type: m6g.large
     version: "1.21"

@@ -14,7 +14,7 @@ plugins {
     id 'application'
 
     // lombok
-    id "io.freefair.lombok" version "6.5.1"
+    id "io.freefair.lombok" version "6.6.1"
 
     // jib
     id 'com.google.cloud.tools.jib'
@@ -28,26 +28,26 @@ dependencies {
     // This dependency is used by the application.
     implementation "com.google.guava:guava:31.1-jre"
 
-    implementation "io.grpc:grpc-bom:1.50.2"
-    implementation "io.grpc:grpc-api:1.47.0"
+    implementation "io.grpc:grpc-bom:1.51.1"
+    implementation "io.grpc:grpc-api:1.51.1"
 
     implementation "io.grpc:grpc-netty-shaded:1.50.2"
 
-    implementation platform("io.opentelemetry:opentelemetry-bom:1.18.0")
+    implementation platform("io.opentelemetry:opentelemetry-bom:1.21.0")
     implementation "io.opentelemetry:opentelemetry-api"
     implementation "io.opentelemetry:opentelemetry-sdk"
     implementation "io.opentelemetry:opentelemetry-exporter-otlp"
 
-    implementation "io.opentelemetry:opentelemetry-semconv:1.18.0-alpha"
+    implementation "io.opentelemetry:opentelemetry-semconv:1.21.0-alpha"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
-    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.11.2"
-    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.11.2"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.13.0"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.13.0"
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13.2'
 
     // Command cli
-    implementation 'info.picocli:picocli:4.6.3'
+    implementation 'info.picocli:picocli:4.7.0'
     compileOnly 'info.picocli:picocli-codegen:4.6.3'
 
     // log
