@@ -4,6 +4,7 @@ import (
 	"container/ring"
 	"encoding/json"
 	"fmt"
+	"os"
 )
 
 // generates the batch keys and value json for github action utilization
@@ -42,10 +43,25 @@ func GithubGenerator(config RunConfig) error {
 		return fmt.Errorf("failed to marshal batch values object: %w", err)
 	}
 
-	fmt.Printf(`::set-output name=batch-keys::%s`, githubBatchKeys)
-	fmt.Printf("\n")
-	fmt.Printf(`::set-output name=batch-values::%s`, githubBatchValues)
-	fmt.Printf("\n")
+	ghOutputFile := os.Getenv("GITHUB_OUTPUT")
+	ghEnv, err := os.OpenFile(ghOutputFile, os.O_APPEND|os.O_RDWR|os.O_CREATE, 0600)
+	if err != nil {
+		fmt.Println("Could not open GITHUB_OUTPUT env file")
+		return err
+	}
+
+	defer ghEnv.Close()
+
+	//Writing into the gh env fie
+	_, err = ghEnv.WriteString(fmt.Sprintf("batch-keys=%s\n", githubBatchKeys))
+	if err != nil {
+		return fmt.Errorf("error writing githubBatchKeys in GITHUB_OUTPUT env: %v", err)
+	}
+
+	_, err = ghEnv.WriteString(fmt.Sprintf("batch-values=%s\n", githubBatchValues))
+	if err != nil {
+		return fmt.Errorf("error writing githubBatchValues in GITHUB_OUTPUT env: %v", err)
+	}
 
 	return nil
 

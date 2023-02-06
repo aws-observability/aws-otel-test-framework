@@ -93,9 +93,9 @@ If a certain test case is failed in the github workflow of ADOT Collector, you m
 
 We have collected notes on how to contribute to this project in CONTRIBUTING.md.
 
-## 4. Security
+## 4. Security issue notifications
 
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
+If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public github issue.
 
 ## 5. License
 

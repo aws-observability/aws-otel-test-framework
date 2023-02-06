@@ -128,11 +128,6 @@ resource "aws_instance" "aoc" {
     TestID    = module.common.testing_id
     ephemeral = "true"
   }
-  
-  metadata_options {
-    http_endpoint = "enabled"
-    http_tokens = "required"
-  }
 }
 
 resource "null_resource" "check_patch" {
