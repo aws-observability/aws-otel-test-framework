@@ -86,7 +86,7 @@ resource "aws_instance" "collector_efs_ec2" {
 
   metadata_options {
     http_endpoint = "enabled"
-    http_tokens = "required"
+    http_tokens   = "required"
   }
 
   depends_on = [aws_efs_mount_target.collector_efs_mount, aws_key_pair.aws_ssh_key]
