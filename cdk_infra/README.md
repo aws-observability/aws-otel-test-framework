@@ -1,7 +1,10 @@
 # Welcome to your CDK Test Framework
 
 This CDK Project handles the deployment of long lived infrastructure used by the ADOT testing framework.
-Currently, the only long lived infrastructure is a VPC and a set of configurable EKS Clusters. 
+Among the long lived infrastructure, there are:
+* VPC for EKS Clusters
+* EKS Clusters with different characteristics, defined in `lib/config/cluster-config/clusters.yml`
+* MSK Clusters
 
 ## Getting Started
 
@@ -12,7 +15,7 @@ Since the code base in written in TypeScript, the CDK library has to be download
 1. Make sure you have Node, so that you can use `npm` control. 
 2. `npm i`
 
-### Deploying clusters
+### Deploying the infrastructure
 
 1. Build or update a cluster config file. See sections below for configuration options.
 2. `make deploy-infra` to deploy VPC and clusters
@@ -30,6 +33,8 @@ There are a number of environment variables that should be defined before deploy
 * `CDK_CONFIG_PATH` - This is the path for which the cluster configuration file is located - default is `clusters.yml` in `lib/config/cluster-config` folder.
 
 ### Cluster Configuration
+
+The following is only valid for the EKS Clusters.
 
 * `clusters`:
     * `name` - `string` The name of the cluster. Cluster names must be unique. 
