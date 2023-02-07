@@ -75,11 +75,9 @@ resource "random_id" "subnetSelector" {
   byte_length = 2
 }
 
-# generate otconfig
-data "template_file" "otconfig" {
-  template = file(local.otconfig_path)
 
-  vars = {
+locals {
+  rendered_template = templatefile(local.otconfig_path, {
     region                         = var.region
     otel_service_namespace         = module.common.otel_service_namespace
     otel_service_name              = module.common.otel_service_name
@@ -93,7 +91,7 @@ data "template_file" "otconfig" {
     log_level                      = var.debug ? "debug" : "info"
 
     mock_endpoint = var.mocked_endpoint
-  }
+  })
 }
 
 data "template_file" "mocked_server_cert" {
