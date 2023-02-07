@@ -1,6 +1,6 @@
 # Purpose
 
-The purpose of this directory is to deploy different long lived infrastructure sing AWS CDK. 
+The purpose of this directory is to deploy different long lived infrastructure using AWS CDK. 
 
 # Architecture
 ![Deployment design](https://user-images.githubusercontent.com/54683946/183471629-59479f8c-db49-4c53-bbe5-48b5f18d6b14.png)
