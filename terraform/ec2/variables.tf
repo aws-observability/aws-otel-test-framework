@@ -25,7 +25,7 @@ variable "testing_ami" {
 }
 
 variable "sidecar_instance_type" {
-  default = "t3.medium"
+  default = "c5a.large"
 }
 
 variable "soaking_compose_file" {
@@ -102,7 +102,7 @@ variable "canary" {
 # also set a patch tag onto the instance so that the instance get picked by the ssm patching process.
 # and then start the installation of collector.
 variable "patch" {
-  default = false
+  default = true
 }
 
 ######################

@@ -52,3 +52,7 @@ output "sample_app_image" {
 output "mocked_server_image" {
   value = "${data.aws_ecr_repository.mocked_servers.repository_url}:${var.mocked_server}-latest"
 }
+
+output "random_subnet_instance_id" {
+  value = local.random_instance_subnet_id
+}

@@ -4,6 +4,10 @@ on:
   push:
     branches: [ terraform ]
 
+permissions:
+  id-token: write
+  contents: read
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,9 +20,7 @@ jobs:
     - name: Configure AWS Credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        role-to-assume: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
+        role-to-assume: ${{ secrets.INTEG_TEST_TFW_ROLE_ARN }}
         role-duration-seconds: 1200
         aws-region: us-east-1
     - name: Login to ECR

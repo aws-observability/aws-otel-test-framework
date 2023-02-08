@@ -44,6 +44,8 @@ module "basic_components" {
   sample_app_listen_address_host = aws_instance.sidecar.public_ip
 
   sample_app_listen_address_port = module.common.sample_app_lb_port
+
+  debug = var.debug
 }
 
 provider "aws" {
@@ -62,7 +64,7 @@ locals {
   docker_compose_path  = var.soaking_compose_file != "" ? var.soaking_compose_file : fileexists("${var.testcase}/docker_compose.tpl") ? "${var.testcase}/docker_compose.tpl" : module.common.default_docker_compose_path
   selected_ami         = var.amis[var.testing_ami]
   ami_family           = var.ami_family[local.selected_ami["family"]]
-  ami_id               = var.amis[var.testing_ami]["ami_id"]
+  ami_id               = data.aws_ami.selected.id
   instance_type        = lookup(local.selected_ami, "instance_type", local.ami_family["instance_type"])
   otconfig_destination = local.ami_family["otconfig_destination"]
   login_user           = lookup(local.selected_ami, "login_user", local.ami_family["login_user"])
@@ -76,9 +78,6 @@ locals {
   # get ecr login domain
   ecr_login_domain = split("/", data.aws_ecr_repository.sample_app.repository_url)[0]
 
-  # get instance subnet, use separate subnet for soaking and performance test as it takes more instances and some times eat up all the available ip address in the subnet
-  instance_subnet = var.testing_type == "e2e" ? tolist(module.basic_components.aoc_public_subnet_ids)[1] : tolist(module.basic_components.aoc_public_subnet_ids)[0]
-
   # get SSM package version, latest is the default version
   ssm_package_version = var.aoc_version == "latest" ? "\"\"" : var.aoc_version
   testcase_name       = split("/", var.testcase)[2]
@@ -88,14 +87,26 @@ locals {
 resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = var.sidecar_instance_type
-  subnet_id                   = local.instance_subnet
+  subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
   tags = {
-    Name  = "Integ-test-Sample-App"
-    Patch = var.patch
+    Name      = "Integ-test-Sample-App"
+    Patch     = var.patch
+    TestCase  = var.testcase
+    TestID    = module.common.testing_id
+    ephemeral = "true"
+  }
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
+
+    # Use 2 hops because some of the test services run inside docker in the instance.
+    # That counts as an extra hop to access the IMDS. The default value is 1.
+    http_put_response_hop_limit = 2
   }
 }
 
@@ -103,7 +114,7 @@ resource "aws_instance" "sidecar" {
 resource "aws_instance" "aoc" {
   ami                         = local.ami_id
   instance_type               = local.instance_type
-  subnet_id                   = local.instance_subnet
+  subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
@@ -112,8 +123,16 @@ resource "aws_instance" "aoc" {
   user_data                   = local.user_data
 
   tags = {
-    Name  = "Integ-test-aoc"
-    Patch = var.patch
+    Name      = "Integ-test-aoc"
+    Patch     = var.patch
+    TestCase  = var.testcase
+    TestID    = module.common.testing_id
+    ephemeral = "true"
+  }
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
 }
 
@@ -134,14 +153,6 @@ resource "null_resource" "check_patch" {
     command = <<-EOT
      "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id}" --ignore-error
      "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}" --ignore-error
-    EOT
-  }
-
-  provisioner "local-exec" {
-    when    = destroy
-    command = <<-EOT
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.sidecar_id}" --ignore-error
-      "${self.triggers.aotutil}" ssm wait-patch-report "${self.triggers.aoc_id}" --ignore-error
     EOT
   }
 }
@@ -463,9 +474,6 @@ module "validator" {
     name : aws_instance.aoc.private_dns
     instanceType : aws_instance.aoc.instance_type
   })
-
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]
 }

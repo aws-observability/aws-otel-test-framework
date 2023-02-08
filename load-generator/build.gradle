@@ -14,7 +14,10 @@ plugins {
     id 'application'
 
     // lombok
-    id "io.freefair.lombok" version "6.4.3.1"
+    id "io.freefair.lombok" version "6.6.1"
+
+    // jib
+    id 'com.google.cloud.tools.jib'
 }
 
 repositories {
@@ -25,40 +28,58 @@ dependencies {
     // This dependency is used by the application.
     implementation "com.google.guava:guava:31.1-jre"
 
-    implementation "io.grpc:grpc-bom:1.47.0"
-    implementation "io.grpc:grpc-api:1.47.0"
+    implementation "io.grpc:grpc-bom:1.51.1"
+    implementation "io.grpc:grpc-api:1.51.1"
 
-    implementation "io.grpc:grpc-netty-shaded:1.47.0"
+    implementation "io.grpc:grpc-netty-shaded:1.50.2"
 
-    implementation platform("io.opentelemetry:opentelemetry-bom:1.12.0")
+    implementation platform("io.opentelemetry:opentelemetry-bom:1.21.0")
     implementation "io.opentelemetry:opentelemetry-api"
-    implementation "io.opentelemetry:opentelemetry-sdk-metrics:1.4.1-alpha"
-    implementation "io.opentelemetry:opentelemetry-exporter-otlp:1.10.0"
-    implementation "io.opentelemetry:opentelemetry-exporter-otlp-metrics:1.4.1-alpha"
-    implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
-    implementation "io.opentelemetry:opentelemetry-sdk-extension-autoconfigure:1.4.1-alpha"
+    implementation "io.opentelemetry:opentelemetry-sdk"
+    implementation "io.opentelemetry:opentelemetry-exporter-otlp"
 
-    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.11.2"
-    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.11.2"
+    implementation "io.opentelemetry:opentelemetry-semconv:1.21.0-alpha"
+    implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.13.0"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.13.0"
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13.2'
 
     // Command cli
-    implementation 'info.picocli:picocli:4.6.3'
+    implementation 'info.picocli:picocli:4.7.0'
     compileOnly 'info.picocli:picocli-codegen:4.6.3'
 
     // log
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.19.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
 
-    // local project can't be referenced in Dockerfile
-    // the workaround is build fat jar and copy it in Dockerfile for building docker image
-    //  implementation files('build/libs/trace-java-client-1.0-all.jar')
     implementation project(":trace-java-client")
 }
 
 application {
     // Define the main class for the application.
     mainClassName = 'com.amazon.opentelemetry.load.generator.App'
+}
+
+// jibDockerBuild doesn't support multi-platform image manifests
+// to build using the local docker daemon execute jibDockerBuild, and use only one specific platforms.
+jib {
+    from {
+          image = 'gradle:7.3.3-jdk11'
+          platforms {
+            platform {
+              architecture = 'amd64'
+              os = 'linux'
+            }
+            platform {
+              architecture = 'arm64'
+              os = 'linux'
+            }
+           }
+         }
+    to {
+        image = 'public.ecr.aws/aws-otel-test/aws-otel-load-generator'
+        tags = ['latest', "${System.getenv("COMMIT_HASH")}"]
+    }
 }

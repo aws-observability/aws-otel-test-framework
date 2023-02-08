@@ -2,10 +2,10 @@ plugins {
     id 'java'
 
     id 'application'
-    id 'com.google.cloud.tools.jib' version "3.2.1"
+    id 'com.google.cloud.tools.jib' version "3.3.0"
 
     // lombok
-    id "io.freefair.lombok" version "6.4.3.1"
+    id "io.freefair.lombok" version "6.5.1"
 
     // check style
     id 'checkstyle'
@@ -35,8 +35,8 @@ dependencies {
     testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.22.0'
 
     // log
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.17.2'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.2'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.19.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
 
     // mustache template
     implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.8.9'
@@ -63,6 +63,9 @@ dependencies {
     implementation 'com.amazonaws:aws-java-sdk-xray'
     implementation 'com.amazonaws:aws-java-sdk-logs'
     implementation 'com.amazonaws:aws-java-sdk-sts'
+
+    // aws ecs sdk
+    implementation 'com.amazonaws:aws-java-sdk-ecs'
 
     // https://mvnrepository.com/artifact/com.github.awslabs/aws-request-signing-apache-interceptor
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'

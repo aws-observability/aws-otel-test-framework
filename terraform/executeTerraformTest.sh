@@ -1,11 +1,11 @@
 #!/bin/bash
 ##########################################
-# This script is used to execute a
-# terraform test. A destroy will 
-# alway be ran no matter if terraform was 
-# successful or not. 
+# This script is used to execute a terraform test case. It is primarily for use 
+# with the Batch Test Generator. The script expects two to three arguments
+# depending on the aws_service type. The script also expects certain enviornment 
+# variables to be set. Expected inputs and env variables are listed below.
 #
-# ENV:
+# Expected env variables:
 # TF_VAR_aoc_version
 # DDB_TABLE_NAME
 # TTL_DATE time insert for TTL item in cache
@@ -17,8 +17,7 @@
 # $1: aws_service
 # $2: testcase 
 # $3: ECS/EC2 only - ami/ecs launch type 
-# $3: For EKS-arm64 we expect region|clustername|amp_endoint
-
+# $3: For all EKS tests we expect region|clustername
 ##########################################
 
 set -x
@@ -36,34 +35,29 @@ TEST_FOLDER=""
 service="$1"
 export AWS_REGION=us-west-2
 case "$service" in
-    "EC2") TEST_FOLDER="./ec2/";
+    EC2) TEST_FOLDER="./ec2/";
         opts+=" -var=testing_ami=$3";
     ;;
-    "EKS") TEST_FOLDER="./eks/";
+    EKS*) TEST_FOLDER="./eks/"
+        region=$(echo $3 | cut -d \| -f 1);
+        clustername=$(echo $3 | cut -d \| -f 2);
+        export AWS_REGION=${region};
+        opts+=" -var=region=${region}";
+        opts+=" -var=eks_cluster_name=${clustername}";
     ;;
-    "EKS_ARM64") TEST_FOLDER="./eks/"
-        arm_64_region=$(echo $3 | cut -d \| -f 1);
-        arm_64_clustername=$(echo $3 | cut -d \| -f 2);
-        arm_64_amp=$(echo $3 | cut -d \| -f 3);
-        export AWS_REGION=${arm_64_region};
-        opts+=" -var=region=${arm_64_region}";
-        opts+=" -var=cortex_instance_endpoint=${arm_64_amp}";
-        opts+=" -var=eks_cluster_name=${arm_64_clustername}";
-    ;;
-    "EKS_FARGATE") TEST_FOLDER="./eks/";
-    ;;
-    "EKS_ADOT_OPERATOR") TEST_FOLDER="./eks/";
-        opts+=" -var=eks_cluster_name=adot-op-cluster";
-    ;;
-    "EKS_ADOT_OPERATOR_ARM64") TEST_FOLDER="./eks/"
-        opts+=" -var=eks_cluster_name=arm64-adot-op-cluster";
-    ;;
-    "ECS") TEST_FOLDER="./ecs/";
+    ECS) TEST_FOLDER="./ecs/";
         opts+=" -var=ecs_launch_type=$3";
     ;;
     *)
     echo "service ${service} is not valid";
     exit 1;
+    ;;
+esac
+
+case ${AWS_REGION} in
+    "us-east-2") export TF_VAR_cortex_instance_endpoint="https://aps-workspaces.us-east-2.amazonaws.com/workspaces/ws-1de68e95-0680-42bb-8e55-67e7fd5d0861";
+    ;;
+    "us-west-2") export TF_VAR_cortex_instance_endpoint="https://aps-workspaces.us-west-2.amazonaws.com/workspaces/ws-e0c3c74f-7fdf-4e90-87d2-a61f52df40cd";
     ;;
 esac
 
@@ -74,7 +68,7 @@ checkCache(){
 
 checkCache $1 $2 $3
 # Used as a retry mechanic.
-ATTEMPTS_LEFT=1
+ATTEMPTS_LEFT=2
 cd ${TEST_FOLDER};
 while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     terraform init;
@@ -91,7 +85,7 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     fi
 
     case "$service" in
-        "EKS_FARGATE" | "EKS_ADOT_OPERATOR" | "EKS_ADOT_OPERATOR_ARM64") terraform destroy --auto-approve $opts;
+        EKS*) terraform destroy --auto-approve $opts;
         ;;
     *)
         terraform destroy --auto-approve;

@@ -55,3 +55,13 @@ variable "rollup" {
 variable "fargate_sample_app_lb_port" {
   default = "80"
 }
+
+variable "operator_repository" {
+  type    = string
+  default = "ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator"
+}
+
+variable "operator_tag" {
+  type    = string
+  default = "latest"
+}

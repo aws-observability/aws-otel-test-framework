@@ -40,6 +40,8 @@ module "basic_components" {
   sample_app_listen_address_port = module.common.sample_app_listen_address_port
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
+
+  debug = var.debug
 }
 
 locals {
@@ -330,13 +332,11 @@ module "validator" {
   ecs_context_json = jsonencode({
     ecsClusterName : module.ecs_cluster.cluster_name
     ecsClusterArn : module.ecs_cluster.cluster_arn
+    ecsTaskDefArn : aws_ecs_task_definition.aoc[0].arn
     ecsTaskDefFamily : aws_ecs_task_definition.aoc[0].family
     ecsTaskDefVersion : aws_ecs_task_definition.aoc[0].revision
     ecsLaunchType : aws_ecs_service.aoc[0].launch_type
   })
-
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [aws_ecs_service.aoc]
 }
@@ -353,15 +353,12 @@ module "validator_without_sample_app" {
 
   ecs_context_json = jsonencode({
     ecsClusterName : module.ecs_cluster.cluster_name
-    ecsTaskArn : aws_ecs_task_definition.aoc[0].arn
+    ecsTaskDefArn : aws_ecs_task_definition.aoc[0].arn
     ecsTaskDefFamily : aws_ecs_task_definition.aoc[0].family
     ecsTaskDefVersion : aws_ecs_task_definition.aoc[0].revision
   })
 
   cloudwatch_context_json = data.template_file.cloudwatch_context.rendered
-
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
 
   depends_on = [aws_ecs_service.aoc_without_sample_app, aws_ecs_service.extra_apps]
 }
@@ -379,13 +376,11 @@ module "validator_without_sample_app_for_bridge" {
 
   ecs_context_json = jsonencode({
     ecsClusterName : module.ecs_cluster.cluster_name
-    ecsTaskArn : aws_ecs_task_definition.aoc_bridge[0].arn
+    ecsTaskDefArn : aws_ecs_task_definition.aoc_bridge[0].arn
     ecsTaskDefFamily : aws_ecs_task_definition.aoc_bridge[0].family
     ecsTaskDefVersion : aws_ecs_task_definition.aoc_bridge[0].revision
   })
 
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
   depends_on = [
   aws_ecs_service.aoc_without_sample_app_for_bridge]
 }

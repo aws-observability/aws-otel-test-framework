@@ -70,3 +70,8 @@ test-case-batch
 validator/bin
 
 .vscode
+
+#reports
+coverage.txt
+
+*.class

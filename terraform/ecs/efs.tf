@@ -61,12 +61,16 @@ resource "tls_private_key" "ssh_key" {
 resource "aws_key_pair" "aws_ssh_key" {
   key_name   = "testing-${module.common.testing_id}"
   public_key = tls_private_key.ssh_key.public_key_openssh
+  tags = {
+    "ephemeral" : "true",
+    "TestCase" : var.testcase,
+  }
 }
 
 resource "aws_instance" "collector_efs_ec2" {
   ami                         = data.aws_ami.amazonlinux2.id
-  instance_type               = "t2.micro"
-  subnet_id                   = tolist(module.basic_components.aoc_public_subnet_ids)[0]
+  instance_type               = "c5a.large"
+  subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
@@ -74,6 +78,15 @@ resource "aws_instance" "collector_efs_ec2" {
 
   volume_tags = {
     Name = local.efs_name
+  }
+
+  tags = {
+    Name = "Integ-test-aoc"
+  }
+
+  metadata_options {
+    http_endpoint = "enabled"
+    http_tokens   = "required"
   }
 
   depends_on = [aws_efs_mount_target.collector_efs_mount, aws_key_pair.aws_ssh_key]

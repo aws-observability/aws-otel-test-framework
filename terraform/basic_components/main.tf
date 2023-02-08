@@ -20,6 +20,16 @@ module "common" {
   security_group_name = var.aoc_vpc_security_group
 }
 
+locals {
+  otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
+
+  subnet_ids_list = tolist(data.aws_subnet_ids.aoc_public_subnet_ids.ids)
+
+  subnet_ids_random_index = random_id.subnetSelector.dec % length(local.subnet_ids_list)
+
+  random_instance_subnet_id = local.subnet_ids_list[local.subnet_ids_random_index]
+}
+
 data "aws_security_group" "aoc_security_group" {
   name = module.common.aoc_vpc_security_group
 }
@@ -61,8 +71,8 @@ data "aws_subnet_ids" "aoc_public_subnet_ids" {
   }
 }
 
-locals {
-  otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
+resource "random_id" "subnetSelector" {
+  byte_length = 2
 }
 
 # generate otconfig
@@ -80,6 +90,7 @@ data "template_file" "otconfig" {
     cortex_instance_endpoint       = var.cortex_instance_endpoint
     sample_app_listen_address_host = var.sample_app_listen_address_host
     sample_app_listen_address_port = var.sample_app_listen_address_port
+    log_level                      = var.debug ? "debug" : "info"
 
     mock_endpoint = var.mocked_endpoint
   }

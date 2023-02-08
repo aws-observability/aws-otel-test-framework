@@ -72,8 +72,10 @@ cd terraform/imagebuild && terraform init && terraform apply -auto-approve
 ````
 this task will build and push the sample apps and mocked server images to the ecr repos,
  so that the following test could use them.
- 
+
 Remember, if you have changes on sample apps or the mocked server, you need to rerun this imagebuild task.
+
+Note: imagebuild publishes multi-arch images to ECR that are compatible with linux/amd64 and linux/amr64 architectures.
 
 #### 2.1.4 Share Setup resources (Optional)
 **Prerequisite:**
