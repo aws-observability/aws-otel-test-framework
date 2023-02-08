@@ -91,6 +91,9 @@ locals {
     log_level                      = var.debug ? "debug" : "info"
 
     mock_endpoint = var.mocked_endpoint
+
+    // Opaque place to put any data that is test dependent so that we dont need to add flags for every test
+    extra_data = var.extra_data
   })
 }
 

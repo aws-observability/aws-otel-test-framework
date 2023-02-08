@@ -20,6 +20,15 @@ module "common" {
   aoc_version    = var.aoc_version
 }
 
+
+module "aoc_msk_cluster" {
+  source = "../data_aoc_msk"
+
+ cluster_version = var.kafka_version
+ testcase = var.testcase
+ dedup_topic = "ecs"
+}
+
 module "basic_components" {
   source = "../basic_components"
 
@@ -40,6 +49,8 @@ module "basic_components" {
   sample_app_listen_address_port = module.common.sample_app_listen_address_port
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
+
+  extra_data = { msk = module.aoc_msk_cluster.cluster_data }
 
   debug = var.debug
 }

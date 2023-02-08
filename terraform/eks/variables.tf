@@ -65,3 +65,8 @@ variable "operator_tag" {
   type    = string
   default = "latest"
 }
+
+// This will only fetch data from the MSK cluster in case this value is set
+variable "kafka_version" {
+  default = ""
+}

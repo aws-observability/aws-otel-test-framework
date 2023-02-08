@@ -21,6 +21,14 @@ module "common" {
   security_group_name = var.aoc_vpc_security_group
 }
 
+module "aoc_msk_cluster" {
+  source = "../data_aoc_msk"
+
+ cluster_version = var.kafka_version
+ testcase = var.testcase
+ dedup_topic = "ec2${var.testing_type}${var.testing_ami}"
+}
+
 module "basic_components" {
   source = "../basic_components"
 
@@ -46,6 +54,7 @@ module "basic_components" {
   sample_app_listen_address_port = module.common.sample_app_lb_port
 
   debug = var.debug
+  extra_data = { msk = module.aoc_msk_cluster.cluster_data }
 }
 
 provider "aws" {

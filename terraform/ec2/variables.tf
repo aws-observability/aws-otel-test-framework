@@ -130,3 +130,8 @@ variable "enable_ssm_validate" {
   type    = bool
   default = false
 }
+
+// This will only fetch data from the MSK cluster in case this value is set
+variable "kafka_version" {
+  default = ""
+}
