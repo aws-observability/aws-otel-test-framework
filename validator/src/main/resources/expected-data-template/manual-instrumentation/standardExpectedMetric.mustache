@@ -1,74 +1,113 @@
 -
-  metricName: totalApiRequests
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: signal
-      value: metric
-    -
-      name: metricType
-      value: request
--
   metricName: totalBytesSent
   namespace: {{metricNamespace}}
   dimensions:
     -
+      name: OTelLib
+      value: js-sample-app-meter
+    -
       name: signal
       value: metric
     -
       name: metricType
       value: request
+    -
+      name: language
+      value: javascript
+    -
+      name: apiName
+      value: SKIP
+    -
+      name: http.status_code
+      value: 200
 
 -
   metricName: latencyTime
   namespace: {{metricNamespace}}
   dimensions:
     -
+      name: OTelLib
+      value: js-sample-app-meter
+    -
       name: signal
       value: metric
     -
       name: metricType
       value: request
+    -
+      name: language
+      value: javascript
+    -
+      name: apiName
+      value: SKIP
+    -
+      name: http.status_code
+      value: 200
 
 -
   metricName: timeAlive
   namespace: {{metricNamespace}}
   dimensions:
     -
+      name: OTelLib
+      value: js-sample-app-meter
+    -
       name: signal
       value: metric
     -
       name: metricType
       value: random
+    -
+      name: language
+      value: javascript
+
 -
   metricName: totalHeapSize
   namespace: {{metricNamespace}}
   dimensions:
     -
+      name: OTelLib
+      value: js-sample-app-meter
+    -
       name: signal
       value: metric
     -
       name: metricType
       value: random
+    -
+      name: language
+      value: javascript
 
 -
   metricName: threadsActive
   namespace: {{metricNamespace}}
   dimensions:
     -
+      name: OTelLib
+      value: js-sample-app-meter
+    -
       name: signal
       value: metric
     -
       name: metricType
       value: random
+    -
+      name: language
+      value: javascript
 
 -
   metricName: cpuUsage
   namespace: {{metricNamespace}}
   dimensions:
     -
+      name: OTelLib
+      value: js-sample-app-meter
+    -
       name: signal
       value: metric
     -
       name: metricType
       value: random
+    -
+      name: language
+      value: javascript

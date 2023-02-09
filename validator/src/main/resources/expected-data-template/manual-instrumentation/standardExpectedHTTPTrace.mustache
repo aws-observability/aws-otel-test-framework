@@ -13,18 +13,16 @@
       "name": "outgoing-http-call",
       "metadata": {
         "default": {
-          "port": {{port}}
-          "host": {{host}}
-          "language": {{language}}
+          "language": "javascript",
           "signal": "trace"
         }
       },
       "subsegments": [
         {
-          "name": "aws\\.amazon\\.com",
+          "name": "aws.amazon.com:443",
           "http": {
             "request": {
-              "url": "https://aws\\.amazon\\.com",
+              "url": "https://aws.amazon.com/",
               "method": "GET"
             }
           },
