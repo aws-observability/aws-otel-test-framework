@@ -1,10 +1,10 @@
 -
-  metricName: totalBytesSent
+  metricName: totalBytesSent_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
       name: OTelLib
-      value: js-sample-app-meter
+      value: SKIP
     -
       name: signal
       value: metric
@@ -13,7 +13,7 @@
       value: request
     -
       name: language
-      value: javascript
+      value: {{language}}
     -
       name: apiName
       value: SKIP
@@ -22,12 +22,12 @@
       value: 200
 
 -
-  metricName: latencyTime
+  metricName: latencyTime_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
       name: OTelLib
-      value: js-sample-app-meter
+      value: SKIP
     -
       name: signal
       value: metric
@@ -36,7 +36,7 @@
       value: request
     -
       name: language
-      value: javascript
+      value: {{language}}
     -
       name: apiName
       value: SKIP
@@ -45,12 +45,12 @@
       value: 200
 
 -
-  metricName: timeAlive
+  metricName: timeAlive_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
       name: OTelLib
-      value: js-sample-app-meter
+      value: SKIP
     -
       name: signal
       value: metric
@@ -59,15 +59,15 @@
       value: random
     -
       name: language
-      value: javascript
+      value: {{language}}
 
 -
-  metricName: totalHeapSize
+  metricName: totalHeapSize_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
       name: OTelLib
-      value: js-sample-app-meter
+      value: SKIP
     -
       name: signal
       value: metric
@@ -76,15 +76,15 @@
       value: random
     -
       name: language
-      value: javascript
+      value: {{language}}
 
 -
-  metricName: threadsActive
+  metricName: threadsActive_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
       name: OTelLib
-      value: js-sample-app-meter
+      value: SKIP
     -
       name: signal
       value: metric
@@ -93,15 +93,15 @@
       value: random
     -
       name: language
-      value: javascript
+      value: {{language}}
 
 -
-  metricName: cpuUsage
+  metricName: cpuUsage_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
       name: OTelLib
-      value: js-sample-app-meter
+      value: SKIP
     -
       name: signal
       value: metric
@@ -110,4 +110,4 @@
       value: random
     -
       name: language
-      value: javascript
+      value: {{language}}
