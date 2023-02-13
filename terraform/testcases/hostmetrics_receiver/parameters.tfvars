@@ -1,5 +1,3 @@
-# this file is defined in validator/src/main/resources/validations
-# this file is defined in validator/src/main/resources/validations
 sample_app_callable = false
 disable_mocked_server = true
 scheduling_strategy = "DAEMON"
