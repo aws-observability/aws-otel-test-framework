@@ -31,7 +31,7 @@ variable "sample_app_image_repo" {
 }
 
 // aoc_base_scenario refers to the base scenario that the aoc is used for.
-// options: oltp, prometheus, infra
+// options: oltp, prometheus, infra, aoc_standalone_daemonset
 variable "aoc_base_scenario" {
   default = "oltp"
 }

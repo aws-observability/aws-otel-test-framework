@@ -87,3 +87,8 @@ variable "rollup" {
 variable "hostmetrics_context_json" {
   default = "{}"
 }
+
+variable "cardinality_same_validation" {
+  type    = bool
+  default = true
+}

@@ -109,7 +109,12 @@ public class CWMetricValidator implements IValidator {
           log.info("expected metricList is {}", expectedMetricList);
           compareMetricLists(expectedMetricList, metricList);
 
-          log.info("check if there're unexpected additional metric getting fetched");
+          if (context.isCardinalitySameValidation()) {
+            log.info("check if there're unexpected additional metric getting fetched");
+            compareMetricLists(metricList, expectedMetricList);
+            } else {
+                log.info("skipped check for unexpected additional fetched metrics");
+          }
           compareMetricLists(metricList, expectedMetricList);
         });
 

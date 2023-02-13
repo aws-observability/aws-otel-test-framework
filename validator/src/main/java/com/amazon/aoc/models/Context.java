@@ -72,5 +72,6 @@ public class Context {
   hostMetrics parameters
    */
   private HostmetricsContext hostmetricsContext;
+  private boolean isCardinalitySameValidation;
 
 }

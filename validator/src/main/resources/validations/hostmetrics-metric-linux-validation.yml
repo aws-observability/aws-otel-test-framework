@@ -2,4 +2,3 @@
   validationType: "cw-metric"
   callingType: "none"
   expectedMetricTemplate: "HOSTMETRICS_CW_EXPECTED_METRIC_LINUX"
-  

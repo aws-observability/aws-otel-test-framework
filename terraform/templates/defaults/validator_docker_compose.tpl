@@ -33,3 +33,5 @@ services:
       - "--alarm-names=${incoming_packets_alarm}"
       - "--cortex-instance-endpoint=${cortex_instance_endpoint}"
       - "--rollup=${rollup}"
+      - "--hostmetrics-context=${hostmetrics_context_json}"
+      - "--cardinality-same-validation=${cardinality_same_validation}"

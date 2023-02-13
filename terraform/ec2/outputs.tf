@@ -26,11 +26,11 @@ output "collector_instance_id" {
 }
 
 output "sample_app_instance_public_ip" {
-  value = aws_instance.sidecar.public_ip
+  value = one(aws_instance.sidecar[*].public_ip)
 }
 
 output "sample_app_instance_id" {
-  value = aws_instance.sidecar.id
+  value = one(aws_instance.sidecar[*].id)
 }
 
 output "testing_id" {

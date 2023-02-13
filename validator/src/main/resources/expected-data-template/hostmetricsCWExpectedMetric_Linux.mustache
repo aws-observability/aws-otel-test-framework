@@ -1,763 +1,762 @@
 {{!hostmetricsreceiver/cpu}}
 -
-  metricName: system.cpu.time
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: cpu
-      value: {{hostmetricsContext.cpuNames}}
-    -
-      name: state
-      value: [idle, interrupt, nice, softirq, steal, system, user, wait]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/cpu]
+metricName: system.cpu.time
+namespace: {{testingId}}
+dimensions:
+-
+name: cpu
+value: {{hostmetricsContext.cpuNames}}
+-
+name: state
+value: [idle, interrupt, nice, softirq, steal, system, user, wait]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/cpu]
 
 -
-  metricName: system.cpu.utilization
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: cpu
-      value: {{hostmetricsContext.cpuNames}}
-    -
-      name: state
-      value: [idle, interrupt, nice, softirq, steal, system, user, wait]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/cpu]
+metricName: system.cpu.utilization
+namespace: {{testingId}}
+dimensions:
+-
+name: cpu
+value: {{hostmetricsContext.cpuNames}}
+-
+name: state
+value: [idle, interrupt, nice, softirq, steal, system, user, wait]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/cpu]
 
 
 {{!hostmetricsreceiver/disk}}
 -
-  metricName: system.disk.io
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: [SKIP]
-    -
-      name: direction
-      value: [read, write]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/disk]
+metricName: system.disk.io
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.diskDevices}}
+-
+name: direction
+value: [read, write]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/disk]
 
 -
-  metricName: system.disk.io_time
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: [SKIP]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/disk]
+metricName: system.disk.io_time
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.diskDevices}}
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/disk]
 
 -
-  metricName: system.disk.merged
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: [SKIP]
-    -
-      name: direction
-      value: [read, write]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/disk]
+metricName: system.disk.merged
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.diskDevices}}
+-
+name: direction
+value: [read, write]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/disk]
 
 -
-  metricName: system.disk.operation_time
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: [SKIP]
-    -
-      name: direction
-      value: [read, write]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/disk]
+metricName: system.disk.operation_time
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.diskDevices}}
+-
+name: direction
+value: [read, write]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/disk]
 
 -
-  metricName: system.disk.operations
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: [SKIP]
-    -
-      name: direction
-      value: [read, write]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/disk]
+metricName: system.disk.operations
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.diskDevices}}
+-
+name: direction
+value: [read, write]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/disk]
 
 -
-  metricName: system.disk.pending_operations
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: [SKIP]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/disk]
+metricName: system.disk.pending_operations
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.diskDevices}}
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/disk]
 
 -
-  metricName: system.disk.weighted_io_time
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: [SKIP]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/disk]
+metricName: system.disk.weighted_io_time
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.diskDevices}}
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/disk]
 
 
 {{!hostmetricsreceiver/load}}
 -
-  metricName: system.cpu.load_average.15m
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/load]
+metricName: system.cpu.load_average.15m
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/load]
 
 -
-  metricName: system.cpu.load_average.1m
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/load]
+metricName: system.cpu.load_average.1m
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/load]
 
 -
-  metricName: system.cpu.load_average.5m
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/load]
+metricName: system.cpu.load_average.5m
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/load]
 
 
 {{!hostmetricsreceiver/filesystem}}
 -
-  metricName: system.filesystem.inodes.usage
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: {{hostmetricsContext.filesystemDevices}}
-    -
-      name: mode
-      value: {{hostmetricsContext.mountpointModes}}
-    -
-      name: mountpoint
-      value: {{hostmetricsContext.mountpoints}}
-    -
-      name: type
-      value: [SKIP]
-    -
-      name: state
-      value: [free, used]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/filesystem]
+metricName: system.filesystem.inodes.usage
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.filesystemDevices}}
+-
+name: mode
+value: {{hostmetricsContext.mountpointModes}}
+-
+name: mountpoint
+value: {{hostmetricsContext.mountpoints}}
+-
+name: type
+value: {{hostmetricsContext.filesystemType}}
+-
+name: state
+value: [free, used]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/filesystem]
 
 -
-  metricName: system.filesystem.usage
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: {{hostmetricsContext.filesystemDevices}}
-    -
-      name: mode
-      value: {{hostmetricsContext.mountpointModes}}
-    -
-      name: mountpoint
-      value: {{hostmetricsContext.mountpoints}}
-    -
-      name: type
-      value: [SKIP]
-    -
-      name: state
-      value: [free, reserved, used]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/filesystem]
+metricName: system.filesystem.usage
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.filesystemDevices}}
+-
+name: mode
+value: {{hostmetricsContext.mountpointModes}}
+-
+name: mountpoint
+value: {{hostmetricsContext.mountpoints}}
+-
+name: type
+value: {{hostmetricsContext.filesystemType}}
+-
+name: state
+value: [free, reserved, used]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/filesystem]
 
 -
-  metricName: system.filesystem.utilization
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: {{hostmetricsContext.filesystemDevices}}
-    -
-      name: mode
-      value: {{hostmetricsContext.mountpointModes}}
-    -
-      name: mountpoint
-      value: {{hostmetricsContext.mountpoints}}
-    -
-      name: type
-      value: [SKIP]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/filesystem]
+metricName: system.filesystem.utilization
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.filesystemDevices}}
+-
+name: mode
+value: {{hostmetricsContext.mountpointModes}}
+-
+name: mountpoint
+value: {{hostmetricsContext.mountpoints}}
+-
+name: type
+value: {{hostmetricsContext.filesystemType}}
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/filesystem]
 
 
 {{!hostmetricsreceiver/memory}}
 -
-  metricName: system.memory.usage
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: state
-      value: [buffered, cached, used, slab_reclaimable, slab_unreclaimable, free]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/memory]
+metricName: system.memory.usage
+namespace: {{testingId}}
+dimensions:
+-
+name: state
+value: [buffered, cached, used, slab_reclaimable, slab_unreclaimable, free]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/memory]
 
 -
-  metricName: system.memory.utilization
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: state
-      value: [buffered, cached, used, slab_reclaimable, slab_unreclaimable, free]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/memory]
+metricName: system.memory.utilization
+namespace: {{testingId}}
+dimensions:
+-
+name: state
+value: [buffered, cached, used, slab_reclaimable, slab_unreclaimable, free]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/memory]
 
 
 {{!hostmetricsreceiver/network}}
 -
-  metricName: system.network.connections
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: protocol
-      value: [tcp]
-    -
-      name: state
-      value: [SKIP]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/network]
+metricName: system.network.connections
+namespace: {{testingId}}
+dimensions:
+-
+name: protocol
+value: {{hostmetricsContext.networkProtocol}}
+-
+name: state
+value: {{hostmetricsContext.networkConnectionState}}
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/network]
 
 -
-  metricName: system.network.dropped
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: {{hostmetricsContext.networkInterfaces}}
-    -
-      name: direction
-      value: [receive, transmit]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/network]
+metricName: system.network.dropped
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.networkInterfaces}}
+-
+name: direction
+value: [receive, transmit]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/network]
 
 -
-  metricName: system.network.errors
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: {{hostmetricsContext.networkInterfaces}}
-    -
-      name: direction
-      value: [receive, transmit]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/network]
+metricName: system.network.errors
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.networkInterfaces}}
+-
+name: direction
+value: [receive, transmit]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/network]
 
 -
-  metricName: system.network.io
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: {{hostmetricsContext.networkInterfaces}}
-    -
-      name: direction
-      value: [receive, transmit]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/network]
+metricName: system.network.io
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.networkInterfaces}}
+-
+name: direction
+value: [receive, transmit]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/network]
 
 -
-  metricName: system.network.packets
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: device
-      value: {{hostmetricsContext.networkInterfaces}}
-    -
-      name: direction
-      value: [receive, transmit]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/network]
+metricName: system.network.packets
+namespace: {{testingId}}
+dimensions:
+-
+name: device
+value: {{hostmetricsContext.networkInterfaces}}
+-
+name: direction
+value: [receive, transmit]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/network]
 
 -
-  metricName: system.network.conntrack.count
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/network]
+metricName: system.network.conntrack.count
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/network]
 
 -
-  metricName: system.network.conntrack.max
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/network]
+metricName: system.network.conntrack.max
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/network]
 
 
 {{!hostmetricsreceiver/paging}}
 -
-  metricName: system.paging.faults
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: type
-      value: [major, minor]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/paging]
+metricName: system.paging.faults
+namespace: {{testingId}}
+dimensions:
+-
+name: type
+value: [major, minor]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/paging]
 
 -
-  metricName: system.paging.operations
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: direction
-      value: [page_in, page_out]
-    -
-      name: type
-      value: [major, minor]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/paging]
+metricName: system.paging.operations
+namespace: {{testingId}}
+dimensions:
+-
+name: direction
+value: [page_in, page_out]
+-
+name: type
+value: [major, minor]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/paging]
 
 
 {{!hostmetricsreceiver/processes}}
 -
-  metricName: system.processes.count
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: status
-      value: [blocked, running, sleeping, unknown]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/processes]
+metricName: system.processes.count
+namespace: {{testingId}}
+dimensions:
+-
+name: status
+value: [blocked, running, sleeping, unknown]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/processes]
 
 -
-  metricName: system.processes.created
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/processes]
+metricName: system.processes.created
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/processes]
 
 
 {{!hostmetricsreceiver/process}}
 -
-  metricName: process.cpu.time
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: state
-      value: [system, user, wait]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: process.command
-      value: {{hostmetricsContext.processCommand}}
-    -
-      name: process.command_line
-      value: {{hostmetricsContext.processCommandLine}}
-    -
-      name: process.executable.name
-      value: {{hostmetricsContext.processExecutableName}}
-    -
-      name: process.executable.path
-      value: {{hostmetricsContext.processExecutablePath}}
-    -
-      name: process.owner
-      value: [SKIP]
-    -
-      name: process.parent_pid
-      value: [-1]
-    -
-      name: process.pid
-      value: [1]
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/process]
+metricName: process.cpu.time
+namespace: {{testingId}}
+dimensions:
+-
+name: state
+value: [system, user, wait]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: process.command
+value: {{hostmetricsContext.processCommand}}
+-
+name: process.command_line
+value: {{hostmetricsContext.processCommandLine}}
+-
+name: process.executable.name
+value: {{hostmetricsContext.processExecutableName}}
+-
+name: process.executable.path
+value: {{hostmetricsContext.processExecutablePath}}
+-
+name: process.owner
+value: {{hostmetricsContext.processOwner}}
+-
+name: process.parent_pid
+value: {{hostmetricsContext.processParentPID}}
+-
+name: process.pid
+value: {{hostmetricsContext.processPID}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/process]
 
 -
-  metricName: process.disk.io
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: direction
-      value: [read, write]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: process.command
-      value: {{hostmetricsContext.processCommand}}
-    -
-      name: process.command_line
-      value: {{hostmetricsContext.processCommandLine}}
-    -
-      name: process.executable.name
-      value: {{hostmetricsContext.processExecutableName}}
-    -
-      name: process.executable.path
-      value: {{hostmetricsContext.processExecutablePath}}
-    -
-      name: process.owner
-      value: [SKIP]
-    -
-      name: process.parent_pid
-      value: [-1]
-    -
-      name: process.pid
-      value: [1]
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/process]
+metricName: process.disk.io
+namespace: {{testingId}}
+dimensions:
+-
+name: direction
+value: [read, write]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: process.command
+value: {{hostmetricsContext.processCommand}}
+-
+name: process.command_line
+value: {{hostmetricsContext.processCommandLine}}
+-
+name: process.executable.name
+value: {{hostmetricsContext.processExecutableName}}
+-
+name: process.executable.path
+value: {{hostmetricsContext.processExecutablePath}}
+-
+name: process.owner
+value: {{hostmetricsContext.processOwner}}
+-
+name: process.parent_pid
+value: {{hostmetricsContext.processParentPID}}
+-
+name: process.pid
+value: {{hostmetricsContext.processPID}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/process]
 
 -
-  metricName: process.context_switches
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: type
-      value: [involuntary, voluntary]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: process.command
-      value: {{hostmetricsContext.processCommand}}
-    -
-      name: process.command_line
-      value: {{hostmetricsContext.processCommandLine}}
-    -
-      name: process.executable.name
-      value: {{hostmetricsContext.processExecutableName}}
-    -
-      name: process.executable.path
-      value: {{hostmetricsContext.processExecutablePath}}
-    -
-      name: process.owner
-      value: [SKIP]
-    -
-      name: process.parent_pid
-      value: [-1]
-    -
-      name: process.pid
-      value: [1]
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/process]
+metricName: process.context_switches
+namespace: {{testingId}}
+dimensions:
+-
+name: type
+value: [involuntary, voluntary]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: process.command
+value: {{hostmetricsContext.processCommand}}
+-
+name: process.command_line
+value: {{hostmetricsContext.processCommandLine}}
+-
+name: process.executable.name
+value: {{hostmetricsContext.processExecutableName}}
+-
+name: process.executable.path
+value: {{hostmetricsContext.processExecutablePath}}
+-
+name: process.owner
+value: {{hostmetricsContext.processOwner}}
+-
+name: process.parent_pid
+value: {{hostmetricsContext.processParentPID}}
+-
+name: process.pid
+value: {{hostmetricsContext.processPID}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/process]
 
 -
-  metricName: process.cpu.utilization
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: state
-      value: [system, user, wait]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: process.command
-      value: {{hostmetricsContext.processCommand}}
-    -
-      name: process.command_line
-      value: {{hostmetricsContext.processCommandLine}}
-    -
-      name: process.executable.name
-      value: {{hostmetricsContext.processExecutableName}}
-    -
-      name: process.executable.path
-      value: {{hostmetricsContext.processExecutablePath}}
-    -
-      name: process.owner
-      value: [SKIP]
-    -
-      name: process.parent_pid
-      value: [-1]
-    -
-      name: process.pid
-      value: [1]
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/process]
+metricName: process.cpu.utilization
+namespace: {{testingId}}
+dimensions:
+-
+name: state
+value: [system, user, wait]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: process.command
+value: {{hostmetricsContext.processCommand}}
+-
+name: process.command_line
+value: {{hostmetricsContext.processCommandLine}}
+-
+name: process.executable.name
+value: {{hostmetricsContext.processExecutableName}}
+-
+name: process.executable.path
+value: {{hostmetricsContext.processExecutablePath}}
+-
+name: process.owner
+value: {{hostmetricsContext.processOwner}}
+-
+name: process.parent_pid
+value: {{hostmetricsContext.processParentPID}}
+-
+name: process.pid
+value: {{hostmetricsContext.processPID}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/process]
 
 -
-  metricName: process.memory.utilization
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: process.command
-      value: {{hostmetricsContext.processCommand}}
-    -
-      name: process.command_line
-      value: {{hostmetricsContext.processCommandLine}}
-    -
-      name: process.executable.name
-      value: {{hostmetricsContext.processExecutableName}}
-    -
-      name: process.executable.path
-      value: {{hostmetricsContext.processExecutablePath}}
-    -
-      name: process.owner
-      value: [SKIP]
-    -
-      name: process.parent_pid
-      value: [-1]
-    -
-      name: process.pid
-      value: [1]
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/process]
+metricName: process.memory.utilization
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: process.command
+value: {{hostmetricsContext.processCommand}}
+-
+name: process.command_line
+value: {{hostmetricsContext.processCommandLine}}
+-
+name: process.executable.name
+value: {{hostmetricsContext.processExecutableName}}
+-
+name: process.executable.path
+value: {{hostmetricsContext.processExecutablePath}}
+-
+name: process.owner
+value: {{hostmetricsContext.processOwner}}
+-
+name: process.parent_pid
+value: {{hostmetricsContext.processParentPID}}
+-
+name: process.pid
+value: {{hostmetricsContext.processPID}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/process]
 
 -
-  metricName: process.open_file_descriptors
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: process.command
-      value: {{hostmetricsContext.processCommand}}
-    -
-      name: process.command_line
-      value: {{hostmetricsContext.processCommandLine}}
-    -
-      name: process.executable.name
-      value: {{hostmetricsContext.processExecutableName}}
-    -
-      name: process.executable.path
-      value: {{hostmetricsContext.processExecutablePath}}
-    -
-      name: process.owner
-      value: [SKIP]
-    -
-      name: process.parent_pid
-      value: [-1]
-    -
-      name: process.pid
-      value: [1]
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/process]
+metricName: process.open_file_descriptors
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: process.command
+value: {{hostmetricsContext.processCommand}}
+-
+name: process.command_line
+value: {{hostmetricsContext.processCommandLine}}
+-
+name: process.executable.name
+value: {{hostmetricsContext.processExecutableName}}
+-
+name: process.executable.path
+value: {{hostmetricsContext.processExecutablePath}}
+-
+name: process.owner
+value: {{hostmetricsContext.processOwner}}
+-
+name: process.parent_pid
+value: {{hostmetricsContext.processParentPID}}
+-
+name: process.pid
+value: {{hostmetricsContext.processPID}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/process]
 
 -
-  metricName: process.paging.faults
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: type
-      value: [major, minor]
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: process.command
-      value: {{hostmetricsContext.processCommand}}
-    -
-      name: process.command_line
-      value: {{hostmetricsContext.processCommandLine}}
-    -
-      name: process.executable.name
-      value: {{hostmetricsContext.processExecutableName}}
-    -
-      name: process.executable.path
-      value: {{hostmetricsContext.processExecutablePath}}
-    -
-      name: process.owner
-      value: [SKIP]
-    -
-      name: process.parent_pid
-      value: [-1]
-    -
-      name: process.pid
-      value: [1]
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/process]
+metricName: process.paging.faults
+namespace: {{testingId}}
+dimensions:
+-
+name: type
+value: [major, minor]
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: process.command
+value: {{hostmetricsContext.processCommand}}
+-
+name: process.command_line
+value: {{hostmetricsContext.processCommandLine}}
+-
+name: process.executable.name
+value: {{hostmetricsContext.processExecutableName}}
+-
+name: process.executable.path
+value: {{hostmetricsContext.processExecutablePath}}
+-
+name: process.owner
+value: {{hostmetricsContext.processOwner}}
+-
+name: process.parent_pid
+value: {{hostmetricsContext.processParentPID}}
+-
+name: process.pid
+value: {{hostmetricsContext.processPID}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/process]
 
 -
-  metricName: process.signals_pending
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: process.command
-      value: {{hostmetricsContext.processCommand}}
-    -
-      name: process.command_line
-      value: {{hostmetricsContext.processCommandLine}}
-    -
-      name: process.executable.name
-      value: {{hostmetricsContext.processExecutableName}}
-    -
-      name: process.executable.path
-      value: {{hostmetricsContext.processExecutablePath}}
-    -
-      name: process.owner
-      value: [SKIP]
-    -
-      name: process.parent_pid
-      value: [-1]
-    -
-      name: process.pid
-      value: [1]
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/process]
+metricName: process.signals_pending
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: process.command
+value: {{hostmetricsContext.processCommand}}
+-
+name: process.command_line
+value: {{hostmetricsContext.processCommandLine}}
+-
+name: process.executable.name
+value: {{hostmetricsContext.processExecutableName}}
+-
+name: process.executable.path
+value: {{hostmetricsContext.processExecutablePath}}
+-
+name: process.owner
+value: {{hostmetricsContext.processOwner}}
+-
+name: process.parent_pid
+value: {{hostmetricsContext.processParentPID}}
+-
+name: process.pid
+value: {{hostmetricsContext.processPID}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/process]
 
 -
-  metricName: process.threads
-  namespace: {{testingId}}
-  dimensions:
-    -
-      name: host.id
-      value: {{hostmetricsContext.hostId}}
-    -
-      name: process.command
-      value: {{hostmetricsContext.processCommand}}
-    -
-      name: process.command_line
-      value: {{hostmetricsContext.processCommandLine}}
-    -
-      name: process.executable.name
-      value: {{hostmetricsContext.processExecutableName}}
-    -
-      name: process.executable.path
-      value: {{hostmetricsContext.processExecutablePath}}
-    -
-      name: process.owner
-      value: [SKIP]
-    -
-      name: process.parent_pid
-      value: [-1]
-    -
-      name: process.pid
-      value: [1]
-    -
-      name: OTelLib
-      value: [otelcol/hostmetricsreceiver/process]
-      
+metricName: process.threads
+namespace: {{testingId}}
+dimensions:
+-
+name: host.id
+value: {{hostmetricsContext.hostId}}
+-
+name: process.command
+value: {{hostmetricsContext.processCommand}}
+-
+name: process.command_line
+value: {{hostmetricsContext.processCommandLine}}
+-
+name: process.executable.name
+value: {{hostmetricsContext.processExecutableName}}
+-
+name: process.executable.path
+value: {{hostmetricsContext.processExecutablePath}}
+-
+name: process.owner
+value: {{hostmetricsContext.processOwner}}
+-
+name: process.parent_pid
+value: {{hostmetricsContext.processParentPID}}
+-
+name: process.pid
+value: {{hostmetricsContext.processPID}}
+-
+name: OTelLib
+value: [otelcol/hostmetricsreceiver/process]
