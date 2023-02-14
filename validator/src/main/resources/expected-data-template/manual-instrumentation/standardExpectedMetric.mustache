@@ -1,4 +1,21 @@
 -
+  metricName: totalApiRequests_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: SKIP
+    -
+      name: signal
+      value: metric
+    -
+      name: metricType
+      value: request
+    -
+      name: language
+      value: {{language}}
+
+-
   metricName: totalBytesSent_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
