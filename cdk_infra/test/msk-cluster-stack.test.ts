@@ -13,8 +13,7 @@ class FakeStack extends Stack {
     this.vpc = new cdk.aws_ec2.Vpc(this, 'vpc', { vpcName: 'aoc-vpc' });
   }
 }
-// example test. To run these tests, uncomment this file along with the
-// example resource in lib/my-project-stack.ts
+
 test('ClusterManagementTest', () => {
   // prepare
   const stack = new cdk.App();
@@ -22,8 +21,10 @@ test('ClusterManagementTest', () => {
     region: 'us-west-2'
   };
 
-  // Will simulate the vpc created in terraform
-  const fakeStack = new FakeStack(stack, 'fake-stack', { env: env });
+  // stack used to simulate the vpc created in terraform
+  const fakeStack = new FakeStack(stack, 'Aoc-vpc', {
+    env: env
+  });
 
   const vpcStack = new VPCStack(stack, 'EKSVpc', {
     env: env
