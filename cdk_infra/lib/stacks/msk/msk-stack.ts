@@ -1,13 +1,7 @@
-import {
-  Stack,
-  StackProps,
-  aws_msk as msk,
-  aws_ec2,
-  RemovalPolicy
-} from 'aws-cdk-lib';
+import { aws_ec2, Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-import { IVpc, Peer, Port, SecurityGroup } from 'aws-cdk-lib/aws-ec2';
-import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
+import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import { MSKTestCluster } from '../../constructs/msk/test-cluster';
 
 // Configuration that is going to be used in the cluster
 const SERVER_PROPERTIES = `auto.create.topics.enable = true
@@ -15,127 +9,57 @@ delete.topic.enable = true
 log.retention.minutes = 5
 `;
 
-// Versions supported
+// Versions supported for the integration tests
 const MSK_VERSIONS: string[] = ['3.2.0', '2.8.1'];
 
-/** Stack that will concentrate all permanent MSK Cluster used in the integration
- * tests.
+/** Stack that will concentrate all permanent MSK clusters used in the integration
+ * tests. It will create MSK Clusters for all supported versions of Kafka and in
+ * all supported VPCs.
+ *
+ * Supported VPCs:
+ *  * AOC VPC - Legacy VPC, created through terraform
+ *  * EKS VPC - Used by the EKS clusters
+ *
+ * In the tests where these clusters are used, we strongly rely on naming
+ * conventions so that it is possible to fetch information about these clusters
+ * in the terraform modules that run the tests.
+ * The convention is to name the cluster with  <prefix><dash separated version>.
+ * E.g.: AOCMSKCluster2-8-1
  */
 export class MSKClustersStack extends Stack {
   constructor(scope: Construct, id: string, props: MSKStackProps) {
     super(scope, id, props);
 
-    const configuration = new msk.CfnConfiguration(this, 'mskconfiguration', {
-      name: 'testconfiguration',
-      serverProperties: SERVER_PROPERTIES,
-      kafkaVersionsList: MSK_VERSIONS
+    // Get the legacy VPC that was created with terraform
+    // This lookup has to be done inside a stack
+    const aocVPC = aws_ec2.Vpc.fromLookup(this, 'aoc-vpc', {
+      vpcName: 'aoc-vpc'
     });
 
-    const securityGroupMSKAOC = this.createSecurityGroup(
-      'aoc-msk',
-      props.aocVPC
-    );
-    const securityGroupMSKEKS = this.createSecurityGroup(
-      'eks-msk',
-      props.eksVPC
-    );
-
-    MSK_VERSIONS.forEach((version) =>
-      this.createCluster(
-        'AOCMSKCluster',
-        version,
-        configuration,
-        props.aocVPC,
-        securityGroupMSKAOC
-      )
-    );
-    MSK_VERSIONS.forEach((version) =>
-      this.createCluster(
-        'EKSMSKCluster',
-        version,
-        configuration,
-        props.eksVPC,
-        securityGroupMSKEKS
-      )
-    );
-  }
-
-  private createSecurityGroup(sgName: string, vpc: aws_ec2.IVpc) {
-    const securityGroupMSKAOC = new SecurityGroup(this, `sg-${sgName}`, {
-      vpc: vpc,
-      securityGroupName: sgName
-    });
-    // plain text listener
-    securityGroupMSKAOC.addIngressRule(
-      Peer.ipv4(vpc.vpcCidrBlock),
-      Port.tcp(9092)
-    );
-    // TLS listener
-    securityGroupMSKAOC.addIngressRule(
-      Peer.ipv4(vpc.vpcCidrBlock),
-      Port.tcp(9094)
+    // Legacy VPC clusters
+    MSK_VERSIONS.forEach(
+      (version) =>
+        new MSKTestCluster(this, `aoc${version.replaceAll('.', '-')}`, {
+          kafkaVersion: version,
+          namePrefix: 'AOCMSKCluster',
+          serverProperties: SERVER_PROPERTIES,
+          vpc: aocVPC
+        })
     );
 
-    return securityGroupMSKAOC;
-  }
-
-  private createCluster(
-    clusterPrefix: string,
-    version: string,
-    configuration: msk.CfnConfiguration,
-    vpc: IVpc,
-    securityGroup: aws_ec2.SecurityGroup
-  ): msk.CfnCluster {
-    const clusterName = `${clusterPrefix}${version.replaceAll('.', '-')}`;
-    const logGroupName = `/aws-otel-tests/${clusterName}`;
-    const logGroup = new LogGroup(this, `loggroup-${clusterName}`, {
-      logGroupName: logGroupName,
-      retention: RetentionDays.ONE_MONTH,
-      removalPolicy: RemovalPolicy.DESTROY
-    });
-
-    return new msk.CfnCluster(this, `cluster-${clusterName}`, {
-      clusterName: clusterName,
-      kafkaVersion: version,
-      numberOfBrokerNodes: 3,
-      configurationInfo: {
-        arn: configuration.attrArn,
-        revision: 1
-      },
-      brokerNodeGroupInfo: {
-        instanceType: 'kafka.t3.small',
-        clientSubnets: vpc.privateSubnets.map((x) => x.subnetId),
-        storageInfo: {
-          ebsStorageInfo: {
-            volumeSize: 10
-          }
-        },
-        securityGroups: [securityGroup.securityGroupId]
-      },
-      clientAuthentication: {
-        // No need to authenticate since we are only accessible inside the vpc
-        unauthenticated: {
-          enabled: true
-        }
-      },
-      encryptionInfo: {
-        encryptionInTransit: {
-          clientBroker: 'TLS_PLAINTEXT'
-        }
-      },
-      loggingInfo: {
-        brokerLogs: {
-          cloudWatchLogs: {
-            enabled: true,
-            logGroup: logGroup.logGroupName
-          }
-        }
-      }
-    });
+    // EKS VPC clusters
+    MSK_VERSIONS.forEach(
+      (version) =>
+        new MSKTestCluster(this, `eks${version.replaceAll('.', '-')}`, {
+          kafkaVersion: version,
+          namePrefix: 'EKSMSKCluster',
+          serverProperties: SERVER_PROPERTIES,
+          vpc: props.eksVPC
+        })
+    );
   }
 }
 
 export interface MSKStackProps extends StackProps {
   eksVPC: IVpc; // VPC used in the EKS Clusters
-  aocVPC: IVpc; // Legacy VPC used in the remaining in the tests
 }

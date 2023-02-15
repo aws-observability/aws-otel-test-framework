@@ -15,14 +15,8 @@ const vpcStack = new VPCStack(app, 'EKSVpc', {
   env: envDefault
 });
 
-// Get the legacy VPC that was created with terraform
-const aocVPC = cdk.aws_ec2.Vpc.fromLookup(app, 'aoc-vpc', {
-  vpcName: 'aoc-vpc'
-});
-
 new MSKClustersStack(app, 'msk-clusters', {
   env: envDefault,
-  eksVPC: vpcStack.vpc,
-  aocVPC: aocVPC
+  eksVPC: vpcStack.vpc
 });
 deployClusters(app, vpcStack.vpc, envDefault);
