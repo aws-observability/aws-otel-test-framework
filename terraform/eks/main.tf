@@ -246,28 +246,6 @@ module "validator" {
   cortex_instance_endpoint = var.cortex_instance_endpoint
   rollup                   = var.rollup
 
-  # hostmetrics_receiver related variables
-  hostmetrics_context_json = !endswith(var.testcase, "hostmetrics_receiver") ? null : jsonencode({
-    hostId                  : ["SKIP"]
-    cpuNames                : ["cpu0", "cpu1"]
-    diskDevices             : ["SKIP"]
-    filesystemDevices       : ["SKIP"]
-    filesystemType          : ["SKIP"]
-    mountpointModes         : ["rw"]
-    mountpoints             : ["SKIP"]
-    networkInterfaces       : ["SKIP"]
-    networkConnectionState  : ["SKIP"]
-    networkProtocol         : ["tcp"]
-    processCommand          : ["SKIP"]
-    processCommandLine      : ["SKIP"]
-    processExecutableName   : ["SKIP"]
-    processExecutablePath   : ["SKIP"]
-    processOwner            : ["SKIP"]
-    processParentPID        : ["SKIP"]
-    processPID              : ["SKIP"]
-  })
-
-
   depends_on = [
     module.aoc_oltp,
     module.adot_operator,

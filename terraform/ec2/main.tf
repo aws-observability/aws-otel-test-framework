@@ -41,7 +41,7 @@ module "basic_components" {
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
-  sample_app_listen_address_host = one(aws_instance.sidecar[*].public_ip)
+  sample_app_listen_address_host = aws_instance.sidecar.public_ip
 
   sample_app_listen_address_port = module.common.sample_app_lb_port
 
@@ -85,7 +85,6 @@ locals {
 
 ## launch a sidecar instance to install data emitter and the mocked server
 resource "aws_instance" "sidecar" {
-  count                       = var.sample_app_callable ? 1 : 0
   ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = var.sidecar_instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
@@ -129,11 +128,6 @@ resource "aws_instance" "aoc" {
     TestID    = module.common.testing_id
     ephemeral = "true"
   }
-
-  metadata_options {
-    http_endpoint = "enabled"
-    http_tokens   = "required"
-  }
 }
 
 resource "null_resource" "check_patch" {
@@ -144,7 +138,7 @@ resource "null_resource" "check_patch" {
 
   # https://discuss.hashicorp.com/t/how-to-rewrite-null-resource-with-local-exec-provisioner-when-destroy-to-prepare-for-deprecation-after-0-12-8/4580/2
   triggers = {
-    sidecar_id = one(aws_instance.sidecar[*].id)
+    sidecar_id = aws_instance.sidecar.id
     aoc_id     = aws_instance.aoc.id
     aotutil    = var.aotutil
   }
@@ -165,7 +159,7 @@ data "template_file" "mocked_server_cert_for_windows" {
 }
 resource "null_resource" "setup_mocked_server_cert_for_windows" {
   depends_on = [null_resource.check_patch]
-  count      = !var.disable_mocked_server && local.selected_ami["family"] == "windows" ? 1 : 0
+  count      = local.selected_ami["family"] == "windows" ? 1 : 0
 
   provisioner "file" {
     content     = data.template_file.mocked_server_cert_for_windows.rendered
@@ -181,7 +175,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
 
   provisioner "remote-exec" {
     inline = [
-      "echo ${one(aws_instance.sidecar[*].private_ip)} mocked-server >> C:\\Windows\\System32\\drivers\\etc\\hosts",
+      "echo ${aws_instance.sidecar.private_ip} mocked-server >> C:\\Windows\\System32\\drivers\\etc\\hosts",
       "powershell \"Import-Certificate -FilePath 'C:\\ca-bundle.crt' -CertStoreLocation 'Cert:\\LocalMachine\\Root' -Verbose \""
     ]
 
@@ -196,7 +190,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
 
 resource "null_resource" "setup_mocked_server_cert_for_linux" {
   depends_on = [null_resource.check_patch]
-  count      = !var.disable_mocked_server && local.selected_ami["family"] != "windows" ? 1 : 0
+  count      = local.selected_ami["family"] != "windows" ? 1 : 0
   provisioner "file" {
     content     = module.basic_components.mocked_server_cert_content
     destination = "/tmp/ca-bundle.crt"
@@ -216,7 +210,7 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
       "sudo chmod 777 /etc/pki/tls/certs/ca-bundle.crt",
       "sudo cp /tmp/ca-bundle.crt /etc/pki/tls/certs/ca-bundle.crt",
       "sudo chmod 777 /etc/hosts",
-      "sudo echo '${one(aws_instance.sidecar[*].private_ip)} mocked-server' >> /etc/hosts",
+      "sudo echo '${aws_instance.sidecar.private_ip} mocked-server' >> /etc/hosts",
     ]
 
     connection {
@@ -369,7 +363,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       type        = "ssh"
       user        = "ec2-user"
       private_key = local.private_key_content
-      host        = one(aws_instance.sidecar[*].public_ip)
+      host        = aws_instance.sidecar.public_ip
     }
   }
   provisioner "remote-exec" {
@@ -389,7 +383,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       type        = "ssh"
       user        = "ec2-user"
       private_key = local.private_key_content
-      host        = one(aws_instance.sidecar[*].public_ip)
+      host        = aws_instance.sidecar.public_ip
     }
   }
 }
@@ -455,12 +449,12 @@ module "validator" {
   count  = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
   source = "../validation"
 
-  validation_config            = !endswith(var.testcase, "hostmetrics_receiver") ? var.validation_config : (local.selected_ami["family"] == "windows" ? "hostmetrics-metric-windows-validation.yml" : "hostmetrics-metric-linux-validation.yml")
+  validation_config            = var.validation_config
   region                       = var.region
   testing_id                   = module.common.testing_id
   metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-  sample_app_endpoint          = var.sample_app_callable ? "http://${one(aws_instance.sidecar[*].public_ip)}:${module.common.sample_app_lb_port}" : ""
-  mocked_server_validating_url = var.disable_mocked_server ? "" : "http://${one(aws_instance.sidecar[*].public_ip)}/check-data"
+  sample_app_endpoint          = "http://${aws_instance.sidecar.public_ip}:${module.common.sample_app_lb_port}"
+  mocked_server_validating_url = "http://${aws_instance.sidecar.public_ip}/check-data"
   canary                       = var.canary
   testcase                     = split("/", var.testcase)[2]
   cortex_instance_endpoint     = var.cortex_instance_endpoint
@@ -473,28 +467,6 @@ module "validator" {
     ami : aws_instance.aoc.ami
     name : aws_instance.aoc.private_dns
     instanceType : aws_instance.aoc.instance_type
-  })
-  # hostmetrics_receiver related variables
-  rollup                       = endswith(var.testcase, "hostmetrics_receiver") ? false : true
-  cardinality_same_validation  = endswith(var.testcase, "hostmetrics_receiver") ? false : true # in-case of ec2, metrics have high cardinality, and these dimension values may not be part of expectation template
-  hostmetrics_context_json     = !endswith(var.testcase, "hostmetrics_receiver") ? null : jsonencode({
-    hostId                  : tolist([aws_instance.aoc.id])
-    cpuNames                : ["cpu0", "cpu1"] # c5a.large
-    diskDevices             : ["SKIP"]
-    filesystemDevices       : ["SKIP"]
-    filesystemType          : ["SKIP"]
-    mountpointModes         : ["rw"]
-    mountpoints             : ["SKIP"]
-    networkInterfaces       : ["SKIP"]
-    networkConnectionState  : ["SKIP"]
-    networkProtocol         : ["tcp"]
-    processCommand          : ["SKIP"]
-    processCommandLine      : ["SKIP"]
-    processExecutableName   : ["SKIP"]
-    processExecutablePath   : ["SKIP"]
-    processOwner            : ["SKIP"]
-    processParentPID        : ["SKIP"]
-    processPID              : ["SKIP"]
   })
 
   depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]

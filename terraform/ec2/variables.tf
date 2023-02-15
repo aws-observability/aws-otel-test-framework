@@ -130,18 +130,3 @@ variable "enable_ssm_validate" {
   type    = bool
   default = false
 }
-
-# hostmetrics_receiver related variables
-variable "sample_app_callable" {
-  type = bool
-  default = true
-}
-
-variable "scheduling_strategy" {
-  default = "REPLICA"
-}
-
-variable "rollup" {
-  type    = bool
-  default = true
-}
