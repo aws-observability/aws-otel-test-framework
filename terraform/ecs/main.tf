@@ -385,7 +385,7 @@ module "validator_without_sample_app" {
   count  = !var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
   source = "../validation"
 
-  validation_config            = !endswith(var.testcase, "hostmetrics_receiver") ? var.validation_config : "hostmetrics-metric-linux-validation.yml"
+  validation_config            = var.validation_config
   region                       = var.region
   testing_id                   = module.common.testing_id
   metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
@@ -404,26 +404,22 @@ module "validator_without_sample_app" {
 
   # hostmetrics_receiver related variables
   hostmetrics_context_json = !endswith(var.testcase, "hostmetrics_receiver") ? null : jsonencode({
-    hostId                  : data.aws_instances.ecs_instances.ids
-    cpuNames                : ["cpu0", "cpu1"] # t2.medium is hardcoded, so cpu_count is not fetched using data_sources
-    diskDevices             : ["SKIP"]
-    filesystemDevices       : tolist([
+    hostId : data.aws_instances.ecs_instances.ids
+    cpuNames : ["cpu0", "cpu1"] # t2.medium is hardcoded, so cpu_count is not fetched using data_sources
+    diskDevices : ["vda", "vda1"]
+    filesystemDevices : tolist([
       (tolist(data.aws_instance.get_specific_instance.root_block_device)[0]).device_name
     ])
-    filesystemType          : ["SKIP"]
-    mountpointModes         : ["rw"]
-    mountpoints             : ["/etc/resolv.conf", "/etc/hostname", "/etc/hosts"]
-    networkInterfaces       : ["lo", "eth0", "ecs-eth0"]
-    networkConnectionState  : ["SKIP"]
-    networkProtocol         : ["tcp"]
-    processCommand          : ["/awscollector"] # as given in container definition (ADOT collector dockerfile)
-    processCommandLine      : ["/awscollector --config=/etc/otel-config.yaml"] # as given in container definition (cmd)
-    processExecutableName   : ["awscollector"] # as given in container definition (ADOT collector dockerfile)
-    processExecutablePath   : ["/awscollector"] # as given in container definition(ADOT collector dockerfile entrypoint)
-    processOwner            : ["SKIP"]
-    processParentPID        : ["-1"]
-    processPID              : ["1"]
+    mountpointModes : ["rw"]
+    mountpoints : ["/etc/resolv.conf", "/etc/hostname", "/etc/hosts"]
+    networkInterfaces : ["lo", "eth0", "ecs-eth0"]
+    processCommand : ["/awscollector"]                                    # as given in container definition (ADOT collector dockerfile)
+    processCommandLine : ["/awscollector --config=/etc/otel-config.yaml"] # as given in container definition (cmd)
+    processExecutableName : ["awscollector"]                              # as given in container definition (ADOT collector dockerfile)
+    processCommand : ["/awscollector"]                                    # as given in container definition
+    processExecutablePath : ["/awscollector"]                             # as given in container definition(ADOT collector dockerfile entrypoint)
   })
+
   depends_on = [aws_ecs_service.aoc_without_sample_app, aws_ecs_service.aoc_without_sample_app_daemon_scheduling, aws_ecs_service.extra_apps, time_sleep.wait_60_seconds]
 }
 

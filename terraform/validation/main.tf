@@ -38,10 +38,10 @@ data "template_file" "docker_compose" {
 
     # Escaping (") in the JSON when using as a terraform string variable.
     # For more information: https://www.terraform.io/docs/configuration-0-11/interpolation.html#built-in-functions
-    ec2_context_json          = replace(var.ec2_context_json, "\"", "\\\"")
-    ecs_context_json          = replace(var.ecs_context_json, "\"", "\\\"")
-    cloudwatch_context_json   = replace(var.cloudwatch_context_json, "\"", "\\\"")
-    hostmetrics_context_json  = var.hostmetrics_context_json != null ? replace(var.hostmetrics_context_json, "\"", "\\\"") : null
+    ec2_context_json         = replace(var.ec2_context_json, "\"", "\\\"")
+    ecs_context_json         = replace(var.ecs_context_json, "\"", "\\\"")
+    cloudwatch_context_json  = replace(var.cloudwatch_context_json, "\"", "\\\"")
+    hostmetrics_context_json = replace(var.hostmetrics_context_json, "\"", "\\\"")
 
     # alarm related
     cpu_alarm              = var.cpu_alarm
@@ -50,7 +50,6 @@ data "template_file" "docker_compose" {
 
     cortex_instance_endpoint = var.cortex_instance_endpoint
     rollup                   = var.rollup
-    cardinality_same_validation  = var.cardinality_same_validation
   }
 
 }

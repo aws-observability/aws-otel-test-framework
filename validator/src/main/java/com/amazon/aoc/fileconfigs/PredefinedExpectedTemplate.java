@@ -38,8 +38,6 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   FARGATE_EXPECTED_METRIC("/expected-data-template/EKSFargateCWCIExpectedMetric.mustache"),
   HOSTMETRICS_CW_EXPECTED_METRIC_LINUX(
       "/expected-data-template/hostmetricsCWExpectedMetric_Linux.mustache"),
-  HOSTMETRICS_CW_EXPECTED_METRIC_WINDOWS(
-      "/expected-data-template/hostmetricsCWExpectedMetric_Windows.mustache"),
 
 
   /**
