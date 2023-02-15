@@ -1,4 +1,5 @@
 // Prefix used in the cluster name
+// Should use the same prefix of the clusters created in the cdk_infra module.
 variable "cluster_name_prefix" {
     default = "AOCMSKCluster"
 }
