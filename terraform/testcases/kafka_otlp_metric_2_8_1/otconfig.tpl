@@ -42,7 +42,7 @@ service:
       exporters: [logging, kafka/exporter]
     metrics/2:
       receivers: [kafka/receiver]
-      exporters: [loggins, awsemf]
+      exporters: [logging, awsemf]
   extensions: [pprof]
   telemetry:
     logs:
