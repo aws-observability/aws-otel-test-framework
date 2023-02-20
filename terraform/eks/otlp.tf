@@ -13,6 +13,14 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
+module "aoc_msk_cluster" {
+  source = "../data_aoc_msk"
+  cluster_name_prefix = "EKSMSKCluster"
+ cluster_version = var.kafka_version
+ testcase = var.testcase
+ dedup_topic = "eks${var.eks_cluster_name}"
+}
+
 module "basic_components" {
   source = "../basic_components"
   count  = var.aoc_base_scenario == "oltp" ? 1 : 0
@@ -26,6 +34,9 @@ module "basic_components" {
   cortex_instance_endpoint       = var.cortex_instance_endpoint
   sample_app_listen_address_host = var.sample_app_mode == "pull" ? kubernetes_service.sample_app_service[0].status[0].load_balancer[0].ingress[0].hostname : ""
   sample_app_listen_address_port = module.common.sample_app_lb_port
+
+  extra_data = { msk = module.aoc_msk_cluster.cluster_data }
+
   debug                          = var.debug
 }
 

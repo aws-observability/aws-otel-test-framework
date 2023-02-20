@@ -34,7 +34,7 @@ output "aoc_iam_role_arn" {
 }
 
 output "otconfig_content" {
-  value = data.template_file.otconfig.rendered
+  value = local.rendered_template
 }
 
 output "mocked_server_cert_content" {

@@ -130,6 +130,66 @@
 			]
 		},
 		{
+			"case_name": "kafka_otlp_metric_2_8_1",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_metric_3_2_0",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_trace_2_8_1",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_trace_3_2_0",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_metric_mock_2_8_1",
+			"platforms": [
+				"PERF"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_metric_mock_3_2_0",
+			"platforms": [
+				"PERF"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_mock_2_8_1",
+			"platforms": [
+				"PERF"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_mock_3_2_0",
+			"platforms": [
+				"PERF"
+			]
+		},
+		{
 			"case_name": "otlp_metric",
 			"platforms": [
 				"EC2",

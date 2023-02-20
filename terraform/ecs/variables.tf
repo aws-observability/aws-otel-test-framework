@@ -58,3 +58,7 @@ variable "ecs_extra_apps" {
   default = {}
 }
 
+// This will only fetch data from the MSK cluster in case this value is set
+variable "kafka_version" {
+  default = ""
+}
