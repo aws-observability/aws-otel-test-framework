@@ -1,7 +1,11 @@
 import { Stack, StackProps, aws_eks as eks, aws_ec2 as ec2 } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Vpc, InstanceType } from 'aws-cdk-lib/aws-ec2';
-import { KubernetesVersion, Nodegroup, NodegroupAmiType } from 'aws-cdk-lib/aws-eks';
+import {
+  KubernetesVersion,
+  Nodegroup,
+  NodegroupAmiType
+} from 'aws-cdk-lib/aws-eks';
 import { ManagedPolicy } from 'aws-cdk-lib/aws-iam';
 import { GetLayer } from '../../utils/eks/kubectlLayer';
 
@@ -31,8 +35,8 @@ export class EC2Stack extends Stack {
       requireImdsv2: true,
       httpEndpoint: true,
       httpPutResponseHopLimit: 2,
-      httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED,
-    })
+      httpTokens: ec2.LaunchTemplateHttpTokens.REQUIRED
+    });
     const clusterNodeGroup = new Nodegroup(this, `${props.name}-managed-ng`, {
       amiType: props.amiType,
       instanceTypes: props.instanceTypes,
@@ -41,7 +45,7 @@ export class EC2Stack extends Stack {
       subnets: { subnetType: ec2.SubnetType.PUBLIC },
       launchTemplateSpec: {
         id: lt.launchTemplateId as string,
-        version: lt.latestVersionNumber,
+        version: lt.latestVersionNumber
       }
     });
     clusterNodeGroup.role.addManagedPolicy(

@@ -32,9 +32,12 @@ export class MSKClustersStack extends Stack {
 
     // Get the legacy VPC that was created with terraform
     // This lookup has to be done inside a stack
-    const aocVPC = props.aocVPC == null ? aws_ec2.Vpc.fromLookup(this, 'aoc-vpc', {
-      vpcName: 'aoc-vpc'
-    }) : props.aocVPC;
+    const aocVPC =
+      props.aocVPC == null
+        ? aws_ec2.Vpc.fromLookup(this, 'aoc-vpc', {
+            vpcName: 'aoc-vpc'
+          })
+        : props.aocVPC;
 
     // Legacy VPC clusters
     MSK_VERSIONS.forEach(
