@@ -1,0 +1,130 @@
+-
+  metricName: totalApiRequests_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: SKIP
+    -
+      name: signal
+      value: metric
+    -
+      name: metricType
+      value: request
+    -
+      name: language
+      value: {{language}}
+
+-
+  metricName: totalBytesSent_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: SKIP
+    -
+      name: signal
+      value: metric
+    -
+      name: metricType
+      value: request
+    -
+      name: language
+      value: {{language}}
+    -
+      name: apiName
+      value: SKIP
+    -
+      name: http.status_code
+      value: SKIP
+
+-
+  metricName: latencyTime_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: SKIP
+    -
+      name: signal
+      value: metric
+    -
+      name: metricType
+      value: request
+    -
+      name: language
+      value: {{language}}
+    -
+      name: apiName
+      value: SKIP
+    -
+      name: http.status_code
+      value: SKIP
+
+-
+  metricName: timeAlive_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: SKIP
+    -
+      name: signal
+      value: metric
+    -
+      name: metricType
+      value: random
+    -
+      name: language
+      value: {{language}}
+
+-
+  metricName: totalHeapSize_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: SKIP
+    -
+      name: signal
+      value: metric
+    -
+      name: metricType
+      value: random
+    -
+      name: language
+      value: {{language}}
+
+-
+  metricName: threadsActive_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: SKIP
+    -
+      name: signal
+      value: metric
+    -
+      name: metricType
+      value: random
+    -
+      name: language
+      value: {{language}}
+
+-
+  metricName: cpuUsage_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: SKIP
+    -
+      name: signal
+      value: metric
+    -
+      name: metricType
+      value: random
+    -
+      name: language
+      value: {{language}}

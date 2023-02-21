@@ -1,0 +1,22 @@
+[{
+  "http":{
+    "request": {
+      "url": "{{endpoint}}/aws-sdk-call",
+      "method": "GET"
+    },
+    "response":{
+      "status": 200
+    }
+  },
+  "subsegments": [
+    {
+      "name": "/aws-sdk-call",
+      "metadata": {
+        "default": {
+          "language": "{{language}}",
+          "signal": "trace"
+        }
+      }
+    }
+  ]
+}]
