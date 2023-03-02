@@ -72,14 +72,6 @@ func (t *Target) isTestCaseExcluded(value string) bool {
 
 	_, contains := t.excludedTestMap[value]
 	return contains
-	/*
-		for _, x := range t.ExcludedTests {
-			if x == value {
-				return true
-			}
-		}
-		return false
-	*/
 }
 
 func (r *RunConfig) unmarshalInputFile() error {
