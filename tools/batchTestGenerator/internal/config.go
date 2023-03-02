@@ -56,18 +56,30 @@ type ClusterTarget struct {
 }
 
 type Target struct {
-	Name          string   `json:"name"`
-	Region        string   `json:"region"`
-	ExcludedTests []string `json:"excluded_tests"`
+	Name            string   `json:"name"`
+	Region          string   `json:"region"`
+	ExcludedTests   []string `json:"excluded_tests"`
+	excludedTestMap map[string]struct{}
 }
 
 func (t *Target) isTestCaseExcluded(value string) bool {
-	for _, x := range t.ExcludedTests {
-		if x == value {
-			return true
+	if t.excludedTestMap == nil {
+		t.excludedTestMap = make(map[string]struct{})
+		for _, val := range t.ExcludedTests {
+			t.excludedTestMap[val] = struct{}{}
 		}
 	}
-	return false
+
+	_, contains := t.excludedTestMap[value]
+	return contains
+	/*
+		for _, x := range t.ExcludedTests {
+			if x == value {
+				return true
+			}
+		}
+		return false
+	*/
 }
 
 func (r *RunConfig) unmarshalInputFile() error {
