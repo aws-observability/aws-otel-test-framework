@@ -4,10 +4,6 @@
 			"type": "EKS",
 			"targets": [
 				{
-					"name": "collector-ci-amd64-1-21",
-					"region": "us-west-2"
-				},
-				{
 					"name": "collector-ci-amd64-1-22",
 					"region": "us-west-2"
 				},
@@ -20,10 +16,6 @@
 		{
 			"type": "EKS_ARM64",
 			"targets": [
-				{
-					"name": "collector-ci-arm64-1-21",
-					"region": "us-west-2"
-				},
 				{
 					"name": "collector-ci-arm64-1-22",
 					"region": "us-west-2"
@@ -38,10 +30,6 @@
 			"type": "EKS_ADOT_OPERATOR",
 			"targets": [
 				{
-					"name": "operator-ci-amd64-1-21",
-					"region": "us-west-2"
-				},
-				{
 					"name": "operator-ci-amd64-1-22",
 					"region": "us-west-2"
 				},
@@ -55,10 +43,6 @@
 			"type": "EKS_ADOT_OPERATOR_ARM64",
 			"targets": [
 				{
-					"name": "operator-ci-arm64-1-21",
-					"region": "us-west-2"
-				},
-				{
 					"name": "operator-ci-arm64-1-22",
 					"region": "us-west-2"
 				},
@@ -71,10 +55,6 @@
 		{
 			"type": "EKS_FARGATE",
 			"targets": [
-				{
-					"name": "collector-ci-fargate-1-21",
-					"region": "us-west-2"
-				},
 				{
 					"name": "collector-ci-fargate-1-22",
 					"region": "us-west-2"
