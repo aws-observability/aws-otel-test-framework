@@ -170,6 +170,21 @@ func TestBuildTestCaseEKS(t *testing.T) {
 				{Name: "eks-cluster-1", Region: "us-west-2"},
 			},
 		},
+		{
+			testname: "ekstestexcluded",
+			runConfig: RunConfig{
+				IncludedServices: map[string]struct{}{
+					"EKS": {},
+				},
+			},
+			expectedTestCases: map[string]struct{}{
+				"xrayreceiver": {},
+			},
+			serviceType: "EKS",
+			clusters: []Target{
+				{Name: "eks-cluster-1", Region: "us-west-2"},
+			},
+		},
 	}
 
 	for _, test := range tests {
