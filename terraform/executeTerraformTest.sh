@@ -12,6 +12,11 @@
 # on mac TTL_DATE=$(date -v +7d +%s)
 # for local use. command line vars will override this env var
 # TF_VAR_cortex_instance_endpoint
+# DDB_BATCH_CACHE_SK(OPTIONAL): If set then the prefix
+# of the sortkey will be set to this value. The default value is the 
+# value of TF_VAR_aoc_version. This is useful if testing
+# something other than the ADOT Collector and you would like to use a different
+# sort key. 
 #
 # Inputs
 # $1: aws_service
@@ -25,6 +30,12 @@ set -x
 echo "Test Case Args: $@"
 
 
+if [[ -z "${DDB_BATCH_CACHE_SK}" ]]; then
+    DDB_SK_PREFIX=$TF_VAR_aoc_version
+else
+    DDB_SK_PREFIX=$DDB_BATCH_CACHE_SK
+fi
+        
 opts=""
 if [[ -f ./testcases/$2/parameters.tfvars ]] ; then 
     opts="-var-file=../testcases/$2/parameters.tfvars" ; 
@@ -63,7 +74,7 @@ esac
 
 test_framework_shortsha=$(git rev-parse --short HEAD)
 checkCache(){
-    CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}$test_framework_shortsha\"}})
+    CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}})
 }
 
 checkCache $1 $2 $3
@@ -75,7 +86,7 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     if timeout -k 5m --signal=SIGINT -v 45m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ; then
         APPLY_EXIT=$?
         echo "Exit code: $?" 
-        aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"${TF_VAR_aoc_version}$test_framework_shortsha\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
+        aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
     else
         APPLY_EXIT=$?
         echo "Terraform apply failed"
