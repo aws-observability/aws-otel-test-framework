@@ -23,6 +23,10 @@
 				{
 					"name": "collector-ci-arm64-1-23",
 					"region": "us-west-2"
+				},
+				{
+					"name": "collector-ci-arm64-1-24",
+					"region": "us-west-2"
 				}
 			]
 		},
@@ -35,6 +39,10 @@
 				},
 				{
 					"name": "operator-ci-amd64-1-23",
+					"region": "us-west-2"
+				},
+				{
+					"name": "operator-ci-amd64-1-24",
 					"region": "us-west-2"
 				}
 			]
