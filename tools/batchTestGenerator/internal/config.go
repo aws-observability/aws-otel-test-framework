@@ -62,14 +62,21 @@ type Target struct {
 	excludedTestMap map[string]struct{}
 }
 
-func (t *Target) isTestCaseExcluded(value string) bool {
-	if t.excludedTestMap == nil {
-		t.excludedTestMap = make(map[string]struct{})
-		for _, val := range t.ExcludedTests {
-			t.excludedTestMap[val] = struct{}{}
-		}
+func (t *Target) UnmarshalJSON(b []byte) error {
+	type TempTarget Target
+	var tempTarget TempTarget
+	if err := json.Unmarshal(b, &tempTarget); err != nil {
+		return err
 	}
+	*t = Target(tempTarget)
+	t.excludedTestMap = make(map[string]struct{}, 0)
+	for _, val := range t.ExcludedTests {
+		t.excludedTestMap[val] = struct{}{}
+	}
+	return nil
+}
 
+func (t *Target) isTestCaseExcluded(value string) bool {
 	_, contains := t.excludedTestMap[value]
 	return contains
 }
