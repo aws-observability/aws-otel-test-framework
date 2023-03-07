@@ -56,8 +56,29 @@ type ClusterTarget struct {
 }
 
 type Target struct {
-	Name   string `json:"name"`
-	Region string `json:"region"`
+	Name            string   `json:"name"`
+	Region          string   `json:"region"`
+	ExcludedTests   []string `json:"excluded_tests"`
+	excludedTestSet map[string]struct{}
+}
+
+func (t *Target) UnmarshalJSON(b []byte) error {
+	type TempTarget Target
+	var tempTarget TempTarget
+	if err := json.Unmarshal(b, &tempTarget); err != nil {
+		return err
+	}
+	*t = Target(tempTarget)
+	t.excludedTestSet = make(map[string]struct{}, 0)
+	for _, val := range t.ExcludedTests {
+		t.excludedTestSet[val] = struct{}{}
+	}
+	return nil
+}
+
+func (t *Target) isTestCaseExcluded(value string) bool {
+	_, contains := t.excludedTestSet[value]
+	return contains
 }
 
 func (r *RunConfig) unmarshalInputFile() error {
@@ -109,6 +130,7 @@ func (r *RunConfig) validateTestCaseInput() error {
 			}
 		}
 	}
+
 	return nil
 }
 
