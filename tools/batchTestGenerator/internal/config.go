@@ -59,7 +59,7 @@ type Target struct {
 	Name            string   `json:"name"`
 	Region          string   `json:"region"`
 	ExcludedTests   []string `json:"excluded_tests"`
-	excludedTestMap map[string]struct{}
+	excludedTestSet map[string]struct{}
 }
 
 func (t *Target) UnmarshalJSON(b []byte) error {
@@ -69,15 +69,15 @@ func (t *Target) UnmarshalJSON(b []byte) error {
 		return err
 	}
 	*t = Target(tempTarget)
-	t.excludedTestMap = make(map[string]struct{}, 0)
+	t.excludedTestSet = make(map[string]struct{}, 0)
 	for _, val := range t.ExcludedTests {
-		t.excludedTestMap[val] = struct{}{}
+		t.excludedTestSet[val] = struct{}{}
 	}
 	return nil
 }
 
 func (t *Target) isTestCaseExcluded(value string) bool {
-	_, contains := t.excludedTestMap[value]
+	_, contains := t.excludedTestSet[value]
 	return contains
 }
 
