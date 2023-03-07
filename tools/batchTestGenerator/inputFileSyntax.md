@@ -17,7 +17,10 @@ create these permutations and then break them up into smaller batches.
         },
         {
           "name": "eks-cluster-arm64-2",
-          "region": "us-east-2"
+          "region": "us-east-2",
+          "excluded_tests": [
+            "otlp_metric"
+          ]
         }
       ]
     },
@@ -42,6 +45,16 @@ create these permutations and then break them up into smaller batches.
         "EKS",
         "CANARY"
       ]
+    },
+    {
+      "case_name": "otlp_metric",
+      "platforms": [
+        "EC2",
+        "ECS",
+        "EKS",
+        "EKS_ARM64",
+        "CANARY"
+      ]
     }
   ]
 }
@@ -51,7 +64,8 @@ create these permutations and then break them up into smaller batches.
 Define a set of clusters to dispatch EKS tests to. Each EKS platform that is included in your
 test case platforms must have cluster targets defined. A test will be run against all corresponding
 cluster targets if that service is included in the batch generation. Defining a test case with `EKS_FARGATE` tests
-without defining a cluster target with type `EKS_FARGATE` will result in an error. 
+without defining a cluster target with type `EKS_FARGATE` will result in an error. Test cases can also be excluded 
+from executing on a certain cluster by using the `excluded_tests` field. 
 
 ### tests
 Define an array of test cases. 
