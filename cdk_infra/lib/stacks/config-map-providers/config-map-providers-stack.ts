@@ -8,7 +8,8 @@ import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
 export interface ConfigMapProvidersStackProps extends StackProps {
-  suffix: string;
+  // Suffix used to test the stack and avoid collisions with s3 buckets names, that must be globally unique.
+  suffix: string | undefined;
 }
 
 /**
@@ -23,7 +24,8 @@ export class ConfigMapProvidersStack extends Stack {
   ) {
     super(scope, id, props);
 
-    const bucketName = `aws-otel-collector-integ-test-configurations${props.suffix}`;
+    const suffix = props.suffix || '';
+    const bucketName = `aws-otel-collector-integ-test-configurations${suffix}`;
 
     const bucket = new Bucket(this, 'configuration-bucket', {
       bucketName: bucketName,

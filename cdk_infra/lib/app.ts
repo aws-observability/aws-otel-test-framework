@@ -21,6 +21,6 @@ new MSKClustersStack(app, 'msk-clusters', {
   eksVPC: vpcStack.vpc
 });
 new ConfigMapProvidersStack(app, 'config-map-providers', {
-  suffix: process.env.CONFIG_BUCKET_SUFFIX || ''
+  suffix: process.env.CONFIG_BUCKET_SUFFIX
 });
 deployClusters(app, vpcStack.vpc, envDefault);
