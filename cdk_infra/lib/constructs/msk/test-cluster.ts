@@ -4,7 +4,7 @@ import { aws_msk, RemovalPolicy } from 'aws-cdk-lib';
 import { LogGroup, RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 export interface MSKTestClusterProps {
-  readonly namePrefix: String;
+  readonly namePrefix: string;
   readonly kafkaVersion: string;
   readonly vpc: IVpc;
   // Kafka server.properties file https://kafka.apache.org/documentation/#configuration
