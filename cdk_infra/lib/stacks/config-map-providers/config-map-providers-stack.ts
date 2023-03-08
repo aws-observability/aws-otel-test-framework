@@ -9,7 +9,7 @@ import { Construct } from 'constructs';
 
 export interface ConfigMapProvidersStackProps extends StackProps {
   // Suffix used to test the stack and avoid collisions with s3 buckets names, that must be globally unique.
-  suffix: string | undefined;
+  suffix?: string;
 }
 
 /**

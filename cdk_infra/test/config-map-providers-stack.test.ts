@@ -12,8 +12,13 @@ test('Config map providers', () => {
   // Act
   const configMapProvidersStack = new ConfigMapProvidersStack(
     stack,
-    'config-map-providers',
-    { suffix: 'foo' ,
+    'config-map-providers', {
+      suffix: 'foo',
+      env: env
+  });
+
+  const noSuffixConfigMapProvidersStack = new ConfigMapProvidersStack(stack,
+    'no-suffix', {
     env: env
   });
 
@@ -23,4 +28,10 @@ test('Config map providers', () => {
   template.hasResourceProperties('AWS::S3::Bucket', {
     BucketName: 'aws-otel-collector-integ-test-configurationsfoo'
   });
+
+  const noSuffixTemplate = Template.fromStack(noSuffixConfigMapProvidersStack);
+
+  noSuffixTemplate.hasResourceProperties('AWS::S3::Bucket', {
+    BucketName: 'aws-otel-collector-integ-test-configurations'
+  }); 
 });
