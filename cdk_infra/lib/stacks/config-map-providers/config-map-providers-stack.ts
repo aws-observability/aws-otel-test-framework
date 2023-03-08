@@ -8,7 +8,7 @@ import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
 export interface ConfigMapProvidersStackProps extends StackProps {
-  // Suffix used to test the stack and avoid collisions with s3 buckets names, that must be globally unique.
+  // Suffix used to test the stack
   suffix?: string;
 }
 
@@ -24,7 +24,14 @@ export class ConfigMapProvidersStack extends Stack {
   ) {
     super(scope, id, props);
 
-    const suffix = props.suffix || '';
+    // We need a suffix for testing deployments in local accounts and in unit tests
+    // We are "hiding" this here so that this detail does not leak when we instantiate
+    // the stack. The order of precedence when evaluating the suffix is:
+    // * environment CONFIG_MAP_PROVIDERS_BUCKET_SUFFIX variable: used when testing locally in dev account.
+    // * props.suffix: used in unit tests
+    // * the default is an empty suffix ''
+    const suffix = process.env.CONFIG_MAP_PROVIDERS_BUCKET_SUFFIX || props.suffix || '';
+
     const bucketName = `adot-collector-integ-test-configurations${suffix}`;
 
     const bucket = new Bucket(this, 'configuration-bucket', {

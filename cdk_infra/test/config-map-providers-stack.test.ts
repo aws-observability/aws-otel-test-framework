@@ -26,12 +26,12 @@ test('Config map providers', () => {
   const template = Template.fromStack(configMapProvidersStack);
 
   template.hasResourceProperties('AWS::S3::Bucket', {
-    BucketName: 'aws-otel-collector-integ-test-configurationsfoo'
+    BucketName: 'adot-collector-integ-test-configurationsfoo'
   });
 
   const noSuffixTemplate = Template.fromStack(noSuffixConfigMapProvidersStack);
 
   noSuffixTemplate.hasResourceProperties('AWS::S3::Bucket', {
-    BucketName: 'aws-otel-collector-integ-test-configurations'
+    BucketName: 'adot-collector-integ-test-configurations'
   }); 
 });
