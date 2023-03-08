@@ -13,21 +13,17 @@ test('Config map providers', () => {
   // Act
   const configMapProvidersStack = new ConfigMapProvidersStack(
     stack,
-    'config-map-providers', {
-      suffix: 'foo',
+    'config-map-providers',
+    {
       env: env
-  });
-
-  const noSuffixConfigMapProvidersStack = new ConfigMapProvidersStack(stack,
-    'no-suffix', {
-    env: env
-  });
+    }
+  );
 
   // Assert
   const template = Template.fromStack(configMapProvidersStack);
 
   template.hasResourceProperties('AWS::S3::Bucket', {
-    BucketName: 'adot-collector-integ-test-configurations-us-west-2-123456789012'
+    BucketName:
+      'adot-collector-integ-test-configurations-us-west-2-123456789012'
   });
-
 });

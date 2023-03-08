@@ -7,22 +7,13 @@ import {
 import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
-export interface ConfigMapProvidersStackProps extends StackProps {
-  // Suffix used to test the stack
-  suffix?: string;
-}
-
 /**
  * Stack containing resources used by config map providers in the integration
  * tests. The limitation is that only one stack of this type can be deployed per
  * region.
  */
 export class ConfigMapProvidersStack extends Stack {
-  constructor(
-    scope: Construct,
-    id: string,
-    props: ConfigMapProvidersStackProps
-  ) {
+  constructor(scope: Construct, id: string, props: StackProps) {
     super(scope, id, props);
 
     // We need a globally unique bucket name that can be used in local development as well,
