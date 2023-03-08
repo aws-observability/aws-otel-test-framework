@@ -25,7 +25,7 @@ export class ConfigMapProvidersStack extends Stack {
     super(scope, id, props);
 
     const suffix = props.suffix || '';
-    const bucketName = `aws-otel-collector-integ-test-configurations${suffix}`;
+    const bucketName = `adot-collector-integ-test-configurations${suffix}`;
 
     const bucket = new Bucket(this, 'configuration-bucket', {
       bucketName: bucketName,
