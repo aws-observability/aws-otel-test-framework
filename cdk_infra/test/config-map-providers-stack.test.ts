@@ -6,7 +6,8 @@ test('Config map providers', () => {
   // prepare
   const stack = new cdk.App();
   const env = {
-    region: 'us-west-2'
+    region: 'us-west-2',
+    account: '123456789012'
   };
 
   // Act
@@ -26,12 +27,7 @@ test('Config map providers', () => {
   const template = Template.fromStack(configMapProvidersStack);
 
   template.hasResourceProperties('AWS::S3::Bucket', {
-    BucketName: 'adot-collector-integ-test-configurationsfoo'
+    BucketName: 'adot-collector-integ-test-configurations-us-west-2-123456789012'
   });
 
-  const noSuffixTemplate = Template.fromStack(noSuffixConfigMapProvidersStack);
-
-  noSuffixTemplate.hasResourceProperties('AWS::S3::Bucket', {
-    BucketName: 'adot-collector-integ-test-configurations'
-  }); 
 });

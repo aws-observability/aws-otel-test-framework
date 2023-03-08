@@ -14,7 +14,8 @@ export interface ConfigMapProvidersStackProps extends StackProps {
 
 /**
  * Stack containing resources used by config map providers in the integration
- * tests.
+ * tests. The limitation is that only one stack of this type can be deployed per
+ * region.
  */
 export class ConfigMapProvidersStack extends Stack {
   constructor(
@@ -24,15 +25,9 @@ export class ConfigMapProvidersStack extends Stack {
   ) {
     super(scope, id, props);
 
-    // We need a suffix for testing deployments in local accounts and in unit tests
-    // We are "hiding" this here so that this detail does not leak when we instantiate
-    // the stack. The order of precedence when evaluating the suffix is:
-    // * environment CONFIG_MAP_PROVIDERS_BUCKET_SUFFIX variable: used when testing locally in dev account.
-    // * props.suffix: used in unit tests
-    // * the default is an empty suffix ''
-    const suffix = process.env.CONFIG_MAP_PROVIDERS_BUCKET_SUFFIX || props.suffix || '';
-
-    const bucketName = `adot-collector-integ-test-configurations${suffix}`;
+    // We need a globally unique bucket name that can be used in local development as well,
+    // therefore we are using the region and account id as part of the bucket name.
+    const bucketName = `adot-collector-integ-test-configurations-${this.region}-${this.account}`;
 
     const bucket = new Bucket(this, 'configuration-bucket', {
       bucketName: bucketName,
