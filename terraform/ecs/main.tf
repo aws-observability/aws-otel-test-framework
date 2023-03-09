@@ -58,21 +58,65 @@ provider "aws" {
 data "aws_caller_identity" "current" {
 }
 
-module "ecs_cluster" {
-  source  = "infrablocks/ecs-cluster/aws"
-  version = "4.0.0"
+#module "ecs_cluster" {
+#  source  = "infrablocks/ecs-cluster/aws"
+#  version = "4.0.0"
 
-  cluster_name                         = module.common.testing_id
-  component                            = "aoc"
-  deployment_identifier                = "testing"
-  vpc_id                               = module.basic_components.aoc_vpc_id
-  subnet_ids                           = module.basic_components.aoc_private_subnet_ids
-  region                               = var.region
-  associate_public_ip_addresses        = "yes"
-  security_groups                      = [module.basic_components.aoc_security_group_id]
-  cluster_desired_capacity             = 1
-  cluster_instance_iam_policy_contents = file("instance-policy.json")
+#  cluster_name                         = module.common.testing_id
+#  component                            = "aoc"
+#  deployment_identifier                = "testing"
+#  vpc_id                               = module.basic_components.aoc_vpc_id
+#  subnet_ids                           = module.basic_components.aoc_private_subnet_ids
+#  region                               = var.region
+#  associate_public_ip_addresses        = "yes"
+#  security_groups                      = [module.basic_components.aoc_security_group_id]
+#  cluster_desired_capacity             = 1
+#  cluster_instance_iam_policy_contents = file("instance-policy.json")
   // TODO(pingleig): pass patch tag for canary and soaking (if any)
+#}
+
+
+resource "aws_ecs_cluster" "ecscluster" {
+  name = module.common.testing_id
+}
+
+resource "aws_ecs_cluster_capacity_providers" "clustercapacity" {
+  cluster_name = aws_ecs_cluster.ecscluster.name
+
+  capacity_providers = [aws_ecs_capacity_provider.capacityprovider.name]
+
+  default_capacity_provider_strategy {
+    base              = 1
+    weight            = 100
+    capacity_provider = aws_ecs_capacity_provider.example.name
+  }
+}
+
+resource "aws_ecs_capacity_provider" "capacityprovider" {
+  name = "ecscapacity"
+
+  auto_scaling_group_provider {
+    auto_scaling_group_arn = aws_autoscaling_group.clusterasg.arn
+  }
+}
+
+resource "aws_launch_template" "foobar" {
+  name_prefix   = "foobar"
+  image_id      = "ami-1a2b3c"
+  instance_type = "t2.medium"
+}
+
+resource "aws_autoscaling_group" "clusterasg" {
+  name = "clusterasg"
+  availability_zones = ["us-east-1a"]
+  desired_capacity   = 1
+  max_size           = 1
+  min_size           = 1
+
+  launch_template {
+    id      = aws_launch_template.foobar.id
+    version = "$Latest"
+  }
 }
 
 # This is a hack for known issue https://github.com/hashicorp/terraform-provider-aws/issues/4852
@@ -81,7 +125,7 @@ module "ecs_cluster" {
 resource "null_resource" "scale_down_asg" {
   # https://discuss.hashicorp.com/t/how-to-rewrite-null-resource-with-local-exec-provisioner-when-destroy-to-prepare-for-deprecation-after-0-12-8/4580/2
   triggers = {
-    asg_name = module.ecs_cluster.autoscaling_group_name
+    asg_name = aws_autoscaling_group.clusterasg.name
   }
 
   # Only run during destroy, do nothing for apply.
@@ -259,7 +303,7 @@ resource "aws_ecs_service" "aoc" {
   # don't do lb if the sample app is not callable
   count            = var.sample_app_callable ? 1 : 0
   name             = "aocservice-${module.common.testing_id}"
-  cluster          = module.ecs_cluster.cluster_id
+  cluster          = aws_ecs_cluster.ecscluster.id
   task_definition  = "${aws_ecs_task_definition.aoc[0].family}:1"
   desired_count    = 1
   launch_type      = var.ecs_launch_type
@@ -289,7 +333,7 @@ resource "aws_ecs_service" "aoc" {
 resource "aws_ecs_service" "aoc_without_sample_app" {
   count            = !var.sample_app_callable && var.ecs_taskdef_network_mode == "awsvpc" ? 1 : 0
   name             = "aocservice-${module.common.testing_id}"
-  cluster          = module.ecs_cluster.cluster_id
+  cluster          = aws_ecs_cluster.ecscluster.id
   task_definition  = "${aws_ecs_task_definition.aoc[0].family}:1"
   desired_count    = 1
   launch_type      = var.ecs_launch_type
@@ -305,7 +349,7 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
 resource "aws_ecs_service" "aoc_without_sample_app_for_bridge" {
   count           = !var.sample_app_callable && var.ecs_taskdef_network_mode == "bridge" ? 1 : 0
   name            = "aocservice-${module.common.testing_id}"
-  cluster         = module.ecs_cluster.cluster_id
+  cluster         = aws_ecs_cluster.ecscluster.id
   task_definition = "${aws_ecs_task_definition.aoc_bridge[0].family}:1"
   desired_count   = 1
   launch_type     = "EC2"
@@ -330,8 +374,8 @@ module "validator" {
   account_id = data.aws_caller_identity.current.account_id
 
   ecs_context_json = jsonencode({
-    ecsClusterName : module.ecs_cluster.cluster_name
-    ecsClusterArn : module.ecs_cluster.cluster_arn
+    ecsClusterName : aws_ecs_cluster.ecscluster.name
+    ecsClusterArn : aws_ecs_cluster.ecscluster.arn
     ecsTaskDefArn : aws_ecs_task_definition.aoc[0].arn
     ecsTaskDefFamily : aws_ecs_task_definition.aoc[0].family
     ecsTaskDefVersion : aws_ecs_task_definition.aoc[0].revision
@@ -352,7 +396,7 @@ module "validator_without_sample_app" {
   mocked_server_validating_url = var.disable_mocked_server ? "" : "http://${aws_lb.mocked_server_lb[0].dns_name}:${module.common.mocked_server_lb_port}/check-data"
 
   ecs_context_json = jsonencode({
-    ecsClusterName : module.ecs_cluster.cluster_name
+    ecsClusterName : aws_ecs_cluster.ecscluster.name
     ecsTaskDefArn : aws_ecs_task_definition.aoc[0].arn
     ecsTaskDefFamily : aws_ecs_task_definition.aoc[0].family
     ecsTaskDefVersion : aws_ecs_task_definition.aoc[0].revision
@@ -375,7 +419,7 @@ module "validator_without_sample_app_for_bridge" {
   cloudwatch_context_json      = data.template_file.cloudwatch_context.rendered
 
   ecs_context_json = jsonencode({
-    ecsClusterName : module.ecs_cluster.cluster_name
+    ecsClusterName : aws_ecs_cluster.ecscluster.name
     ecsTaskDefArn : aws_ecs_task_definition.aoc_bridge[0].arn
     ecsTaskDefFamily : aws_ecs_task_definition.aoc_bridge[0].family
     ecsTaskDefVersion : aws_ecs_task_definition.aoc_bridge[0].revision
@@ -391,6 +435,6 @@ data "template_file" "cloudwatch_context" {
   template = file(local.cloudwatch_context_path)
   vars = {
     testing_id   = module.common.testing_id
-    cluster_name = module.ecs_cluster.cluster_name
+    cluster_name = aws_ecs_cluster.ecscluster.name
   }
 }
