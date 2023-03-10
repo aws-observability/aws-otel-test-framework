@@ -99,7 +99,6 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     ;;
     esac
 
-    ../checkCacheHit.sh $SERVICE $TESTCASE $ADDTL_PARAMS
     let ATTEMPTS_LEFT=ATTEMPTS_LEFT-1
 done
 
