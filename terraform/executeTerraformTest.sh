@@ -28,7 +28,9 @@
 set -x
 
 echo "Test Case Args: $@"
-
+SERVICE="$1"
+TESTCASE=$2
+ADDTL_PARAMS=$3
 
 if [[ -z "${DDB_BATCH_CACHE_SK}" ]]; then
     DDB_SK_PREFIX=$TF_VAR_aoc_version
@@ -37,30 +39,29 @@ else
 fi
         
 opts=""
-if [[ -f ./testcases/$2/parameters.tfvars ]] ; then 
-    opts="-var-file=../testcases/$2/parameters.tfvars" ; 
+if [[ -f ./testcases/$TESTCASE/parameters.tfvars ]] ; then 
+    opts="-var-file=../testcases/$TESTCASE/parameters.tfvars" ; 
 fi
 
 APPLY_EXIT=0
 TEST_FOLDER=""
-service="$1"
 export AWS_REGION=us-west-2
-case "$service" in
+case "$SERVICE" in
     EC2) TEST_FOLDER="./ec2/";
-        opts+=" -var=testing_ami=$3";
+        opts+=" -var=testing_ami=$ADDTL_PARAMS";
     ;;
     EKS*) TEST_FOLDER="./eks/"
-        region=$(echo $3 | cut -d \| -f 1);
-        clustername=$(echo $3 | cut -d \| -f 2);
+        region=$(echo $ADDTL_PARAMS | cut -d \| -f 1);
+        clustername=$(echo $ADDTL_PARAMS | cut -d \| -f 2);
         export AWS_REGION=${region};
         opts+=" -var=region=${region}";
         opts+=" -var=eks_cluster_name=${clustername}";
     ;;
     ECS) TEST_FOLDER="./ecs/";
-        opts+=" -var=ecs_launch_type=$3";
+        opts+=" -var=ecs_launch_type=$ADDTL_PARAMS";
     ;;
     *)
-    echo "service ${service} is not valid";
+    echo "service ${SERVICE} is not valid";
     exit 1;
     ;;
 esac
@@ -76,21 +77,21 @@ test_framework_shortsha=$(git rev-parse --short HEAD)
 # Used as a retry mechanic.
 ATTEMPTS_LEFT=2
 cd ${TEST_FOLDER};
-while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $1 $2 $3; do
+while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDTL_PARAMS; do
     terraform init;
-    if timeout -k 5m --signal=SIGINT -v 45m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ; then
+    if timeout -k 5m --signal=SIGINT -v 45m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$TESTCASE" ; then
         APPLY_EXIT=$?
         echo "Exit code: $?" 
-        aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
+        aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$SERVICE$TESTCASE$ADDTL_PARAMS\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
     else
         APPLY_EXIT=$?
         echo "Terraform apply failed"
         echo "Exit code: $?"
-        echo "AWS_service: $1"
-        echo "Testcase: $2" 
+        echo "AWS_service: $SERVICE"
+        echo "Testcase: $TESTCASE" 
     fi
 
-    case "$service" in
+    case "$SERVICE" in
         EKS*) terraform destroy --auto-approve $opts;
         ;;
     *)
@@ -98,7 +99,7 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $1 $2 $3; do
     ;;
     esac
 
-    ../checkCacheHit.sh $1 $2 $3
+    ../checkCacheHit.sh $SERVICE $TESTCASE $ADDTL_PARAMS
     let ATTEMPTS_LEFT=ATTEMPTS_LEFT-1
 done
 
