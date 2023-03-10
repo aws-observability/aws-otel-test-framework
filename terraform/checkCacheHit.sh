@@ -12,6 +12,9 @@
 # sort key. 
 
 test_framework_shortsha=$(git rev-parse --short HEAD)
+SERVICE="$1"
+TESTCASE=$2
+ADDTL_PARAMS=$3
 
 if [[ -z "${DDB_BATCH_CACHE_SK}" ]]; then
     DDB_SK_PREFIX=$TF_VAR_aoc_version
@@ -19,7 +22,7 @@ else
     DDB_SK_PREFIX=$DDB_BATCH_CACHE_SK
 fi
 
-CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}})
+CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$SERVICE$TESTCASE$ADDTL_PARAMS\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}})
 
 if [ -z "${CACHE_HIT}" ]; then
     echo "Cache miss for $@"
