@@ -88,7 +88,7 @@ resource "aws_ecs_cluster_capacity_providers" "clustercapacity" {
   default_capacity_provider_strategy {
     base              = 1
     weight            = 100
-    capacity_provider = aws_ecs_capacity_provider.example.name
+    capacity_provider = aws_ecs_capacity_provider.capacityprovider.name
   }
 }
 
@@ -102,13 +102,13 @@ resource "aws_ecs_capacity_provider" "capacityprovider" {
 
 resource "aws_launch_template" "foobar" {
   name_prefix   = "foobar"
-  image_id      = "ami-1a2b3c"
+  image_id      = "ami-0ae546d2dd33d2039"
   instance_type = "t2.medium"
 }
 
 resource "aws_autoscaling_group" "clusterasg" {
   name = "clusterasg"
-  availability_zones = ["us-east-1a"]
+  availability_zones = ["us-west-2a"]
   desired_capacity   = 1
   max_size           = 1
   min_size           = 1
