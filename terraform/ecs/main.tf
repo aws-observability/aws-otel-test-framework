@@ -100,23 +100,55 @@ resource "aws_ecs_capacity_provider" "capacityprovider" {
   }
 }
 
-resource "aws_launch_template" "foobar" {
-  name_prefix   = "foobar"
-  image_id      = "ami-0ae546d2dd33d2039"
+resource "aws_launch_template" "launchtemp" {
+  name_prefix   = "launchtemp"
+  image_id      = "ami-05f991e317f30f87a"
   instance_type = "t2.medium"
+  vpc_security_group_ids = [module.basic_components.aoc_security_group_id]
+  iam_instance_profile {
+    name = aws_iam_instance_profile.ecs_agent.name
+  }
 }
 
 resource "aws_autoscaling_group" "clusterasg" {
   name = "clusterasg"
-  availability_zones = ["us-west-2a"]
+  #availability_zones = ["us-west-2a", "us-west-2b", "us-west-2c"]
+  vpc_zone_identifier = module.basic_components.aoc_private_subnet_ids
   desired_capacity   = 1
-  max_size           = 1
+  max_size           = 10
   min_size           = 1
 
   launch_template {
-    id      = aws_launch_template.foobar.id
+    id      = aws_launch_template.launchtemp.id
     version = "$Latest"
   }
+}
+
+data "aws_iam_policy_document" "ecs_agent" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["ec2.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_role" "ecs_agent" {
+  name               = "ecs-agent"
+  assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
+}
+
+
+resource "aws_iam_role_policy_attachment" "ecs_agent" {
+  role       = "aws_iam_role.ecs_agent.name"
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+}
+
+resource "aws_iam_instance_profile" "ecs_agent" {
+  name = "ecs-agent"
+  role = aws_iam_role.ecs_agent.name
 }
 
 # This is a hack for known issue https://github.com/hashicorp/terraform-provider-aws/issues/4852
