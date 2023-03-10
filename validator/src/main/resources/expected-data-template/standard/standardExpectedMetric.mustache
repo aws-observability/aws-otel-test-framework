@@ -1,5 +1,5 @@
 -
-  metricName: totalApiRequests_{{testingId}}
+  metricName: total_api_requests_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
@@ -16,30 +16,7 @@
       value: {{language}}
 
 -
-  metricName: totalBytesSent_{{testingId}}
-  namespace: {{metricNamespace}}
-  dimensions:
-    -
-      name: OTelLib
-      value: SKIP
-    -
-      name: signal
-      value: metric
-    -
-      name: metricType
-      value: request
-    -
-      name: language
-      value: {{language}}
-    -
-      name: apiName
-      value: SKIP
-    -
-      name: http.status_code
-      value: SKIP
-
--
-  metricName: latencyTime_{{testingId}}
+  metricName: total_bytes_sent_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
@@ -62,7 +39,30 @@
       value: SKIP
 
 -
-  metricName: timeAlive_{{testingId}}
+  metricName: latency_time_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: SKIP
+    -
+      name: signal
+      value: metric
+    -
+      name: metricType
+      value: request
+    -
+      name: language
+      value: {{language}}
+    -
+      name: apiName
+      value: SKIP
+    -
+      name: http.status_code
+      value: SKIP
+
+-
+  metricName: time_alive_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
@@ -79,7 +79,7 @@
       value: {{language}}
 
 -
-  metricName: totalHeapSize_{{testingId}}
+  metricName: total_heap_size_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
@@ -96,7 +96,7 @@
       value: {{language}}
 
 -
-  metricName: threadsActive_{{testingId}}
+  metricName: threads_active_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
@@ -113,7 +113,7 @@
       value: {{language}}
 
 -
-  metricName: cpuUsage_{{testingId}}
+  metricName: cpu_usage_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
     -
