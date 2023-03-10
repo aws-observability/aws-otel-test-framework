@@ -73,15 +73,10 @@ case ${AWS_REGION} in
 esac
 
 test_framework_shortsha=$(git rev-parse --short HEAD)
-checkCache(){
-    CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --key {\"TestId\":{\"S\":\"$1$2$3\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}})
-}
-
-checkCache $1 $2 $3
 # Used as a retry mechanic.
 ATTEMPTS_LEFT=2
 cd ${TEST_FOLDER};
-while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
+while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $1 $2 $3; do
     terraform init;
     if timeout -k 5m --signal=SIGINT -v 45m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$2" ; then
         APPLY_EXIT=$?
@@ -103,7 +98,7 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && [ -z "${CACHE_HIT}" ]; do
     ;;
     esac
 
-    checkCache $1 $2 $3 
+    ../checkCacheHit.sh $1 $2 $3
     let ATTEMPTS_LEFT=ATTEMPTS_LEFT-1
 done
 
