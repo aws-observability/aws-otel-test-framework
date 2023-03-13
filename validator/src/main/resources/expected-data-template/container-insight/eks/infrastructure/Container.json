@@ -46,7 +46,7 @@
         "service_name":{},
         "container_name":{},
         "container_id": {},
-        "containerd":{
+        "docker":{
           "title": "object",
           "properties": {
             "container_id":{}
@@ -57,7 +57,7 @@
       },
       "oneOf": [
         {
-          "required": ["host","namespace_name","pod_id","pod_name","container_name", "containerd", "pod_owners"]
+          "required": ["host","namespace_name","pod_id","pod_name","container_name", "docker", "pod_owners"]
         },
         {
           "required": ["host","namespace_name","pod_id","pod_name","container_name", "container_id", "pod_owners"]

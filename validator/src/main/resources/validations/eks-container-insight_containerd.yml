@@ -1,4 +1,0 @@
--
-  validationType: "containerd-containerinsight-eks-logs"
-  shouldValidateMetricValue: false
-  expectedLogStructureTemplate: "CONTAINER_INSIGHT_EKS_LOG"
