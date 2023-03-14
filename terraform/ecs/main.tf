@@ -93,7 +93,7 @@ resource "aws_ecs_cluster_capacity_providers" "clustercapacity" {
 }
 
 resource "aws_ecs_capacity_provider" "capacityprovider" {
-  name = "ecscapacity"
+  name = "capacityprovider"
 
   auto_scaling_group_provider {
     auto_scaling_group_arn = aws_autoscaling_group.clusterasg.arn
@@ -102,9 +102,16 @@ resource "aws_ecs_capacity_provider" "capacityprovider" {
 
 resource "aws_launch_template" "launchtemp" {
   name_prefix   = "launchtemp"
-  image_id      = "ami-05f991e317f30f87a"
+  image_id      = "ami-0ae546d2dd33d2039"
   instance_type = "t2.medium"
   vpc_security_group_ids = [module.basic_components.aoc_security_group_id]
+  user_data            = "${base64encode("#!/bin/bash\necho ECS_CLUSTER=${module.common.testing_id} >> /etc/ecs/ecs.config")}"
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
+    instance_metadata_tags      = "enabled"
+  }
   iam_instance_profile {
     name = aws_iam_instance_profile.ecs_agent.name
   }
@@ -142,7 +149,7 @@ resource "aws_iam_role" "ecs_agent" {
 
 
 resource "aws_iam_role_policy_attachment" "ecs_agent" {
-  role       = "aws_iam_role.ecs_agent.name"
+  role       = aws_iam_role.ecs_agent.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
 }
 
@@ -402,6 +409,7 @@ module "validator" {
   sample_app_endpoint          = "http://${aws_lb.aoc_lb[0].dns_name}:${module.common.sample_app_lb_port}"
   mocked_server_validating_url = "http://${aws_lb.mocked_server_lb[0].dns_name}:${module.common.mocked_server_lb_port}/check-data"
   cortex_instance_endpoint     = var.cortex_instance_endpoint
+  #language = "javascript"
 
   account_id = data.aws_caller_identity.current.account_id
 
