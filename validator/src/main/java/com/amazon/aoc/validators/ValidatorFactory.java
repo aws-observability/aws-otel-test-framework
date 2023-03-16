@@ -81,6 +81,7 @@ public class ValidatorFactory {
         expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;
       case "container-insight-eks-logs":
+      case "containerd-containerinsight-eks-logs":
         validator = new ContainerInsightStructuredLogValidator();
         expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;

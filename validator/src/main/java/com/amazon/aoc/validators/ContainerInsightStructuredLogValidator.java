@@ -15,12 +15,12 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
 
-
 @Log4j2
 public class ContainerInsightStructuredLogValidator
         extends AbstractStructuredLogValidator {
 
-  private static final List<String> LOG_TYPE_TO_VALIDATE = Arrays.asList(
+  //expected template Array for docker runtime
+  private static final List<String> LOG_TYPE_DOCKER = Arrays.asList(
           "Cluster",
           "ClusterNamespace",
           "ClusterService",
@@ -34,18 +34,39 @@ public class ContainerInsightStructuredLogValidator
           "PodNet"
   );
 
+  //expected template Array for containerd runtime
+  private static final List<String> LOG_TYPE_CONTAINERD = Arrays.asList(
+          "Cluster",
+          "ClusterNamespace",
+          "ClusterService",
+          "Container",
+          "Node",
+          "NodeDiskIO",
+          "NodeFS",
+          "NodeNet",
+          "Pod",
+          "PodNet"
+  );
+
   private static final int MAX_RETRY_COUNT = 15;
   private static final int QUERY_LIMIT = 100;
+  private static List<String> LOG_TYPE_TO_VALIDATE;
 
   @Override
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     logGroupName = String.format("/aws/containerinsights/%s/performance",
             context.getCloudWatchContext().getClusterName());
     MustacheHelper mustacheHelper = new MustacheHelper();
+    if (context.getTestcase().contains("containerinsight_eks")) {
+      LOG_TYPE_TO_VALIDATE = LOG_TYPE_DOCKER;
+    } else {
+      LOG_TYPE_TO_VALIDATE = LOG_TYPE_CONTAINERD;
+    }
+
     for (String logType : LOG_TYPE_TO_VALIDATE) {
       FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
-          expectedDataTemplate.getPath().toString(),
-          logType + ".json"));
+              expectedDataTemplate.getPath().toString(),
+              logType + ".json"));
       try {
         String templateInput = mustacheHelper.render(fileConfig, context);
         schemasToValidate.put(logType, parseJsonSchema(templateInput));
@@ -74,7 +95,7 @@ public class ContainerInsightStructuredLogValidator
       String filterPattern = String.format("{ $.Type = \"%s\"}", logType);
       try {
         log.info(String.format("[StructuredLogValidator] Filtering logs in log group %s"
-                + "with filter pattern %s", logGroupName, filterPattern));
+                + " with filter pattern %s", logGroupName, filterPattern));
         List<FilteredLogEvent> logEvents = cloudWatchService.filterLogs(logGroupName, filterPattern,
                 startTime.toEpochMilli(), QUERY_LIMIT);
         for (FilteredLogEvent logEvent : logEvents) {

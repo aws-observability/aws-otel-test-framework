@@ -211,6 +211,7 @@ module "validator" {
 
   validation_config = var.validation_config
   region            = var.region
+  testcase          = var.testcase
   testing_id        = module.common.testing_id
   metric_namespace  = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
   sample_app_endpoint = (length(kubernetes_ingress.app) > 0 && var.deployment_type == "fargate" ? "http://${kubernetes_ingress.app[0].status[0].load_balancer[0].ingress[0].hostname}:${var.fargate_sample_app_lb_port}" : (
