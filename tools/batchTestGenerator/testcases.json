@@ -7,14 +7,14 @@
 					"name": "collector-ci-amd64-1-22",
 					"region": "us-west-2",
 					"excluded_tests": [
-						"containerinsight_eks_containerd"
+						"containerinsights_eks_containerd"
 					]
 				},
 				{
 					"name": "collector-ci-amd64-1-23",
 					"region": "us-west-2",
 					"excluded_tests": [
-						"containerinsight_eks_containerd"
+						"containerinsights_eks_containerd"
 					]
 				},
 				{
@@ -33,14 +33,14 @@
 					"name": "collector-ci-arm64-1-22",
 					"region": "us-west-2",
 					"excluded_tests": [
-						"containerinsight_eks_containerd"
+						"containerinsights_eks_containerd"
 					]
 				},
 				{
 					"name": "collector-ci-arm64-1-23",
 					"region": "us-west-2",
 					"excluded_tests": [
-						"containerinsight_eks_containerd"
+						"containerinsights_eks_containerd"
 					]
 				},
 				{
@@ -373,7 +373,7 @@
 			]
 		},
 		{
-			"case_name": "containerinsight_eks_containerd",
+			"case_name": "containerinsights_eks_containerd",
 			"platforms": [
 				"EKS",
 				"EKS_ARM64"
