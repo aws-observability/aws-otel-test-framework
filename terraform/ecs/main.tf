@@ -58,26 +58,12 @@ provider "aws" {
 data "aws_caller_identity" "current" {
 }
 
-#module "ecs_cluster" {
-#  source  = "infrablocks/ecs-cluster/aws"
-#  version = "4.0.0"
-
-#  cluster_name                         = module.common.testing_id
-#  component                            = "aoc"
-#  deployment_identifier                = "testing"
-#  vpc_id                               = module.basic_components.aoc_vpc_id
-#  subnet_ids                           = module.basic_components.aoc_private_subnet_ids
-#  region                               = var.region
-#  associate_public_ip_addresses        = "yes"
-#  security_groups                      = [module.basic_components.aoc_security_group_id]
-#  cluster_desired_capacity             = 1
-#  cluster_instance_iam_policy_contents = file("instance-policy.json")
-  // TODO(pingleig): pass patch tag for canary and soaking (if any)
-#}
-
-
 resource "aws_ecs_cluster" "ecscluster" {
   name = module.common.testing_id
+
+  depends_on = [
+    null_resource.iam_wait
+  ]
 }
 
 resource "aws_ecs_cluster_capacity_providers" "clustercapacity" {
@@ -85,11 +71,6 @@ resource "aws_ecs_cluster_capacity_providers" "clustercapacity" {
 
   capacity_providers = [aws_ecs_capacity_provider.capacityprovider.name]
 
-  default_capacity_provider_strategy {
-    base              = 1
-    weight            = 100
-    capacity_provider = aws_ecs_capacity_provider.capacityprovider.name
-  }
 }
 
 resource "aws_ecs_capacity_provider" "capacityprovider" {
@@ -104,7 +85,6 @@ resource "aws_launch_template" "launchtemp" {
   name_prefix   = "launchtemp"
   image_id      = "ami-0ae546d2dd33d2039"
   instance_type = "t2.medium"
-  vpc_security_group_ids = [module.basic_components.aoc_security_group_id]
   user_data            = "${base64encode("#!/bin/bash\necho ECS_CLUSTER=${module.common.testing_id} >> /etc/ecs/ecs.config")}"
   metadata_options {
     http_endpoint               = "enabled"
@@ -112,9 +92,16 @@ resource "aws_launch_template" "launchtemp" {
     http_put_response_hop_limit = 2
     instance_metadata_tags      = "enabled"
   }
-  iam_instance_profile {
-    name = aws_iam_instance_profile.ecs_agent.name
+  network_interfaces {
+    associate_public_ip_address = true
+    security_groups = [module.basic_components.aoc_security_group_id]
   }
+  iam_instance_profile {
+    name = aws_iam_instance_profile.cluster.name
+  }
+  depends_on = [
+    null_resource.iam_wait
+  ]
 }
 
 resource "aws_autoscaling_group" "clusterasg" {
@@ -129,6 +116,9 @@ resource "aws_autoscaling_group" "clusterasg" {
     id      = aws_launch_template.launchtemp.id
     version = "$Latest"
   }
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 data "aws_iam_policy_document" "ecs_agent" {
@@ -142,20 +132,37 @@ data "aws_iam_policy_document" "ecs_agent" {
   }
 }
 
-resource "aws_iam_role" "ecs_agent" {
-  name               = "ecs-agent"
+resource "aws_iam_role" "cluster_instance_role" {
   assume_role_policy = data.aws_iam_policy_document.ecs_agent.json
+
 }
 
-
-resource "aws_iam_role_policy_attachment" "ecs_agent" {
-  role       = aws_iam_role.ecs_agent.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
+resource "aws_iam_policy" "cluster_instance_policy" {
+  policy      = file("instance-policy.json")
 }
 
-resource "aws_iam_instance_profile" "ecs_agent" {
-  name = "ecs-agent"
-  role = aws_iam_role.ecs_agent.name
+resource "aws_iam_policy_attachment" "cluster_instance_policy_attachment" {
+  name = "clusterpolicyattach"
+
+  roles      = [aws_iam_role.cluster_instance_role.id]
+  policy_arn = aws_iam_policy.cluster_instance_policy.arn
+}
+
+resource "aws_iam_instance_profile" "cluster" {
+  role = aws_iam_role.cluster_instance_role.name
+}
+
+resource "null_resource" "iam_wait" {
+  depends_on = [
+    aws_iam_role.cluster_instance_role,
+    aws_iam_policy.cluster_instance_policy,
+    aws_iam_policy_attachment.cluster_instance_policy_attachment,
+    aws_iam_instance_profile.cluster,
+  ]
+
+  provisioner "local-exec" {
+    command = "sleep 30"
+  }
 }
 
 # This is a hack for known issue https://github.com/hashicorp/terraform-provider-aws/issues/4852
