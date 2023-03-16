@@ -106,7 +106,6 @@ resource "aws_launch_template" "launchtemp" {
 
 resource "aws_autoscaling_group" "clusterasg" {
   name = "clusterasg"
-  #availability_zones = ["us-west-2a", "us-west-2b", "us-west-2c"]
   vpc_zone_identifier = module.basic_components.aoc_private_subnet_ids
   desired_capacity   = 1
   max_size           = 10
