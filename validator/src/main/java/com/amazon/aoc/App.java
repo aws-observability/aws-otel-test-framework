@@ -49,6 +49,10 @@ public class App implements Callable<Integer> {
   private String accountId;
 
   @CommandLine.Option(
+          names = {"--language"})
+  private String language;
+
+  @CommandLine.Option(
       names = {"--metric-namespace"},
       defaultValue = "AWSObservability/CloudWatchOTService")
   private String metricNamespace;
@@ -132,6 +136,7 @@ public class App implements Callable<Integer> {
     context.setMockedServerValidatingUrl(mockedServerValidatingUrl);
     context.setCortexInstanceEndpoint(this.cortexInstanceEndpoint);
     context.setTestcase(testcase);
+    context.setLanguage(language);
 
     log.info(context);
 

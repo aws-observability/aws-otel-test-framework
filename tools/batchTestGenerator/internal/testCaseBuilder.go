@@ -68,12 +68,14 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS", "EKS_ARM64":
 					if clusterList, ok := clusterMaps[testPlatform]; ok && len(clusterList) > 0 {
 						for _, cluster := range clusterList {
-							newTest := TestCaseInfo{
-								testcaseName:  test.CaseName,
-								serviceType:   testPlatform,
-								additionalVar: strings.Join([]string{cluster.Region, cluster.Name}, "|"),
+							if !cluster.isTestCaseExcluded(test.CaseName) {
+								newTest := TestCaseInfo{
+									testcaseName:  test.CaseName,
+									serviceType:   testPlatform,
+									additionalVar: strings.Join([]string{cluster.Region, cluster.Name}, "|"),
+								}
+								newTests = append(newTests, newTest)
 							}
-							newTests = append(newTests, newTest)
 						}
 					} else {
 						return nil, fmt.Errorf("no clusters defined for %s plaftorm in test input file", testPlatform)

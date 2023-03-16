@@ -35,6 +35,7 @@ data "template_file" "docker_compose" {
     metric_namespace             = var.metric_namespace
     canary                       = var.canary
     testcase                     = var.testcase
+    language                     = var.language
 
     # Escaping (") in the JSON when using as a terraform string variable.
     # For more information: https://www.terraform.io/docs/configuration-0-11/interpolation.html#built-in-functions

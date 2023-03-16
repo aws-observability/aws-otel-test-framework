@@ -23,6 +23,10 @@ variable "account_id" {
   default = ""
 }
 
+variable "language" {
+  default = ""
+}
+
 variable "region" {
 }
 

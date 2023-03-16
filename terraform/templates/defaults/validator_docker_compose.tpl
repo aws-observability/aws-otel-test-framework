@@ -17,6 +17,7 @@ services:
       - "-c=${validation_config}"
       - "-t=${testing_id}"
       - "--account-id=${account_id}"
+      - "--language=${language}"
       - "--region=${region}"
       - "--availability-zone=${availability_zone}"
       - "--endpoint=${sample_app_endpoint}"

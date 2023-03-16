@@ -27,6 +27,8 @@ public class Context {
 
   private String accountId;
 
+  private String language;
+
   @NonNull
   private String region;
 
