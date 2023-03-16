@@ -81,9 +81,19 @@ resource "aws_ecs_capacity_provider" "capacityprovider" {
   }
 }
 
+data "aws_ami" "amazon_linux_2" {
+  most_recent = true
+  owners      = ["amazon"]
+
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-ecs-hvm-*-x86_64-ebs"]
+  }
+}
+
 resource "aws_launch_template" "launchtemp" {
   name_prefix   = "launchtemp"
-  image_id      = "ami-0ae546d2dd33d2039"
+  image_id      =  data.aws_ami.amazon_linux_2.image_id
   instance_type = "t2.medium"
   user_data            = "${base64encode("#!/bin/bash\necho ECS_CLUSTER=${module.common.testing_id} >> /etc/ecs/ecs.config")}"
   metadata_options {
