@@ -93,9 +93,9 @@ data "aws_ami" "amazon_linux_2" {
 
 resource "aws_launch_template" "launchtemp" {
   name_prefix   = "launchtemp"
-  image_id      =  data.aws_ami.amazon_linux_2.image_id
+  image_id      = data.aws_ami.amazon_linux_2.image_id
   instance_type = "t2.medium"
-  user_data            = "${base64encode("#!/bin/bash\necho ECS_CLUSTER=${module.common.testing_id} >> /etc/ecs/ecs.config")}"
+  user_data     = base64encode("#!/bin/bash\necho ECS_CLUSTER=${module.common.testing_id} >> /etc/ecs/ecs.config")
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
@@ -104,7 +104,7 @@ resource "aws_launch_template" "launchtemp" {
   }
   network_interfaces {
     associate_public_ip_address = true
-    security_groups = [module.basic_components.aoc_security_group_id]
+    security_groups             = [module.basic_components.aoc_security_group_id]
   }
   iam_instance_profile {
     name = aws_iam_instance_profile.cluster.name
@@ -115,11 +115,11 @@ resource "aws_launch_template" "launchtemp" {
 }
 
 resource "aws_autoscaling_group" "clusterasg" {
-  name = "clusterasg"
+  name                = "clusterasg"
   vpc_zone_identifier = module.basic_components.aoc_private_subnet_ids
-  desired_capacity   = 1
-  max_size           = 10
-  min_size           = 1
+  desired_capacity    = 1
+  max_size            = 10
+  min_size            = 1
 
   launch_template {
     id      = aws_launch_template.launchtemp.id
@@ -147,7 +147,7 @@ resource "aws_iam_role" "cluster_instance_role" {
 }
 
 resource "aws_iam_policy" "cluster_instance_policy" {
-  policy      = file("instance-policy.json")
+  policy = file("instance-policy.json")
 }
 
 resource "aws_iam_policy_attachment" "cluster_instance_policy_attachment" {
