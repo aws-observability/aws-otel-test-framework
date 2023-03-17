@@ -84,9 +84,9 @@ public enum PredefinedExpectedTemplate implements FileConfig {
    */
   CONTAINER_INSIGHT_EKS_PROMETHEUS_LOG(
     "/expected-data-template/container-insight/eks/prometheus"),
-  CONTAINER_INSIGHT_EKS_LOG(
+  CONTAINER_INSIGHT_EKS_DOCKER_LOG(
     "/expected-data-template/container-insight/eks/infrastructure"),
-  CONTAINERD_INSIGHT_EKS_LOG(
+  CONTAINER_INSIGHT_EKS_CONTAINERD_LOG(
     "/expected-data-template/container-insight/eks/containerd-infrastructure"),
   CONTAINER_INSIGHT_ECS_LOG(
     "/expected-data-template/container-insight/ecs/ecs-instance"),

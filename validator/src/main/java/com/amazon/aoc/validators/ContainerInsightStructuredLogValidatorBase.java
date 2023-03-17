@@ -12,58 +12,25 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
 @Log4j2
-public class ContainerInsightStructuredLogValidator
+public abstract class ContainerInsightStructuredLogValidatorBase
         extends AbstractStructuredLogValidator {
 
-  //expected template Array for docker runtime
-  private static final List<String> LOG_TYPE_DOCKER = Arrays.asList(
-          "Cluster",
-          "ClusterNamespace",
-          "ClusterService",
-          "Container",
-          "ContainerFS",
-          "Node",
-          "NodeDiskIO",
-          "NodeFS",
-          "NodeNet",
-          "Pod",
-          "PodNet"
-  );
-
-  //expected template Array for containerd runtime
-  private static final List<String> LOG_TYPE_CONTAINERD = Arrays.asList(
-          "Cluster",
-          "ClusterNamespace",
-          "ClusterService",
-          "Container",
-          "Node",
-          "NodeDiskIO",
-          "NodeFS",
-          "NodeNet",
-          "Pod",
-          "PodNet"
-  );
+  //Abstract method for the log type to validate
+  public abstract List<String> getLogTypeToValidate();
 
   private static final int MAX_RETRY_COUNT = 15;
   private static final int QUERY_LIMIT = 100;
-  private static List<String> LOG_TYPE_TO_VALIDATE;
 
   @Override
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     logGroupName = String.format("/aws/containerinsights/%s/performance",
             context.getCloudWatchContext().getClusterName());
     MustacheHelper mustacheHelper = new MustacheHelper();
-    if (context.getTestcase().contains("containerinsight_eks")) {
-      LOG_TYPE_TO_VALIDATE = LOG_TYPE_DOCKER;
-    } else {
-      LOG_TYPE_TO_VALIDATE = LOG_TYPE_CONTAINERD;
-    }
-
-    for (String logType : LOG_TYPE_TO_VALIDATE) {
+    List<String> validateLogType = getLogTypeToValidate();
+    for (String logType : validateLogType) {
       FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
               expectedDataTemplate.getPath().toString(),
               logType + ".json"));
