@@ -98,7 +98,7 @@ provider "helm" {
 resource "kubernetes_namespace" "aoc_ns" {
   metadata {
     name = "aoc-ns-${module.common.testing_id}"
-  }  testcase          = var.testcase
+  }
 }
 
 # create a unique fargate namespace for each run
