@@ -170,7 +170,7 @@ resource "null_resource" "iam_wait" {
   ]
 
   provisioner "local-exec" {
-    command = "sleep 30"
+    command = "echo iam_wait done"
   }
 }
 
