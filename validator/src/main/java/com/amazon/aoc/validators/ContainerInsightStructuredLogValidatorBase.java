@@ -12,27 +12,14 @@ import org.apache.commons.io.FilenameUtils;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Arrays;
 import java.util.List;
 
-
 @Log4j2
-public class ContainerInsightStructuredLogValidator
+public abstract class ContainerInsightStructuredLogValidatorBase
         extends AbstractStructuredLogValidator {
 
-  private static final List<String> LOG_TYPE_TO_VALIDATE = Arrays.asList(
-          "Cluster",
-          "ClusterNamespace",
-          "ClusterService",
-          "Container",
-          "ContainerFS",
-          "Node",
-          "NodeDiskIO",
-          "NodeFS",
-          "NodeNet",
-          "Pod",
-          "PodNet"
-  );
+  //Abstract method for the log type to validate
+  public abstract List<String> getLogTypeToValidate();
 
   private static final int MAX_RETRY_COUNT = 15;
   private static final int QUERY_LIMIT = 100;
@@ -42,10 +29,11 @@ public class ContainerInsightStructuredLogValidator
     logGroupName = String.format("/aws/containerinsights/%s/performance",
             context.getCloudWatchContext().getClusterName());
     MustacheHelper mustacheHelper = new MustacheHelper();
-    for (String logType : LOG_TYPE_TO_VALIDATE) {
+    List<String> validateLogType = getLogTypeToValidate();
+    for (String logType : validateLogType) {
       FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
-          expectedDataTemplate.getPath().toString(),
-          logType + ".json"));
+              expectedDataTemplate.getPath().toString(),
+              logType + ".json"));
       try {
         String templateInput = mustacheHelper.render(fileConfig, context);
         schemasToValidate.put(logType, parseJsonSchema(templateInput));
@@ -74,7 +62,7 @@ public class ContainerInsightStructuredLogValidator
       String filterPattern = String.format("{ $.Type = \"%s\"}", logType);
       try {
         log.info(String.format("[StructuredLogValidator] Filtering logs in log group %s"
-                + "with filter pattern %s", logGroupName, filterPattern));
+                + " with filter pattern %s", logGroupName, filterPattern));
         List<FilteredLogEvent> logEvents = cloudWatchService.filterLogs(logGroupName, filterPattern,
                 startTime.toEpochMilli(), QUERY_LIMIT);
         for (FilteredLogEvent logEvent : logEvents) {
