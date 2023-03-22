@@ -70,3 +70,8 @@ variable "operator_tag" {
 variable "kafka_version" {
   default = ""
 }
+
+// Source of the collector configurations: file, s3, http and https
+variable "configuration_source" {
+  default = "file"
+}

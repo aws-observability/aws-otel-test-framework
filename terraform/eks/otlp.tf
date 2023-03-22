@@ -40,6 +40,15 @@ module "basic_components" {
   debug                          = var.debug
 }
 
+module "remote_configuration" {
+  count = var.configuration_source != "file" && var.aoc_base_scenario == "oltp" ? 1: 0
+  source = "../remote_configuration"
+
+  content = module.basic_components[0].otconfig_content
+  scheme = var.configuration_source
+  testing_id = module.common.testing_id
+}
+
 # create an IAM role here so that we can reference the clusters OIDC Provider.
 # This will be used for the push mode sample app since it needs to make a call to s3.listBuckets()
 module "iam_assumable_role_sample_app" {
@@ -132,6 +141,10 @@ resource "kubernetes_config_map" "mocked_server_cert" {
   }
 }
 
+locals {
+  configuration_uri = var.configuration_source == "file" ? "/aoc/aoc-config.yml" : module.remote_configuration[0].configuration_uri
+}
+
 # deploy aoc and mocked server
 resource "kubernetes_deployment" "aoc_deployment" {
   count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
@@ -199,7 +212,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
           image             = module.common.aoc_image
           image_pull_policy = "Always"
           args = [
-          "--config=/aoc/aoc-config.yml"]
+          "--config", local.configuration_uri]
 
           resources {
             limits = {

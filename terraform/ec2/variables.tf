@@ -135,3 +135,8 @@ variable "enable_ssm_validate" {
 variable "kafka_version" {
   default = ""
 }
+
+// Source of the collector configuration: file, s3, http and https
+variable "configuration_source" {
+  default = "file"
+}
