@@ -426,13 +426,13 @@
 			]
 		},
 		{
-			"case_name": "eks_containerinsights_fargate",
+			"case_name": "eks_containerinsights_fargate_docker",
 			"platforms": [
 				"EKS_FARGATE"
 			]
 		},
 		{
-			"case_name": "eks_containerinsights_fargate_metric",
+			"case_name": "eks_containerinsights_fargate_docker_metric",
 			"platforms": [
 				"EKS_FARGATE"
 			]
