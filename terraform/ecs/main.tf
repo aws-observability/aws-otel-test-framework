@@ -109,6 +109,17 @@ resource "aws_launch_template" "launchtemp" {
   iam_instance_profile {
     name = aws_iam_instance_profile.cluster.name
   }
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = {
+      Name      = "Integ-test-ecs-instance"
+      Patch     = var.patch
+      TestCase  = var.testcase
+      TestID    = module.common.testing_id
+      ephemeral = "true"
+    }
+  }
   depends_on = [
     null_resource.iam_wait
   ]
