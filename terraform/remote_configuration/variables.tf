@@ -11,6 +11,11 @@ variable "content" {
 // The scheme that will be used in the url returned by this module
 variable "scheme" {
     type = string
+
+    validation {
+        condition = contains(["http", "https", "s3"], var.scheme)
+        error_message = "Invalid sheme for remote_configuration"
+    }
 }
 
 // Unique id, used to name the objects stored into s3

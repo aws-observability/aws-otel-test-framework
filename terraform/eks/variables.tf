@@ -74,4 +74,9 @@ variable "kafka_version" {
 // Source of the collector configurations: file, s3, http and https
 variable "configuration_source" {
   default = "file"
+
+  validation {
+    condition = contains(["file", "http", "https", "s3"], var.configuration_source)
+    error_message = "Invalid configuration_source for eks"
+  }
 }

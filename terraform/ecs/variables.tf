@@ -66,4 +66,9 @@ variable "kafka_version" {
 // Source of the configurations in ECS: env_var, s3, http and https
 variable "configuration_source" {
   default = "env_var"
+
+  validation {
+    condition = contains(["env_var", "http", "https", "s3"], var.configuration_source)
+    error_message = "Invalid configuration_source for ecs"
+  }
 }
