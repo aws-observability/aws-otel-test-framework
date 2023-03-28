@@ -151,7 +151,7 @@ data "aws_instances" "ecs-instances" {
     values = ["Integ-test-ecs-instance"]
   }
 
-  instance_state_names = ["running", "stopped"]
+  instance_state_names = ["running"]
 
   depends_on = [aws_autoscaling_group.clusterasg]
 }
