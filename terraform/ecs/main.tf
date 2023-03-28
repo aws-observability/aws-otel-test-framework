@@ -227,14 +227,14 @@ resource "aws_ssm_parameter" "otconfig" {
 
 resource "null_resource" "check_patch" {
   depends_on = [
-    data.aws_instances.ecs-instances, aws_instance.collector_efs_ec2]
+  data.aws_instances.ecs-instances, aws_instance.collector_efs_ec2]
   count = var.patch ? 1 : 0
 
   # https://discuss.hashicorp.com/t/how-to-rewrite-null-resource-with-local-exec-provisioner-when-destroy-to-prepare-for-deprecation-after-0-12-8/4580/2
   triggers = {
-    ecs_id = data.aws_instances.ecs-instances.ids[0]
-    aoc_id     = aws_instance.collector_efs_ec2.id
-    aotutil    = var.aotutil
+    ecs_id  = data.aws_instances.ecs-instances.ids[0]
+    aoc_id  = aws_instance.collector_efs_ec2.id
+    aotutil = var.aotutil
   }
 
   provisioner "local-exec" {
