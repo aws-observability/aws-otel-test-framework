@@ -1,0 +1,101 @@
+-
+  metricName: latency_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: aws-otel
+    -
+      name: apiName
+      value: /outgoing-http-call
+    -
+      name: statusCode
+      value: 200
+    -
+      name: testingId
+      value: {{testingId}}
+
+-
+  metricName: apiBytesSent_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: aws-otel
+    -
+      name: apiName
+      value: /outgoing-http-call
+    -
+      name: statusCode
+      value: 200
+    -
+      name: testingId
+      value: {{testingId}}
+
+-
+  metricName: totalApiBytesSent_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: aws-otel
+    -
+      name: apiName
+      value: /outgoing-http-call
+    -
+      name: statusCode
+      value: 200
+    -
+      name: testingId
+      value: {{testingId}}
+
+-
+  metricName: queueSizeChange_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: aws-otel
+    -
+      name: apiName
+      value: /outgoing-http-call
+    -
+      name: statusCode
+      value: 200
+    -
+      name: testingId
+      value: {{testingId}}
+
+-
+  metricName: actualQueueSize_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: aws-otel
+    -
+      name: apiName
+      value: /outgoing-http-call
+    -
+      name: statusCode
+      value: 200
+    -
+      name: testingId
+      value: {{testingId}}
+
+-
+  metricName: lastLatency_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: aws-otel
+    -
+      name: apiName
+      value: /outgoing-http-call
+    -
+      name: statusCode
+      value: 200
+    -
+      name: testingId
+      value: {{testingId}}

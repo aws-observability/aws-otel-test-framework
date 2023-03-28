@@ -194,6 +194,33 @@
 			]
 		},
 		{
+			"case_name": "configmap_provider_http",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "configmap_provider_https",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "configmap_provider_s3",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
 			"case_name": "otlp_metric_mock",
 			"platforms": [
 				"LOCAL",

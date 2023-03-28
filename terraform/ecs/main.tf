@@ -12,6 +12,14 @@
 # express or implied. See the License for the specific language governing
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+  }
+}
 
 module "common" {
   source = "../common"
@@ -55,11 +63,21 @@ module "basic_components" {
   debug = var.debug
 }
 
+module "remote_configuration" {
+  count = var.configuration_source != "env_var" ? 1: 0
+  source = "../remote_configuration"
+
+  content = module.basic_components.otconfig_content
+  scheme = var.configuration_source
+  testing_id = module.common.testing_id
+}
+
 locals {
   ecs_taskdef_path        = fileexists("${var.testcase}/ecs_taskdef.tpl") ? "${var.testcase}/ecs_taskdef.tpl" : "../templates/${var.ecs_taskdef_directory}/ecs_taskdef.tpl"
   sample_app_image        = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
   mocked_server_image     = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
   cloudwatch_context_path = fileexists("${var.testcase}/cloudwatch_context.json") ? "${var.testcase}/cloudwatch_context.json" : "../templates/${var.ecs_taskdef_directory}/cloudwatch_context.json"
+  configuration_uri = var.configuration_source != "env_var" ? module.remote_configuration[0].configuration_uri : ""
 }
 
 provider "aws" {
@@ -71,7 +89,7 @@ data "aws_caller_identity" "current" {
 
 module "ecs_cluster" {
   source  = "infrablocks/ecs-cluster/aws"
-  version = "4.0.0"
+  version = "4.2.0"
 
   cluster_name                         = module.common.testing_id
   component                            = "aoc"
@@ -130,6 +148,7 @@ data "template_file" "task_def" {
     udp_port                       = module.common.udp_port
     grpc_port                      = module.common.grpc_port
     http_port                      = module.common.http_port
+    configuration_uri              = local.configuration_uri
 
     mocked_server_image = local.mocked_server_image
   }

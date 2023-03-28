@@ -277,9 +277,17 @@ resource "null_resource" "download_collector_from_s3" {
   }
 }
 
-resource "null_resource" "start_collector" {
-  count = var.install_package_source == "ssm" ? 0 : 1
-  # either getting the install package from s3 or from local
+module "remote_configuration" {
+  count = var.configuration_source != "file" ? 1: 0
+  source = "../remote_configuration"
+
+  content = module.basic_components.otconfig_content
+  scheme = var.configuration_source
+  testing_id = module.common.testing_id
+}
+
+resource "null_resource" "collector_file_configuration" {
+  count = var.install_package_source == "ssm" || var.configuration_source != "file" ? 0 : 1
   depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3]
   provisioner "file" {
     content     = module.basic_components.otconfig_content
@@ -293,12 +301,25 @@ resource "null_resource" "start_collector" {
       host        = aws_instance.aoc.public_ip
     }
   }
+}
+
+locals {
+  configuration_uri = var.configuration_source == "file" ? local.otconfig_destination : module.remote_configuration[0].configuration_uri
+  // encode the uri used during tests to base64 to avoid problems while this string is sent across the wire on windows.
+  // we are normalizing this behavior across all operating systems.
+  start_command = replace(local.ami_family["start_command"], "CONFIGURATION_URI_PLACEHOLDER", base64encode(local.configuration_uri))
+}
+
+resource "null_resource" "start_collector" {
+  count = var.install_package_source == "ssm" ? 0 : 1
+  # either getting the install package from s3 or from local
+  depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3]
 
   provisioner "remote-exec" {
     inline = [
       local.ami_family["wait_cloud_init"],
       local.ami_family["install_command"],
-      local.ami_family["start_command"],
+      local.start_command,
     ]
 
     connection {
