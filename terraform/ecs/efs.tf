@@ -82,6 +82,7 @@ resource "aws_instance" "collector_efs_ec2" {
 
   tags = {
     Name = "Integ-test-aoc"
+    Patch = var.patch
   }
 
   metadata_options {

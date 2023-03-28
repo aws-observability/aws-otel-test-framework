@@ -141,6 +141,21 @@ resource "aws_autoscaling_group" "clusterasg" {
   }
 }
 
+data "aws_instances" "ecs-instances" {
+  instance_tags = {
+    Patch = var.patch
+  }
+
+  filter {
+    name   = "tag:Name"
+    values = ["Integ-test-ecs-instance"]
+  }
+
+  instance_state_names = ["running", "stopped"]
+
+  depends_on = [aws_autoscaling_group.clusterasg]
+}
+
 data "aws_iam_policy_document" "ecs_agent" {
   statement {
     actions = ["sts:AssumeRole"]
@@ -208,6 +223,26 @@ resource "aws_ssm_parameter" "otconfig" {
   type  = "String"
   value = module.basic_components.otconfig_content
   tier  = "Advanced" // need advanced for a long list of prometheus relabel config
+}
+
+resource "null_resource" "check_patch" {
+  depends_on = [
+    data.aws_instances.ecs-instances, aws_instance.collector_efs_ec2]
+  count = var.patch ? 1 : 0
+
+  # https://discuss.hashicorp.com/t/how-to-rewrite-null-resource-with-local-exec-provisioner-when-destroy-to-prepare-for-deprecation-after-0-12-8/4580/2
+  triggers = {
+    ecs_id = data.aws_instances.ecs-instances.ids[0]
+    aoc_id     = aws_instance.collector_efs_ec2.id
+    aotutil    = var.aotutil
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.ecs_id}" --ignore-error
+     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}" --ignore-error
+    EOT
+  }
 }
 
 ## create task def
@@ -392,7 +427,7 @@ resource "aws_ecs_service" "aoc" {
     security_groups = [module.basic_components.aoc_security_group_id]
   }
 
-  depends_on = [null_resource.scale_down_asg, aws_ecs_task_definition.aoc]
+  depends_on = [null_resource.scale_down_asg, null_resource.check_patch, aws_ecs_task_definition.aoc]
 }
 
 # remove lb since there's no callable sample app, some test cases will drop in here, for example, ecsmetadata receiver test
@@ -409,7 +444,7 @@ resource "aws_ecs_service" "aoc_without_sample_app" {
     subnets         = module.basic_components.aoc_private_subnet_ids
     security_groups = [module.basic_components.aoc_security_group_id]
   }
-  depends_on = [aws_ecs_task_definition.aoc]
+  depends_on = [null_resource.check_patch, aws_ecs_task_definition.aoc]
 }
 
 resource "aws_ecs_service" "aoc_without_sample_app_for_bridge" {
@@ -419,7 +454,7 @@ resource "aws_ecs_service" "aoc_without_sample_app_for_bridge" {
   task_definition = "${aws_ecs_task_definition.aoc_bridge[0].family}:1"
   desired_count   = 1
   launch_type     = "EC2"
-  depends_on      = [null_resource.scale_down_asg, aws_ecs_task_definition.aoc_bridge]
+  depends_on      = [null_resource.scale_down_asg, null_resource.check_patch, aws_ecs_task_definition.aoc_bridge]
 }
 
 ##########################################
