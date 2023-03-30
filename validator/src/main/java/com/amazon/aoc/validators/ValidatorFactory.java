@@ -80,8 +80,12 @@ public class ValidatorFactory {
         validator = new ContainerInsightPrometheusStructuredLogValidator();
         expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;
-      case "container-insight-eks-logs":
-        validator = new ContainerInsightStructuredLogValidator();
+      case "container-insight-eks-containerd-logs":
+        validator = new ContainerInsightStructuredLogValidatorContainerd();
+        expectedData = validationConfig.getExpectedLogStructureTemplate();
+        break;
+      case "container-insight-eks-docker-logs":
+        validator = new ContainerInsightStructuredLogValidatorDocker();
         expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;
       case "container-insight-ecs-logs":
