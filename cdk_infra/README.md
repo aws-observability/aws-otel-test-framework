@@ -29,7 +29,6 @@ In order to update clusters, just change the config file and then call `make dep
 ### Cluster Configuration
 
 The following is only valid for the EKS Clusters.
-
 * `clusters`:
     * `name` - `string` The name of the cluster. Cluster names must be unique.
     * `launch_type` - `ec2` or `fargate` - Determines the launch type for the cluster to be deployed. Case insensitive.
