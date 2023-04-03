@@ -126,7 +126,7 @@ resource "aws_launch_template" "launchtemp" {
 }
 
 resource "aws_autoscaling_group" "clusterasg" {
-  name_prefix         = "clusterasg" 
+  name_prefix         = "clusterasg"
   vpc_zone_identifier = module.basic_components.aoc_private_subnet_ids
   desired_capacity    = 1
   max_size            = 10
