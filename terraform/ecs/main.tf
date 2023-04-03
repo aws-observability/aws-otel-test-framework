@@ -133,7 +133,7 @@ resource "aws_autoscaling_group" "clusterasg" {
   min_size            = 1
   tags = [
     {
-      "key"                 = "ephermeral"
+      "key"                 = "ephemeral"
       "value"               = "true"
       "propagate_at_launch" = false
     },
