@@ -59,7 +59,7 @@ data "aws_caller_identity" "current" {
 }
 
 resource "aws_ecs_cluster" "ecscluster" {
-  name = module.common.testing_id
+  name = "aoc-testing-${module.common.testing_id}"
 
   depends_on = [
     null_resource.iam_wait
@@ -74,7 +74,7 @@ resource "aws_ecs_cluster_capacity_providers" "clustercapacity" {
 }
 
 resource "aws_ecs_capacity_provider" "capacityprovider" {
-  name = "capacityprovider"
+  name = "capacityprovider-${module.common.testing_id}"
 
   auto_scaling_group_provider {
     auto_scaling_group_arn = aws_autoscaling_group.clusterasg.arn
@@ -92,7 +92,7 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 resource "aws_launch_template" "launchtemp" {
-  name_prefix   = "launchtemp"
+  name_prefix   = "launchtemp-${module.common.testing_id}-"
   image_id      = data.aws_ami.amazon_linux_2.image_id
   instance_type = "t2.medium"
   user_data     = base64encode("#!/bin/bash\necho ECS_CLUSTER=${module.common.testing_id} >> /etc/ecs/ecs.config")
@@ -126,11 +126,23 @@ resource "aws_launch_template" "launchtemp" {
 }
 
 resource "aws_autoscaling_group" "clusterasg" {
-  name_prefix         = "clusterasg"
+  name_prefix         = "clusterasg-${module.common.testing_id}-"
   vpc_zone_identifier = module.basic_components.aoc_private_subnet_ids
   desired_capacity    = 1
   max_size            = 10
   min_size            = 1
+  tags = [
+    {
+      "key"                 = "ephermeral"
+      "value"               = "true"
+      "propagate_at_launch" = false
+    },
+    {
+      "key"                 = "Component"
+      "value"               = "aoc"
+      "propagate_at_launch" = false
+    },
+  ]
 
   launch_template {
     id      = aws_launch_template.launchtemp.id
