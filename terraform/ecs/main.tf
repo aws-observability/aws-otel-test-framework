@@ -58,6 +58,7 @@ provider "aws" {
 data "aws_caller_identity" "current" {
 }
 
+# Builds the ecs cluster to run the tests.  Name must start with "aoc-testing" to be picked up by resource cleaner
 resource "aws_ecs_cluster" "ecscluster" {
   name = "aoc-testing-${module.common.testing_id}"
 
@@ -91,11 +92,12 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
+# The ec2 launch template used to specify the details for the ecs instances like the metdata options, ami, instance type, and much more.
 resource "aws_launch_template" "launchtemp" {
   name_prefix   = "launchtemp-${module.common.testing_id}-"
   image_id      = data.aws_ami.amazon_linux_2.image_id
   instance_type = "t2.medium"
-  user_data     = base64encode("#!/bin/bash\necho ECS_CLUSTER=${module.common.testing_id} >> /etc/ecs/ecs.config")
+  user_data     = base64encode("#!/bin/bash\necho ECS_CLUSTER=aoc-testing-${module.common.testing_id} >> /etc/ecs/ecs.config")
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
@@ -125,6 +127,7 @@ resource "aws_launch_template" "launchtemp" {
   ]
 }
 
+# The autoscaling group to handle the ecs instances.  The name of the autoscaling group must be unique and the "Component" tag must be set to "aoc" to be picked up by resource cleaner.
 resource "aws_autoscaling_group" "clusterasg" {
   name_prefix         = "clusterasg-${module.common.testing_id}-"
   vpc_zone_identifier = module.basic_components.aoc_private_subnet_ids
@@ -133,7 +136,7 @@ resource "aws_autoscaling_group" "clusterasg" {
   min_size            = 1
   tags = [
     {
-      "key"                 = "ephermeral"
+      "key"                 = "ephemeral"
       "value"               = "true"
       "propagate_at_launch" = false
     },
@@ -143,7 +146,6 @@ resource "aws_autoscaling_group" "clusterasg" {
       "propagate_at_launch" = false
     },
   ]
-
   launch_template {
     id      = aws_launch_template.launchtemp.id
     version = "$Latest"
