@@ -29,6 +29,8 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   OTLP_TO_AMP_EXPECTED_METRIC("/expected-data-template/otlpToAMPExpectedMetric.mustache"),
   DEFAULT_EXPECTED_METRIC("/expected-data-template/defaultExpectedMetric.mustache"),
   ENHANCED_EXPECTED_METRIC("/expected-data-template/enhancedExpectedMetric.mustache"),
+  ENHANCED_EXPECTED_METRIC_TESTING_ID(
+    "/expected-data-template/enhancedExpectedMetricTestingId.mustache"),
   STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),
   ECS_CONTAINER_EXPECTED_METRIC("/expected-data-template/ecsContainerExpectedMetric.mustache"),
   CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC(

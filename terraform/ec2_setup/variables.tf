@@ -74,3 +74,7 @@ variable "testing_type" {
 variable "patch" {
   default = true
 }
+
+variable "kafka_version" {
+  default = ""
+}

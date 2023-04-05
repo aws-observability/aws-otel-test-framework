@@ -65,3 +65,17 @@ variable "ecs_extra_apps" {
   default = {}
 }
 
+// This will only fetch data from the MSK cluster in case this value is set
+variable "kafka_version" {
+  default = ""
+}
+
+// Source of the configurations in ECS: env_var, s3, http and https
+variable "configuration_source" {
+  default = "env_var"
+
+  validation {
+    condition     = contains(["env_var", "http", "https", "s3"], var.configuration_source)
+    error_message = "Invalid configuration_source for ecs"
+  }
+}

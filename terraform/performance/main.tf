@@ -45,6 +45,8 @@ module "ec2_setup" {
 
   debug = var.debug
 
+  kafka_version = var.kafka_version
+
   testing_type = "perf"
 }
 

@@ -1,0 +1,7 @@
+-
+  validationType: "cw-metric"
+  httpPath: "/outgoing-http-call"
+  httpMethod: "get"
+  callingType: "http"
+  expectedMetricTemplate: "ENHANCED_EXPECTED_METRIC_TESTING_ID"
+
