@@ -24,9 +24,9 @@ module "common" {
 module "aoc_msk_cluster" {
   source = "../data_aoc_msk"
 
- cluster_version = var.kafka_version
- testcase = var.testcase
- dedup_topic = "ec2${var.testing_type}${var.testing_ami}"
+  cluster_version = var.kafka_version
+  testcase        = var.testcase
+  dedup_topic     = "ec2${var.testing_type}${var.testing_ami}"
 }
 
 module "basic_components" {
@@ -53,7 +53,7 @@ module "basic_components" {
 
   sample_app_listen_address_port = module.common.sample_app_lb_port
 
-  debug = var.debug
+  debug      = var.debug
   extra_data = { msk = module.aoc_msk_cluster.cluster_data }
 }
 
@@ -278,16 +278,16 @@ resource "null_resource" "download_collector_from_s3" {
 }
 
 module "remote_configuration" {
-  count = var.configuration_source != "file" ? 1: 0
+  count  = var.configuration_source != "file" ? 1 : 0
   source = "../remote_configuration"
 
-  content = module.basic_components.otconfig_content
-  scheme = var.configuration_source
+  content    = module.basic_components.otconfig_content
+  scheme     = var.configuration_source
   testing_id = module.common.testing_id
 }
 
 resource "null_resource" "collector_file_configuration" {
-  count = var.install_package_source == "ssm" || var.configuration_source != "file" ? 0 : 1
+  count      = var.install_package_source == "ssm" || var.configuration_source != "file" ? 0 : 1
   depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3]
   provisioner "file" {
     content     = module.basic_components.otconfig_content

@@ -32,9 +32,9 @@ module "common" {
 module "aoc_msk_cluster" {
   source = "../data_aoc_msk"
 
- cluster_version = var.kafka_version
- testcase = var.testcase
- dedup_topic = "ecs"
+  cluster_version = var.kafka_version
+  testcase        = var.testcase
+  dedup_topic     = "ecs"
 }
 
 module "basic_components" {
@@ -64,11 +64,11 @@ module "basic_components" {
 }
 
 module "remote_configuration" {
-  count = var.configuration_source != "env_var" ? 1: 0
+  count  = var.configuration_source != "env_var" ? 1 : 0
   source = "../remote_configuration"
 
-  content = module.basic_components.otconfig_content
-  scheme = var.configuration_source
+  content    = module.basic_components.otconfig_content
+  scheme     = var.configuration_source
   testing_id = module.common.testing_id
 }
 
@@ -77,7 +77,7 @@ locals {
   sample_app_image        = var.sample_app_image != "" ? var.sample_app_image : module.basic_components.sample_app_image
   mocked_server_image     = var.mocked_server_image != "" ? var.mocked_server_image : module.basic_components.mocked_server_image
   cloudwatch_context_path = fileexists("${var.testcase}/cloudwatch_context.json") ? "${var.testcase}/cloudwatch_context.json" : "../templates/${var.ecs_taskdef_directory}/cloudwatch_context.json"
-  configuration_uri = var.configuration_source != "env_var" ? module.remote_configuration[0].configuration_uri : ""
+  configuration_uri       = var.configuration_source != "env_var" ? module.remote_configuration[0].configuration_uri : ""
 }
 
 provider "aws" {

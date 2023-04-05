@@ -14,11 +14,11 @@
 # -------------------------------------------------------------------------
 
 module "aoc_msk_cluster" {
-  source = "../data_aoc_msk"
+  source              = "../data_aoc_msk"
   cluster_name_prefix = "EKSMSKCluster"
- cluster_version = var.kafka_version
- testcase = var.testcase
- dedup_topic = "eks${var.eks_cluster_name}"
+  cluster_version     = var.kafka_version
+  testcase            = var.testcase
+  dedup_topic         = "eks${var.eks_cluster_name}"
 }
 
 module "basic_components" {
@@ -37,15 +37,15 @@ module "basic_components" {
 
   extra_data = { msk = module.aoc_msk_cluster.cluster_data }
 
-  debug                          = var.debug
+  debug = var.debug
 }
 
 module "remote_configuration" {
-  count = var.configuration_source != "file" && var.aoc_base_scenario == "oltp" ? 1: 0
+  count  = var.configuration_source != "file" && var.aoc_base_scenario == "oltp" ? 1 : 0
   source = "../remote_configuration"
 
-  content = module.basic_components[0].otconfig_content
-  scheme = var.configuration_source
+  content    = module.basic_components[0].otconfig_content
+  scheme     = var.configuration_source
   testing_id = module.common.testing_id
 }
 

@@ -8,8 +8,8 @@
 // avoid collision between tests.
 // Topic names will have the following format: <branch>-<testcase name>-<dedupstring>
 locals {
-    // E.g.: "AOCMSKCluster2-8-1"
-    cluster_name = "${var.cluster_name_prefix}${replace(var.cluster_version, ".", "-")}"
+  // E.g.: "AOCMSKCluster2-8-1"
+  cluster_name = "${var.cluster_name_prefix}${replace(var.cluster_version, ".", "-")}"
 }
 
 data "aws_msk_cluster" "aoc_cluster" {
@@ -24,11 +24,11 @@ data "external" "branch" {
 }
 
 locals {
-    topic_pieces = split("/", var.testcase)
-    topic_testcase = element(local.topic_pieces, length(local.topic_pieces) - 1)
-    // Branch name with "/" replaced by "-"
-    branch = replace(trim(data.external.branch.result["branch"], " "), "/[\\/]/", "-")
+  topic_pieces   = split("/", var.testcase)
+  topic_testcase = element(local.topic_pieces, length(local.topic_pieces) - 1)
+  // Branch name with "/" replaced by "-"
+  branch = replace(trim(data.external.branch.result["branch"], " "), "/[\\/]/", "-")
 
-    topic = "${local.branch}-${local.topic_testcase}-${var.dedup_topic}"
-    cluster_data = var.cluster_version == "" ? tomap({}) : data.aws_msk_cluster.aoc_cluster[0]
+  topic        = "${local.branch}-${local.topic_testcase}-${var.dedup_topic}"
+  cluster_data = var.cluster_version == "" ? tomap({}) : data.aws_msk_cluster.aoc_cluster[0]
 }
