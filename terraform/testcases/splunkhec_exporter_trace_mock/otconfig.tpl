@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   splunk_hec:
     endpoint: "https://${mock_endpoint}"
     token: dummytoken

@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   otlphttp:
     traces_endpoint: "https://${mock_endpoint}"
     tls:

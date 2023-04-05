@@ -7,7 +7,7 @@ exporters:
     namespace: '${otel_service_namespace}/${otel_service_name}'
     region: '${region}'
   logging:
-    loglevel: debug
+    verbosity: detailed
 service:
   pipelines:
     metrics:

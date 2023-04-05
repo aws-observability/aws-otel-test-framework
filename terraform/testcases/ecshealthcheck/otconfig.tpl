@@ -11,7 +11,7 @@ receivers:
         - targets: [ ${sample_app_listen_address_host}:${sample_app_listen_address_port} ]
 exporters:
   logging:
-      loglevel: debug
+      verbosity: detailed
 service:
   pipelines:
     metrics:

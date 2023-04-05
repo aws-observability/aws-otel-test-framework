@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   sapm:
     endpoint: "https://${mock_endpoint}"
 

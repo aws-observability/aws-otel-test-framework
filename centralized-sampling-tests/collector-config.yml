@@ -13,7 +13,7 @@ receivers:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   awsxray:
     local_mode: true
     region: 'us-west-2'

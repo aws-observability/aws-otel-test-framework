@@ -15,7 +15,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   prometheusremotewrite:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     timeout: 10s

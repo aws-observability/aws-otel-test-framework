@@ -12,7 +12,7 @@ extensions:
 
     exporters:
       logging:
-        loglevel: debug
+        verbosity: detailed
       awsemf:
         region: '${region}'
 
