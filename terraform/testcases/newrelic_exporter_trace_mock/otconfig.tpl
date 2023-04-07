@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   newrelic:
     apikey: super-secret-api-key
     traces:

@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   awsemf:
     region: ${region}
     endpoint: "https://${mock_endpoint}"

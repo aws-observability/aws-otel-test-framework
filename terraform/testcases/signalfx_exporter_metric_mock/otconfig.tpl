@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   signalfx:
     access_token: dummytoken
     ingest_url: "https://${mock_endpoint}"

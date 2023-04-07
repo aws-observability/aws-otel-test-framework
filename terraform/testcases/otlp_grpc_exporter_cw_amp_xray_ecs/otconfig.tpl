@@ -122,7 +122,7 @@ exporters:
     local_mode: true
     region: '${region}'
   logging:
-    loglevel: debug
+    verbosity: detailed
 
 service:
   pipelines:
