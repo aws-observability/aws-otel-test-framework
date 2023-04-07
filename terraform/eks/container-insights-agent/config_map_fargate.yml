@@ -430,7 +430,7 @@ data:
               - pod_network_tx_bytes
 
       logging:
-        loglevel: debug
+        verbosity: detailed
 
     extensions:
       health_check:

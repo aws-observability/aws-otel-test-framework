@@ -40,7 +40,7 @@ exporters:
           - instance_memory_working_set
           - instance_memory_limit
   logging:
-    loglevel: debug
+    verbosity: detailed
 service:
   pipelines:
     metrics:

@@ -90,7 +90,7 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
   logging:
-    loglevel: debug
+    verbosity: detailed
 
 service:
   pipelines:

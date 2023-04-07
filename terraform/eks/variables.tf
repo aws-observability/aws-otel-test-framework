@@ -65,3 +65,18 @@ variable "operator_tag" {
   type    = string
   default = "latest"
 }
+
+// This will only fetch data from the MSK cluster in case this value is set
+variable "kafka_version" {
+  default = ""
+}
+
+// Source of the collector configurations: file, s3, http and https
+variable "configuration_source" {
+  default = "file"
+
+  validation {
+    condition     = contains(["file", "http", "https", "s3"], var.configuration_source)
+    error_message = "Invalid configuration_source for eks"
+  }
+}

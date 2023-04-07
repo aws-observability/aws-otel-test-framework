@@ -56,3 +56,8 @@ variable "debug" {
   type    = bool
   default = false
 }
+
+variable "extra_data" {
+  type    = map(any)
+  default = {}
+}

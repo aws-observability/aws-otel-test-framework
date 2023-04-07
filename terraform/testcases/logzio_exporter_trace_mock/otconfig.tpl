@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   logzio/traces:
     account_token: testToken
     endpoint: "https://${mock_endpoint}"

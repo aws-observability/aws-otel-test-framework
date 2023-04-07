@@ -23,7 +23,7 @@ exporters:
     auth:
       authenticator: sigv4auth
   logging:
-    loglevel: debug
+    verbosity: detailed
 service:
   pipelines:
     metrics:

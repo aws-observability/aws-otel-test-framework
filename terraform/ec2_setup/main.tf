@@ -75,5 +75,7 @@ module "ec2_setup" {
 
   testing_type = var.testing_type
 
+  kafka_version = var.kafka_version
+
   patch = var.patch
 }

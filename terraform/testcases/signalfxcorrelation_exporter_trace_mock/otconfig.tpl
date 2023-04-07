@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   signalfx_correlation:
     endpoint: "https://${mock_endpoint}"
 

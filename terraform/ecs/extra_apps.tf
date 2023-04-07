@@ -28,7 +28,7 @@ resource "aws_ecs_task_definition" "extra_apps" {
 resource "aws_ecs_service" "extra_apps" {
   for_each         = var.ecs_extra_apps
   name             = "aocservice-${module.common.testing_id}-${each.value.service_name}"
-  cluster          = module.ecs_cluster.cluster_id
+  cluster          = aws_ecs_cluster.ecscluster.id
   task_definition  = "${aws_ecs_task_definition.extra_apps[each.key].family}:1"
   desired_count    = each.value.replicas
   launch_type      = each.value.launch_type

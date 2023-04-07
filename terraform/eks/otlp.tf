@@ -13,6 +13,14 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
+module "aoc_msk_cluster" {
+  source              = "../data_aoc_msk"
+  cluster_name_prefix = "EKSMSKCluster"
+  cluster_version     = var.kafka_version
+  testcase            = var.testcase
+  dedup_topic         = "eks${var.eks_cluster_name}"
+}
+
 module "basic_components" {
   source = "../basic_components"
   count  = var.aoc_base_scenario == "oltp" ? 1 : 0
@@ -26,7 +34,19 @@ module "basic_components" {
   cortex_instance_endpoint       = var.cortex_instance_endpoint
   sample_app_listen_address_host = var.sample_app_mode == "pull" ? kubernetes_service.sample_app_service[0].status[0].load_balancer[0].ingress[0].hostname : ""
   sample_app_listen_address_port = module.common.sample_app_lb_port
-  debug                          = var.debug
+
+  extra_data = { msk = module.aoc_msk_cluster.cluster_data }
+
+  debug = var.debug
+}
+
+module "remote_configuration" {
+  count  = var.configuration_source != "file" && var.aoc_base_scenario == "oltp" ? 1 : 0
+  source = "../remote_configuration"
+
+  content    = module.basic_components[0].otconfig_content
+  scheme     = var.configuration_source
+  testing_id = module.common.testing_id
 }
 
 # create an IAM role here so that we can reference the clusters OIDC Provider.
@@ -121,6 +141,10 @@ resource "kubernetes_config_map" "mocked_server_cert" {
   }
 }
 
+locals {
+  configuration_uri = var.configuration_source == "file" ? "/aoc/aoc-config.yml" : module.remote_configuration[0].configuration_uri
+}
+
 # deploy aoc and mocked server
 resource "kubernetes_deployment" "aoc_deployment" {
   count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
@@ -188,7 +212,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
           image             = module.common.aoc_image
           image_pull_policy = "Always"
           args = [
-          "--config=/aoc/aoc-config.yml"]
+          "--config", local.configuration_uri]
 
           resources {
             limits = {

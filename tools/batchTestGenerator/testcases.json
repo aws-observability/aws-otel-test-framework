@@ -5,11 +5,24 @@
 			"targets": [
 				{
 					"name": "collector-ci-amd64-1-22",
-					"region": "us-west-2"
+					"region": "us-west-2",
+					"excluded_tests": [
+						"containerinsights_eks_containerd"
+					]
 				},
 				{
 					"name": "collector-ci-amd64-1-23",
-					"region": "us-west-2"
+					"region": "us-west-2",
+					"excluded_tests": [
+						"containerinsights_eks_containerd"
+					]
+				},
+				{
+					"name": "collector-ci-amd64-1-24",
+					"region": "us-west-2",
+					"excluded_tests": [
+						"containerinsight_eks"
+					]
 				}
 			]
 		},
@@ -18,11 +31,17 @@
 			"targets": [
 				{
 					"name": "collector-ci-arm64-1-22",
-					"region": "us-west-2"
+					"region": "us-west-2",
+					"excluded_tests": [
+						"containerinsights_eks_containerd"
+					]
 				},
 				{
 					"name": "collector-ci-arm64-1-23",
-					"region": "us-west-2"
+					"region": "us-west-2",
+					"excluded_tests": [
+						"containerinsights_eks_containerd"
+					]
 				},
 				{
 					"name": "collector-ci-arm64-1-24",
@@ -43,13 +62,6 @@
 				{
 					"name": "operator-ci-amd64-1-23",
 					"region": "us-west-2"
-				},
-				{
-					"name": "operator-ci-amd64-1-24",
-					"region": "us-west-2",
-					"excluded_tests": [
-						"containerinsight_eks"
-					]
 				}
 			]
 		},
@@ -124,6 +136,66 @@
 			]
 		},
 		{
+			"case_name": "kafka_otlp_metric_2_8_1",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_metric_3_2_0",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_trace_2_8_1",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_trace_3_2_0",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_metric_mock_2_8_1",
+			"platforms": [
+				"PERF"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_metric_mock_3_2_0",
+			"platforms": [
+				"PERF"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_mock_2_8_1",
+			"platforms": [
+				"PERF"
+			]
+		},
+		{
+			"case_name": "kafka_otlp_mock_3_2_0",
+			"platforms": [
+				"PERF"
+			]
+		},
+		{
 			"case_name": "otlp_metric",
 			"platforms": [
 				"EC2",
@@ -131,6 +203,33 @@
 				"EKS",
 				"EKS_ARM64",
 				"CANARY"
+			]
+		},
+		{
+			"case_name": "configmap_provider_http",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "configmap_provider_https",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
+			"case_name": "configmap_provider_s3",
+			"platforms": [
+				"EC2",
+				"ECS",
+				"EKS",
+				"EKS_ARM64"
 			]
 		},
 		{
@@ -361,6 +460,13 @@
 			]
 		},
 		{
+			"case_name": "containerinsights_eks_containerd",
+			"platforms": [
+				"EKS",
+				"EKS_ARM64"
+			]
+		},
+		{
 			"case_name": "zipkin_mock",
 			"platforms": [
 				"LOCAL",
@@ -407,13 +513,13 @@
 			]
 		},
 		{
-			"case_name": "eks_containerinsights_fargate",
+			"case_name": "eks_containerinsights_fargate_docker",
 			"platforms": [
 				"EKS_FARGATE"
 			]
 		},
 		{
-			"case_name": "eks_containerinsights_fargate_metric",
+			"case_name": "eks_containerinsights_fargate_docker_metric",
 			"platforms": [
 				"EKS_FARGATE"
 			]

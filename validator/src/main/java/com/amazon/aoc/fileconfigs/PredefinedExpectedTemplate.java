@@ -29,6 +29,8 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   OTLP_TO_AMP_EXPECTED_METRIC("/expected-data-template/otlpToAMPExpectedMetric.mustache"),
   DEFAULT_EXPECTED_METRIC("/expected-data-template/defaultExpectedMetric.mustache"),
   ENHANCED_EXPECTED_METRIC("/expected-data-template/enhancedExpectedMetric.mustache"),
+  ENHANCED_EXPECTED_METRIC_TESTING_ID(
+    "/expected-data-template/enhancedExpectedMetricTestingId.mustache"),
   STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),
   ECS_CONTAINER_EXPECTED_METRIC("/expected-data-template/ecsContainerExpectedMetric.mustache"),
   CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC(
@@ -84,8 +86,10 @@ public enum PredefinedExpectedTemplate implements FileConfig {
    */
   CONTAINER_INSIGHT_EKS_PROMETHEUS_LOG(
     "/expected-data-template/container-insight/eks/prometheus"),
-  CONTAINER_INSIGHT_EKS_LOG(
+  CONTAINER_INSIGHT_EKS_DOCKER_LOG(
     "/expected-data-template/container-insight/eks/infrastructure"),
+  CONTAINER_INSIGHT_EKS_CONTAINERD_LOG(
+    "/expected-data-template/container-insight/eks/containerd-infrastructure"),
   CONTAINER_INSIGHT_ECS_LOG(
     "/expected-data-template/container-insight/ecs/ecs-instance"),
   CONTAINER_INSIGHT_ECS_PROMETHEUS_LOG(

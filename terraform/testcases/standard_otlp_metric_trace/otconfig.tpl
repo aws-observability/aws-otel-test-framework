@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   awsemf:
     region: ${region}
     no_verify_ssl: false

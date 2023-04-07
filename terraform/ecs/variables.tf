@@ -39,6 +39,13 @@ variable "ecs_taskdef_network_mode" {
   default = "awsvpc"
 }
 
+# if patch is true, we will wait until the instance gets patched after launching the instance,
+# also set a patch tag onto the instance so that the instance get picked by the ssm patching process.
+# and then start the installation of collector.
+variable "patch" {
+  default = true
+}
+
 variable "ecs_extra_apps_image_repo" {
   # When empty will use sample image repo
   default = ""
@@ -58,3 +65,17 @@ variable "ecs_extra_apps" {
   default = {}
 }
 
+// This will only fetch data from the MSK cluster in case this value is set
+variable "kafka_version" {
+  default = ""
+}
+
+// Source of the configurations in ECS: env_var, s3, http and https
+variable "configuration_source" {
+  default = "env_var"
+
+  validation {
+    condition     = contains(["env_var", "http", "https", "s3"], var.configuration_source)
+    error_message = "Invalid configuration_source for ecs"
+  }
+}
