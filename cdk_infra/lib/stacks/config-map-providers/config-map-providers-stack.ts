@@ -9,7 +9,7 @@ import { Construct } from 'constructs';
 
 export interface ConfigMapProvidersStackProps extends StackProps {
   /* Prefix of the bucket that will store the configuration for confmap providers */
-  bucketNamePrefix: string
+  bucketNamePrefix: string;
 }
 /**
  * Stack containing resources used by config map providers in the integration
@@ -17,7 +17,11 @@ export interface ConfigMapProvidersStackProps extends StackProps {
  * region and account.
  */
 export class ConfigMapProvidersStack extends Stack {
-  constructor(scope: Construct, id: string, props: ConfigMapProvidersStackProps) {
+  constructor(
+    scope: Construct,
+    id: string,
+    props: ConfigMapProvidersStackProps
+  ) {
     super(scope, id, props);
 
     // We need a globally unique bucket name that can be used in local development as well,

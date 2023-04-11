@@ -13,8 +13,8 @@ const envDefault = {
 // Lambda CI runs in us-east-1
 const lambdaDefaults = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
-  region: "us-east-1"
-}
+  region: 'us-east-1'
+};
 
 const app = new cdk.App();
 
@@ -29,11 +29,11 @@ new MSKClustersStack(app, 'msk-clusters', {
 
 new ConfigMapProvidersStack(app, 'config-map-providers', {
   env: envDefault,
-  bucketNamePrefix: "adot-collector-integ-test-configurations"
+  bucketNamePrefix: 'adot-collector-integ-test-configurations'
 });
 new ConfigMapProvidersStack(app, 'config-map-providers-lambda', {
   env: lambdaDefaults,
-  bucketNamePrefix: "adot-lambda-integ-test-configurations"
+  bucketNamePrefix: 'adot-lambda-integ-test-configurations'
 });
 
 deployClusters(app, vpcStack.vpc, envDefault);
