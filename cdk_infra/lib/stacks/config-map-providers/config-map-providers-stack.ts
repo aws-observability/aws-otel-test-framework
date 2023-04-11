@@ -8,12 +8,13 @@ import { Bucket, BucketEncryption } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 
 export interface ConfigMapProvidersStackProps extends StackProps {
+  /* Prefix of the bucket that will store the configuration for confmap providers */
   bucketNamePrefix: string
 }
 /**
  * Stack containing resources used by config map providers in the integration
- * tests. The limitation is that only one stack of this type can be deployed per
- * region.
+ * tests. The limitation is that only one stack with a specific prefix can be deployed per
+ * region and account.
  */
 export class ConfigMapProvidersStack extends Stack {
   constructor(scope: Construct, id: string, props: ConfigMapProvidersStackProps) {

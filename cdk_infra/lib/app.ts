@@ -10,7 +10,7 @@ const envDefault = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
   region: process.env.CDK_DEFAULT_REGION
 };
-
+// Lambda CI runs in us-east-1
 const lambdaDefaults = {
   account: process.env.CDK_DEFAULT_ACCOUNT,
   region: "us-east-1"
