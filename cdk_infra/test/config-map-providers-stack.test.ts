@@ -15,7 +15,8 @@ test('Config map providers', () => {
     stack,
     'config-map-providers',
     {
-      env: env
+      env: env,
+      bucketNamePrefix: 'adot-collector-integ-test-configurations'
     }
   );
 
