@@ -37,6 +37,16 @@ export class ClusterAuth extends Construct {
       username: 'adot-admin'
     });
 
+    const operatorRepoWorkflowRole = Role.fromRoleName(
+      this,
+      'repoWorkflowRole',
+      'aws-obs-operator-gha'
+    );
+    this.cluster.awsAuth.addRoleMapping(operatorRepoWorkflowRole, {
+      groups: ['adot-workflow-admin'],
+      username: 'adot-operator-workflow'
+    });
+
     const repoWorkflowRole = Role.fromRoleName(
       this,
       'repoWorkflowRole',
