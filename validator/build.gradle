@@ -39,7 +39,7 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
 
     // mustache template
-    implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.8.9'
+    implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.10'
 
     // apache io utils
     implementation group: 'commons-io', name: 'commons-io', version: '2.11.0'
