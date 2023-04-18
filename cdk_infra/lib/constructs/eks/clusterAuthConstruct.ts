@@ -39,7 +39,7 @@ export class ClusterAuth extends Construct {
 
     const operatorRepoWorkflowRole = Role.fromRoleName(
       this,
-      'repoWorkflowRole',
+      'operatorRepoWorkflowRole',
       'aws-obs-operator-gha'
     );
     this.cluster.awsAuth.addRoleMapping(operatorRepoWorkflowRole, {
