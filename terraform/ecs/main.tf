@@ -121,12 +121,24 @@ data "aws_ami" "amazon_linux_2" {
   }
 }
 
+locals {
+  user_data = <<EOF
+#!/bin/bash
+
+# Set Cluster ID
+echo ECS_CLUSTER=aoc-testing-${module.common.testing_id} >> /etc/ecs/ecs.config
+
+# Install SSM
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+EOF
+}
+
 # The ec2 launch template used to specify the details for the ecs instances like the metdata options, ami, instance type, and much more.
 resource "aws_launch_template" "launchtemp" {
   name_prefix   = "launchtemp-${module.common.testing_id}-"
   image_id      = data.aws_ami.amazon_linux_2.image_id
   instance_type = "t2.medium"
-  user_data     = base64encode("#!/bin/bash\necho ECS_CLUSTER=aoc-testing-${module.common.testing_id} >> /etc/ecs/ecs.config")
+  user_data     = base64encode(local.user_data)
   metadata_options {
     http_endpoint               = "enabled"
     http_tokens                 = "required"
