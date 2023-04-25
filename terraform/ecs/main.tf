@@ -92,7 +92,7 @@ resource "aws_ecs_cluster" "ecscluster" {
   name = "aoc-testing-${module.common.testing_id}"
   tags = {
     creation_time_rfc3339 = module.common.start_time_3339
-    ephemeral = "true"
+    ephemeral             = "true"
   }
   depends_on = [
     null_resource.iam_wait
