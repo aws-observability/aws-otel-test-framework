@@ -90,7 +90,9 @@ data "aws_caller_identity" "current" {
 # Builds the ecs cluster to run the tests.  Name must start with "aoc-testing" to be picked up by resource cleaner
 resource "aws_ecs_cluster" "ecscluster" {
   name = "aoc-testing-${module.common.testing_id}"
-
+  tags = {
+    creation_time_rfc3339 = module.common.start_time_3339
+  }
   depends_on = [
     null_resource.iam_wait
   ]
