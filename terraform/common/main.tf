@@ -19,3 +19,5 @@
 resource "random_id" "testing_id" {
   byte_length = 8
 }
+
+resource "time_static" "startTime" {}

@@ -118,3 +118,7 @@ output "amp_testing_framework" {
   value = "amp_testing_framework"
 }
 
+output "start_time_3339" {
+  value = time_static.startTime.rfc3339
+}
+
