@@ -154,6 +154,11 @@ resource "aws_launch_template" "launchtemp" {
       ephemeral = "true"
     }
   }
+  tags = {
+    TestCase  = var.testcase
+    TestID    = module.common.testing_id
+    ephemeral = "true"
+  }
   depends_on = [
     null_resource.iam_wait
   ]
