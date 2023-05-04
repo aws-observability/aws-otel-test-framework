@@ -4,7 +4,7 @@ receivers:
     aggregation_interval: 20s
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   otlphttp:
     metrics_endpoint: "https://${mock_endpoint}"
     tls:

@@ -155,7 +155,7 @@ exporters:
           - "^envoy_http_downstream_rq_xx$"
 
   logging:
-    loglevel: debug
+    verbosity: detailed
 
 service:
   telemetry:

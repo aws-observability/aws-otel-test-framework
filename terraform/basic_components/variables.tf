@@ -58,6 +58,6 @@ variable "debug" {
 }
 
 variable "extra_data" {
-  type = map
+  type    = map(any)
   default = {}
 }

@@ -105,6 +105,9 @@ processors:
         action: delete
       - key: aws.ecs.task.known_status
         action: delete
+      - key: aws.ecs.service.name
+        action: upsert
+        value: "NOOP"
 
 exporters:
   awsemf:
@@ -122,7 +125,7 @@ exporters:
     local_mode: true
     region: '${region}'
   logging:
-    loglevel: debug
+    verbosity: detailed
 
 service:
   pipelines:

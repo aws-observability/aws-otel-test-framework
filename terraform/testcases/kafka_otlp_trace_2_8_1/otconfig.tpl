@@ -21,7 +21,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   awsxray:
     local_mode: true
     region: '${region}'

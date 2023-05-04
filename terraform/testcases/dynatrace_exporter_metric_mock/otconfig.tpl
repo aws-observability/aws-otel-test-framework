@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   dynatrace:
     api_token: mytoken
     endpoint: "https://${mock_endpoint}"

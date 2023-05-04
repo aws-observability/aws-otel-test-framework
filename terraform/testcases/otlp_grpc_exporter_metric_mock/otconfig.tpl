@@ -12,7 +12,7 @@ processors:
 
 exporters:
   logging:
-    loglevel: debug
+    verbosity: detailed
   otlp:
     endpoint: ${mock_endpoint}
     tls:

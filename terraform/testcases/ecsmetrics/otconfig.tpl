@@ -82,6 +82,11 @@ processors:
       action: delete
     - key: aws.ecs.task.known_status
       action: delete
+      # We are normalizing this because of this issue: https://github.com/open-telemetry/opentelemetry-collector-contrib/issues/21412
+      # In ECS running in Fargate this resource attribute is currently an empty-string.
+    - key: aws.ecs.service.name
+      action: upsert
+      value: "NOOP"
 
 exporters:
   awsemf:
@@ -90,7 +95,7 @@ exporters:
     resource_to_telemetry_conversion:
       enabled: true
   logging:
-    loglevel: debug
+    verbosity: detailed
 
 service:
   pipelines:

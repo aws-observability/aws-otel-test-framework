@@ -6,16 +6,16 @@ data "aws_caller_identity" "caller" {}
 data "aws_region" "region" {}
 
 locals {
-    // Name of the bucket, according to the convention
-    // {prefix}-{region}-{account id}
-    // This bucket is created in the cdk_infra package.
-    bucket = "${var.configuration_bucket}-${data.aws_region.region.name}-${data.aws_caller_identity.caller.account_id}"
+  // Name of the bucket, according to the convention
+  // {prefix}-{region}-{account id}
+  // This bucket is created in the cdk_infra package.
+  bucket = "${var.configuration_bucket}-${data.aws_region.region.name}-${data.aws_caller_identity.caller.account_id}"
 }
 
 resource "aws_s3_object" "configuration_uri" {
-    bucket = local.bucket
-    key = var.testing_id
-    content = var.content
+  bucket  = local.bucket
+  key     = var.testing_id
+  content = var.content
 }
 
 resource "null_resource" "presigned_url" {
@@ -37,10 +37,10 @@ data "local_file" "uri" {
 }
 
 locals {
-    uri = {
-        s3 = "s3://${local.bucket}.s3.${data.aws_region.region.name}.amazonaws.com/${var.testing_id}"
-        https = trimspace(data.local_file.uri.content)
-        http = replace(trimspace(data.local_file.uri.content), "/^https:/", "http:")
-    }
-    configuration_uri = local.uri[var.scheme]
+  uri = {
+    s3    = "s3://${local.bucket}.s3.${data.aws_region.region.name}.amazonaws.com/${var.testing_id}"
+    https = trimspace(data.local_file.uri.content)
+    http  = replace(trimspace(data.local_file.uri.content), "/^https:/", "http:")
+  }
+  configuration_uri = local.uri[var.scheme]
 }
