@@ -8,8 +8,6 @@ Before adding a new component into ADOT Collector, we require contributors to ad
 
 * Contributors won't need to define different test cases for different platforms. The point is, one test case for multiple types of tests including integration test and soaking test. 
 
-Any questions could be asked on [gitter](https://gitter.im/aws-observability-aws-otel-test-framework/community)
-
 ## 1. Two PRs to contribute your component to [ADOT Collector](https://github.com/aws-observability/aws-otel-collector)
 
 Below are the steps to add a new component to ADOT Collector. Before doing this, please ensure your component is already merged into [opentelemetry-collector-contrib](https://github.com/open-telemetry/opentelemetry-collector-contrib)
