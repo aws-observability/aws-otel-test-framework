@@ -428,6 +428,12 @@ data "aws_ami" "amazonlinux2" {
     "available"]
   }
 
+  // sidecar instance should be fixed in x86_64 instance types
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
   owners = [
   "amazon"]
 }
