@@ -55,3 +55,19 @@ clusters:
     launch_type: ec2
     instance_type: "m5.large"
     cert_manager: true
+  - name: collector-ci-arm64-1-25
+    version: "1.25"
+    launch_type: ec2
+    instance_type: m6g.medium
+  - name: collector-ci-amd64-1-25
+    version: "1.25"
+    launch_type: ec2
+    instance_type: "m5.large"
+  - name: collector-ci-arm64-1-26
+    version: "1.26"
+    launch_type: ec2
+    instance_type: m6g.medium
+  - name: collector-ci-amd64-1-26
+    version: "1.26"
+    launch_type: ec2
+    instance_type: "m5.large"
