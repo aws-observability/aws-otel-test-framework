@@ -372,22 +372,23 @@ below is an example in the aoc repo workflow, you can also configure it in your 
     needs: [e2etest-release, e2etest-preparation]
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: ${{ secrets.ASSUMABLE_ROLE_ARN }}
           role-session-name: RelevantNameForWorkflow
           aws-region: us-west-2
           
       - name: Set up JDK 1.11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 1.11
       
       - name: Set up terraform
         uses: hashicorp/setup-terraform@v1
       
       - name: Check out testing framework
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: 'aws-observability/aws-otel-test-framework'
           ref: 'terraform'
