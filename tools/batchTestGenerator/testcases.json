@@ -70,7 +70,7 @@
 					"excluded_tests": [
 						"containerinsight_eks"
 					]
-				}
+				},
 				{
 					"name": "collector-ci-arm64-1-26",
 					"region": "us-west-2",
