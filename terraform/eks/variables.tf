@@ -80,3 +80,8 @@ variable "configuration_source" {
     error_message = "Invalid configuration_source for eks"
   }
 }
+
+variable "auto_instrumentation" {
+  type    = bool
+  default = false
+}

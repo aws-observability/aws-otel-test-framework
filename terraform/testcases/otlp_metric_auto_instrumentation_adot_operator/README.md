@@ -1,0 +1,1 @@
+This tests uses java-auto-instrumentation to instrument the spark sample app image (without java agent) using Opentelemetry-Operator. Opentelemetry-Operator here also deploys and manages the ADOT-Collector. Validation and other rest functionality is similar to otlp_metric_adot_operator testcase.

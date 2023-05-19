@@ -50,3 +50,7 @@ variable "aoc_service" {
 variable "sample_app_service_account_name" {
   type = string
 }
+
+variable "auto_instrumentation" {
+  type    = bool
+}
