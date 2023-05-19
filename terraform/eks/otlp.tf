@@ -107,7 +107,7 @@ module "aoc_oltp" {
   is_adot_operator                = replace(var.testcase, "_adot_operator", "") != var.testcase
   auto_instrumentation            = var.auto_instrumentation
 
-  depends_on                      = [module.iam_assumable_role_sample_app]
+  depends_on = [module.iam_assumable_role_sample_app]
 }
 
 locals {
@@ -299,7 +299,7 @@ data "template_file" "java_auto_instrumentation_config_file" {
   template = file("./adot-operator/java_auto_instrumentation.tpl")
 
   vars = {
-    AOC_NAMESPACE      = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
+    AOC_NAMESPACE = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
   }
 
   depends_on = [module.adot_operator]

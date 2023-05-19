@@ -52,5 +52,5 @@ variable "sample_app_service_account_name" {
 }
 
 variable "auto_instrumentation" {
-  type    = bool
+  type = bool
 }
