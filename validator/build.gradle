@@ -71,7 +71,7 @@ dependencies {
     implementation 'com.github.awslabs:aws-request-signing-apache-interceptor:b3772780da'
 
     // http client
-    implementation("com.squareup.okhttp3:okhttp:5.0.0-alpha.11")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
 
     // command cli
     implementation 'info.picocli:picocli:4.7.3'
