@@ -382,7 +382,7 @@ below is an example in the aoc repo workflow, you can also configure it in your 
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
-          java-version: 11
+          java-version: 17
       
       - name: Set up terraform
         uses: hashicorp/setup-terraform@v1
