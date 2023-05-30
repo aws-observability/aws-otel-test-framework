@@ -49,7 +49,7 @@ dependencies {
 
     // json flattener
     implementation group: 'com.github.wnameless', name: 'json-flattener', version: '0.7.1'
-    implementation group: 'com.github.fge', name: 'json-schema-validator', version: '2.0.0'
+    implementation group: 'com.github.fge', name: 'json-schema-validator', version: '2.2.14'
 
     // command cli
     implementation 'info.picocli:picocli:4.7.3'
