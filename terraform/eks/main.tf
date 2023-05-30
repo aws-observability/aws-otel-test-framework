@@ -108,14 +108,6 @@ resource "kubernetes_namespace" "aoc_fargate_ns" {
   }
 }
 
-data "aws_subnet_ids" "private_subnets" {
-  vpc_id = data.aws_eks_cluster.testing_cluster.vpc_config[0].vpc_id
-  filter {
-    name   = "mapPublicIpOnLaunch"
-    values = ["false"] # insert values here
-  }
-}
-
 resource "kubernetes_service_account" "aoc-role" {
   metadata {
     name      = "aoc-role-${module.common.testing_id}"
