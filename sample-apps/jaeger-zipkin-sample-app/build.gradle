@@ -31,7 +31,7 @@ configurations {
 
 application {
     // Define the main class for the application.
-    mainClassName = 'com.amazon.sampleapp.App'
+    mainClass.set("com.amazon.sampleapp.App")
 }
 
 dependencies {

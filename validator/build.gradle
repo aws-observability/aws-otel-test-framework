@@ -84,7 +84,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClassName = 'com.amazon.aoc.App'
+    mainClass.set("com.amazon.aoc.App")
 }
 
 jib {

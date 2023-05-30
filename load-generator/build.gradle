@@ -59,7 +59,7 @@ dependencies {
 
 application {
     // Define the main class for the application.
-    mainClassName = 'com.amazon.opentelemetry.load.generator.App'
+    mainClass.set("com.amazon.opentelemetry.load.generator.App")
 }
 
 // jibDockerBuild doesn't support multi-platform image manifests
