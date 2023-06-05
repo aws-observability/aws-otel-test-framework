@@ -10,7 +10,7 @@
     "prettier-format": "prettier --config .prettierrc 'lib/**/*.ts' 'test/**/*.ts' --write"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.1",
+    "@types/jest": "^29.5.2",
     "@types/js-yaml": "^4.0.5",
     "@types/node": "20.2.5",
     "@types/prettier": "2.7.2",
