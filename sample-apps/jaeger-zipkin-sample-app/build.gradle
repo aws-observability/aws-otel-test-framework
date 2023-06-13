@@ -36,7 +36,7 @@ application {
 
 dependencies {
     implementation "com.sparkjava:spark-core:2.9.4"
-    implementation "com.squareup.okhttp3:okhttp:5.0.0-alpha.11"
+    implementation "com.squareup.okhttp3:okhttp:4.11.0"
     implementation "software.amazon.awssdk:s3:2.20.75"
     implementation "io.grpc:grpc-api:1.55.1"
     implementation "io.grpc:grpc-netty-shaded:1.55.1"
