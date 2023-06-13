@@ -32,7 +32,7 @@
     "@aws-cdk/aws-eks": "^1.202.0",
     "@aws-cdk/aws-iam": "^1.202.0",
     "@aws-cdk/core": "^1.202.0",
-    "@aws-cdk/lambda-layer-kubectl": "^1.202.0",
+    "@aws-cdk/lambda-layer-kubectl": "^1.203.0",
     "@aws-cdk/lambda-layer-kubectl-v21": "^0.0.13",
     "@aws-cdk/lambda-layer-kubectl-v22": "^2.0.7",
     "@aws-cdk/lambda-layer-kubectl-v23": "^2.0.7",
