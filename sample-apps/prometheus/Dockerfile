@@ -1,11 +1,11 @@
-FROM golang:1.19 AS mod
+FROM golang:1.19.9 AS mod
 WORKDIR $GOPATH/main
 COPY go.mod .
 COPY go.sum .
 RUN go env -w GOPROXY=direct
 RUN GO111MODULE=on go mod download
 
-FROM golang:1.19 as build
+FROM golang:1.19.9 as build
 COPY --from=mod $GOCACHE $GOCACHE
 COPY --from=mod $GOPATH/pkg/mod $GOPATH/pkg/mod
 WORKDIR $GOPATH/main
