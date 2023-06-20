@@ -95,3 +95,8 @@ The app relies on `CDK_DEFAULT_ACCOUNT` and `CDK_DEFAULT_REGION` to set their [e
 * `npm run cdk synth`   -    emits the synthesized CloudFormation template
 * `npm run cdk deploy`  -    deploy this stack to your default AWS account/region
 * `npm run cdk diff`    -    compare deployed stack with current state
+
+## Updating dependencies
+
+To update dependencies it is reccommeneded to use the [ncu](https://github.com/raineorshine/npm-check-updates) tool. 
+Follow installation instructions for `ncu` and then run `ncu -u`. 
