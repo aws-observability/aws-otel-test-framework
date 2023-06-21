@@ -14,7 +14,7 @@
 # -------------------------------------------------------------------------
 
 variable "eks_cluster_name" {
-  default = "aws-otel-testing-framework-eks-2"
+  default = "operator-ci-arm64-1-22"
 }
 
 variable "mock_endpoint" {
@@ -79,4 +79,20 @@ variable "configuration_source" {
     condition     = contains(["file", "http", "https", "s3"], var.configuration_source)
     error_message = "Invalid configuration_source for eks"
   }
+}
+
+variable "auto_instrumentation" {
+  type    = bool
+  default = false
+}
+
+variable "java_auto_instrumentation_repository" {
+  type    = string
+  default = "public.ecr.aws/aws-observability/adot-autoinstrumentation-java"
+}
+
+# latest tag is not available
+variable "java_auto_instrumentation_tag" {
+  type    = string
+  default = "v1.27.0"
 }
