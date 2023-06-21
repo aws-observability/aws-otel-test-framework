@@ -20,14 +20,12 @@ import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.CWMetricHelper;
-import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -36,12 +34,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class CWMetricValidator implements IValidator {
-  private static int DEFAULT_MAX_RETRY_COUNT = 30;
-
-  private MustacheHelper mustacheHelper = new MustacheHelper();
   private ICaller caller;
   private Context context;
   private FileConfig expectedMetric;
@@ -85,6 +81,8 @@ public class CWMetricValidator implements IValidator {
           .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
     }
 
+    log.info("expected metricList is {}", expectedMetricList);
+
     // get metric from cloudwatch
     RetryHelper.retry(
         maxRetryCount,
@@ -101,27 +99,55 @@ public class CWMetricValidator implements IValidator {
           }
 
           log.info("check if all the expected metrics are found");
-          log.info("actual metricList is {}", actualMetricList);
-          log.info("expected metricList is {}", expectedMetricList);
-
           compareMetricLists(expectedMetricList, actualMetricList);
-
-          log.info("check if there're unexpected additional metric getting fetched");
-          compareMetricLists(actualMetricList, expectedMetricList);
         });
 
     log.info("finish metric validation");
   }
 
   /**
-   * Check if every metric in expectedMetricList is in actualMetricList.
+   * Check if every metric in expectedMetricList is in actualMetricList. This performs an exact
+   * match between two metric lists. This does not allow any extra metrics + dimension set
+   * combinations to be present in the actual metric list.
    *
-   * @param expectedMetricList expectedMetricList
-   * @param actualMetricList actualMetricList
+   * @param expectedMetricList The list of expected metrics
+   * @param actualMetricList The list of actual metrics retrieved from CloudWatch
    */
   private void compareMetricLists(List<Metric> expectedMetricList, List<Metric> actualMetricList)
       throws BaseException {
 
+    /*
+     * TODO: The two insertions below fail fast and don't give any visibility if there are multiple
+     * set differences Instead we should either compile a list before throwing an exception or find
+     * a better algorithm for performing these assertions where full visibility into the set diffs
+     * is giving on each method call.
+     */
+    // check if all expected values are present
+    Set<Metric> actualMetricSet = buildMetricSet(actualMetricList);
+    for (Metric metric : expectedMetricList) {
+      if (!actualMetricSet.contains(metric)) {
+        throw new BaseException(
+            ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
+            String.format(
+                "expected metric %s is not found in actual metric list %s %n",
+                metric, actualMetricSet));
+      }
+    }
+
+    // check if any additional metric and dimension set combinations are present in actual metric
+    // list
+    Set<Metric> expectedMetricSet = buildMetricSet(expectedMetricList);
+    for (Metric metric : actualMetricList) {
+      if (!expectedMetricSet.contains(metric)) {
+        throw new BaseException(
+            ExceptionCode.UNEXPECTED_METRIC_FOUND,
+            String.format(
+                "unexpected metric %s found in actual metric list %s %n", metric, actualMetricSet));
+      }
+    }
+  }
+
+  @NotNull private static Set<Metric> buildMetricSet(List<Metric> inputMetricList) {
     // load metrics into a hash set
     Set<Metric> metricSet =
         new TreeSet<>(
@@ -146,22 +172,12 @@ public class CWMetricValidator implements IValidator {
 
               return dimensionList1.toString().compareTo(dimensionList2.toString());
             });
-    for (Metric metric : actualMetricList) {
-      metricSet.add(metric);
-    }
-    for (Metric metric : expectedMetricList) {
-      if (!metricSet.contains(metric)) {
-        throw new BaseException(
-            ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
-            String.format(
-                "metric in %ntoBeCheckedMetricList: %s is not found in %nbaseMetricList: %s %n",
-                metric, metricSet));
-      }
-    }
+    metricSet.addAll(inputMetricList);
+    return metricSet;
   }
 
   private List<Metric> listMetricFromCloudWatch(
-      CloudWatchService cloudWatchService, List<Metric> expectedMetricList) throws IOException {
+      CloudWatchService cloudWatchService, List<Metric> expectedMetricList) {
     // put namespace into the map key, so that we can use it to search metric
     HashMap<String, String> metricNameMap = new HashMap<>();
     for (Metric metric : expectedMetricList) {
@@ -188,6 +204,6 @@ public class CWMetricValidator implements IValidator {
     this.expectedMetric = expectedMetricTemplate;
     this.cloudWatchService = new CloudWatchService(context.getRegion());
     this.cwMetricHelper = new CWMetricHelper();
-    this.maxRetryCount = DEFAULT_MAX_RETRY_COUNT;
+    this.maxRetryCount = 30;
   }
 }
