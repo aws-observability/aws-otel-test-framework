@@ -21,26 +21,26 @@ import lombok.NonNull;
 
 @Data
 public class PerformanceResult implements Serializable {
-    @NonNull private String testcase;
-    @NonNull private String instanceType;
-    @NonNull private String[] receivers;
-    @NonNull private String[] processors;
-    @NonNull private String[] exporters;
+  @NonNull private String testcase;
+  @NonNull private String instanceType;
+  @NonNull private String[] receivers;
+  @NonNull private String[] processors;
+  @NonNull private String[] exporters;
 
-    @NonNull private String dataType;
-    @NonNull private String dataMode;
-    @NonNull private Integer dataRate;
+  @NonNull private String dataType;
+  @NonNull private String dataMode;
+  @NonNull private Integer dataRate;
 
-    // Calculated average statistics
-    @NonNull private Double avgCpu;
-    @NonNull private Double avgMem;
+  // Calculated average statistics
+  @NonNull private Double avgCpu;
+  @NonNull private Double avgMem;
 
-    // Max statistics
-    @NonNull private Double maxCpu;
-    @NonNull private Double maxMem;
+  // Max statistics
+  @NonNull private Double maxCpu;
+  @NonNull private Double maxMem;
 
-    // Metadata
-    @NonNull private String commitId;
-    @NonNull private Integer collectionPeriod;
-    @NonNull private String testingAmi;
+  // Metadata
+  @NonNull private String commitId;
+  @NonNull private Integer collectionPeriod;
+  @NonNull private String testingAmi;
 }

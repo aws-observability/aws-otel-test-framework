@@ -44,135 +44,143 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class TraceValidator implements IValidator {
-    private MustacheHelper mustacheHelper = new MustacheHelper();
-    private XRayService xrayService;
-    private ICaller caller;
-    private Context context;
-    private FileConfig expectedTrace;
+  private MustacheHelper mustacheHelper = new MustacheHelper();
+  private XRayService xrayService;
+  private ICaller caller;
+  private Context context;
+  private FileConfig expectedTrace;
 
-    private static final ObjectMapper MAPPER = new ObjectMapper()
-            .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+  private static final ObjectMapper MAPPER =
+      new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
 
-    @Override
-    public void init(Context context, ValidationConfig validationConfig, ICaller caller, FileConfig expectedTrace)
-            throws Exception {
-        this.xrayService = new XRayService(context.getRegion());
-        this.caller = caller;
-        this.context = context;
-        this.expectedTrace = expectedTrace;
+  @Override
+  public void init(
+      Context context, ValidationConfig validationConfig, ICaller caller, FileConfig expectedTrace)
+      throws Exception {
+    this.xrayService = new XRayService(context.getRegion());
+    this.caller = caller;
+    this.context = context;
+    this.expectedTrace = expectedTrace;
+  }
+
+  @Override
+  public void validate() throws Exception {
+    // 2 retries for calling the sample app to handle the Lambda case,
+    // where first request might be a cold start and have an additional unexpected
+    // subsegment
+    boolean isMatched =
+        RetryHelper.retry(
+            2,
+            Integer.parseInt(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
+            false,
+            () -> {
+              // Call sample app and get locally stored trace
+              Map<String, Object> storedTrace = this.getStoredTrace();
+              log.info("value of stored trace map: {}", storedTrace);
+
+              // prepare list of trace IDs to retrieve from X-Ray service
+              String traceId = (String) storedTrace.get("[0].trace_id");
+              List<String> traceIdList = Collections.singletonList(traceId);
+
+              // Retry 5 times to since segments might not be immediately available in X-Ray
+              // service
+              RetryHelper.retry(
+                  5,
+                  () -> {
+                    // get retrieved trace from x-ray service
+                    Map<String, Object> retrievedTrace = this.getRetrievedTrace(traceIdList);
+                    log.info("value of retrieved trace map: {}", retrievedTrace);
+
+                    // data model validation of other fields of segment document
+                    for (Map.Entry<String, Object> entry : storedTrace.entrySet()) {
+                      String targetKey = entry.getKey();
+                      if (retrievedTrace.get(targetKey) == null) {
+                        log.error("mis target data: {}", targetKey);
+                        throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
+                      }
+
+                      Pattern p =
+                          Pattern.compile(entry.getValue().toString(), Pattern.CASE_INSENSITIVE);
+                      Matcher m = p.matcher(retrievedTrace.get(targetKey).toString());
+                      if (!m.matches()) {
+                        log.error("data model validation failed");
+                        log.info("mis matched data model field list");
+                        log.info("value of stored trace map: {}", entry.getValue());
+                        log.info("value of retrieved map: {}", retrievedTrace.get(entry.getKey()));
+                        log.info("==========================================");
+                        throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
+                      }
+                    }
+                  });
+            });
+
+    if (!isMatched) {
+      throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
     }
 
-    @Override
-    public void validate() throws Exception {
-        // 2 retries for calling the sample app to handle the Lambda case,
-        // where first request might be a cold start and have an additional unexpected
-        // subsegment
-        boolean isMatched = RetryHelper.retry(2, Integer.parseInt(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
-                false, () -> {
-                    // Call sample app and get locally stored trace
-                    Map<String, Object> storedTrace = this.getStoredTrace();
-                    log.info("value of stored trace map: {}", storedTrace);
+    log.info("validation is passed for path {}", caller.getCallingPath());
+  }
 
-                    // prepare list of trace IDs to retrieve from X-Ray service
-                    String traceId = (String) storedTrace.get("[0].trace_id");
-                    List<String> traceIdList = Collections.singletonList(traceId);
-
-                    // Retry 5 times to since segments might not be immediately available in X-Ray
-                    // service
-                    RetryHelper.retry(5, () -> {
-                        // get retrieved trace from x-ray service
-                        Map<String, Object> retrievedTrace = this.getRetrievedTrace(traceIdList);
-                        log.info("value of retrieved trace map: {}", retrievedTrace);
-
-                        // data model validation of other fields of segment document
-                        for (Map.Entry<String, Object> entry : storedTrace.entrySet()) {
-                            String targetKey = entry.getKey();
-                            if (retrievedTrace.get(targetKey) == null) {
-                                log.error("mis target data: {}", targetKey);
-                                throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
-                            }
-
-                            Pattern p = Pattern.compile(entry.getValue().toString(), Pattern.CASE_INSENSITIVE);
-                            Matcher m = p.matcher(retrievedTrace.get(targetKey).toString());
-                            if (!m.matches()) {
-                                log.error("data model validation failed");
-                                log.info("mis matched data model field list");
-                                log.info("value of stored trace map: {}", entry.getValue());
-                                log.info("value of retrieved map: {}", retrievedTrace.get(entry.getKey()));
-                                log.info("==========================================");
-                                throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
-                            }
-                        }
-                    });
-                });
-
-        if (!isMatched) {
-            throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
-        }
-
-        log.info("validation is passed for path {}", caller.getCallingPath());
+  // this method will hit get trace from x-ray service and get retrieved trace
+  private Map<String, Object> getRetrievedTrace(List<String> traceIdList) throws Exception {
+    List<Trace> retrieveTraceList = xrayService.listTraceByIds(traceIdList);
+    if (retrieveTraceList == null || retrieveTraceList.isEmpty()) {
+      throw new BaseException(ExceptionCode.EMPTY_LIST);
     }
 
-    // this method will hit get trace from x-ray service and get retrieved trace
-    private Map<String, Object> getRetrievedTrace(List<String> traceIdList) throws Exception {
-        List<Trace> retrieveTraceList = xrayService.listTraceByIds(traceIdList);
-        if (retrieveTraceList == null || retrieveTraceList.isEmpty()) {
-            throw new BaseException(ExceptionCode.EMPTY_LIST);
-        }
+    return this.flattenDocument(retrieveTraceList.get(0).getSegments());
+  }
 
-        return this.flattenDocument(retrieveTraceList.get(0).getSegments());
+  private Map<String, Object> flattenDocument(List<Segment> segmentList) {
+    List<Entity> entityList = new ArrayList<>();
+
+    // Parse retrieved segment documents into a barebones Entity POJO
+    for (Segment segment : segmentList) {
+      Entity entity;
+      try {
+        entity = MAPPER.readValue(segment.getDocument(), Entity.class);
+        entityList.add(entity);
+      } catch (JsonProcessingException e) {
+        log.warn("Error parsing segment JSON", e);
+      }
     }
 
-    private Map<String, Object> flattenDocument(List<Segment> segmentList) {
-        List<Entity> entityList = new ArrayList<>();
+    // Recursively sort all segments and subsegments so the ordering is always
+    // consistent
+    SortUtils.recursiveEntitySort(entityList);
+    StringBuilder segmentsJson = new StringBuilder("[");
 
-        // Parse retrieved segment documents into a barebones Entity POJO
-        for (Segment segment : segmentList) {
-            Entity entity;
-            try {
-                entity = MAPPER.readValue(segment.getDocument(), Entity.class);
-                entityList.add(entity);
-            } catch (JsonProcessingException e) {
-                log.warn("Error parsing segment JSON", e);
-            }
-        }
-
-        // Recursively sort all segments and subsegments so the ordering is always
-        // consistent
-        SortUtils.recursiveEntitySort(entityList);
-        StringBuilder segmentsJson = new StringBuilder("[");
-
-        // build the segment's document as a json array and flatten it for easy
-        // comparison
-        for (Entity entity : entityList) {
-            try {
-                segmentsJson.append(MAPPER.writeValueAsString(entity));
-                segmentsJson.append(",");
-            } catch (JsonProcessingException e) {
-                log.warn("Error serializing segment JSON", e);
-            }
-        }
-
-        segmentsJson.replace(segmentsJson.length() - 1, segmentsJson.length(), "]");
-        return JsonFlattener.flattenAsMap(segmentsJson.toString());
+    // build the segment's document as a json array and flatten it for easy
+    // comparison
+    for (Entity entity : entityList) {
+      try {
+        segmentsJson.append(MAPPER.writeValueAsString(entity));
+        segmentsJson.append(",");
+      } catch (JsonProcessingException e) {
+        log.warn("Error serializing segment JSON", e);
+      }
     }
 
-    // this method will hit a http endpoints of sample web apps and get stored trace
-    private Map<String, Object> getStoredTrace() throws Exception {
-        Map<String, Object> flattenedJsonMapForStoredTraces = null;
+    segmentsJson.replace(segmentsJson.length() - 1, segmentsJson.length(), "]");
+    return JsonFlattener.flattenAsMap(segmentsJson.toString());
+  }
 
-        SampleAppResponse sampleAppResponse = this.caller.callSampleApp();
+  // this method will hit a http endpoints of sample web apps and get stored trace
+  private Map<String, Object> getStoredTrace() throws Exception {
+    Map<String, Object> flattenedJsonMapForStoredTraces = null;
 
-        String jsonExpectedTrace = mustacheHelper.render(this.expectedTrace, context);
+    SampleAppResponse sampleAppResponse = this.caller.callSampleApp();
 
-        try {
-            // flattened JSON object to a map
-            flattenedJsonMapForStoredTraces = JsonFlattener.flattenAsMap(jsonExpectedTrace);
-            flattenedJsonMapForStoredTraces.put("[0].trace_id", sampleAppResponse.getTraceId());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    String jsonExpectedTrace = mustacheHelper.render(this.expectedTrace, context);
 
-        return flattenedJsonMapForStoredTraces;
+    try {
+      // flattened JSON object to a map
+      flattenedJsonMapForStoredTraces = JsonFlattener.flattenAsMap(jsonExpectedTrace);
+      flattenedJsonMapForStoredTraces.put("[0].trace_id", sampleAppResponse.getTraceId());
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+
+    return flattenedJsonMapForStoredTraces;
+  }
 }

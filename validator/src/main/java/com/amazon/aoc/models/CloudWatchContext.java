@@ -19,46 +19,46 @@ import lombok.Data;
 
 @Data
 public class CloudWatchContext {
-    private String clusterName;
+  private String clusterName;
 
-    private App appMesh;
-    private App nginx;
-    private App jmx;
-    private App haproxy;
-    private App memcached;
+  private App appMesh;
+  private App nginx;
+  private App jmx;
+  private App haproxy;
+  private App memcached;
 
-    public void setAppMesh(App appMesh) {
-        appMesh.setName("appMesh");
-        this.appMesh = appMesh;
-    }
+  public void setAppMesh(App appMesh) {
+    appMesh.setName("appMesh");
+    this.appMesh = appMesh;
+  }
 
-    public void setNginx(App nginx) {
-        nginx.setName("nginx");
-        this.nginx = nginx;
-    }
+  public void setNginx(App nginx) {
+    nginx.setName("nginx");
+    this.nginx = nginx;
+  }
 
-    public void setJmx(App jmx) {
-        jmx.setName("jmx");
-        this.jmx = jmx;
-    }
+  public void setJmx(App jmx) {
+    jmx.setName("jmx");
+    this.jmx = jmx;
+  }
 
-    public void setHaproxy(App haproxy) {
-        haproxy.setName("haproxy");
-        this.haproxy = haproxy;
-    }
+  public void setHaproxy(App haproxy) {
+    haproxy.setName("haproxy");
+    this.haproxy = haproxy;
+  }
 
-    public void setMemcached(App memcached) {
-        memcached.setName("memcached");
-        this.memcached = memcached;
-    }
+  public void setMemcached(App memcached) {
+    memcached.setName("memcached");
+    this.memcached = memcached;
+  }
 
-    @Data
-    public static class App {
-        private String name;
-        private String namespace;
-        private String job;
-        // For ECS
-        private String[] taskDefinitionFamilies;
-        private String serviceName;
-    }
+  @Data
+  public static class App {
+    private String name;
+    private String namespace;
+    private String job;
+    // For ECS
+    private String[] taskDefinitionFamilies;
+    private String serviceName;
+  }
 }

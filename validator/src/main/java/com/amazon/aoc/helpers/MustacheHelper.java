@@ -28,29 +28,26 @@ import org.apache.commons.io.IOUtils;
 
 @Log4j2
 public class MustacheHelper {
-    private MustacheFactory mustacheFactory = new DefaultMustacheFactory();
+  private MustacheFactory mustacheFactory = new DefaultMustacheFactory();
 
-    /**
-     * Render the template file with injecting the data.
-     *
-     * @param fileConfig
-     *            any object implementing the FileConfig interface
-     * @param dataToInject
-     *            the object to inject to the template
-     * @return generated content
-     * @throws IOException
-     *             when the template file is not existed
-     */
-    public String render(FileConfig fileConfig, Object dataToInject) throws IOException {
-        return render(fileConfig.getPath(), dataToInject);
-    }
+  /**
+   * Render the template file with injecting the data.
+   *
+   * @param fileConfig any object implementing the FileConfig interface
+   * @param dataToInject the object to inject to the template
+   * @return generated content
+   * @throws IOException when the template file is not existed
+   */
+  public String render(FileConfig fileConfig, Object dataToInject) throws IOException {
+    return render(fileConfig.getPath(), dataToInject);
+  }
 
-    private String render(URL path, Object dataToInject) throws IOException {
-        log.info("fetch config: {}", path);
-        String templateContent = IOUtils.toString(path);
-        Mustache mustache = mustacheFactory.compile(new StringReader(templateContent), path.getPath());
-        StringWriter stringWriter = new StringWriter();
-        mustache.execute(stringWriter, dataToInject).flush();
-        return stringWriter.getBuffer().toString();
-    }
+  private String render(URL path, Object dataToInject) throws IOException {
+    log.info("fetch config: {}", path);
+    String templateContent = IOUtils.toString(path);
+    Mustache mustache = mustacheFactory.compile(new StringReader(templateContent), path.getPath());
+    StringWriter stringWriter = new StringWriter();
+    mustache.execute(stringWriter, dataToInject).flush();
+    return stringWriter.getBuffer().toString();
+  }
 }

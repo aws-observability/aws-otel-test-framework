@@ -39,141 +39,155 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class CWMetricValidator implements IValidator {
-    private static int DEFAULT_MAX_RETRY_COUNT = 30;
+  private static int DEFAULT_MAX_RETRY_COUNT = 30;
 
-    private MustacheHelper mustacheHelper = new MustacheHelper();
-    private ICaller caller;
-    private Context context;
-    private FileConfig expectedMetric;
+  private MustacheHelper mustacheHelper = new MustacheHelper();
+  private ICaller caller;
+  private Context context;
+  private FileConfig expectedMetric;
 
-    private CloudWatchService cloudWatchService;
-    private CWMetricHelper cwMetricHelper;
-    private int maxRetryCount;
+  private CloudWatchService cloudWatchService;
+  private CWMetricHelper cwMetricHelper;
+  private int maxRetryCount;
 
-    // for unit test
-    public void setCloudWatchService(CloudWatchService cloudWatchService) {
-        this.cloudWatchService = cloudWatchService;
-    }
+  // for unit test
+  public void setCloudWatchService(CloudWatchService cloudWatchService) {
+    this.cloudWatchService = cloudWatchService;
+  }
 
-    // for unit test so that we lower the count to 1
-    public void setMaxRetryCount(int maxRetryCount) {
-        this.maxRetryCount = maxRetryCount;
-    }
+  // for unit test so that we lower the count to 1
+  public void setMaxRetryCount(int maxRetryCount) {
+    this.maxRetryCount = maxRetryCount;
+  }
 
-    @Override
-    public void validate() throws Exception {
-        log.info("Start metric validating");
-        // get expected metrics and remove the to be skipped dimensions
-        final List<Metric> expectedMetricList = cwMetricHelper.listExpectedMetrics(context, expectedMetric, caller);
-        Set<String> skippedDimensionNameList = new HashSet<>();
-        for (Metric metric : expectedMetricList) {
-            for (Dimension dimension : metric.getDimensions()) {
+  @Override
+  public void validate() throws Exception {
+    log.info("Start metric validating");
+    // get expected metrics and remove the to be skipped dimensions
+    final List<Metric> expectedMetricList =
+        cwMetricHelper.listExpectedMetrics(context, expectedMetric, caller);
+    Set<String> skippedDimensionNameList = new HashSet<>();
+    for (Metric metric : expectedMetricList) {
+      for (Dimension dimension : metric.getDimensions()) {
 
-                if (dimension.getValue() == null || dimension.getValue().equals("")) {
-                    continue;
-                }
-
-                if (dimension.getValue().equals("SKIP")) {
-                    skippedDimensionNameList.add(dimension.getName());
-                }
-            }
-        }
-        for (Metric metric : expectedMetricList) {
-            metric.getDimensions().removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+        if (dimension.getValue() == null || dimension.getValue().equals("")) {
+          continue;
         }
 
-        // get metric from cloudwatch
-        RetryHelper.retry(maxRetryCount, () -> {
-            List<Metric> actualMetricList = this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
+        if (dimension.getValue().equals("SKIP")) {
+          skippedDimensionNameList.add(dimension.getName());
+        }
+      }
+    }
+    for (Metric metric : expectedMetricList) {
+      metric
+          .getDimensions()
+          .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+    }
 
-            // remove the skip dimensions
-            log.info("dimensions to be skipped in validation: {}", skippedDimensionNameList);
-            for (Metric metric : actualMetricList) {
-                metric.getDimensions().removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
-            }
+    // get metric from cloudwatch
+    RetryHelper.retry(
+        maxRetryCount,
+        () -> {
+          List<Metric> actualMetricList =
+              this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
 
-            log.info("check if all the expected metrics are found");
-            log.info("actual metricList is {}", actualMetricList);
-            log.info("expected metricList is {}", expectedMetricList);
+          // remove the skip dimensions
+          log.info("dimensions to be skipped in validation: {}", skippedDimensionNameList);
+          for (Metric metric : actualMetricList) {
+            metric
+                .getDimensions()
+                .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
+          }
 
-            compareMetricLists(expectedMetricList, actualMetricList);
+          log.info("check if all the expected metrics are found");
+          log.info("actual metricList is {}", actualMetricList);
+          log.info("expected metricList is {}", expectedMetricList);
 
-            log.info("check if there're unexpected additional metric getting fetched");
-            compareMetricLists(actualMetricList, expectedMetricList);
+          compareMetricLists(expectedMetricList, actualMetricList);
+
+          log.info("check if there're unexpected additional metric getting fetched");
+          compareMetricLists(actualMetricList, expectedMetricList);
         });
 
-        log.info("finish metric validation");
-    }
+    log.info("finish metric validation");
+  }
 
-    /**
-     * Check if every metric in expectedMetricList is in actualMetricList.
-     *
-     * @param expectedMetricList
-     *            expectedMetricList
-     * @param actualMetricList
-     *            actualMetricList
-     */
-    private void compareMetricLists(List<Metric> expectedMetricList, List<Metric> actualMetricList)
-            throws BaseException {
+  /**
+   * Check if every metric in expectedMetricList is in actualMetricList.
+   *
+   * @param expectedMetricList expectedMetricList
+   * @param actualMetricList actualMetricList
+   */
+  private void compareMetricLists(List<Metric> expectedMetricList, List<Metric> actualMetricList)
+      throws BaseException {
 
-        // load metrics into a hash set
-        Set<Metric> metricSet = new TreeSet<>((Metric o1, Metric o2) -> {
-            // check namespace
-            if (!o1.getNamespace().equals(o2.getNamespace())) {
+    // load metrics into a hash set
+    Set<Metric> metricSet =
+        new TreeSet<>(
+            (Metric o1, Metric o2) -> {
+              // check namespace
+              if (!o1.getNamespace().equals(o2.getNamespace())) {
                 return o1.getNamespace().compareTo(o2.getNamespace());
-            }
+              }
 
-            // check metric name
-            if (!o1.getMetricName().equals(o2.getMetricName())) {
+              // check metric name
+              if (!o1.getMetricName().equals(o2.getMetricName())) {
                 return o1.getMetricName().compareTo(o2.getMetricName());
-            }
+              }
 
-            // sort and check dimensions
-            List<Dimension> dimensionList1 = o1.getDimensions();
-            List<Dimension> dimensionList2 = o2.getDimensions();
+              // sort and check dimensions
+              List<Dimension> dimensionList1 = o1.getDimensions();
+              List<Dimension> dimensionList2 = o2.getDimensions();
 
-            // sort
-            dimensionList1.sort(Comparator.comparing(Dimension::getName));
-            dimensionList2.sort(Comparator.comparing(Dimension::getName));
+              // sort
+              dimensionList1.sort(Comparator.comparing(Dimension::getName));
+              dimensionList2.sort(Comparator.comparing(Dimension::getName));
 
-            return dimensionList1.toString().compareTo(dimensionList2.toString());
-        });
-        for (Metric metric : actualMetricList) {
-            metricSet.add(metric);
-        }
-        for (Metric metric : expectedMetricList) {
-            if (!metricSet.contains(metric)) {
-                throw new BaseException(ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
-                        String.format("metric in %ntoBeCheckedMetricList: %s is not found in %nbaseMetricList: %s %n",
-                                metric, metricSet));
-            }
-        }
+              return dimensionList1.toString().compareTo(dimensionList2.toString());
+            });
+    for (Metric metric : actualMetricList) {
+      metricSet.add(metric);
+    }
+    for (Metric metric : expectedMetricList) {
+      if (!metricSet.contains(metric)) {
+        throw new BaseException(
+            ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
+            String.format(
+                "metric in %ntoBeCheckedMetricList: %s is not found in %nbaseMetricList: %s %n",
+                metric, metricSet));
+      }
+    }
+  }
+
+  private List<Metric> listMetricFromCloudWatch(
+      CloudWatchService cloudWatchService, List<Metric> expectedMetricList) throws IOException {
+    // put namespace into the map key, so that we can use it to search metric
+    HashMap<String, String> metricNameMap = new HashMap<>();
+    for (Metric metric : expectedMetricList) {
+      metricNameMap.put(metric.getMetricName(), metric.getNamespace());
     }
 
-    private List<Metric> listMetricFromCloudWatch(CloudWatchService cloudWatchService, List<Metric> expectedMetricList)
-            throws IOException {
-        // put namespace into the map key, so that we can use it to search metric
-        HashMap<String, String> metricNameMap = new HashMap<>();
-        for (Metric metric : expectedMetricList) {
-            metricNameMap.put(metric.getMetricName(), metric.getNamespace());
-        }
-
-        // search by metric name
-        List<Metric> result = new ArrayList<>();
-        for (String metricName : metricNameMap.keySet()) {
-            result.addAll(cloudWatchService.listMetrics(metricNameMap.get(metricName), metricName));
-        }
-        return result;
+    // search by metric name
+    List<Metric> result = new ArrayList<>();
+    for (String metricName : metricNameMap.keySet()) {
+      result.addAll(cloudWatchService.listMetrics(metricNameMap.get(metricName), metricName));
     }
+    return result;
+  }
 
-    @Override
-    public void init(Context context, ValidationConfig validationConfig, ICaller caller,
-            FileConfig expectedMetricTemplate) throws Exception {
-        this.context = context;
-        this.caller = caller;
-        this.expectedMetric = expectedMetricTemplate;
-        this.cloudWatchService = new CloudWatchService(context.getRegion());
-        this.cwMetricHelper = new CWMetricHelper();
-        this.maxRetryCount = DEFAULT_MAX_RETRY_COUNT;
-    }
+  @Override
+  public void init(
+      Context context,
+      ValidationConfig validationConfig,
+      ICaller caller,
+      FileConfig expectedMetricTemplate)
+      throws Exception {
+    this.context = context;
+    this.caller = caller;
+    this.expectedMetric = expectedMetricTemplate;
+    this.cloudWatchService = new CloudWatchService(context.getRegion());
+    this.cwMetricHelper = new CWMetricHelper();
+    this.maxRetryCount = DEFAULT_MAX_RETRY_COUNT;
+  }
 }

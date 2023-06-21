@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class PrometheusQueryResult {
-    private String status;
-    private PrometheusData data;
+  private String status;
+  private PrometheusData data;
 }

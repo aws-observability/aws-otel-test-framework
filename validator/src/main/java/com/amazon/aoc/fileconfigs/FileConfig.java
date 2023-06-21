@@ -19,14 +19,14 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * Any file based config will need to implement this interface, so that the
- * mustacheHelper could render it.
+ * Any file based config will need to implement this interface, so that the mustacheHelper could
+ * render it.
  */
 public interface FileConfig {
-    /**
-     * get the mustache file path.
-     *
-     * @return file path
-     */
-    URL getPath() throws IOException;
+  /**
+   * get the mustache file path.
+   *
+   * @return file path
+   */
+  URL getPath() throws IOException;
 }

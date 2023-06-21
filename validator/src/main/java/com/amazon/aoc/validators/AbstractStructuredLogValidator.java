@@ -41,124 +41,146 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public abstract class AbstractStructuredLogValidator implements IValidator {
-    private static final int MAX_RETRY_COUNT = 6;
-    private static final int QUERY_LIMIT = 500;
-    private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
-    private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
+  private static final int MAX_RETRY_COUNT = 6;
+  private static final int QUERY_LIMIT = 500;
+  private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
+  private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
 
-    protected Map<String, JsonSchema> schemasToValidate = new HashMap<>();
-    protected Set<String> validatedSchema = new HashSet<>();
-    protected Set<String> logStreamNames = new HashSet<>();
-    protected String logGroupName;
+  protected Map<String, JsonSchema> schemasToValidate = new HashMap<>();
+  protected Set<String> validatedSchema = new HashSet<>();
+  protected Set<String> logStreamNames = new HashSet<>();
+  protected String logGroupName;
 
-    protected CloudWatchService cloudWatchService;
-    protected final ObjectMapper mapper = new ObjectMapper();
+  protected CloudWatchService cloudWatchService;
+  protected final ObjectMapper mapper = new ObjectMapper();
 
-    @Override
-    public void init(Context context, ValidationConfig validationConfig, ICaller caller,
-            FileConfig expectedDataTemplate) throws Exception {
-        cloudWatchService = new CloudWatchService(context.getRegion());
-        init(context, expectedDataTemplate);
+  @Override
+  public void init(
+      Context context,
+      ValidationConfig validationConfig,
+      ICaller caller,
+      FileConfig expectedDataTemplate)
+      throws Exception {
+    cloudWatchService = new CloudWatchService(context.getRegion());
+    init(context, expectedDataTemplate);
 
-        if (StringUtils.isNullOrEmpty(logGroupName)) {
-            throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED, "log group name cannot be null");
-        }
-        if (schemasToValidate.isEmpty()) {
-            throw new BaseException(ExceptionCode.VALIDATION_TYPE_NOT_EXISTED, "json schema cannot be null");
-        }
+    if (StringUtils.isNullOrEmpty(logGroupName)) {
+      throw new BaseException(
+          ExceptionCode.VALIDATION_TYPE_NOT_EXISTED, "log group name cannot be null");
     }
-
-    abstract void init(Context context, FileConfig expectedDataTemplate) throws Exception;
-
-    abstract String getJsonSchemaMappingKey(JsonNode jsonNode);
-
-    protected int getMaxRetryCount() {
-        return MAX_RETRY_COUNT;
+    if (schemasToValidate.isEmpty()) {
+      throw new BaseException(
+          ExceptionCode.VALIDATION_TYPE_NOT_EXISTED, "json schema cannot be null");
     }
+  }
 
-    @Override
-    public void validate() throws Exception {
-        log.info("[StructuredLogValidator] start validating structured log");
+  abstract void init(Context context, FileConfig expectedDataTemplate) throws Exception;
 
-        RetryHelper.retry(getMaxRetryCount(), CHECK_INTERVAL_IN_MILLI, true, () -> {
-            Instant startTime = Instant.now().minusSeconds(CHECK_DURATION_IN_SECONDS).truncatedTo(ChronoUnit.MINUTES);
-            fetchAndValidateLogs(startTime);
-            checkResult();
+  abstract String getJsonSchemaMappingKey(JsonNode jsonNode);
+
+  protected int getMaxRetryCount() {
+    return MAX_RETRY_COUNT;
+  }
+
+  @Override
+  public void validate() throws Exception {
+    log.info("[StructuredLogValidator] start validating structured log");
+
+    RetryHelper.retry(
+        getMaxRetryCount(),
+        CHECK_INTERVAL_IN_MILLI,
+        true,
+        () -> {
+          Instant startTime =
+              Instant.now().minusSeconds(CHECK_DURATION_IN_SECONDS).truncatedTo(ChronoUnit.MINUTES);
+          fetchAndValidateLogs(startTime);
+          checkResult();
         });
-        log.info("[StructuredLogValidator] finish validation successfully");
-    }
+    log.info("[StructuredLogValidator] finish validation successfully");
+  }
 
-    protected void fetchAndValidateLogs(Instant startTime) throws Exception {
-        for (String logStreamName : logStreamNames) {
-            try {
-                List<OutputLogEvent> logEvents = cloudWatchService.getLogs(logGroupName, logStreamName,
-                        startTime.toEpochMilli(), QUERY_LIMIT);
+  protected void fetchAndValidateLogs(Instant startTime) throws Exception {
+    for (String logStreamName : logStreamNames) {
+      try {
+        List<OutputLogEvent> logEvents =
+            cloudWatchService.getLogs(
+                logGroupName, logStreamName, startTime.toEpochMilli(), QUERY_LIMIT);
 
-                if (logEvents.isEmpty()) {
-                    throw new BaseException(ExceptionCode.LOG_FORMAT_NOT_MATCHED,
-                            String.format(
-                                    "[StructuredLogValidator] no logs found under log stream %s" + "in log group %s",
-                                    logStreamName, logGroupName));
-                }
-                for (OutputLogEvent logEvent : logEvents) {
-                    validateJsonSchema(logEvent.getMessage());
-                }
-            } catch (AmazonClientException e) {
-                log.info(String.format("[StructuredLogValidator] failed to retrieve log stream %s" + "in log group %s",
-                        logStreamName, logGroupName));
-                throw e;
-            }
-
+        if (logEvents.isEmpty()) {
+          throw new BaseException(
+              ExceptionCode.LOG_FORMAT_NOT_MATCHED,
+              String.format(
+                  "[StructuredLogValidator] no logs found under log stream %s" + "in log group %s",
+                  logStreamName, logGroupName));
         }
-    }
-
-    private void checkResult() throws BaseException {
-        if (schemasToValidate.isEmpty() || schemasToValidate.keySet().equals(validatedSchema)) {
-            log.info(String.format(
-                    "[StructuredLogValidator] log structure validation successful" + "isEmpty: %b isEqual: %b",
-                    schemasToValidate.isEmpty(), schemasToValidate.keySet().equals(validatedSchema)));
-            return;
+        for (OutputLogEvent logEvent : logEvents) {
+          validateJsonSchema(logEvent.getMessage());
         }
-        ArrayList<String> failedTargets = new ArrayList<>();
-        for (String key : schemasToValidate.keySet()) {
-            if (!validatedSchema.contains(key)) {
-                failedTargets.add(key);
-            }
-        }
-        log.info(String.format("[StructuredLogValidator] log structure validation failed for %s", failedTargets));
-        throw new BaseException(ExceptionCode.LOG_FORMAT_NOT_MATCHED,
-                String.format("[StructuredLogValidator] log structure validation failed for %s", failedTargets));
+      } catch (AmazonClientException e) {
+        log.info(
+            String.format(
+                "[StructuredLogValidator] failed to retrieve log stream %s" + "in log group %s",
+                logStreamName, logGroupName));
+        throw e;
+      }
     }
+  }
 
-    protected void validateJsonSchema(String logEventMsg) throws Exception {
-        JsonNode logEventNode = mapper.readTree(logEventMsg);
-        String key = getJsonSchemaMappingKey(logEventNode);
-        if (validatedSchema.contains(key)) {
-            return;
-        }
-        JsonSchema jsonSchema = schemasToValidate.get(key);
-        if (jsonSchema != null) {
-            ProcessingReport report = jsonSchema.validate(JsonLoader.fromString(logEventNode.toString()));
-            if (report.isSuccess()) {
-                validatedSchema.add(key);
-            } else {
-                // This will probably generate a lot of extra logs
-                // may want to log this to a different level in the future.
-                log.info("[StructuredLogValidator] failed to validate schema \n");
-                log.info(report.toString() + "\n");
-            }
-        }
+  private void checkResult() throws BaseException {
+    if (schemasToValidate.isEmpty() || schemasToValidate.keySet().equals(validatedSchema)) {
+      log.info(
+          String.format(
+              "[StructuredLogValidator] log structure validation successful"
+                  + "isEmpty: %b isEqual: %b",
+              schemasToValidate.isEmpty(), schemasToValidate.keySet().equals(validatedSchema)));
+      return;
     }
-
-    protected static JsonSchema parseJsonSchema(String templateInput) throws Exception {
-        return parseJsonSchema(templateInput, LogLevel.FATAL);
+    ArrayList<String> failedTargets = new ArrayList<>();
+    for (String key : schemasToValidate.keySet()) {
+      if (!validatedSchema.contains(key)) {
+        failedTargets.add(key);
+      }
     }
+    log.info(
+        String.format(
+            "[StructuredLogValidator] log structure validation failed for %s", failedTargets));
+    throw new BaseException(
+        ExceptionCode.LOG_FORMAT_NOT_MATCHED,
+        String.format(
+            "[StructuredLogValidator] log structure validation failed for %s", failedTargets));
+  }
 
-    protected static JsonSchema parseJsonSchema(String templateInput, LogLevel exceptionLevel) throws Exception {
-        JsonNode jsonNode = JsonLoader.fromString(templateInput);
-        JsonSchemaFactory jsonSchemaFactory = JsonSchemaFactory.newBuilder()
-                .setReportProvider(new ListReportProvider(LogLevel.INFO, exceptionLevel)).freeze();
-        return jsonSchemaFactory.getJsonSchema(jsonNode);
+  protected void validateJsonSchema(String logEventMsg) throws Exception {
+    JsonNode logEventNode = mapper.readTree(logEventMsg);
+    String key = getJsonSchemaMappingKey(logEventNode);
+    if (validatedSchema.contains(key)) {
+      return;
     }
+    JsonSchema jsonSchema = schemasToValidate.get(key);
+    if (jsonSchema != null) {
+      ProcessingReport report = jsonSchema.validate(JsonLoader.fromString(logEventNode.toString()));
+      if (report.isSuccess()) {
+        validatedSchema.add(key);
+      } else {
+        // This will probably generate a lot of extra logs
+        // may want to log this to a different level in the future.
+        log.info("[StructuredLogValidator] failed to validate schema \n");
+        log.info(report.toString() + "\n");
+      }
+    }
+  }
 
+  protected static JsonSchema parseJsonSchema(String templateInput) throws Exception {
+    return parseJsonSchema(templateInput, LogLevel.FATAL);
+  }
+
+  protected static JsonSchema parseJsonSchema(String templateInput, LogLevel exceptionLevel)
+      throws Exception {
+    JsonNode jsonNode = JsonLoader.fromString(templateInput);
+    JsonSchemaFactory jsonSchemaFactory =
+        JsonSchemaFactory.newBuilder()
+            .setReportProvider(new ListReportProvider(LogLevel.INFO, exceptionLevel))
+            .freeze();
+    return jsonSchemaFactory.getJsonSchema(jsonNode);
+  }
 }
