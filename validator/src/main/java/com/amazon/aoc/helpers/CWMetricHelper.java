@@ -73,12 +73,12 @@ public class CWMetricHelper {
 
   /**
    * rollup the metrics
-   * 1. all dimension rollup
+   * 1. no dimension rollup
    * 2. zero dimension rollup
    * 3. single dimension rollup
    * Ex. A metric A with dimensions OtelLib, Dimension_1, Dimension_2 will be
    * rolled up to four metrics:
-   * 1. All dimension rollup: A [OtelLib, Dimension_1, Dimension_2].
+   * 1. No dimension rollup: A [OtelLib, Dimension_1, Dimension_2].
    * 2. Zero dimension rollup: A [OtelLib].
    * 3. Single dimension rollup: A [OtelLib, Dimension_1], A [OtelLib, Dimension_2]
    *
