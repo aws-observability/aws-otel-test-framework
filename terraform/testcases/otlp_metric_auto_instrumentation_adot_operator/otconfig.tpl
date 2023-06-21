@@ -22,4 +22,3 @@ receivers:
       telemetry:
         logs:
           level: ${log_level}
-

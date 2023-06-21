@@ -47,6 +47,9 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
         labels = {
           app = local.sample_app_label_selector
         }
+        annotations = {
+          "instrumentation.opentelemetry.io/inject-sdk" = var.auto_instrumentation
+        }
       }
 
       spec {
