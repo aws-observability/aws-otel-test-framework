@@ -1,4 +1,4 @@
-FROM gradle:7.3.3-jdk11 as build
+FROM gradle:8.1.1-jdk17 as build
 
 WORKDIR /app
 COPY ./build.gradle ./build.gradle
@@ -7,7 +7,7 @@ COPY ./src ./src
 RUN gradle build
 RUN tar -xvf build/distributions/app.tar
 
-FROM amazoncorretto:11
+FROM amazoncorretto:17
 
 WORKDIR /app
 COPY --from=build /app/app .

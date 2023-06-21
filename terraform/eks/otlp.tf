@@ -107,7 +107,7 @@ module "aoc_oltp" {
   is_adot_operator                = replace(var.testcase, "_adot_operator", "") != var.testcase
   auto_instrumentation            = var.auto_instrumentation
 
-  depends_on = [module.iam_assumable_role_sample_app]
+  depends_on = [module.iam_assumable_role_sample_app, null_resource.java_auto_instrumentation_adot_operator]
 }
 
 locals {
@@ -299,7 +299,12 @@ data "template_file" "java_auto_instrumentation_config_file" {
   template = file("./adot-operator/java_auto_instrumentation.tpl")
 
   vars = {
-    AOC_NAMESPACE = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
+    AOC_NAMESPACE                        = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
+    GRPC_PORT                            = module.common.grpc_port
+    SERVICE_NAMESPACE                    = module.common.otel_service_namespace
+    SERVICE_NAME                         = module.common.otel_service_name
+    JAVA_AUTO_INSTRUMENTATION_REPOSITORY = var.java_auto_instrumentation_repository
+    JAVA_AUTO_INSTRUMENTATION_TAG        = var.java_auto_instrumentation_tag
   }
 
   depends_on = [module.adot_operator]
@@ -308,7 +313,7 @@ data "template_file" "java_auto_instrumentation_config_file" {
 resource "local_file" "java_auto_instrumentation_deployment" {
   count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase && var.auto_instrumentation ? 1 : 0
 
-  filename = "java_instrumentation.yaml"
+  filename = "java_auto_instrumentation.yaml"
   content  = data.template_file.java_auto_instrumentation_config_file.0.rendered
 
   depends_on = [module.adot_operator]

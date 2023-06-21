@@ -17,19 +17,13 @@
 # Push mode deployments
 ##########################################
 
-# is_adot_operator is true if the current test case is testing ADOT Operator.
-variable "is_adot_operator" {
-  type    = bool
-  default = false
-}
-
 locals {
   aoc_label_selector        = "aoc"
   sample_app_label_selector = "sample-app"
 }
 # deploy sample app
 resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
-  count = var.sample_app.mode == "push" ? 1 : 0
+  count = var.sample_app.mode == "push" && !var.auto_instrumentation ? 1 : 0
 
   metadata {
     name      = "sample-app"

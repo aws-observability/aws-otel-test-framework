@@ -10,15 +10,16 @@ receivers:
     exporters:
       logging:
         verbosity: detailed
-      awsemf:
+      awsxray:
+        local_mode: true
         region: '${region}'
 
     service:
       pipelines:
-        metrics:
+        traces:
           receivers: [otlp]
           processors: [ ]
-          exporters: [logging,awsemf]
+          exporters: [logging,awsxray]
       telemetry:
         logs:
           level: ${log_level}

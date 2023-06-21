@@ -5,13 +5,11 @@ metadata:
   namespace: ${AOC_NAMESPACE}
 spec:
   exporter:
-    endpoint: http://otc-container:4317
-  propagators:
-    - tracecontext
-    - baggage
-    - b3
-  sampler:
-    type: parentbased_traceidratio
-    argument: "1.0"
+    endpoint: http://aoc-collector:${GRPC_PORT}
+  env:
+   - name: OTEL_SERVICE_NAME
+     value: ${SERVICE_NAME}
+   - name: OTEL_RESOURCE_ATTRIBUTES
+     value: "service.namespace=${SERVICE_NAMESPACE},service.name=${SERVICE_NAME}"
   java:
-    image: public.ecr.aws/aws-observability/adot-autoinstrumentation-java:1.24.0
+    image: ${JAVA_AUTO_INSTRUMENTATION_REPOSITORY}:${JAVA_AUTO_INSTRUMENTATION_TAG}

@@ -14,7 +14,7 @@ plugins {
     id 'application'
 
     // lombok
-    id "io.freefair.lombok" version "6.6.1"
+    id "io.freefair.lombok" version "8.0.1"
 
     // jib
     id 'com.google.cloud.tools.jib'
@@ -26,47 +26,47 @@ repositories {
 
 dependencies {
     // This dependency is used by the application.
-    implementation "com.google.guava:guava:31.1-jre"
+    implementation "com.google.guava:guava:32.0.0-jre"
 
-    implementation "io.grpc:grpc-bom:1.54.0"
-    implementation "io.grpc:grpc-api:1.54.1"
+    implementation "io.grpc:grpc-bom:1.55.1"
+    implementation "io.grpc:grpc-api:1.55.1"
 
-    implementation "io.grpc:grpc-netty-shaded:1.54.0"
+    implementation "io.grpc:grpc-netty-shaded:1.55.1"
 
-    implementation platform("io.opentelemetry:opentelemetry-bom:1.25.0")
+    implementation platform("io.opentelemetry:opentelemetry-bom:1.26.0")
     implementation "io.opentelemetry:opentelemetry-api"
     implementation "io.opentelemetry:opentelemetry-sdk"
     implementation "io.opentelemetry:opentelemetry-exporter-otlp"
 
-    implementation "io.opentelemetry:opentelemetry-semconv:1.25.0-alpha"
+    implementation "io.opentelemetry:opentelemetry-semconv:1.26.0-alpha"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
-    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.13.0"
-    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.13.0"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.14.0"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.14.0"
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13.2'
 
     // Command cli
-    implementation 'info.picocli:picocli:4.7.2'
-    compileOnly 'info.picocli:picocli-codegen:4.7.2'
+    implementation 'info.picocli:picocli:4.7.3'
+    compileOnly 'info.picocli:picocli-codegen:4.7.3'
 
     // log
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.19.0'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.20.0'
 
     implementation project(":trace-java-client")
 }
 
 application {
     // Define the main class for the application.
-    mainClassName = 'com.amazon.opentelemetry.load.generator.App'
+    mainClass.set("com.amazon.opentelemetry.load.generator.App")
 }
 
 // jibDockerBuild doesn't support multi-platform image manifests
 // to build using the local docker daemon execute jibDockerBuild, and use only one specific platforms.
 jib {
     from {
-          image = 'gradle:7.3.3-jdk11'
+          image = 'gradle:8.1.1-jdk17'
           platforms {
             platform {
               architecture = 'amd64'
