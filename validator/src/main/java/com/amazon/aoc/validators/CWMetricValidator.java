@@ -106,7 +106,7 @@ public class CWMetricValidator implements IValidator {
 
         /**
          * Validations are performed below. Currently, we enforce strict equality. We do not allow any extra
-         * metric and dimension set combinations in the retrieved metric list from cloudwatch.
+         * metric name and dimension set combinations in the retrieved metric list from cloudwatch.
          */
           log.info("check if all the expected metrics are found");
           log.info("actual metricList is {}", actualMetricList);
