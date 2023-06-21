@@ -65,7 +65,7 @@ func buildTestCases(runConfig RunConfig) ([]TestCaseInfo, error) {
 						}
 						newTests = append(newTests, newTest)
 					}
-				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS", "EKS_ARM64":
+				case "EKS_FARGATE", "EKS_ADOT_OPERATOR", "EKS_ADOT_OPERATOR_ARM64", "EKS", "EKS_ARM64", "EKS_JAVA_INSTRUMENTATION_ADOT_OPERATOR", "EKS_JAVA_INSTRUMENTATION_ADOT_OPERATOR_ARM64":
 					if clusterList, ok := clusterMaps[testPlatform]; ok && len(clusterList) > 0 {
 						for _, cluster := range clusterList {
 							if !cluster.isTestCaseExcluded(test.CaseName) {
