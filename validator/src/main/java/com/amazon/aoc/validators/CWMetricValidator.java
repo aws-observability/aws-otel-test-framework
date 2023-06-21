@@ -93,36 +93,40 @@ public class CWMetricValidator implements IValidator {
     RetryHelper.retry(
         maxRetryCount,
         () -> {
-          List<Metric> metricList =
+          List<Metric> actualMetricList =
               this.listMetricFromCloudWatch(cloudWatchService, expectedMetricList);
 
           // remove the skip dimensions
           log.info("dimensions to be skipped in validation: {}", skippedDimensionNameList);
-          for (Metric metric : metricList) {
+          for (Metric metric : actualMetricList) {
             metric
                 .getDimensions()
                 .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
           }
 
+        /**
+         * Validations are performed below. Currently, we enforce strict equality. We do not allow any extra
+         * metric and dimension set combinations in the retrieved metric list from cloudwatch.
+         */
           log.info("check if all the expected metrics are found");
-          log.info("actual metricList is {}", metricList);
+          log.info("actual metricList is {}", actualMetricList);
           log.info("expected metricList is {}", expectedMetricList);
-          compareMetricLists(expectedMetricList, metricList);
+          compareMetricLists(expectedMetricList, actualMetricList);
 
           log.info("check if there're unexpected additional metric getting fetched");
-          compareMetricLists(metricList, expectedMetricList);
+          compareMetricLists(actualMetricList, expectedMetricList);
         });
 
     log.info("finish metric validation");
   }
 
   /**
-   * Check if every metric in toBeChckedMetricList is in baseMetricList.
+   * Check if every metric in expectedMetricList is in actualMetricList.
    *
-   * @param toBeCheckedMetricList toBeCheckedMetricList
-   * @param baseMetricList baseMetricList
+   * @param expectedMetricList expectedMetricList
+   * @param actualMetricList actualMetricList
    */
-  private void compareMetricLists(List<Metric> toBeCheckedMetricList, List<Metric> baseMetricList)
+  private void compareMetricLists(List<Metric> expectedMetricList, List<Metric> actualMetricList)
       throws BaseException {
 
     // load metrics into a hash set
@@ -149,10 +153,10 @@ public class CWMetricValidator implements IValidator {
 
               return dimensionList1.toString().compareTo(dimensionList2.toString());
             });
-    for (Metric metric : baseMetricList) {
+    for (Metric metric : actualMetricList) {
       metricSet.add(metric);
     }
-    for (Metric metric : toBeCheckedMetricList) {
+    for (Metric metric : expectedMetricList) {
       if (!metricSet.contains(metric)) {
         throw new BaseException(
             ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
