@@ -20,7 +20,6 @@ import com.amazonaws.services.xray.AWSXRayClientBuilder;
 import com.amazonaws.services.xray.model.BatchGetTracesRequest;
 import com.amazonaws.services.xray.model.BatchGetTracesResult;
 import com.amazonaws.services.xray.model.Trace;
-
 import java.util.List;
 
 public class XRayService {

@@ -33,6 +33,7 @@ public class ValidatorFactory {
 
   /**
    * create and init validator base on config.
+   *
    * @param validationConfig config from file
    * @return validator object
    * @throws Exception when there's no matched validator

@@ -9,34 +9,32 @@ import com.amazonaws.services.cloudwatch.model.Metric;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.FilenameUtils;
-
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FilenameUtils;
 
 @Log4j2
 public class ContainerInsightPrometheusMetricsValidator extends AbstractCWMetricsValidator {
   private final ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
   @Override
-  List<Metric> getExpectedMetrics(
-      Context context,
-      FileConfig expectedDataTemplate
-  ) throws Exception {
+  List<Metric> getExpectedMetrics(Context context, FileConfig expectedDataTemplate)
+      throws Exception {
     List<Metric> expectedMetrics = new ArrayList<>();
     List<CloudWatchContext.App> validateApps = getAppsToValidate(context.getCloudWatchContext());
     MustacheHelper mustacheHelper = new MustacheHelper();
     for (CloudWatchContext.App app : validateApps) {
-      FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
-            expectedDataTemplate.getPath().toString(),
-          app.getName() + "_metrics.mustache"));
+      FileConfig fileConfig =
+          new LocalPathExpectedTemplate(
+              FilenameUtils.concat(
+                  expectedDataTemplate.getPath().toString(), app.getName() + "_metrics.mustache"));
       String templateInput = mustacheHelper.render(fileConfig, context);
       // log.info("Rendered template {}", templateInput);
-      List<Metric> appMetrics = mapper.readValue(templateInput.getBytes(StandardCharsets.UTF_8),
-            new TypeReference<List<Metric>>() {
-            });
+      List<Metric> appMetrics =
+          mapper.readValue(
+              templateInput.getBytes(StandardCharsets.UTF_8), new TypeReference<List<Metric>>() {});
       expectedMetrics.addAll(appMetrics);
     }
     return expectedMetrics;

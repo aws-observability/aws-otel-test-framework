@@ -19,9 +19,9 @@ import java.io.IOException;
 import java.net.URL;
 
 /**
- * LocalPathExpectedTemplate represents the template which comes from outside of
- * testing framework but at the same file system with terraform runtime.
- * todo, we can probably support remote templates which come from s3.
+ * LocalPathExpectedTemplate represents the template which comes from outside of testing framework
+ * but at the same file system with terraform runtime. todo, we can probably support remote
+ * templates which come from s3.
  */
 public class LocalPathExpectedTemplate implements FileConfig {
   public LocalPathExpectedTemplate(String path) {

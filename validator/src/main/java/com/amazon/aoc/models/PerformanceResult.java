@@ -15,10 +15,9 @@
 
 package com.amazon.aoc.models;
 
+import java.io.Serializable;
 import lombok.Data;
 import lombok.NonNull;
-
-import java.io.Serializable;
 
 @Data
 public class PerformanceResult implements Serializable {

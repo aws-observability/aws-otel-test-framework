@@ -27,8 +27,6 @@ import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -37,6 +35,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class CWMetricValidator implements IValidator {
@@ -65,11 +64,8 @@ public class CWMetricValidator implements IValidator {
   public void validate() throws Exception {
     log.info("Start metric validating");
     // get expected metrics and remove the to be skipped dimensions
-    final List<Metric> expectedMetricList = cwMetricHelper.listExpectedMetrics(
-        context,
-        expectedMetric,
-        caller
-    );
+    final List<Metric> expectedMetricList =
+        cwMetricHelper.listExpectedMetrics(context, expectedMetric, caller);
     Set<String> skippedDimensionNameList = new HashSet<>();
     for (Metric metric : expectedMetricList) {
       for (Dimension dimension : metric.getDimensions()) {

@@ -15,30 +15,25 @@
 
 package com.amazon.aoc.models;
 
+import java.util.List;
 import lombok.Data;
 import lombok.NonNull;
 
-import java.util.List;
-
 @Data
 public class Context {
-  @NonNull
-  private String testingId;
+  @NonNull private String testingId;
 
   private String accountId;
 
   private String language;
 
-  @NonNull
-  private String region;
+  @NonNull private String region;
 
   private String availabilityZone;
 
-  @NonNull
-  private Boolean isCanary;
+  @NonNull private Boolean isCanary;
 
-  @NonNull
-  private Boolean isRollup;
+  @NonNull private Boolean isRollup;
 
   private String metricNamespace;
 
@@ -54,19 +49,19 @@ public class Context {
   private String testcase;
 
   /*
-  alarm related parameters
+   * alarm related parameters
    */
   private List<String> alarmNameList;
   private Integer alarmPullingDuration;
   private Integer alarmPullingTimes;
 
   /*
-  mocked server parameters
+   * mocked server parameters
    */
   private String mockedServerValidatingUrl;
 
   /*
-  cortex parameters
+   * cortex parameters
    */
   private String cortexInstanceEndpoint;
 }

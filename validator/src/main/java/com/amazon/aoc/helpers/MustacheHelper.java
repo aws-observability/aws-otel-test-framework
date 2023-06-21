@@ -19,13 +19,12 @@ import com.amazon.aoc.fileconfigs.FileConfig;
 import com.github.mustachejava.DefaultMustacheFactory;
 import com.github.mustachejava.Mustache;
 import com.github.mustachejava.MustacheFactory;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.IOUtils;
-
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URL;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.IOUtils;
 
 @Log4j2
 public class MustacheHelper {

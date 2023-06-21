@@ -28,14 +28,13 @@ import com.amazon.aoc.services.CortexService;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class PrometheusStaticMetricValidator implements IValidator {
@@ -59,16 +58,15 @@ public class PrometheusStaticMetricValidator implements IValidator {
     log.info("allow lambda function to finish running and propagate");
     TimeUnit.SECONDS.sleep(60);
     // get expected metrics
-    final List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(
-        context);
+    final List<PrometheusMetric> expectedMetricList = this.getExpectedMetricList(context);
 
     // get metrics from prometheus
     RetryHelper.retry(
         MAX_RETRY_COUNT,
         () -> {
           List<PrometheusMetric> metricList =
-                  this.listMetricFromPrometheus(cortexService, expectedMetricList);
-          
+              this.listMetricFromPrometheus(cortexService, expectedMetricList);
+
           log.info("check if all the expected metrics are found");
           log.info("actual metricList is {}", metricList);
           log.info("expected metricList is {}", expectedMetricList);
@@ -85,11 +83,11 @@ public class PrometheusStaticMetricValidator implements IValidator {
    * Check if every metric in toBeChckedMetricList is in baseMetricList.
    *
    * @param toBeCheckedMetricList toBeCheckedMetricList
-   * @param baseMetricList        baseMetricList
+   * @param baseMetricList baseMetricList
    */
-  private void compareMetricLists(List<PrometheusMetric> toBeCheckedMetricList,
-                                  List<PrometheusMetric> baseMetricList)
-          throws BaseException {
+  private void compareMetricLists(
+      List<PrometheusMetric> toBeCheckedMetricList, List<PrometheusMetric> baseMetricList)
+      throws BaseException {
     // load metrics into a tree set
     Comparator<PrometheusMetric> comparator = PrometheusMetric::comparePrometheusMetricLabels;
 
@@ -103,10 +101,10 @@ public class PrometheusStaticMetricValidator implements IValidator {
     for (PrometheusMetric metric : toBeCheckedMetricList) {
       if (!metricSet.contains(metric)) {
         throw new BaseException(
-                ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
-                String.format(
-                        "metric in toBeCheckedMetricList %s not found in baseMetricList: %s",
-                        metric, metricSet));
+            ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
+            String.format(
+                "metric in toBeCheckedMetricList %s not found in baseMetricList: %s",
+                metric, metricSet));
       }
     }
   }
@@ -114,28 +112,27 @@ public class PrometheusStaticMetricValidator implements IValidator {
   private List<PrometheusMetric> getExpectedMetricList(Context context) throws Exception {
     log.info("getting expected metrics");
     // get expected metrics as json from config
-    String jsonExpectedMetrics =  mustacheHelper.render(this.expectedMetric, context);
+    String jsonExpectedMetrics = mustacheHelper.render(this.expectedMetric, context);
 
     // load metrics from json
     ObjectMapper mapper = new ObjectMapper(new JsonFactory());
     List<PrometheusMetric> expectedMetricList =
         mapper.readValue(
-          jsonExpectedMetrics.getBytes(StandardCharsets.UTF_8),
-            new TypeReference<List<PrometheusMetric>>() {
-            });
+            jsonExpectedMetrics.getBytes(StandardCharsets.UTF_8),
+            new TypeReference<List<PrometheusMetric>>() {});
 
     return removeSkippedMetrics(expectedMetricList);
   }
 
   private List<PrometheusMetric> removeSkippedMetrics(List<PrometheusMetric> expectedMetrics) {
     return expectedMetrics.stream()
-            .filter(metric -> !metric.isSkippedMetric())
-            .collect(Collectors.toList());
+        .filter(metric -> !metric.isSkippedMetric())
+        .collect(Collectors.toList());
   }
 
   private List<PrometheusMetric> listMetricFromPrometheus(
-          CortexService cortexService, List<PrometheusMetric> expectedMetricList)
-          throws IOException, URISyntaxException, BaseException {
+      CortexService cortexService, List<PrometheusMetric> expectedMetricList)
+      throws IOException, URISyntaxException, BaseException {
     // put metric name to search metric
     List<String> metricNameList = new ArrayList<>();
     for (PrometheusMetric metric : expectedMetricList) {
@@ -151,11 +148,11 @@ public class PrometheusStaticMetricValidator implements IValidator {
 
   @Override
   public void init(
-          Context context,
-          ValidationConfig validationConfig,
-          ICaller caller,
-          FileConfig expectedMetricTemplate)
-          throws Exception {
+      Context context,
+      ValidationConfig validationConfig,
+      ICaller caller,
+      FileConfig expectedMetricTemplate)
+      throws Exception {
     this.context = context;
     this.cortexService = new CortexService(context);
     this.validationConfig = validationConfig;

@@ -11,11 +11,10 @@ import com.amazon.aoc.services.CloudWatchAlarmService;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.MetricAlarm;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class AlarmPullingValidator implements IValidator {
@@ -46,8 +45,8 @@ public class AlarmPullingValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     Collections.sort(context.getAlarmNameList());
-    Dimension dimension = new Dimension()
-        .withName(TEST_CASE_DIM_KEY).withValue(context.getTestcase());
+    Dimension dimension =
+        new Dimension().withName(TEST_CASE_DIM_KEY).withValue(context.getTestcase());
     RetryHelper.retry(
         this.pullTimes,
         this.pullDuration * 1000,
@@ -61,7 +60,7 @@ public class AlarmPullingValidator implements IValidator {
           for (int i = 0; i != context.getAlarmNameList().size(); ++i) {
             if (!context.getAlarmNameList().get(i).equals(alarmList.get(i).getAlarmName())) {
               log.error("alarm {} cannot be found", context.getAlarmNameList().get(i));
-              //emit soaking validation metric
+              // emit soaking validation metric
               cloudWatchService.putMetricData(SOAKING_NAMESPACE, METRIC_NAME, 0.0, dimension);
               System.exit(1);
             }
@@ -72,10 +71,10 @@ public class AlarmPullingValidator implements IValidator {
             log.info(metricAlarm.getStateValue());
             if (!metricAlarm.getStateValue().equals("OK")) {
               log.error(
-                  "alarm {} is alarming, status is {}, " 
-                  + "metric is {}, " 
-                  + "matric error : {}, " 
-                  + "failing to bake",
+                  "alarm {} is alarming, status is {}, "
+                      + "metric is {}, "
+                      + "matric error : {}, "
+                      + "failing to bake",
                   metricAlarm.getAlarmName(),
                   metricAlarm.getStateValue(),
                   metricAlarm.getMetrics(),

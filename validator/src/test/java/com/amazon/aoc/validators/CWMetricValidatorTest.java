@@ -26,15 +26,10 @@ import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Metric;
+import java.util.List;
 import org.junit.Test;
 
-import java.util.List;
-
-
-
-/**
- * this class covers the tests for CWMetricValidator.
- */
+/** this class covers the tests for CWMetricValidator. */
 public class CWMetricValidatorTest {
   private CWMetricHelper cwMetricHelper = new CWMetricHelper();
 
@@ -49,13 +44,14 @@ public class CWMetricValidatorTest {
     validationConfig.setCallingType("http");
     validationConfig.setExpectedMetricTemplate(
         "file://"
-        + System.getProperty("user.dir")
-        + "/src/main/resources/expected-data-template/defaultExpectedMetric.mustache");
+            + System.getProperty("user.dir")
+            + "/src/main/resources/expected-data-template/defaultExpectedMetric.mustache");
     runValidation(validationConfig, initContext());
   }
 
   /**
    * test validation with enum template.
+   *
    * @throws Exception when test fails
    */
   @Test
@@ -73,12 +69,7 @@ public class CWMetricValidatorTest {
     String region = "us-west-2";
 
     // faked context
-    Context context = new Context(
-        testingId,
-        region,
-        false,
-        true
-    );
+    Context context = new Context(testingId, region, false, true);
     context.setMetricNamespace(namespace);
     return context;
   }
@@ -94,25 +85,18 @@ public class CWMetricValidatorTest {
     when(httpCaller.callSampleApp()).thenReturn(sampleAppResponse);
 
     // fake and mock a cloudwatch service
-    List<Metric> metrics = cwMetricHelper.listExpectedMetrics(
-        context,
-        validationConfig.getExpectedMetricTemplate(),
-        httpCaller
-        );
+    List<Metric> metrics =
+        cwMetricHelper.listExpectedMetrics(
+            context, validationConfig.getExpectedMetricTemplate(), httpCaller);
     CloudWatchService cloudWatchService = mock(CloudWatchService.class);
 
     // mock listMetrics
     when(cloudWatchService.listMetrics(any(), any())).thenReturn(metrics);
 
-
     // start validation
     CWMetricValidator validator = new CWMetricValidator();
     validator.init(
-        context,
-        validationConfig,
-        httpCaller,
-        validationConfig.getExpectedMetricTemplate()
-    );
+        context, validationConfig, httpCaller, validationConfig.getExpectedMetricTemplate());
     validator.setCloudWatchService(cloudWatchService);
     validator.setMaxRetryCount(1);
     validator.validate();

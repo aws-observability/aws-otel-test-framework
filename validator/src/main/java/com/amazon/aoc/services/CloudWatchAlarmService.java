@@ -5,7 +5,6 @@ import com.amazonaws.services.cloudwatch.AmazonCloudWatchClientBuilder;
 import com.amazonaws.services.cloudwatch.model.DescribeAlarmsRequest;
 import com.amazonaws.services.cloudwatch.model.DescribeAlarmsResult;
 import com.amazonaws.services.cloudwatch.model.MetricAlarm;
-
 import java.util.List;
 
 public class CloudWatchAlarmService {
@@ -17,6 +16,7 @@ public class CloudWatchAlarmService {
 
   /**
    * Get alarm list base on name.
+   *
    * @param alarmNameList alarm name list
    * @return the list of MetricAlarm Object
    */

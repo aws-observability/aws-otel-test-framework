@@ -1,17 +1,16 @@
 package com.amazon.aoc.models.xray;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.List;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-import java.util.Map;
-
 /**
- * Barebones class representing a X-Ray Entity, used for JSON deserialization with Jackson.
- * It is not exactly an entity because it includes fields that are only allowed in Segments
- * (e.g. origin, user) but for the purposes of the validator that is acceptable because those
- * fields will be ignored when they're not present in subsegments.
+ * Barebones class representing a X-Ray Entity, used for JSON deserialization with Jackson. It is
+ * not exactly an entity because it includes fields that are only allowed in Segments (e.g. origin,
+ * user) but for the purposes of the validator that is acceptable because those fields will be
+ * ignored when they're not present in subsegments.
  */
 @Getter
 @Setter
