@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 import lombok.extern.log4j.Log4j2;
+import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class CWMetricValidator implements IValidator {
@@ -114,14 +115,28 @@ public class CWMetricValidator implements IValidator {
   }
 
   /**
-   * Check if every metric in expectedMetricList is in actualMetricList.
+   * Check if every metric in expectedMetricList is in actualMetricList. This performs an exact
+   * match between two metric lists. This does not allow any extra metrics + dimension set
+   * combinations to be present in the actual metric list.
    *
-   * @param expectedMetricList expectedMetricList
-   * @param actualMetricList actualMetricList
+   * @param expectedMetricList The list of expected metrics
+   * @param actualMetricList The list of actual metrics retrieved from CloudWatch
    */
   private void compareMetricLists(List<Metric> expectedMetricList, List<Metric> actualMetricList)
       throws BaseException {
 
+    // check if all expected values are present
+    Set<Metric> actualMetricSet = buildMetricSet(actualMetricList);
+    for (Metric metric : expectedMetricList) {
+      if (!actualMetricSet.contains(metric)) {
+        throw new BaseException(
+            ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
+            String.format("expected metric %s is not found in actual metric list %n", metric));
+      }
+    }
+  }
+
+  @NotNull private static Set<Metric> buildMetricSet(List<Metric> inputMetricList) {
     // load metrics into a hash set
     Set<Metric> metricSet =
         new TreeSet<>(
@@ -146,18 +161,10 @@ public class CWMetricValidator implements IValidator {
 
               return dimensionList1.toString().compareTo(dimensionList2.toString());
             });
-    for (Metric metric : actualMetricList) {
+    for (Metric metric : inputMetricList) {
       metricSet.add(metric);
     }
-    for (Metric metric : expectedMetricList) {
-      if (!metricSet.contains(metric)) {
-        throw new BaseException(
-            ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
-            String.format(
-                "metric in %ntoBeCheckedMetricList: %s is not found in %nbaseMetricList: %s %n",
-                metric, metricSet));
-      }
-    }
+    return metricSet;
   }
 
   private List<Metric> listMetricFromCloudWatch(
