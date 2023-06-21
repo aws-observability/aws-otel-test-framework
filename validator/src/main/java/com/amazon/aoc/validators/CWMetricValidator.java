@@ -26,7 +26,6 @@ import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.Metric;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -170,7 +169,7 @@ public class CWMetricValidator implements IValidator {
   }
 
   private List<Metric> listMetricFromCloudWatch(
-      CloudWatchService cloudWatchService, List<Metric> expectedMetricList) throws IOException {
+      CloudWatchService cloudWatchService, List<Metric> expectedMetricList) {
     // put namespace into the map key, so that we can use it to search metric
     HashMap<String, String> metricNameMap = new HashMap<>();
     for (Metric metric : expectedMetricList) {
