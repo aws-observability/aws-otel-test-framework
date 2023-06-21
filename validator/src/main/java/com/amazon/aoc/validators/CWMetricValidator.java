@@ -165,9 +165,7 @@ public class CWMetricValidator implements IValidator {
 
               return dimensionList1.toString().compareTo(dimensionList2.toString());
             });
-    for (Metric metric : inputMetricList) {
-      metricSet.add(metric);
-    }
+    metricSet.addAll(inputMetricList);
     return metricSet;
   }
 
