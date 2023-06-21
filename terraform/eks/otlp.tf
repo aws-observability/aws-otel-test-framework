@@ -105,7 +105,7 @@ module "aoc_oltp" {
   }
   sample_app_service_account_name = kubernetes_service_account.sample-app-sa.metadata.0.name
   is_adot_operator                = replace(var.testcase, "_adot_operator", "") != var.testcase
-  auto_instrumentation            = var.auto_instrumentation
+  is_inject_auto_instrumentation            = var.is_inject_auto_instrumentation
 
   depends_on = [module.iam_assumable_role_sample_app, null_resource.java_auto_instrumentation_adot_operator]
 }
@@ -294,7 +294,7 @@ resource "null_resource" "aoc_deployment_adot_operator" {
 }
 
 data "template_file" "java_auto_instrumentation_config_file" {
-  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase && var.auto_instrumentation ? 1 : 0
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase && var.is_inject_auto_instrumentation ? 1 : 0
 
   template = file("./adot-operator/java_auto_instrumentation.tpl")
 
@@ -311,7 +311,7 @@ data "template_file" "java_auto_instrumentation_config_file" {
 }
 
 resource "local_file" "java_auto_instrumentation_deployment" {
-  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase && var.auto_instrumentation ? 1 : 0
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase && var.is_inject_auto_instrumentation ? 1 : 0
 
   filename = "java_auto_instrumentation.yaml"
   content  = data.template_file.java_auto_instrumentation_config_file.0.rendered
@@ -320,7 +320,7 @@ resource "local_file" "java_auto_instrumentation_deployment" {
 }
 
 resource "null_resource" "java_auto_instrumentation_adot_operator" {
-  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase && var.auto_instrumentation ? 1 : 0
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase && var.is_inject_auto_instrumentation ? 1 : 0
 
   provisioner "local-exec" {
     command = "kubectl apply --kubeconfig=${local_file.kubeconfig.filename} -f ${local_file.java_auto_instrumentation_deployment.0.filename}"

@@ -23,7 +23,7 @@ locals {
 }
 # deploy sample app
 resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
-  count = var.sample_app.mode == "push" && !var.auto_instrumentation ? 1 : 0
+  count = var.sample_app.mode == "push" && !var.is_inject_auto_instrumentation ? 1 : 0
 
   metadata {
     name      = "sample-app"
@@ -46,9 +46,6 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
       metadata {
         labels = {
           app = local.sample_app_label_selector
-        }
-        annotations = {
-          "instrumentation.opentelemetry.io/inject-sdk" = var.auto_instrumentation
         }
       }
 

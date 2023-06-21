@@ -14,12 +14,12 @@
 # -------------------------------------------------------------------------
 
 ##########################################
-# Push mode deployment for auto_instrumentation
+# Push mode deployment to inject with auto_instrumentation
 ##########################################
 
 # deploy sample app
-resource "kubernetes_deployment" "push_mode_sample_app_deployment_auto_instrumentation" {
-  count = var.sample_app.mode == "push" && var.auto_instrumentation ? 1 : 0
+resource "kubernetes_deployment" "push_mode_sample_app_deployment_inject_auto_instrumentation" {
+  count = var.sample_app.mode == "push" && var.is_inject_auto_instrumentation ? 1 : 0
 
   metadata {
     name      = "sample-app"
@@ -44,7 +44,7 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment_auto_instrumen
           app = local.sample_app_label_selector
         }
         annotations = {
-          "instrumentation.opentelemetry.io/inject-java" = var.auto_instrumentation
+          "instrumentation.opentelemetry.io/inject-java" = var.is_inject_auto_instrumentation
         }
       }
 

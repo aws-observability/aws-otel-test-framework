@@ -81,7 +81,7 @@ variable "configuration_source" {
   }
 }
 
-variable "auto_instrumentation" {
+variable "is_inject_auto_instrumentation" {
   type    = bool
   default = false
 }

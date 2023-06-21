@@ -4,4 +4,4 @@ sample_app = "spark"
 
 sample_app_image = "public.ecr.aws/q1w6y6d0/spark:latest"
 
-auto_instrumentation = true
+is_inject_auto_instrumentation = true
