@@ -197,7 +197,6 @@ public class CWMetricValidator implements IValidator {
     this.expectedMetric = expectedMetricTemplate;
     this.cloudWatchService = new CloudWatchService(context.getRegion());
     this.cwMetricHelper = new CWMetricHelper();
-    int DEFAULT_MAX_RETRY_COUNT = 30;
-    this.maxRetryCount = DEFAULT_MAX_RETRY_COUNT;
+    this.maxRetryCount = 30;
   }
 }
