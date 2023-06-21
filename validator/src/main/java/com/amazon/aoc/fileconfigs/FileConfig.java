@@ -23,10 +23,10 @@ import java.net.URL;
  * mustacheHelper could render it.
  */
 public interface FileConfig {
-	/**
-	 * get the mustache file path.
-	 *
-	 * @return file path
-	 */
-	URL getPath() throws IOException;
+    /**
+     * get the mustache file path.
+     *
+     * @return file path
+     */
+    URL getPath() throws IOException;
 }

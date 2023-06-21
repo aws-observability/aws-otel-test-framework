@@ -32,111 +32,111 @@ import java.util.List;
  * helper class for getting expected metrics from templates.
  */
 public class CWMetricHelper {
-	private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
-	MustacheHelper mustacheHelper = new MustacheHelper();
+    private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
+    MustacheHelper mustacheHelper = new MustacheHelper();
 
-	/**
-	 * get expected metrics from template with injecting context.
-	 *
-	 * @param context
-	 *            testing context
-	 * @param expectedMetric
-	 *            expected template
-	 * @param caller
-	 *            http caller, none caller, could be null
-	 * @return list of metrics
-	 * @throws Exception
-	 *             when caller throws exception or template can not be found
-	 */
-	public List<Metric> listExpectedMetrics(Context context, FileConfig expectedMetric, ICaller caller)
-			throws Exception {
-		// call endpoint
-		if (caller != null) {
-			caller.callSampleApp();
-		}
+    /**
+     * get expected metrics from template with injecting context.
+     *
+     * @param context
+     *            testing context
+     * @param expectedMetric
+     *            expected template
+     * @param caller
+     *            http caller, none caller, could be null
+     * @return list of metrics
+     * @throws Exception
+     *             when caller throws exception or template can not be found
+     */
+    public List<Metric> listExpectedMetrics(Context context, FileConfig expectedMetric, ICaller caller)
+            throws Exception {
+        // call endpoint
+        if (caller != null) {
+            caller.callSampleApp();
+        }
 
-		// get expected metrics as yaml from config
-		String yamlExpectedMetrics = mustacheHelper.render(expectedMetric, context);
+        // get expected metrics as yaml from config
+        String yamlExpectedMetrics = mustacheHelper.render(expectedMetric, context);
 
-		// load metrics from yaml
-		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-		List<Metric> expectedMetricList = mapper.readValue(yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
-				new TypeReference<List<Metric>>() {
-				});
+        // load metrics from yaml
+        ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+        List<Metric> expectedMetricList = mapper.readValue(yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
+                new TypeReference<List<Metric>>() {
+                });
 
-		if (context.getIsRollup()) {
-			return this.rollupMetric(expectedMetricList);
-		}
+        if (context.getIsRollup()) {
+            return this.rollupMetric(expectedMetricList);
+        }
 
-		return expectedMetricList;
-	}
+        return expectedMetricList;
+    }
 
-	/**
-	 * rollup the metrics 1. no dimension rollup 2. zero dimension rollup 3. single
-	 * dimension rollup Ex. A metric A with dimensions OtelLib, Dimension_1,
-	 * Dimension_2 will be rolled up to four metrics: 1. No dimension rollup: A
-	 * [OtelLib, Dimension_1, Dimension_2]. 2. Zero dimension rollup: A [OtelLib].
-	 * 3. Single dimension rollup: A [OtelLib, Dimension_1], A [OtelLib,
-	 * Dimension_2]
-	 *
-	 * @param metricList
-	 *            after rolled up
-	 * @return list of rolled up metrics
-	 */
-	private List<Metric> rollupMetric(List<Metric> metricList) {
-		List<Metric> rollupMetricList = new ArrayList<>();
-		for (Metric metric : metricList) {
-			Dimension otellibDimension = new Dimension();
-			boolean otelLibDimensionExisted = false;
+    /**
+     * rollup the metrics 1. no dimension rollup 2. zero dimension rollup 3. single
+     * dimension rollup Ex. A metric A with dimensions OtelLib, Dimension_1,
+     * Dimension_2 will be rolled up to four metrics: 1. No dimension rollup: A
+     * [OtelLib, Dimension_1, Dimension_2]. 2. Zero dimension rollup: A [OtelLib].
+     * 3. Single dimension rollup: A [OtelLib, Dimension_1], A [OtelLib,
+     * Dimension_2]
+     *
+     * @param metricList
+     *            after rolled up
+     * @return list of rolled up metrics
+     */
+    private List<Metric> rollupMetric(List<Metric> metricList) {
+        List<Metric> rollupMetricList = new ArrayList<>();
+        for (Metric metric : metricList) {
+            Dimension otellibDimension = new Dimension();
+            boolean otelLibDimensionExisted = false;
 
-			if (metric.getDimensions().size() > 0) {
-				// get otellib dimension out
-				// assuming the first dimension is otellib, if not the validation fails
-				otellibDimension = metric.getDimensions().get(0);
-				otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
-			}
+            if (metric.getDimensions().size() > 0) {
+                // get otellib dimension out
+                // assuming the first dimension is otellib, if not the validation fails
+                otellibDimension = metric.getDimensions().get(0);
+                otelLibDimensionExisted = otellibDimension.getName().equals(DEFAULT_DIMENSION_NAME);
+            }
 
-			if (otelLibDimensionExisted) {
-				metric.getDimensions().remove(0);
-			}
+            if (otelLibDimensionExisted) {
+                metric.getDimensions().remove(0);
+            }
 
-			// all dimension rollup
-			Metric allDimensionsMetric = new Metric();
-			allDimensionsMetric.setMetricName(metric.getMetricName());
-			allDimensionsMetric.setNamespace(metric.getNamespace());
-			allDimensionsMetric.setDimensions(metric.getDimensions());
+            // all dimension rollup
+            Metric allDimensionsMetric = new Metric();
+            allDimensionsMetric.setMetricName(metric.getMetricName());
+            allDimensionsMetric.setNamespace(metric.getNamespace());
+            allDimensionsMetric.setDimensions(metric.getDimensions());
 
-			if (otelLibDimensionExisted) {
-				allDimensionsMetric.getDimensions().add(
-						new Dimension().withName(otellibDimension.getName()).withValue(otellibDimension.getValue()));
-			}
-			rollupMetricList.add(allDimensionsMetric);
+            if (otelLibDimensionExisted) {
+                allDimensionsMetric.getDimensions().add(
+                        new Dimension().withName(otellibDimension.getName()).withValue(otellibDimension.getValue()));
+            }
+            rollupMetricList.add(allDimensionsMetric);
 
-			// zero dimension rollup
-			Metric zeroDimensionMetric = new Metric();
-			zeroDimensionMetric.setNamespace(metric.getNamespace());
-			zeroDimensionMetric.setMetricName(metric.getMetricName());
+            // zero dimension rollup
+            Metric zeroDimensionMetric = new Metric();
+            zeroDimensionMetric.setNamespace(metric.getNamespace());
+            zeroDimensionMetric.setMetricName(metric.getMetricName());
 
-			if (otelLibDimensionExisted) {
-				zeroDimensionMetric.setDimensions(Arrays.asList(
-						new Dimension().withName(otellibDimension.getName()).withValue(otellibDimension.getValue())));
-			}
-			rollupMetricList.add(zeroDimensionMetric);
+            if (otelLibDimensionExisted) {
+                zeroDimensionMetric.setDimensions(Arrays.asList(
+                        new Dimension().withName(otellibDimension.getName()).withValue(otellibDimension.getValue())));
+            }
+            rollupMetricList.add(zeroDimensionMetric);
 
-			// single dimension rollup
-			for (Dimension dimension : metric.getDimensions()) {
-				Metric singleDimensionMetric = new Metric();
-				singleDimensionMetric.setNamespace(metric.getNamespace());
-				singleDimensionMetric.setMetricName(metric.getMetricName());
-				if (otelLibDimensionExisted) {
-					singleDimensionMetric.setDimensions(Arrays.asList(new Dimension()
-							.withName(otellibDimension.getName()).withValue(otellibDimension.getValue())));
-				}
-				singleDimensionMetric.getDimensions().add(dimension);
-				rollupMetricList.add(singleDimensionMetric);
-			}
-		}
+            // single dimension rollup
+            for (Dimension dimension : metric.getDimensions()) {
+                Metric singleDimensionMetric = new Metric();
+                singleDimensionMetric.setNamespace(metric.getNamespace());
+                singleDimensionMetric.setMetricName(metric.getMetricName());
+                if (otelLibDimensionExisted) {
+                    singleDimensionMetric.setDimensions(Arrays.asList(new Dimension()
+                            .withName(otellibDimension.getName()).withValue(otellibDimension.getValue())));
+                }
+                singleDimensionMetric.getDimensions().add(dimension);
+                rollupMetricList.add(singleDimensionMetric);
+            }
+        }
 
-		return rollupMetricList;
-	}
+        return rollupMetricList;
+    }
 }

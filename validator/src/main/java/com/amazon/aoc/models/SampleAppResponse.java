@@ -22,5 +22,5 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SampleAppResponse implements Serializable {
-	private String traceId;
+    private String traceId;
 }

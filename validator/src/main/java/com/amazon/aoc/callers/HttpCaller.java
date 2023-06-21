@@ -30,57 +30,57 @@ import okhttp3.Response;
 
 @Log4j2
 public class HttpCaller implements ICaller {
-	private String url;
-	private String path;
+    private String url;
+    private String path;
 
-	/**
-	 * construct httpCaller.
-	 * 
-	 * @param endpoint
-	 *            the endpoint to call, for example "http://127.0.0.1:8080"
-	 * @param path
-	 *            the path to call, for example "/test"
-	 */
-	public HttpCaller(String endpoint, String path) {
-		this.path = path;
-		this.url = endpoint + path;
-		log.info("validator is trying to hit this {} endpoint", this.url);
-	}
+    /**
+     * construct httpCaller.
+     * 
+     * @param endpoint
+     *            the endpoint to call, for example "http://127.0.0.1:8080"
+     * @param path
+     *            the path to call, for example "/test"
+     */
+    public HttpCaller(String endpoint, String path) {
+        this.path = path;
+        this.url = endpoint + path;
+        log.info("validator is trying to hit this {} endpoint", this.url);
+    }
 
-	@Override
-	public SampleAppResponse callSampleApp() throws Exception {
-		OkHttpClient client = new OkHttpClient();
-		Request request = new Request.Builder().url(url).build();
+    @Override
+    public SampleAppResponse callSampleApp() throws Exception {
+        OkHttpClient client = new OkHttpClient();
+        Request request = new Request.Builder().url(url).build();
 
-		AtomicReference<SampleAppResponse> sampleAppResponseAtomicReference = new AtomicReference<>();
-		RetryHelper.retry(40, () -> {
-			try (Response response = client.newCall(request).execute()) {
-				String responseBody = response.body().string();
-				log.info("response from sample app {}", responseBody);
-				if (!response.isSuccessful()) {
-					throw new BaseException(ExceptionCode.DATA_EMITTER_UNAVAILABLE);
-				}
-				SampleAppResponse sampleAppResponse = null;
-				try {
-					sampleAppResponse = new ObjectMapper().readValue(responseBody, SampleAppResponse.class);
-				} catch (JsonProcessingException ex) {
-					// try to get the trace id from header
-					// this is a specific logic for xray sdk, which injects trace id in header
-					log.info("getting trace id from header");
-					// X-Amzn-Trace-Id: Root=1-5f84a611-f2f5df6827016222af9d8b60
-					String traceId = response.header(GenericConstants.HTTP_HEADER_TRACE_ID.getVal()).substring(5);
-					sampleAppResponse = new SampleAppResponse();
-					sampleAppResponse.setTraceId(traceId);
-				}
-				sampleAppResponseAtomicReference.set(sampleAppResponse);
-			}
-		});
+        AtomicReference<SampleAppResponse> sampleAppResponseAtomicReference = new AtomicReference<>();
+        RetryHelper.retry(40, () -> {
+            try (Response response = client.newCall(request).execute()) {
+                String responseBody = response.body().string();
+                log.info("response from sample app {}", responseBody);
+                if (!response.isSuccessful()) {
+                    throw new BaseException(ExceptionCode.DATA_EMITTER_UNAVAILABLE);
+                }
+                SampleAppResponse sampleAppResponse = null;
+                try {
+                    sampleAppResponse = new ObjectMapper().readValue(responseBody, SampleAppResponse.class);
+                } catch (JsonProcessingException ex) {
+                    // try to get the trace id from header
+                    // this is a specific logic for xray sdk, which injects trace id in header
+                    log.info("getting trace id from header");
+                    // X-Amzn-Trace-Id: Root=1-5f84a611-f2f5df6827016222af9d8b60
+                    String traceId = response.header(GenericConstants.HTTP_HEADER_TRACE_ID.getVal()).substring(5);
+                    sampleAppResponse = new SampleAppResponse();
+                    sampleAppResponse.setTraceId(traceId);
+                }
+                sampleAppResponseAtomicReference.set(sampleAppResponse);
+            }
+        });
 
-		return sampleAppResponseAtomicReference.get();
-	}
+        return sampleAppResponseAtomicReference.get();
+    }
 
-	@Override
-	public String getCallingPath() {
-		return path;
-	}
+    @Override
+    public String getCallingPath() {
+        return path;
+    }
 }

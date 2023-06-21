@@ -43,79 +43,79 @@ import lombok.extern.log4j.Log4j2;
 // is finalized.
 @Log4j2
 public abstract class AbstractCWMetricsValidator implements IValidator {
-	private CloudWatchService cloudWatchService;
-	private List<Metric> expectedMetrics;
+    private CloudWatchService cloudWatchService;
+    private List<Metric> expectedMetrics;
 
-	private static final int DEFAULT_MAX_RETRY_COUNT = 10;
-	private static final int DEFAULT_INITIAL_SLEEP_TIME = 60;
-	private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
-	private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
+    private static final int DEFAULT_MAX_RETRY_COUNT = 10;
+    private static final int DEFAULT_INITIAL_SLEEP_TIME = 60;
+    private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
+    private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
 
-	private int maxRetryCount;
-	private int initialSleepTime;
+    private int maxRetryCount;
+    private int initialSleepTime;
 
-	@Override
-	public void init(Context context, ValidationConfig validationConfig, ICaller caller,
-			FileConfig expectedDataTemplate) throws Exception {
-		cloudWatchService = new CloudWatchService(context.getRegion());
-		expectedMetrics = getExpectedMetrics(context, expectedDataTemplate);
-		this.maxRetryCount = DEFAULT_MAX_RETRY_COUNT;
-		this.initialSleepTime = DEFAULT_INITIAL_SLEEP_TIME;
-	}
+    @Override
+    public void init(Context context, ValidationConfig validationConfig, ICaller caller,
+            FileConfig expectedDataTemplate) throws Exception {
+        cloudWatchService = new CloudWatchService(context.getRegion());
+        expectedMetrics = getExpectedMetrics(context, expectedDataTemplate);
+        this.maxRetryCount = DEFAULT_MAX_RETRY_COUNT;
+        this.initialSleepTime = DEFAULT_INITIAL_SLEEP_TIME;
+    }
 
-	abstract List<Metric> getExpectedMetrics(Context context, FileConfig expectedDataTemplate) throws Exception;
+    abstract List<Metric> getExpectedMetrics(Context context, FileConfig expectedDataTemplate) throws Exception;
 
-	@Override
-	public void validate() throws Exception {
-		log.info("[ContainerInsight] start validating metrics, pause 60s for metric collection");
-		TimeUnit.SECONDS.sleep(initialSleepTime);
-		log.info("[ContainerInsight] resume validation");
+    @Override
+    public void validate() throws Exception {
+        log.info("[ContainerInsight] start validating metrics, pause 60s for metric collection");
+        TimeUnit.SECONDS.sleep(initialSleepTime);
+        log.info("[ContainerInsight] resume validation");
 
-		RetryHelper.retry(maxRetryCount, CHECK_INTERVAL_IN_MILLI, true, () -> {
-			Instant startTime = Instant.now().minusSeconds(CHECK_DURATION_IN_SECONDS).truncatedTo(ChronoUnit.MINUTES);
-			Instant endTime = startTime.plusSeconds(CHECK_DURATION_IN_SECONDS);
+        RetryHelper.retry(maxRetryCount, CHECK_INTERVAL_IN_MILLI, true, () -> {
+            Instant startTime = Instant.now().minusSeconds(CHECK_DURATION_IN_SECONDS).truncatedTo(ChronoUnit.MINUTES);
+            Instant endTime = startTime.plusSeconds(CHECK_DURATION_IN_SECONDS);
 
-			for (Metric expectedMetric : expectedMetrics) {
-				List<MetricDataResult> batchResult = cloudWatchService.getMetricData(expectedMetric,
-						Date.from(startTime), Date.from(endTime));
-				boolean found = false;
-				for (MetricDataResult result : batchResult) {
-					if (result.getValues().size() > 0) {
-						found = true;
-					}
-				}
-				if (!found) {
-					throw new BaseException(ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
-							String.format("[ContainerInsight] metric %s not found with dimension %s",
-									expectedMetric.getMetricName(), stringifyDimension(expectedMetric)));
-				}
-			}
-		});
-		log.info("[ContainerInsight] finish validation successfully");
-	}
+            for (Metric expectedMetric : expectedMetrics) {
+                List<MetricDataResult> batchResult = cloudWatchService.getMetricData(expectedMetric,
+                        Date.from(startTime), Date.from(endTime));
+                boolean found = false;
+                for (MetricDataResult result : batchResult) {
+                    if (result.getValues().size() > 0) {
+                        found = true;
+                    }
+                }
+                if (!found) {
+                    throw new BaseException(ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
+                            String.format("[ContainerInsight] metric %s not found with dimension %s",
+                                    expectedMetric.getMetricName(), stringifyDimension(expectedMetric)));
+                }
+            }
+        });
+        log.info("[ContainerInsight] finish validation successfully");
+    }
 
-	private static String stringifyDimension(Metric metric) {
-		if (metric.getDimensions() == null) {
-			return "[]";
-		}
-		String[] dimensions = new String[metric.getDimensions().size()];
-		for (int i = 0; i < metric.getDimensions().size(); i++) {
-			Dimension dimension = metric.getDimensions().get(i);
-			dimensions[i] = String.format("%s: %s", dimension.getName(), dimension.getValue());
-		}
-		return "[" + StringUtils.join(", ", dimensions) + "]";
+    private static String stringifyDimension(Metric metric) {
+        if (metric.getDimensions() == null) {
+            return "[]";
+        }
+        String[] dimensions = new String[metric.getDimensions().size()];
+        for (int i = 0; i < metric.getDimensions().size(); i++) {
+            Dimension dimension = metric.getDimensions().get(i);
+            dimensions[i] = String.format("%s: %s", dimension.getName(), dimension.getValue());
+        }
+        return "[" + StringUtils.join(", ", dimensions) + "]";
 
-	}
+    }
 
-	public void setCloudWatchService(CloudWatchService cloudWatchService) {
-		this.cloudWatchService = cloudWatchService;
-	}
+    public void setCloudWatchService(CloudWatchService cloudWatchService) {
+        this.cloudWatchService = cloudWatchService;
+    }
 
-	public void setMaxRetryCount(int maxRetryCount) {
-		this.maxRetryCount = maxRetryCount;
-	}
+    public void setMaxRetryCount(int maxRetryCount) {
+        this.maxRetryCount = maxRetryCount;
+    }
 
-	public void setInitialSleepTime(int initialSleepTime) {
-		this.initialSleepTime = initialSleepTime;
-	}
+    public void setInitialSleepTime(int initialSleepTime) {
+        this.initialSleepTime = initialSleepTime;
+    }
 }

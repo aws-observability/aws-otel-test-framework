@@ -21,58 +21,58 @@ import org.junit.Test;
 
 public class ContainerInsightECSStructuredLogValidatorTest {
 
-	String clusterName = "fakedClusterName";
-	private static final String PATH = "/src/test/java/com/amazon/aoc/validators/ecsinstancelogtemplate/";
+    String clusterName = "fakedClusterName";
+    private static final String PATH = "/src/test/java/com/amazon/aoc/validators/ecsinstancelogtemplate/";
 
-	@Test
-	public void testFetchAndValidateLogs() throws Exception {
+    @Test
+    public void testFetchAndValidateLogs() throws Exception {
 
-		// fake a validation config
-		ValidationConfig validationConfig = new ValidationConfig();
-		validationConfig.setExpectedMetricTemplate(PredefinedExpectedTemplate.CONTAINER_INSIGHT_ECS_LOG.name());
+        // fake a validation config
+        ValidationConfig validationConfig = new ValidationConfig();
+        validationConfig.setExpectedMetricTemplate(PredefinedExpectedTemplate.CONTAINER_INSIGHT_ECS_LOG.name());
 
-		// mock cloudwatch service
-		CloudWatchService cloudWatchService = mock(CloudWatchService.class);
-		List<FilteredLogEvent> logEvents = getlogEvents();
-		when(cloudWatchService.filterLogs(anyString(), anyString(), anyLong(), anyInt())).thenReturn(logEvents);
+        // mock cloudwatch service
+        CloudWatchService cloudWatchService = mock(CloudWatchService.class);
+        List<FilteredLogEvent> logEvents = getlogEvents();
+        when(cloudWatchService.filterLogs(anyString(), anyString(), anyLong(), anyInt())).thenReturn(logEvents);
 
-		// go validate
-		ConatinerInsightECSStructuredLogValidator validator = new ConatinerInsightECSStructuredLogValidator();
-		validator.init(getContext(), validationConfig, null, PredefinedExpectedTemplate.CONTAINER_INSIGHT_ECS_LOG);
-		Instant startTime = Instant.EPOCH;
-		validator.setCloudWatchService(cloudWatchService);
-		validator.fetchAndValidateLogs(startTime);
-	}
+        // go validate
+        ConatinerInsightECSStructuredLogValidator validator = new ConatinerInsightECSStructuredLogValidator();
+        validator.init(getContext(), validationConfig, null, PredefinedExpectedTemplate.CONTAINER_INSIGHT_ECS_LOG);
+        Instant startTime = Instant.EPOCH;
+        validator.setCloudWatchService(cloudWatchService);
+        validator.fetchAndValidateLogs(startTime);
+    }
 
-	private Context getContext() {
-		String namespace = "fakednamespace";
-		String testingId = "fakedTesingId";
-		String region = "us-west-2";
+    private Context getContext() {
+        String namespace = "fakednamespace";
+        String testingId = "fakedTesingId";
+        String region = "us-west-2";
 
-		// faked context
-		Context context = new Context(testingId, region, false, true);
-		context.setMetricNamespace(namespace);
-		CloudWatchContext cloudWatchContext = new CloudWatchContext();
-		cloudWatchContext.setClusterName(this.clusterName);
+        // faked context
+        Context context = new Context(testingId, region, false, true);
+        context.setMetricNamespace(namespace);
+        CloudWatchContext cloudWatchContext = new CloudWatchContext();
+        cloudWatchContext.setClusterName(this.clusterName);
 
-		context.setCloudWatchContext(cloudWatchContext);
-		return context;
-	}
+        context.setCloudWatchContext(cloudWatchContext);
+        return context;
+    }
 
-	private List<FilteredLogEvent> getlogEvents() throws IOException {
-		List<FilteredLogEvent> events = new ArrayList<>();
-		String path = System.getProperty("user.dir") + PATH;
-		File file = new File(path);
-		File[] tempList = file.listFiles();
-		for (int i = 0; i < tempList.length; i++) {
-			if (tempList[i].isFile()) {
-				FilteredLogEvent event = new FilteredLogEvent();
-				String fileName = tempList[i].toString();
-				String content = new String(Files.readAllBytes(Paths.get(fileName)));
-				event.setMessage(content);
-				events.add(event);
-			}
-		}
-		return events;
-	}
+    private List<FilteredLogEvent> getlogEvents() throws IOException {
+        List<FilteredLogEvent> events = new ArrayList<>();
+        String path = System.getProperty("user.dir") + PATH;
+        File file = new File(path);
+        File[] tempList = file.listFiles();
+        for (int i = 0; i < tempList.length; i++) {
+            if (tempList[i].isFile()) {
+                FilteredLogEvent event = new FilteredLogEvent();
+                String fileName = tempList[i].toString();
+                String content = new String(Files.readAllBytes(Paths.get(fileName)));
+                event.setMessage(content);
+                events.add(event);
+            }
+        }
+        return events;
+    }
 }

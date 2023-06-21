@@ -116,9 +116,10 @@ spotless {
 
     // Cleanthat will refactor your code, but it may break your style: apply it before your formatter
     cleanthat()          // has its own section below
-        indentWithSpaces(4)
 
     eclipse()          // has its own section below
+
+    indentWithSpaces(4)
 
     formatAnnotations()  // fixes formatting of type annotations, see below
   }

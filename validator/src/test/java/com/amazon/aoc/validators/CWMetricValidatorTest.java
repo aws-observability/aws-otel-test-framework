@@ -33,72 +33,72 @@ import org.junit.Test;
  * this class covers the tests for CWMetricValidator.
  */
 public class CWMetricValidatorTest {
-	private CWMetricHelper cwMetricHelper = new CWMetricHelper();
+    private CWMetricHelper cwMetricHelper = new CWMetricHelper();
 
-	/**
-	 * test validation with local file path template file.
-	 *
-	 * @throws Exception
-	 *             when test fails
-	 */
-	@Test
-	public void testValidationSucceedWithCustomizedFilePath() throws Exception {
-		ValidationConfig validationConfig = new ValidationConfig();
-		validationConfig.setCallingType("http");
-		validationConfig.setExpectedMetricTemplate("file://" + System.getProperty("user.dir")
-				+ "/src/main/resources/expected-data-template/defaultExpectedMetric.mustache");
-		runValidation(validationConfig, initContext());
-	}
+    /**
+     * test validation with local file path template file.
+     *
+     * @throws Exception
+     *             when test fails
+     */
+    @Test
+    public void testValidationSucceedWithCustomizedFilePath() throws Exception {
+        ValidationConfig validationConfig = new ValidationConfig();
+        validationConfig.setCallingType("http");
+        validationConfig.setExpectedMetricTemplate("file://" + System.getProperty("user.dir")
+                + "/src/main/resources/expected-data-template/defaultExpectedMetric.mustache");
+        runValidation(validationConfig, initContext());
+    }
 
-	/**
-	 * test validation with enum template.
-	 * 
-	 * @throws Exception
-	 *             when test fails
-	 */
-	@Test
-	public void testValidationSucceed() throws Exception {
-		ValidationConfig validationConfig = new ValidationConfig();
-		validationConfig.setCallingType("http");
-		validationConfig.setExpectedMetricTemplate("DEFAULT_EXPECTED_METRIC");
-		runValidation(validationConfig, initContext());
-	}
+    /**
+     * test validation with enum template.
+     * 
+     * @throws Exception
+     *             when test fails
+     */
+    @Test
+    public void testValidationSucceed() throws Exception {
+        ValidationConfig validationConfig = new ValidationConfig();
+        validationConfig.setCallingType("http");
+        validationConfig.setExpectedMetricTemplate("DEFAULT_EXPECTED_METRIC");
+        runValidation(validationConfig, initContext());
+    }
 
-	private Context initContext() {
-		// fake vars
-		String namespace = "fakednamespace";
-		String testingId = "fakedTesingId";
-		String region = "us-west-2";
+    private Context initContext() {
+        // fake vars
+        String namespace = "fakednamespace";
+        String testingId = "fakedTesingId";
+        String region = "us-west-2";
 
-		// faked context
-		Context context = new Context(testingId, region, false, true);
-		context.setMetricNamespace(namespace);
-		return context;
-	}
+        // faked context
+        Context context = new Context(testingId, region, false, true);
+        context.setMetricNamespace(namespace);
+        return context;
+    }
 
-	private void runValidation(ValidationConfig validationConfig, Context context) throws Exception {
-		// fake vars
-		String traceId = "fakedtraceid";
+    private void runValidation(ValidationConfig validationConfig, Context context) throws Exception {
+        // fake vars
+        String traceId = "fakedtraceid";
 
-		// fake and mock a http caller
-		HttpCaller httpCaller = mock(HttpCaller.class);
-		SampleAppResponse sampleAppResponse = new SampleAppResponse();
-		sampleAppResponse.setTraceId(traceId);
-		when(httpCaller.callSampleApp()).thenReturn(sampleAppResponse);
+        // fake and mock a http caller
+        HttpCaller httpCaller = mock(HttpCaller.class);
+        SampleAppResponse sampleAppResponse = new SampleAppResponse();
+        sampleAppResponse.setTraceId(traceId);
+        when(httpCaller.callSampleApp()).thenReturn(sampleAppResponse);
 
-		// fake and mock a cloudwatch service
-		List<Metric> metrics = cwMetricHelper.listExpectedMetrics(context, validationConfig.getExpectedMetricTemplate(),
-				httpCaller);
-		CloudWatchService cloudWatchService = mock(CloudWatchService.class);
+        // fake and mock a cloudwatch service
+        List<Metric> metrics = cwMetricHelper.listExpectedMetrics(context, validationConfig.getExpectedMetricTemplate(),
+                httpCaller);
+        CloudWatchService cloudWatchService = mock(CloudWatchService.class);
 
-		// mock listMetrics
-		when(cloudWatchService.listMetrics(any(), any())).thenReturn(metrics);
+        // mock listMetrics
+        when(cloudWatchService.listMetrics(any(), any())).thenReturn(metrics);
 
-		// start validation
-		CWMetricValidator validator = new CWMetricValidator();
-		validator.init(context, validationConfig, httpCaller, validationConfig.getExpectedMetricTemplate());
-		validator.setCloudWatchService(cloudWatchService);
-		validator.setMaxRetryCount(1);
-		validator.validate();
-	}
+        // start validation
+        CWMetricValidator validator = new CWMetricValidator();
+        validator.init(context, validationConfig, httpCaller, validationConfig.getExpectedMetricTemplate());
+        validator.setCloudWatchService(cloudWatchService);
+        validator.setMaxRetryCount(1);
+        validator.validate();
+    }
 }

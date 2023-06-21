@@ -21,8 +21,8 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 
 public interface IValidator {
-	void init(Context context, ValidationConfig validationConfig, ICaller caller, FileConfig expectedDataTemplate)
-			throws Exception;
+    void init(Context context, ValidationConfig validationConfig, ICaller caller, FileConfig expectedDataTemplate)
+            throws Exception;
 
-	void validate() throws Exception;
+    void validate() throws Exception;
 }

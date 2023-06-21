@@ -17,32 +17,32 @@ import lombok.Setter;
 @Setter
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 public class Entity {
-	private String name;
-	private String id;
-	private String parentId;
-	private double startTime;
-	private String resourceArn;
-	private String user;
-	private String origin;
-	private String traceId;
+    private String name;
+    private String id;
+    private String parentId;
+    private double startTime;
+    private String resourceArn;
+    private String user;
+    private String origin;
+    private String traceId;
 
-	private double endTime;
-	private boolean fault;
-	private boolean error;
-	private boolean throttle;
-	private boolean inProgress;
-	private boolean inferred;
-	private boolean stubbed;
-	private String namespace;
+    private double endTime;
+    private boolean fault;
+    private boolean error;
+    private boolean throttle;
+    private boolean inProgress;
+    private boolean inferred;
+    private boolean stubbed;
+    private String namespace;
 
-	private List<Entity> subsegments;
+    private List<Entity> subsegments;
 
-	private Map<String, Object> cause;
-	private Map<String, Object> http;
-	private Map<String, Object> aws;
-	private Map<String, Object> sql;
-	private Map<String, Object> service;
+    private Map<String, Object> cause;
+    private Map<String, Object> http;
+    private Map<String, Object> aws;
+    private Map<String, Object> sql;
+    private Map<String, Object> service;
 
-	private Map<String, Map<String, Object>> metadata;
-	private Map<String, Object> annotations;
+    private Map<String, Map<String, Object>> metadata;
+    private Map<String, Object> annotations;
 }

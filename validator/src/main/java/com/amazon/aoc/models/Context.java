@@ -21,47 +21,47 @@ import lombok.NonNull;
 
 @Data
 public class Context {
-	@NonNull private String testingId;
+    @NonNull private String testingId;
 
-	private String accountId;
+    private String accountId;
 
-	private String language;
+    private String language;
 
-	@NonNull private String region;
+    @NonNull private String region;
 
-	private String availabilityZone;
+    private String availabilityZone;
 
-	@NonNull private Boolean isCanary;
+    @NonNull private Boolean isCanary;
 
-	@NonNull private Boolean isRollup;
+    @NonNull private Boolean isRollup;
 
-	private String metricNamespace;
+    private String metricNamespace;
 
-	private String endpoint;
+    private String endpoint;
 
-	private ECSContext ecsContext;
+    private ECSContext ecsContext;
 
-	private CloudWatchContext cloudWatchContext;
+    private CloudWatchContext cloudWatchContext;
 
-	private EC2Context ec2Context;
+    private EC2Context ec2Context;
 
-	/* testcase name */
-	private String testcase;
+    /* testcase name */
+    private String testcase;
 
-	/*
-	 * alarm related parameters
-	 */
-	private List<String> alarmNameList;
-	private Integer alarmPullingDuration;
-	private Integer alarmPullingTimes;
+    /*
+     * alarm related parameters
+     */
+    private List<String> alarmNameList;
+    private Integer alarmPullingDuration;
+    private Integer alarmPullingTimes;
 
-	/*
-	 * mocked server parameters
-	 */
-	private String mockedServerValidatingUrl;
+    /*
+     * mocked server parameters
+     */
+    private String mockedServerValidatingUrl;
 
-	/*
-	 * cortex parameters
-	 */
-	private String cortexInstanceEndpoint;
+    /*
+     * cortex parameters
+     */
+    private String cortexInstanceEndpoint;
 }
