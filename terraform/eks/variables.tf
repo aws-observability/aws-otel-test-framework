@@ -14,7 +14,7 @@
 # -------------------------------------------------------------------------
 
 variable "eks_cluster_name" {
-  default = "operator-ci-arm64-1-22"
+  default = "aws-otel-testing-framework-eks-2"
 }
 
 variable "mock_endpoint" {
