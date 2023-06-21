@@ -1,11 +1,10 @@
 package com.amazon.aoc.models.prometheus;
 
-import lombok.Data;
-
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class PrometheusData {
-  private String resultType;
-  private List<PrometheusMetric> result;
+	private String resultType;
+	private List<PrometheusMetric> result;
 }

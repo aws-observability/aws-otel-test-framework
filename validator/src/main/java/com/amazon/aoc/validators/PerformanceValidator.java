@@ -12,144 +12,117 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.Statistic;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Arrays;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class PerformanceValidator implements IValidator {
-  private static final int BYTES_IN_MEGABYTES = 1000000;
-  private static String outputFileName = "performance.json";
-  private static int MAX_RETRY_COUNT = 30;
-  private Context context;
-  private ValidationConfig validationConfig;
+	private static final int BYTES_IN_MEGABYTES = 1000000;
+	private static String outputFileName = "performance.json";
+	private static int MAX_RETRY_COUNT = 30;
+	private Context context;
+	private ValidationConfig validationConfig;
 
-  @Override
-  public void init(
-      Context context,
-      ValidationConfig validationConfig,
-      ICaller caller,
-      FileConfig expectedDataTemplate)
-      throws Exception {
-    this.context = context;
-    this.validationConfig = validationConfig;
-  }
+	@Override
+	public void init(Context context, ValidationConfig validationConfig, ICaller caller,
+			FileConfig expectedDataTemplate) throws Exception {
+		this.context = context;
+		this.validationConfig = validationConfig;
+	}
 
-  // Create dimension given name and value
-  private Dimension createDimension(String name, String value) {
-    Dimension dimension = new Dimension();
-    dimension.setName(name);
-    dimension.setValue(value);
-    return dimension;
-  }
+	// Create dimension given name and value
+	private Dimension createDimension(String name, String value) {
+		Dimension dimension = new Dimension();
+		dimension.setName(name);
+		dimension.setValue(value);
+		return dimension;
+	}
 
-  // Get average stat over all datapoints
-  private Double getAverageStats(List<Datapoint> datapoints) {
-    Double sum = 0.0;
-    if (datapoints == null || datapoints.isEmpty()) {
-      return sum;
-    }
+	// Get average stat over all datapoints
+	private Double getAverageStats(List<Datapoint> datapoints) {
+		Double sum = 0.0;
+		if (datapoints == null || datapoints.isEmpty()) {
+			return sum;
+		}
 
-    for (Datapoint dp : datapoints) {
-      sum += dp.getAverage();
-    }
+		for (Datapoint dp : datapoints) {
+			sum += dp.getAverage();
+		}
 
-    return sum / datapoints.size();
-  }
+		return sum / datapoints.size();
+	}
 
-  // Get max stat over all datapoints
-  private Double getMaxStats(List<Datapoint> datapoints) {
-    Double max = 0.0;
-    if (datapoints == null || datapoints.isEmpty()) {
-      return max;
-    }
+	// Get max stat over all datapoints
+	private Double getMaxStats(List<Datapoint> datapoints) {
+		Double max = 0.0;
+		if (datapoints == null || datapoints.isEmpty()) {
+			return max;
+		}
 
-    for (Datapoint dp : datapoints) {
-      if (dp.getMaximum().compareTo(max) > 0) {
-        max = dp.getMaximum();
-      }
-    }
+		for (Datapoint dp : datapoints) {
+			if (dp.getMaximum().compareTo(max) > 0) {
+				max = dp.getMaximum();
+			}
+		}
 
-    return max;
-  }
+		return max;
+	}
 
-  @Override
-  public void validate() throws Exception {
-    final Date endTime = new Date();
-    // Convert collection duration from minutes to milliseconds
-    final Integer durationMs = validationConfig.getCollectionPeriod() * 60000;
-    final Date startTime = new Date(System.currentTimeMillis() - durationMs);
+	@Override
+	public void validate() throws Exception {
+		final Date endTime = new Date();
+		// Convert collection duration from minutes to milliseconds
+		final Integer durationMs = validationConfig.getCollectionPeriod() * 60000;
+		final Date startTime = new Date(System.currentTimeMillis() - durationMs);
 
-    final String dataRateKey = validationConfig.getDataMode() + "-"
-        + validationConfig.getDataRate();
-    List<Dimension> dimensions = Arrays.asList(
-        createDimension("testcase", validationConfig.getTestcase()),
-        createDimension("commit_id", validationConfig.getCommitId()),
-        createDimension("data_rate", dataRateKey),
-        createDimension("InstanceId", validationConfig.getInstanceId()),
-        createDimension("instance_type", validationConfig.getInstanceType()),
-        createDimension("launch_date", validationConfig.getLaunchDate()),
-        createDimension("exe", validationConfig.getExe()),
-        createDimension("process_name", validationConfig.getProcessName()),
-        createDimension("testing_ami", validationConfig.getTestingAmi()),
-        createDimension("negative_soaking", validationConfig.getNegativeSoaking())
-    );
+		final String dataRateKey = validationConfig.getDataMode() + "-" + validationConfig.getDataRate();
+		List<Dimension> dimensions = Arrays.asList(createDimension("testcase", validationConfig.getTestcase()),
+				createDimension("commit_id", validationConfig.getCommitId()), createDimension("data_rate", dataRateKey),
+				createDimension("InstanceId", validationConfig.getInstanceId()),
+				createDimension("instance_type", validationConfig.getInstanceType()),
+				createDimension("launch_date", validationConfig.getLaunchDate()),
+				createDimension("exe", validationConfig.getExe()),
+				createDimension("process_name", validationConfig.getProcessName()),
+				createDimension("testing_ami", validationConfig.getTestingAmi()),
+				createDimension("negative_soaking", validationConfig.getNegativeSoaking()));
 
-    // Create requests
-    final GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
-        .withNamespace(context.getMetricNamespace())
-        .withPeriod(validationConfig.getDatapointPeriod())
-        .withStartTime(startTime)
-        .withEndTime(endTime)
-        .withDimensions(dimensions)
-        .withStatistics(Statistic.Average, Statistic.Maximum);
-    final GetMetricStatisticsRequest cpuStatsRequest = request
-        .clone()
-        .withMetricName(validationConfig.getCpuMetricName());
-    final GetMetricStatisticsRequest memoryStatsRequest = request
-        .clone()
-        .withMetricName(validationConfig.getMemoryMetricName());
+		// Create requests
+		final GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
+				.withNamespace(context.getMetricNamespace()).withPeriod(validationConfig.getDatapointPeriod())
+				.withStartTime(startTime).withEndTime(endTime).withDimensions(dimensions)
+				.withStatistics(Statistic.Average, Statistic.Maximum);
+		final GetMetricStatisticsRequest cpuStatsRequest = request.clone()
+				.withMetricName(validationConfig.getCpuMetricName());
+		final GetMetricStatisticsRequest memoryStatsRequest = request.clone()
+				.withMetricName(validationConfig.getMemoryMetricName());
 
-    CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
-    RetryHelper.retry(
-        MAX_RETRY_COUNT,
-        () -> {
-          log.info("retrieving cpu statistics");
-          List<Datapoint> cpuDatapoints = cloudWatchService.getDatapoints(cpuStatsRequest);
-          Double avgCpu = getAverageStats(cpuDatapoints);
-          Double maxCpu = getMaxStats(cpuDatapoints);
-          log.info("retrieving memory statistics");
-          List<Datapoint> memoryDatapoints = cloudWatchService.getDatapoints(memoryStatsRequest);
-          Double avgMemory = getAverageStats(memoryDatapoints) / BYTES_IN_MEGABYTES;
-          Double maxMemory = getMaxStats(memoryDatapoints) / BYTES_IN_MEGABYTES;
+		CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
+		RetryHelper.retry(MAX_RETRY_COUNT, () -> {
+			log.info("retrieving cpu statistics");
+			List<Datapoint> cpuDatapoints = cloudWatchService.getDatapoints(cpuStatsRequest);
+			Double avgCpu = getAverageStats(cpuDatapoints);
+			Double maxCpu = getMaxStats(cpuDatapoints);
+			log.info("retrieving memory statistics");
+			List<Datapoint> memoryDatapoints = cloudWatchService.getDatapoints(memoryStatsRequest);
+			Double avgMemory = getAverageStats(memoryDatapoints) / BYTES_IN_MEGABYTES;
+			Double maxMemory = getMaxStats(memoryDatapoints) / BYTES_IN_MEGABYTES;
 
-          final PerformanceResult result = new PerformanceResult(
-              validationConfig.getTestcase(),
-              validationConfig.getInstanceType(),
-              validationConfig.getOtReceivers(),
-              validationConfig.getOtProcessors(),
-              validationConfig.getOtExporters(),
-              validationConfig.getDataType(),
-              validationConfig.getDataMode(),
-              validationConfig.getDataRate(),
-              avgCpu,
-              avgMemory,
-              maxCpu,
-              maxMemory,
-              validationConfig.getCommitId(),
-              validationConfig.getCollectionPeriod(),
-              validationConfig.getTestingAmi()
-          );
+			final PerformanceResult result = new PerformanceResult(validationConfig.getTestcase(),
+					validationConfig.getInstanceType(), validationConfig.getOtReceivers(),
+					validationConfig.getOtProcessors(), validationConfig.getOtExporters(),
+					validationConfig.getDataType(), validationConfig.getDataMode(), validationConfig.getDataRate(),
+					avgCpu, avgMemory, maxCpu, maxMemory, validationConfig.getCommitId(),
+					validationConfig.getCollectionPeriod(), validationConfig.getTestingAmi());
 
-          try {
-            new ObjectMapper().writeValue(new File("/var/output/" + outputFileName), result);
-            log.info("Result written to " + outputFileName);
-          } catch (Exception e) {
-            log.error("failed to write performance result to file." + e.getMessage());
-          }
-        });
-  }
+			try {
+				new ObjectMapper().writeValue(new File("/var/output/" + outputFileName), result);
+				log.info("Result written to " + outputFileName);
+			} catch (Exception e) {
+				log.error("failed to write performance result to file." + e.getMessage());
+			}
+		});
+	}
 }

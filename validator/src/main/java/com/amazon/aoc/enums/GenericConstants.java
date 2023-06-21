@@ -19,28 +19,23 @@ import lombok.Getter;
 
 @Getter
 public enum GenericConstants {
-  // retry
-  SLEEP_IN_MILLISECONDS("20000"), // ms
-  SLEEP_IN_SECONDS("30"),
-  MAX_RETRIES("10"),
+	// retry
+	SLEEP_IN_MILLISECONDS("20000"), // ms
+	SLEEP_IN_SECONDS("30"), MAX_RETRIES("10"),
 
-  // validator env vars
-  ENV_VAR_AGENT_VERSION("AGENT_VERSION"),
-  ENV_VAR_TESTING_ID("TESTING_ID"),
-  ENV_VAR_EXPECTED_METRIC("EXPECTED_METRIC"),
-  ENV_VAR_EXPECTED_TRACE("EXPECTED_TRACE"),
-  ENV_VAR_REGION("REGION"),
-  ENV_VAR_NAMESPACE("NAMESPACE"),
-  ENV_VAR_DATA_EMITTER_ENDPOINT("DATA_EMITTER_ENDPOINT"),
+	// validator env vars
+	ENV_VAR_AGENT_VERSION("AGENT_VERSION"), ENV_VAR_TESTING_ID("TESTING_ID"), ENV_VAR_EXPECTED_METRIC(
+			"EXPECTED_METRIC"), ENV_VAR_EXPECTED_TRACE("EXPECTED_TRACE"), ENV_VAR_REGION(
+					"REGION"), ENV_VAR_NAMESPACE("NAMESPACE"), ENV_VAR_DATA_EMITTER_ENDPOINT("DATA_EMITTER_ENDPOINT"),
 
-  // XRay sdk related
-  HTTP_HEADER_TRACE_ID("X-Amzn-Trace-Id"),
+	// XRay sdk related
+	HTTP_HEADER_TRACE_ID("X-Amzn-Trace-Id"),
 
-  ;
+	;
 
-  private String val;
+	private String val;
 
-  GenericConstants(String val) {
-    this.val = val;
-  }
+	GenericConstants(String val) {
+		this.val = val;
+	}
 }

@@ -14,48 +14,43 @@ import okhttp3.Response;
 
 @Log4j2
 public class MockedServerValidator implements IValidator {
-  String mockedServerValidatingUrl;
-  ICaller caller;
+	String mockedServerValidatingUrl;
+	ICaller caller;
 
-  @Override
-  public void init(
-      Context context,
-      ValidationConfig validationConfig,
-      ICaller caller,
-      FileConfig expectedDataTemplate)
-      throws Exception {
-    mockedServerValidatingUrl = context.getMockedServerValidatingUrl();
-    this.caller = caller;
-  }
+	@Override
+	public void init(Context context, ValidationConfig validationConfig, ICaller caller,
+			FileConfig expectedDataTemplate) throws Exception {
+		mockedServerValidatingUrl = context.getMockedServerValidatingUrl();
+		this.caller = caller;
+	}
 
-  @Override
-  public void validate() throws Exception {
-    // hit the endpoint to generate data if need be
-    if (caller != null) {
-      caller.callSampleApp();
-    }
+	@Override
+	public void validate() throws Exception {
+		// hit the endpoint to generate data if need be
+		if (caller != null) {
+			caller.callSampleApp();
+		}
 
-    // hit the mocked server to validate to if it receives data
-    callMockedServer();
-  }
+		// hit the mocked server to validate to if it receives data
+		callMockedServer();
+	}
 
-  private void callMockedServer() throws Exception {
-    OkHttpClient client = new OkHttpClient();
-    Request request = new Request.Builder().url(this.mockedServerValidatingUrl).build();
+	private void callMockedServer() throws Exception {
+		OkHttpClient client = new OkHttpClient();
+		Request request = new Request.Builder().url(this.mockedServerValidatingUrl).build();
 
-    RetryHelper.retry(
-        () -> {
-          Response response = client.newCall(request).execute();
-          if (!response.isSuccessful()) {
-            throw new BaseException(ExceptionCode.MOCKED_SERVER_NOT_AVAILABLE);
-          }
+		RetryHelper.retry(() -> {
+			Response response = client.newCall(request).execute();
+			if (!response.isSuccessful()) {
+				throw new BaseException(ExceptionCode.MOCKED_SERVER_NOT_AVAILABLE);
+			}
 
-          String responseBody = response.body().string();
-          if (!responseBody.equalsIgnoreCase("success")) {
-            throw new BaseException(ExceptionCode.MOCKED_SERVER_NOT_RECEIVE_DATA);
-          }
+			String responseBody = response.body().string();
+			if (!responseBody.equalsIgnoreCase("success")) {
+				throw new BaseException(ExceptionCode.MOCKED_SERVER_NOT_RECEIVE_DATA);
+			}
 
-          log.info("mocked server validation passed");
-        });
-  }
+			log.info("mocked server validation passed");
+		});
+	}
 }

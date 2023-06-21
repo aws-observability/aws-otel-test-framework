@@ -16,5 +16,5 @@
 package com.amazon.aoc.helpers;
 
 public interface Retryable {
-  void execute() throws Exception;
+	void execute() throws Exception;
 }

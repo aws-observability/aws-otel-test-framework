@@ -16,12 +16,11 @@
 package com.amazon.aoc.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.Data;
-
 import java.io.Serializable;
+import lombok.Data;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SampleAppResponse implements Serializable {
-  private String traceId;
+	private String traceId;
 }

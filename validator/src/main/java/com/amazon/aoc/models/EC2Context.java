@@ -19,9 +19,9 @@ import lombok.Data;
 
 @Data
 public class EC2Context {
-  // ec2 related context
-  private String hostId;
-  private String ami;
-  private String name;
-  private String instanceType;
+	// ec2 related context
+	private String hostId;
+	private String ami;
+	private String name;
+	private String instanceType;
 }

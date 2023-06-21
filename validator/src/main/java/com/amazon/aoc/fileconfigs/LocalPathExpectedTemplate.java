@@ -20,18 +20,18 @@ import java.net.URL;
 
 /**
  * LocalPathExpectedTemplate represents the template which comes from outside of
- * testing framework but at the same file system with terraform runtime.
- * todo, we can probably support remote templates which come from s3.
+ * testing framework but at the same file system with terraform runtime. todo,
+ * we can probably support remote templates which come from s3.
  */
 public class LocalPathExpectedTemplate implements FileConfig {
-  public LocalPathExpectedTemplate(String path) {
-    this.path = path;
-  }
+	public LocalPathExpectedTemplate(String path) {
+		this.path = path;
+	}
 
-  private String path;
+	private String path;
 
-  @Override
-  public URL getPath() throws IOException {
-    return new URL(path);
-  }
+	@Override
+	public URL getPath() throws IOException {
+		return new URL(path);
+	}
 }
