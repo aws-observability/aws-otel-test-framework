@@ -106,9 +106,6 @@ public class CWMetricValidator implements IValidator {
           log.info("expected metricList is {}", expectedMetricList);
 
           compareMetricLists(expectedMetricList, actualMetricList);
-
-          log.info("check if there're unexpected additional metric getting fetched");
-          compareMetricLists(actualMetricList, expectedMetricList);
         });
 
     log.info("finish metric validation");
@@ -132,6 +129,17 @@ public class CWMetricValidator implements IValidator {
         throw new BaseException(
             ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
             String.format("expected metric %s is not found in actual metric list %n", metric));
+      }
+    }
+
+    // check if any additional metric and dimension set combinations are present in actual metric
+    // list
+    Set<Metric> expectedMetricSet = buildMetricSet(expectedMetricList);
+    for (Metric metric : actualMetricList) {
+      if (!expectedMetricSet.contains(metric)) {
+        throw new BaseException(
+            ExceptionCode.UNEXPECTED_METRIC_FOUND,
+            String.format("unexpected metric %s found in actual metric list %n"));
       }
     }
   }
