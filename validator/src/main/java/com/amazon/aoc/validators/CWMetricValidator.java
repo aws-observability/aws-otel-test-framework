@@ -40,9 +40,6 @@ import org.jetbrains.annotations.NotNull;
 
 @Log4j2
 public class CWMetricValidator implements IValidator {
-  private static int DEFAULT_MAX_RETRY_COUNT = 30;
-
-  private MustacheHelper mustacheHelper = new MustacheHelper();
   private ICaller caller;
   private Context context;
   private FileConfig expectedMetric;
@@ -139,7 +136,7 @@ public class CWMetricValidator implements IValidator {
       if (!expectedMetricSet.contains(metric)) {
         throw new BaseException(
             ExceptionCode.UNEXPECTED_METRIC_FOUND,
-            String.format("unexpected metric %s found in actual metric list %n"));
+            String.format("unexpected metric %s found in actual metric list %n", metric));
       }
     }
   }
@@ -203,6 +200,7 @@ public class CWMetricValidator implements IValidator {
     this.expectedMetric = expectedMetricTemplate;
     this.cloudWatchService = new CloudWatchService(context.getRegion());
     this.cwMetricHelper = new CWMetricHelper();
+    int DEFAULT_MAX_RETRY_COUNT = 30;
     this.maxRetryCount = DEFAULT_MAX_RETRY_COUNT;
   }
 }
