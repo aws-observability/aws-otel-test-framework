@@ -103,11 +103,11 @@ public class CWMetricValidator implements IValidator {
                 .getDimensions()
                 .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
           }
-
-        /**
-         * Validations are performed below. Currently, we enforce strict equality. We do not allow any extra
-         * metric name and dimension set combinations in the retrieved metric list from cloudwatch.
-         */
+          /**
+           * Validations are performed below. Currently, we enforce strict equality. We do not
+           * allow any extra metric name and dimension set combinations in the retrieved metric
+           * list from cloudwatch.
+          */
           log.info("check if all the expected metrics are found");
           log.info("actual metricList is {}", actualMetricList);
           log.info("expected metricList is {}", expectedMetricList);
