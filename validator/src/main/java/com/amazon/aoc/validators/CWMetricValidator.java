@@ -20,7 +20,6 @@ import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.CWMetricHelper;
-import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
