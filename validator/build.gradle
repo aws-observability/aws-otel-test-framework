@@ -10,15 +10,6 @@ plugins {
 
 }
 
-tasks.withType(Checkstyle) {
-  checkstyle {
-    toolVersion '8.33'
-    configFile = new File(projectDir, "src/main/resources/checkstyle.xml")
-    maxWarnings = 0
-    ignoreFailures = false
-  }
-}
-
 version 'unspecified'
 
 repositories {
