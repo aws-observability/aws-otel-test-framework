@@ -104,10 +104,6 @@ public class CWMetricValidator implements IValidator {
                 .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
           }
 
-
-
-
-
           log.info("check if all the expected metrics are found");
           log.info("actual metricList is {}", actualMetricList);
           log.info("expected metricList is {}", expectedMetricList);
