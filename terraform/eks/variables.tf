@@ -80,3 +80,10 @@ variable "configuration_source" {
     error_message = "Invalid configuration_source for eks"
   }
 }
+
+variable "ignore_empty_dim_set" {
+  type = bool
+  default = false
+
+  description = "Toggles whether or not the validataor will ignore an empty EMF dimension set"
+}
