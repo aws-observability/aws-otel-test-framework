@@ -81,6 +81,8 @@ public class CWMetricValidator implements IValidator {
           .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
     }
 
+    log.info("expected metricList is {}", expectedMetricList);
+
     // get metric from cloudwatch
     RetryHelper.retry(
         maxRetryCount,
@@ -97,9 +99,6 @@ public class CWMetricValidator implements IValidator {
           }
 
           log.info("check if all the expected metrics are found");
-          log.info("actual metricList is {}", actualMetricList);
-          log.info("expected metricList is {}", expectedMetricList);
-
           compareMetricLists(expectedMetricList, actualMetricList);
         });
 
@@ -117,13 +116,21 @@ public class CWMetricValidator implements IValidator {
   private void compareMetricLists(List<Metric> expectedMetricList, List<Metric> actualMetricList)
       throws BaseException {
 
+    /*
+     * TODO: The two insertions below fail fast and don't give any visibility if there are multiple
+     * set differences Instead we should either compile a list before throwing an exception or find
+     * a better algorithm for performing these assertions where full visibility into the set diffs
+     * is giving on each method call.
+     */
     // check if all expected values are present
     Set<Metric> actualMetricSet = buildMetricSet(actualMetricList);
     for (Metric metric : expectedMetricList) {
       if (!actualMetricSet.contains(metric)) {
         throw new BaseException(
             ExceptionCode.EXPECTED_METRIC_NOT_FOUND,
-            String.format("expected metric %s is not found in actual metric list %n", metric));
+            String.format(
+                "expected metric %s is not found in actual metric list %s %n",
+                metric, actualMetricSet));
       }
     }
 
@@ -134,7 +141,8 @@ public class CWMetricValidator implements IValidator {
       if (!expectedMetricSet.contains(metric)) {
         throw new BaseException(
             ExceptionCode.UNEXPECTED_METRIC_FOUND,
-            String.format("unexpected metric %s found in actual metric list %n", metric));
+            String.format(
+                "unexpected metric %s found in actual metric list %s %n", metric, actualMetricSet));
       }
     }
   }
