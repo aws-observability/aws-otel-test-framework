@@ -105,7 +105,7 @@ module "aoc_oltp" {
   }
   sample_app_service_account_name = kubernetes_service_account.sample-app-sa.metadata.0.name
   is_adot_operator                = replace(var.testcase, "_adot_operator", "") != var.testcase
-  is_inject_auto_instrumentation            = var.is_inject_auto_instrumentation
+  is_inject_auto_instrumentation  = var.is_inject_auto_instrumentation
 
   depends_on = [module.iam_assumable_role_sample_app, null_resource.java_auto_instrumentation_adot_operator]
 }
