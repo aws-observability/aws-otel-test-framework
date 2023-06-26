@@ -1,1 +1,3 @@
-This tests uses java-auto-instrumentation to instrument the spark sample app image (without java agent) using Opentelemetry-Operator. Opentelemetry-Operator here also deploys and manages the ADOT-Collector. Validation and other rest functionality is similar to otlp_trace_adot_operator testcase. This testcase validates traces emitted using java-auto-instrumentation deployed through Opentelemetry-Operator.
+# Description 
+
+This testcase validates traces emitted using java-auto-instrumentation deployed through Opentelemetry-Operator. This test uses the ADOT java-auto-instrumentation image to instrument a Spark sample-app image (without java-agent baked in) using the OpenTelemetry Operator. The OpenTelemetry Operator also deploys and manages the ADOT collector. The validation and other functionality is similar to otlp_trace_adot_operator testcase. 
