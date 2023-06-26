@@ -18,7 +18,7 @@ receivers:
       pipelines:
         traces:
           receivers: [otlp]
-          processors: [ ]
+          processors: [batch]
           exporters: [logging,awsxray]
       telemetry:
         logs:

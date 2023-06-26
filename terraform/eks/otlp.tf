@@ -306,7 +306,7 @@ resource "local_file" "java_auto_instrumentation_deployment" {
       SERVICE_NAME                         = module.common.otel_service_name
       JAVA_AUTO_INSTRUMENTATION_REPOSITORY = var.java_auto_instrumentation_repository
       JAVA_AUTO_INSTRUMENTATION_TAG        = var.java_auto_instrumentation_tag
-    })
+  })
 
   depends_on = [module.adot_operator]
 }
