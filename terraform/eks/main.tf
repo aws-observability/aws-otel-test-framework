@@ -222,6 +222,7 @@ module "validator" {
     }
     }) : jsonencode({
     clusterName : var.eks_cluster_name
+    ignoreEmptyDimSet: var.ignore_empty_dim_set
   })
   cortex_instance_endpoint = var.cortex_instance_endpoint
   rollup                   = var.rollup
