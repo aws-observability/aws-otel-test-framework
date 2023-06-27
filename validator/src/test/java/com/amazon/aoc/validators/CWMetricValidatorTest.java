@@ -120,6 +120,25 @@ public class CWMetricValidatorTest {
     assertEquals(e.getCode(), ExceptionCode.UNEXPECTED_METRIC_FOUND.getCode());
   }
 
+  @Test
+  public void testValidationIgnoreEmptyDimensions() throws Exception {
+    ValidationConfig validationConfig = new ValidationConfig();
+    validationConfig.setCallingType("http");
+    validationConfig.setExpectedMetricTemplate("DEFAULT_EXPECTED_METRIC");
+    Context context = initContext();
+    context.setIgnoreEmptyDimSet(true);
+
+    List<Metric> mockedActualMetrics =
+        cwMetricHelper.listExpectedMetrics(
+            context, validationConfig.getExpectedMetricTemplate(), null);
+
+    Metric fakeMetricNoDimensions =
+        new Metric().withMetricName("fake metric").withNamespace("fake/namespace");
+    mockedActualMetrics.add(fakeMetricNoDimensions);
+
+    runValidation(validationConfig, context, mockedActualMetrics);
+  }
+
   private Context initContext() {
     // fake vars
     String namespace = "fakednamespace";
