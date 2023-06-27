@@ -15,11 +15,15 @@
 
 package com.amazon.aoc.validators;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.amazon.aoc.callers.HttpCaller;
+import com.amazon.aoc.exception.BaseException;
+import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.helpers.CWMetricHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
@@ -31,7 +35,7 @@ import org.junit.Test;
 
 /** this class covers the tests for CWMetricValidator. */
 public class CWMetricValidatorTest {
-  private CWMetricHelper cwMetricHelper = new CWMetricHelper();
+  private final CWMetricHelper cwMetricHelper = new CWMetricHelper();
 
   /**
    * test validation with local file path template file.
@@ -46,7 +50,12 @@ public class CWMetricValidatorTest {
         "file://"
             + System.getProperty("user.dir")
             + "/src/main/resources/expected-data-template/defaultExpectedMetric.mustache");
-    runValidation(validationConfig, initContext());
+    Context context = initContext();
+    List<Metric> metrics =
+        cwMetricHelper.listExpectedMetrics(
+            context, validationConfig.getExpectedMetricTemplate(), null);
+
+    runValidation(validationConfig, context, metrics);
   }
 
   /**
@@ -59,7 +68,56 @@ public class CWMetricValidatorTest {
     ValidationConfig validationConfig = new ValidationConfig();
     validationConfig.setCallingType("http");
     validationConfig.setExpectedMetricTemplate("DEFAULT_EXPECTED_METRIC");
-    runValidation(validationConfig, initContext());
+    Context context = initContext();
+
+    // fake and mock a cloudwatch service
+    List<Metric> mockedActualMetrics =
+        cwMetricHelper.listExpectedMetrics(
+            context, validationConfig.getExpectedMetricTemplate(), null);
+
+    runValidation(validationConfig, context, mockedActualMetrics);
+  }
+
+  @Test
+  public void testValidationFailedExpectedMetricMissing() throws Exception {
+    ValidationConfig validationConfig = new ValidationConfig();
+    validationConfig.setCallingType("http");
+    validationConfig.setExpectedMetricTemplate("DEFAULT_EXPECTED_METRIC");
+    Context context = initContext();
+
+    List<Metric> mockedActualMetrics =
+        cwMetricHelper.listExpectedMetrics(
+            context, validationConfig.getExpectedMetricTemplate(), null);
+
+    // remove a mocked metric to ensure a test is failed
+    mockedActualMetrics.remove(mockedActualMetrics.size() - 1);
+
+    BaseException e =
+        assertThrows(
+            BaseException.class,
+            () -> runValidation(validationConfig, context, mockedActualMetrics));
+    assertEquals(e.getCode(), ExceptionCode.EXPECTED_METRIC_NOT_FOUND.getCode());
+  }
+
+  @Test
+  public void testValidationFailedUnexpectedMetricFound() throws Exception {
+    ValidationConfig validationConfig = new ValidationConfig();
+    validationConfig.setCallingType("http");
+    validationConfig.setExpectedMetricTemplate("DEFAULT_EXPECTED_METRIC");
+    Context context = initContext();
+
+    List<Metric> mockedActualMetrics =
+        cwMetricHelper.listExpectedMetrics(
+            context, validationConfig.getExpectedMetricTemplate(), null);
+
+    Metric fakeMetric = new Metric().withMetricName("fake metric").withNamespace("fake/namespace");
+    mockedActualMetrics.add(fakeMetric);
+
+    BaseException e =
+        assertThrows(
+            BaseException.class,
+            () -> runValidation(validationConfig, context, mockedActualMetrics));
+    assertEquals(e.getCode(), ExceptionCode.UNEXPECTED_METRIC_FOUND.getCode());
   }
 
   private Context initContext() {
@@ -74,24 +132,20 @@ public class CWMetricValidatorTest {
     return context;
   }
 
-  private void runValidation(ValidationConfig validationConfig, Context context) throws Exception {
-    // fake vars
-    String traceId = "fakedtraceid";
-
+  private void runValidation(
+      ValidationConfig validationConfig, Context context, List<Metric> mockActualMetrics)
+      throws Exception {
     // fake and mock a http caller
+    String traceId = "fakedtraceid";
     HttpCaller httpCaller = mock(HttpCaller.class);
     SampleAppResponse sampleAppResponse = new SampleAppResponse();
     sampleAppResponse.setTraceId(traceId);
     when(httpCaller.callSampleApp()).thenReturn(sampleAppResponse);
 
-    // fake and mock a cloudwatch service
-    List<Metric> metrics =
-        cwMetricHelper.listExpectedMetrics(
-            context, validationConfig.getExpectedMetricTemplate(), httpCaller);
     CloudWatchService cloudWatchService = mock(CloudWatchService.class);
 
     // mock listMetrics
-    when(cloudWatchService.listMetrics(any(), any())).thenReturn(metrics);
+    when(cloudWatchService.listMetrics(any(), any())).thenReturn(mockActualMetrics);
 
     // start validation
     CWMetricValidator validator = new CWMetricValidator();
