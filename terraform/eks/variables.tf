@@ -93,5 +93,5 @@ variable "java_auto_instrumentation_repository" {
 
 # latest tag is not available
 variable "java_auto_instrumentation_tag" {
-  type    = string
+  type = string
 }
