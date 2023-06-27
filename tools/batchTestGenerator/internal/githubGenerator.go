@@ -76,11 +76,9 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 	}
 
 	nonParallelTestSet := map[string][]TestCaseInfo{
-		"EKS_ADOT_OPERATOR":                            {},
-		"EKS_ADOT_OPERATOR_ARM64":                      {},
-		"EKS_FARGATE":                                  {},
-		"EKS_JAVA_INSTRUMENTATION_ADOT_OPERATOR":       {},
-		"EKS_JAVA_INSTRUMENTATION_ADOT_OPERATOR_ARM64": {},
+		"EKS_ADOT_OPERATOR":       {},
+		"EKS_ADOT_OPERATOR_ARM64": {},
+		"EKS_FARGATE":             {},
 	}
 
 	if numBatches == 1 {
