@@ -57,7 +57,7 @@ public class ContainerInsightECSStructuredLogValidatorTest {
     // faked context
     Context context = new Context(testingId, region, false, true);
     context.setMetricNamespace(namespace);
-    CloudWatchContext cloudWatchContext = new CloudWatchContext(false);
+    CloudWatchContext cloudWatchContext = new CloudWatchContext();
     cloudWatchContext.setClusterName(this.clusterName);
 
     context.setCloudWatchContext(cloudWatchContext);

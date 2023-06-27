@@ -149,7 +149,8 @@ public class CWMetricValidatorTest {
     // faked context
     Context context = new Context(testingId, region, false, true);
     context.setMetricNamespace(namespace);
-    context.setCloudWatchContext(new CloudWatchContext(false));
+    context.setCloudWatchContext(new CloudWatchContext());
+    context.getCloudWatchContext().setIgnoreEmptyDimSet(false);
     return context;
   }
 
