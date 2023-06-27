@@ -48,8 +48,6 @@ public class Context {
   /* testcase name */
   private String testcase;
 
-  private Boolean ignoreEmptyDimSet;
-
   /*
    * alarm related parameters
    */

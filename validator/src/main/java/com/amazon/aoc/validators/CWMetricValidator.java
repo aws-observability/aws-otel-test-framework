@@ -139,7 +139,8 @@ public class CWMetricValidator implements IValidator {
     Set<Metric> expectedMetricSet = buildMetricSet(expectedMetricList);
     for (Metric metric : actualMetricList) {
       if (!expectedMetricSet.contains(metric)
-          && !(context.getIgnoreEmptyDimSet() && metric.getDimensions().isEmpty())) {
+          && !(context.getCloudWatchContext().getIgnoreEmptyDimSet()
+              && metric.getDimensions().isEmpty())) {
         throw new BaseException(
             ExceptionCode.UNEXPECTED_METRIC_FOUND,
             String.format(

@@ -25,6 +25,7 @@ import com.amazon.aoc.callers.HttpCaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.helpers.CWMetricHelper;
+import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.models.ValidationConfig;
@@ -126,7 +127,7 @@ public class CWMetricValidatorTest {
     validationConfig.setCallingType("http");
     validationConfig.setExpectedMetricTemplate("DEFAULT_EXPECTED_METRIC");
     Context context = initContext();
-    context.setIgnoreEmptyDimSet(true);
+    context.getCloudWatchContext().setIgnoreEmptyDimSet(true);
 
     List<Metric> mockedActualMetrics =
         cwMetricHelper.listExpectedMetrics(
@@ -148,6 +149,7 @@ public class CWMetricValidatorTest {
     // faked context
     Context context = new Context(testingId, region, false, true);
     context.setMetricNamespace(namespace);
+    context.setCloudWatchContext(new CloudWatchContext(false));
     return context;
   }
 

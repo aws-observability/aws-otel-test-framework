@@ -72,7 +72,7 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
     app.setJob("appjob");
     app.setName("appname");
     app.setNamespace(this.eksNamespace);
-    CloudWatchContext cloudWatchContext = new CloudWatchContext();
+    CloudWatchContext cloudWatchContext = new CloudWatchContext(false);
     cloudWatchContext.setNginx(app);
     cloudWatchContext.setClusterName(this.clusterName);
 
@@ -84,7 +84,7 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
     CloudWatchContext.App jmx = new CloudWatchContext.App();
     jmx.setJob("jmx");
     jmx.setTaskDefinitionFamilies(new String[] {"jmxawsvpc", "jmxfargate"});
-    CloudWatchContext cloudWatchContext = new CloudWatchContext();
+    CloudWatchContext cloudWatchContext = new CloudWatchContext(false);
     cloudWatchContext.setJmx(jmx);
     cloudWatchContext.setClusterName(this.clusterName);
 

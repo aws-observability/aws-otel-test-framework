@@ -104,11 +104,6 @@ public class App implements Callable<Integer> {
       defaultValue = "true")
   private boolean isRollup;
 
-  @CommandLine.Option(
-      names = {"--ignore-empty-dimension-set"},
-      defaultValue = "false")
-  private boolean ignoreEmptyDimSet;
-
   private static final String TEST_CASE_DIM_KEY = "testcase";
   private static final String CANARY_NAMESPACE = "Otel/Canary";
   private static final String CANARY_METRIC_NAME = "Success";
@@ -135,7 +130,6 @@ public class App implements Callable<Integer> {
     context.setCortexInstanceEndpoint(this.cortexInstanceEndpoint);
     context.setTestcase(testcase);
     context.setLanguage(language);
-    context.setIgnoreEmptyDimSet(this.ignoreEmptyDimSet);
 
     log.info(context);
 

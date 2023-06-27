@@ -16,6 +16,7 @@
 package com.amazon.aoc.models;
 
 import lombok.Data;
+import lombok.NonNull;
 
 @Data
 public class CloudWatchContext {
@@ -26,6 +27,8 @@ public class CloudWatchContext {
   private App jmx;
   private App haproxy;
   private App memcached;
+
+  @NonNull private Boolean ignoreEmptyDimSet;
 
   public void setAppMesh(App appMesh) {
     appMesh.setName("appMesh");
