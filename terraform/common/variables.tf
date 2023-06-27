@@ -38,9 +38,9 @@ variable "aoc_vpc_name" {
 }
 
 variable "aoc_image_repo" {
-  default = "766286727518.dkr.ecr.us-west-2.amazonaws.com/aws-otel-collector-test"
+  default = "public.ecr.aws/aws-observability/aws-otel-collector"
 }
 
 variable "aoc_version" {
-  default = "k8sattrtest"
+  default = "latest"
 }
