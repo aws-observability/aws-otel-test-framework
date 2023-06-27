@@ -94,5 +94,4 @@ variable "java_auto_instrumentation_repository" {
 # latest tag is not available
 variable "java_auto_instrumentation_tag" {
   type    = string
-  default = "v1.27.0"
 }
