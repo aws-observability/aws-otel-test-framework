@@ -34,26 +34,24 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.github.wnameless.json.flattener.JsonFlattener;
-import lombok.extern.log4j.Log4j2;
- 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import lombok.extern.log4j.Log4j2;
 
- 
 @Log4j2
 public class LoadBalanceValidator implements IValidator {
   private MustacheHelper mustacheHelper = new MustacheHelper();
   private XRayService xrayService;
   private ICaller caller;
   private Context context;
- 
-  private static final ObjectMapper MAPPER = new ObjectMapper()
-      .setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
- 
+
+  private static final ObjectMapper MAPPER =
+      new ObjectMapper().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE);
+
   @Override
   public void init(
       Context context, ValidationConfig validationConfig, ICaller caller, FileConfig expectedTrace)
@@ -62,7 +60,7 @@ public class LoadBalanceValidator implements IValidator {
     this.caller = caller;
     this.context = context;
   }
- 
+
   @Override
   public void validate() throws Exception {
     // 2 retries for calling the sample app to handle the Lambda case,
@@ -71,50 +69,54 @@ public class LoadBalanceValidator implements IValidator {
     while (successes < 5) {
       // Call sample app and get locally stored trace
       String traceId = this.getAppTraceId();
-      List<String> traceIdList = Collections.singletonList(traceId);;
+      List<String> traceIdList = Collections.singletonList(traceId);
+      ;
       log.info("value of Sample App traceId: {}", traceId);
-                
+
       // Retry 5 times to since segments might not be immediately available in X-Ray service
-      boolean isValid = RetryHelper.retry(
-          5, Integer.parseInt(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()), false, 
-          () -> {
-          // get retrieved trace from x-ray service
-          Map<String, Object> retrievedTrace = this.getRetrievedTrace(traceIdList);
-          log.info("value of retrieved trace map: {}", retrievedTrace);
-          Set<String> set = retrievedTrace.keySet()
-              .stream()
-              .filter(s -> s.endsWith("collector-id"))
-              .collect(Collectors.toSet());
-          if (set.size() < 2) {
-            log.error("not enough spans in trace map: {}", retrievedTrace);
-            throw new BaseException(ExceptionCode.NOT_ENOUGH_SPANS);
-          }
-          String targetCollectorId = null;
-          for (String collectorId : set) {
-            if (targetCollectorId == null) {
-              targetCollectorId = retrievedTrace.get(collectorId).toString();
-            } else {
-              if (!targetCollectorId.equals(retrievedTrace.get(collectorId).toString())) {
-                log.info("id values do not match");
-                log.info("value of target id: {}", targetCollectorId);
-                log.info("value of retrieved id: {}", retrievedTrace.get(collectorId).toString());
-                log.info("==========================================");
-                throw new BaseException(ExceptionCode.COLLECTOR_ID_NOT_MATCHED);
-              }
-            }
-          }
-                
-        });
+      boolean isValid =
+          RetryHelper.retry(
+              5,
+              Integer.parseInt(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
+              false,
+              () -> {
+                // get retrieved trace from x-ray service
+                Map<String, Object> retrievedTrace = this.getRetrievedTrace(traceIdList);
+                log.info("value of retrieved trace map: {}", retrievedTrace);
+                Set<String> set =
+                    retrievedTrace.keySet().stream()
+                        .filter(s -> s.endsWith("collector-id"))
+                        .collect(Collectors.toSet());
+                if (set.size() < 2) {
+                  log.error("not enough spans in trace map: {}", retrievedTrace);
+                  throw new BaseException(ExceptionCode.NOT_ENOUGH_SPANS);
+                }
+                String targetCollectorId = null;
+                for (String collectorId : set) {
+                  if (targetCollectorId == null) {
+                    targetCollectorId = retrievedTrace.get(collectorId).toString();
+                  } else {
+                    if (!targetCollectorId.equals(retrievedTrace.get(collectorId).toString())) {
+                      log.info("id values do not match");
+                      log.info("value of target id: {}", targetCollectorId);
+                      log.info(
+                          "value of retrieved id: {}", retrievedTrace.get(collectorId).toString());
+                      log.info("==========================================");
+                      throw new BaseException(ExceptionCode.COLLECTOR_ID_NOT_MATCHED);
+                    }
+                  }
+                }
+              });
       if (!isValid) {
         throw new BaseException(ExceptionCode.COLLECTOR_ID_NOT_MATCHED);
       }
       successes += 1;
       log.info("Total number of successful runs: {}", successes);
     }
- 
+
     log.info("validation is passed for path {}", caller.getCallingPath());
   }
- 
+
   // this method will hit get trace from x-ray service and get retrieved trace
   private Map<String, Object> getRetrievedTrace(List<String> traceIdList) throws Exception {
     List<Trace> retrieveTraceList = xrayService.listTraceByIds(traceIdList);
@@ -156,12 +158,11 @@ public class LoadBalanceValidator implements IValidator {
     segmentsJson.replace(segmentsJson.length() - 1, segmentsJson.length(), "]");
     return JsonFlattener.flattenAsMap(segmentsJson.toString());
   }
- 
+
   // this method will hit a http endpoints of sample web apps
   private String getAppTraceId() throws Exception {
     SampleAppResponse sampleAppResponse = this.caller.callSampleApp();
- 
+
     return sampleAppResponse.getTraceId();
   }
 }
- 
