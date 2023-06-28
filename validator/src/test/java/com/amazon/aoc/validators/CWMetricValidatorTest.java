@@ -25,6 +25,7 @@ import com.amazon.aoc.callers.HttpCaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.helpers.CWMetricHelper;
+import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.models.ValidationConfig;
@@ -120,6 +121,25 @@ public class CWMetricValidatorTest {
     assertEquals(e.getCode(), ExceptionCode.UNEXPECTED_METRIC_FOUND.getCode());
   }
 
+  @Test
+  public void testValidationIgnoreEmptyDimensions() throws Exception {
+    ValidationConfig validationConfig = new ValidationConfig();
+    validationConfig.setCallingType("http");
+    validationConfig.setExpectedMetricTemplate("DEFAULT_EXPECTED_METRIC");
+    Context context = initContext();
+    context.getCloudWatchContext().setIgnoreEmptyDimSet(true);
+
+    List<Metric> mockedActualMetrics =
+        cwMetricHelper.listExpectedMetrics(
+            context, validationConfig.getExpectedMetricTemplate(), null);
+
+    Metric fakeMetricNoDimensions =
+        new Metric().withMetricName("fake metric").withNamespace("fake/namespace");
+    mockedActualMetrics.add(fakeMetricNoDimensions);
+
+    runValidation(validationConfig, context, mockedActualMetrics);
+  }
+
   private Context initContext() {
     // fake vars
     String namespace = "fakednamespace";
@@ -129,6 +149,8 @@ public class CWMetricValidatorTest {
     // faked context
     Context context = new Context(testingId, region, false, true);
     context.setMetricNamespace(namespace);
+    context.setCloudWatchContext(new CloudWatchContext());
+    context.getCloudWatchContext().setIgnoreEmptyDimSet(false);
     return context;
   }
 
