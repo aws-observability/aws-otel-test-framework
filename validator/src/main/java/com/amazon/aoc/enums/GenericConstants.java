@@ -35,7 +35,6 @@ public enum GenericConstants {
 
   // XRay sdk related
   HTTP_HEADER_TRACE_ID("X-Amzn-Trace-Id"),
-
   ;
 
   private String val;

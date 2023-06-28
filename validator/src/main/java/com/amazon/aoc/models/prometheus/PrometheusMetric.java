@@ -1,13 +1,12 @@
 package com.amazon.aoc.models.prometheus;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import lombok.Data;
 
 @Data
 public class PrometheusMetric {
@@ -40,9 +39,8 @@ public class PrometheusMetric {
   }
 
   /**
-   * Check if a metric should be skipped (when validating). ADOT adds certain metrics
-   * when converting Prometheus metrics to the OTLP dataformat (such as the +Inf bound
-   * histogram).
+   * Check if a metric should be skipped (when validating). ADOT adds certain metrics when
+   * converting Prometheus metrics to the OTLP dataformat (such as the +Inf bound histogram).
    *
    * @return true if metric can be skipped
    */
@@ -53,9 +51,7 @@ public class PrometheusMetric {
     return false;
   }
 
-  /**
-   * Comparison method for comparing two Prometheus metrics by the metric name and labels.
-   */
+  /** Comparison method for comparing two Prometheus metrics by the metric name and labels. */
   public static int comparePrometheusMetricLabels(PrometheusMetric o1, PrometheusMetric o2) {
     // check metric name
     if (!o1.getMetricName().equals(o2.getMetricName())) {
@@ -70,8 +66,8 @@ public class PrometheusMetric {
   }
 
   /**
-   * Strict comparison method for comparing two Prometheus metrics by the metric name,
-   * labels and values.
+   * Strict comparison method for comparing two Prometheus metrics by the metric name, labels and
+   * values.
    */
   public static int staticPrometheusMetricCompare(PrometheusMetric o1, PrometheusMetric o2) {
     {
@@ -103,8 +99,8 @@ public class PrometheusMetric {
       // prometheus or by the sample app). All sample app metrics will be prefixed
       // by 'key'.
       if (!key.equals(HISTOGRAM_BOUND_FIELD)
-              && !key.equals(QUANTILE_FIELD)
-              && key.indexOf(KEY_FIELD) != 0) {
+          && !key.equals(QUANTILE_FIELD)
+          && key.indexOf(KEY_FIELD) != 0) {
         continue;
       }
 

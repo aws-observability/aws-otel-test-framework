@@ -15,9 +15,9 @@
 
 package com.amazon.aoc.models;
 
+import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.fileconfigs.LocalPathExpectedTemplate;
 import com.amazon.aoc.fileconfigs.PredefinedExpectedTemplate;
-import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazonaws.util.StringUtils;
 import lombok.Data;
 
@@ -36,16 +36,14 @@ public class ValidationConfig {
   String expectedTraceTemplate;
   String expectedLogStructureTemplate;
 
-  /**
-   * alarm related.
-   */
+  /** alarm related. */
   Integer pullingDuration;
+
   Integer pullingTimes;
 
-  /**
-   * performance test related.
-   */
+  /** performance test related. */
   String cpuMetricName;
+
   String memoryMetricName;
   Integer collectionPeriod;
   Integer datapointPeriod;
@@ -67,7 +65,6 @@ public class ValidationConfig {
   String testingAmi;
   String negativeSoaking;
 
-
   public FileConfig getExpectedMetricTemplate() {
     return this.getTemplate(this.expectedMetricTemplate);
   }
@@ -81,9 +78,9 @@ public class ValidationConfig {
   }
 
   /**
-   * get expected template
-   * 1. if the path starts with "file://", we assume it's a local path.
-   * 2. if not, we assume it's a ENUM name which we defined in the framework.
+   * get expected template 1. if the path starts with "file://", we assume it's a local path. 2. if
+   * not, we assume it's a ENUM name which we defined in the framework.
+   *
    * @return ExpectedMetric
    */
   private FileConfig getTemplate(String templatePath) {

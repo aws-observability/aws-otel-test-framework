@@ -1,8 +1,7 @@
 package com.amazon.aoc.models.prometheus;
 
-import lombok.Data;
-
 import java.util.List;
+import lombok.Data;
 
 @Data
 public class PrometheusData {

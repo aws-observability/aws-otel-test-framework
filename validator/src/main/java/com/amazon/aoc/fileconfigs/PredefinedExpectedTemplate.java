@@ -18,33 +18,27 @@ package com.amazon.aoc.fileconfigs;
 import java.net.URL;
 
 /**
- * PredefinedExpectedTemplate includes all the built-in expected data templates,
- * which are under resources/expected-data-templates.
+ * PredefinedExpectedTemplate includes all the built-in expected data templates, which are under
+ * resources/expected-data-templates.
  */
 public enum PredefinedExpectedTemplate implements FileConfig {
-  /**
-   * metric template, defined in resources.
-   */
+  /** metric template, defined in resources. */
   AMP_EXPECTED_METRIC("/expected-data-template/ampExpectedMetric.mustache"),
   OTLP_TO_AMP_EXPECTED_METRIC("/expected-data-template/otlpToAMPExpectedMetric.mustache"),
   DEFAULT_EXPECTED_METRIC("/expected-data-template/defaultExpectedMetric.mustache"),
   ENHANCED_EXPECTED_METRIC("/expected-data-template/enhancedExpectedMetric.mustache"),
   ENHANCED_EXPECTED_METRIC_TESTING_ID(
-    "/expected-data-template/enhancedExpectedMetricTestingId.mustache"),
+      "/expected-data-template/enhancedExpectedMetricTestingId.mustache"),
   STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),
   ECS_CONTAINER_EXPECTED_METRIC("/expected-data-template/ecsContainerExpectedMetric.mustache"),
   CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC(
-    "/expected-data-template/container-insight/eks/prometheus"),
+      "/expected-data-template/container-insight/eks/prometheus"),
   CONTAINER_INSIGHT_ECS_PROMETHEUS_METRIC(
       "/expected-data-template/container-insight/ecs/prometheus"),
   FARGATE_EXPECTED_METRIC("/expected-data-template/EKSFargateCWCIExpectedMetric.mustache"),
-  STANDARD_EXPECTED_METRIC(
-    "/expected-data-template/standard/standardExpectedMetric.mustache"),
+  STANDARD_EXPECTED_METRIC("/expected-data-template/standard/standardExpectedMetric.mustache"),
 
-
-  /**
-   * trace template, defined in resources.
-   */
+  /** trace template, defined in resources. */
   // not use default expected trace any more
   // DEFAULT_EXPECTED_TRACE("/expected-data-template/defaultExpectedTrace.mustache"),
   OTEL_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/otelSDKexpectedAWSSDKTrace.mustache"),
@@ -53,51 +47,33 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   XRAY_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedHTTPTrace.mustache"),
   SPARK_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedHTTPTrace.mustache"),
   SPARK_SDK_AWSSDK_EXPECTED_TRACE(
-    "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache"),
+      "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache"),
   SPARK_SDK_EC2_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedEC2Trace.mustache"),
   SPARK_SDK_ECS_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedECSTrace.mustache"),
   SPARK_SDK_EKS_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedEKSTrace.mustache"),
   LAMBDA_EXPECTED_TRACE("/expected-data-template/lambdaExpectedTrace.mustache"),
   SPRINGBOOT_SDK_HTTP_EXPECTED_TRACE(
-    "/expected-data-template/springboot/springbootAppExpectedHTTPTrace.mustache"),
+      "/expected-data-template/springboot/springbootAppExpectedHTTPTrace.mustache"),
   SPRINGBOOT_SDK_AWSSDK_EXPECTED_TRACE(
-    "/expected-data-template/springboot/springbootAppExpectedAWSSDKTrace.mustache"),
-  GO_SDK_HTTP_EXPECTED_TRACE(
-    "/expected-data-template/go/goAppExpectedHTTPTrace.mustache"
-  ),
-  GO_SDK_AWSSDK_EXPECTED_TRACE(
-    "/expected-data-template/go/goAppExpectedAWSSDKTrace.mustache"
-  ),
-  JS_SDK_HTTP_EXPECTED_TRACE(
-    "/expected-data-template/js/jsAppExpectedHTTPTrace.mustache"
-  ),
-  JS_SDK_AWSSDK_EXPECTED_TRACE(
-    "/expected-data-template/js/jsAppExpectedAWSSDKTrace.mustache"
-  ),
+      "/expected-data-template/springboot/springbootAppExpectedAWSSDKTrace.mustache"),
+  GO_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/go/goAppExpectedHTTPTrace.mustache"),
+  GO_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/go/goAppExpectedAWSSDKTrace.mustache"),
+  JS_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/js/jsAppExpectedHTTPTrace.mustache"),
+  JS_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/js/jsAppExpectedAWSSDKTrace.mustache"),
   STANDARD_HTTP_EXPECTED_TRACE(
-    "/expected-data-template/standard/standardExpectedHTTPTrace.mustache"
-  ),
+      "/expected-data-template/standard/standardExpectedHTTPTrace.mustache"),
   STANDARD_AWSSDK_EXPECTED_TRACE(
-    "/expected-data-template/standard/standardExpectedAWSSDKTrace.mustache"
-  ),
+      "/expected-data-template/standard/standardExpectedAWSSDKTrace.mustache"),
 
-  /**
-   * Log structure template, defined in resources.
-   */
-  CONTAINER_INSIGHT_EKS_PROMETHEUS_LOG(
-    "/expected-data-template/container-insight/eks/prometheus"),
-  CONTAINER_INSIGHT_EKS_DOCKER_LOG(
-    "/expected-data-template/container-insight/eks/infrastructure"),
+  /** Log structure template, defined in resources. */
+  CONTAINER_INSIGHT_EKS_PROMETHEUS_LOG("/expected-data-template/container-insight/eks/prometheus"),
+  CONTAINER_INSIGHT_EKS_DOCKER_LOG("/expected-data-template/container-insight/eks/infrastructure"),
   CONTAINER_INSIGHT_EKS_CONTAINERD_LOG(
-    "/expected-data-template/container-insight/eks/containerd-infrastructure"),
-  CONTAINER_INSIGHT_ECS_LOG(
-    "/expected-data-template/container-insight/ecs/ecs-instance"),
-  CONTAINER_INSIGHT_ECS_PROMETHEUS_LOG(
-      "/expected-data-template/container-insight/ecs/prometheus"),
-  CONTAINER_INSIGHT_FARGATE_EKS_LOG(
-          "/expected-data-template/container-insight/eks/fargate"),
+      "/expected-data-template/container-insight/eks/containerd-infrastructure"),
+  CONTAINER_INSIGHT_ECS_LOG("/expected-data-template/container-insight/ecs/ecs-instance"),
+  CONTAINER_INSIGHT_ECS_PROMETHEUS_LOG("/expected-data-template/container-insight/ecs/prometheus"),
+  CONTAINER_INSIGHT_FARGATE_EKS_LOG("/expected-data-template/container-insight/eks/fargate"),
   ;
-
 
   private String path;
 
@@ -109,5 +85,4 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   public URL getPath() {
     return getClass().getResource(path);
   }
-
 }

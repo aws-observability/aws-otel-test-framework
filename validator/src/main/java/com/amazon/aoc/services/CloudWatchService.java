@@ -39,14 +39,11 @@ import com.amazonaws.services.logs.model.FilteredLogEvent;
 import com.amazonaws.services.logs.model.GetLogEventsRequest;
 import com.amazonaws.services.logs.model.GetLogEventsResult;
 import com.amazonaws.services.logs.model.OutputLogEvent;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.Date;
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
 
-/**
- * a wrapper of cloudwatch client.
- */
+/** a wrapper of cloudwatch client. */
 @Log4j2
 public class CloudWatchService {
   private static final int MAX_QUERY_PERIOD = 60;
@@ -78,20 +75,23 @@ public class CloudWatchService {
     return amazonCloudWatch.listMetrics(listMetricsRequest).getMetrics();
   }
 
-
   /**
    * getMetricData fetches the history data of the given metric from CloudWatch.
+   *
    * @param metric metric query object
    * @param startTime the start timestamp
    * @param endTime the end timestamp
    * @return List of MetricDataResult
    */
   public List<MetricDataResult> getMetricData(Metric metric, Date startTime, Date endTime) {
-    MetricStat stat = new MetricStat().withMetric(metric).withStat("Average")
-            .withPeriod(MAX_QUERY_PERIOD);
+    MetricStat stat =
+        new MetricStat().withMetric(metric).withStat("Average").withPeriod(MAX_QUERY_PERIOD);
     MetricDataQuery query = new MetricDataQuery().withMetricStat(stat).withId(REQUESTER);
-    final GetMetricDataRequest request = new GetMetricDataRequest().withMetricDataQueries(query)
-            .withStartTime(startTime).withEndTime(endTime);
+    final GetMetricDataRequest request =
+        new GetMetricDataRequest()
+            .withMetricDataQueries(query)
+            .withStartTime(startTime)
+            .withEndTime(endTime);
 
     GetMetricDataResult result = amazonCloudWatch.getMetricData(request);
     return result.getMetricDataResults();
@@ -106,17 +106,19 @@ public class CloudWatchService {
    * @param dimensions the dimensions of metric
    * @return Response of PMD call
    */
-  public PutMetricDataResult putMetricData(final String namespace,
-                                           final String metricName, final Double value,
-                                           final Dimension... dimensions) {
-    MetricDatum datum = new MetricDatum()
+  public PutMetricDataResult putMetricData(
+      final String namespace,
+      final String metricName,
+      final Double value,
+      final Dimension... dimensions) {
+    MetricDatum datum =
+        new MetricDatum()
             .withMetricName(metricName)
             .withUnit(StandardUnit.None)
             .withDimensions(dimensions)
             .withValue(value);
-    PutMetricDataRequest request = new PutMetricDataRequest()
-            .withNamespace(namespace)
-            .withMetricData(datum);
+    PutMetricDataRequest request =
+        new PutMetricDataRequest().withNamespace(namespace).withMetricData(datum);
     return amazonCloudWatch.putMetricData(request);
   }
 
@@ -132,41 +134,45 @@ public class CloudWatchService {
 
   /**
    * getLogs fetches log entries from CloudWatch.
+   *
    * @param logGroupName the log group name
    * @param logStreamName the log stream name
    * @param startFromTimestamp the start timestamp
    * @param limit the maximum number of log events to be returned in a single query
    * @return List of OutputLogEvent
    */
-  public List<OutputLogEvent> getLogs(String logGroupName, String logStreamName,
-                                      long startFromTimestamp, int limit) {
-    GetLogEventsRequest request = new GetLogEventsRequest()
+  public List<OutputLogEvent> getLogs(
+      String logGroupName, String logStreamName, long startFromTimestamp, int limit) {
+    GetLogEventsRequest request =
+        new GetLogEventsRequest()
             .withLogGroupName(logGroupName)
             .withLogStreamName(logStreamName)
             .withStartTime(startFromTimestamp)
             .withLimit(limit);
-    
+
     GetLogEventsResult result = awsLogs.getLogEvents(request);
     return result.getEvents();
   }
 
-
   /**
    * filterLogs filters log entries from CloudWatch.
+   *
    * @param logGroupName the log group name
-   * @param filterPattern the filter pattern, see https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html
+   * @param filterPattern the filter pattern, see
+   *     https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/FilterAndPatternSyntax.html
    * @param startFromTimestamp the start timestamp
    * @param limit the maximum number of log events to be returned in a single query
    * @return List of FilteredLogEvent
    */
-  public List<FilteredLogEvent> filterLogs(String logGroupName, String filterPattern,
-                                      long startFromTimestamp, int limit) {
-    FilterLogEventsRequest request = new FilterLogEventsRequest()
+  public List<FilteredLogEvent> filterLogs(
+      String logGroupName, String filterPattern, long startFromTimestamp, int limit) {
+    FilterLogEventsRequest request =
+        new FilterLogEventsRequest()
             .withLogGroupName(logGroupName)
             .withStartTime(startFromTimestamp)
             .withFilterPattern(filterPattern)
             .withLimit(limit);
-    
+
     FilterLogEventsResult result = awsLogs.filterLogEvents(request);
     return result.getEvents();
   }

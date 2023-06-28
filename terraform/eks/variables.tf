@@ -95,3 +95,10 @@ variable "java_auto_instrumentation_repository" {
 variable "java_auto_instrumentation_tag" {
   type = string
 }
+
+variable "ignore_empty_dim_set" {
+  type    = bool
+  default = false
+
+  description = "Toggles whether or not the validator will ignore an empty EMF dimension set"
+}
