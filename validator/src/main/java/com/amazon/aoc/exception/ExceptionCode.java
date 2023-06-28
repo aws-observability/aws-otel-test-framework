@@ -33,6 +33,9 @@ public enum ExceptionCode {
   EMPTY_LIST(50007, "list is empty or null"),
   LOG_FORMAT_NOT_MATCHED(50008, "log format not matched"),
   HEALTH_STATUS_NOT_MATCHED(50009, "health_check status not matched"),
+  NOT_ENOUGH_SPANS(50010, "not enough spans in the trace"),
+  COLLECTOR_ID_NOT_MATCHED(50011, "collector id of spans not matched"),
+
 
   // build validator
   VALIDATION_TYPE_NOT_EXISTED(60001, "validation type not existed"),
