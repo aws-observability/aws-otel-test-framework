@@ -70,6 +70,10 @@ dependencies {
 
   // mockito
   testImplementation "org.mockito:mockito-core:5.3.1"
+
+  // k8s client
+
+  compileOnly "io.kubernetes:client-java-extended:18.0.0"
 }
 
 application {
