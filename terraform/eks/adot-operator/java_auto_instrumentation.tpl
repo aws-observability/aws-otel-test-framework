@@ -4,12 +4,8 @@ metadata:
   name: my-instrumentation
   namespace: ${AOC_NAMESPACE}
 spec:
-  exporter:
-    endpoint: http://aoc-collector:${GRPC_PORT}
-  env:
-   - name: OTEL_SERVICE_NAME
-     value: ${SERVICE_NAME}
-   - name: OTEL_RESOURCE_ATTRIBUTES
-     value: "service.namespace=${SERVICE_NAMESPACE}"
+  sampler:
+    type: parentbased_traceidratio
+    argument: "1.0"
   java:
     image: ${JAVA_AUTO_INSTRUMENTATION_REPOSITORY}:${JAVA_AUTO_INSTRUMENTATION_TAG}

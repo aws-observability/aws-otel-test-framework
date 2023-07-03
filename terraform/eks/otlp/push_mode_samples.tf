@@ -23,7 +23,7 @@ locals {
 }
 # deploy sample app
 resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
-  count = var.sample_app.mode == "push" && !var.is_inject_auto_instrumentation ? 1 : 0
+  count = var.sample_app.mode == "push" ? 1 : 0
 
   metadata {
     name      = "sample-app"
@@ -46,6 +46,9 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
       metadata {
         labels = {
           app = local.sample_app_label_selector
+        }
+        annotations = {
+          "instrumentation.opentelemetry.io/inject-java" = var.is_inject_auto_instrumentation
         }
       }
 
@@ -86,7 +89,12 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
 
           env {
             name  = "OTEL_RESOURCE_ATTRIBUTES"
-            value = "service.namespace=${var.sample_app.metric_namespace},service.name=${var.aoc_service.name}"
+            value = "service.namespace=${var.sample_app.metric_namespace}"
+          }
+
+          env {
+            name  = "OTEL_SERVICE_NAME"
+            value = "${var.aoc_service.name}"
           }
 
           env {

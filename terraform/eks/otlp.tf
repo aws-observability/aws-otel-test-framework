@@ -301,9 +301,6 @@ resource "local_file" "java_auto_instrumentation_deployment" {
   content = templatefile("./adot-operator/java_auto_instrumentation.tpl",
     {
       AOC_NAMESPACE                        = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
-      GRPC_PORT                            = module.common.grpc_port
-      SERVICE_NAMESPACE                    = module.common.otel_service_namespace
-      SERVICE_NAME                         = module.common.otel_service_name
       JAVA_AUTO_INSTRUMENTATION_REPOSITORY = var.java_auto_instrumentation_repository
       JAVA_AUTO_INSTRUMENTATION_TAG        = var.java_auto_instrumentation_tag
   })
