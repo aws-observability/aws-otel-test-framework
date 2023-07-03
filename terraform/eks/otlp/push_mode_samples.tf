@@ -94,7 +94,7 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
 
           env {
             name  = "OTEL_SERVICE_NAME"
-            value = "${var.aoc_service.name}"
+            value = var.aoc_service.name
           }
 
           env {
