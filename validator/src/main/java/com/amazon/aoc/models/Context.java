@@ -64,4 +64,6 @@ public class Context {
    * cortex parameters
    */
   private String cortexInstanceEndpoint;
+
+  private String kubeCfgFilePath;
 }
