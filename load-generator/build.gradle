@@ -29,7 +29,7 @@ dependencies {
     implementation "com.google.guava:guava:32.0.1-jre"
 
     implementation "io.grpc:grpc-bom:1.56.0"
-    implementation "io.grpc:grpc-api:1.56.0"
+    implementation "io.grpc:grpc-api:1.56.1"
 
     implementation "io.grpc:grpc-netty-shaded:1.56.0"
 
