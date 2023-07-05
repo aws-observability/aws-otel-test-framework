@@ -81,6 +81,21 @@ variable "configuration_source" {
   }
 }
 
+variable "is_inject_auto_instrumentation" {
+  type    = bool
+  default = false
+}
+
+variable "java_auto_instrumentation_repository" {
+  type    = string
+  default = "public.ecr.aws/aws-observability/adot-autoinstrumentation-java"
+}
+
+# latest tag is not available
+variable "java_auto_instrumentation_tag" {
+  type = string
+}
+
 variable "ignore_empty_dim_set" {
   type    = bool
   default = false

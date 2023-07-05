@@ -50,3 +50,13 @@ variable "aoc_service" {
 variable "sample_app_service_account_name" {
   type = string
 }
+
+variable "is_inject_auto_instrumentation" {
+  type = bool
+}
+
+# is_adot_operator is true if the current test case is testing ADOT Operator.
+variable "is_adot_operator" {
+  type    = bool
+  default = false
+}
