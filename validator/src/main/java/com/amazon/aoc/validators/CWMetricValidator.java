@@ -20,6 +20,7 @@ import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.CWMetricHelper;
+import com.amazon.aoc.helpers.K8sExpectedValuesHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
@@ -44,6 +45,8 @@ public class CWMetricValidator implements IValidator {
 
   private CloudWatchService cloudWatchService;
   private CWMetricHelper cwMetricHelper;
+
+  private K8sExpectedValuesHelper k8sExpectedValuesHelper;
   private int maxRetryCount;
 
   // for unit test
@@ -59,7 +62,14 @@ public class CWMetricValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("Start metric validating");
+    // Populate the context kubernetes context values which will be used in the expected data
+    // template. This must happen before the expected metric list is built. This probably isn't the
+    // correct place for this but this is just for a POC.
+    if (context.getKubeCfgFilePath() != null) {
+      k8sExpectedValuesHelper.getExpectedMetrics(context);
+    }
     // get expected metrics and remove the to be skipped dimensions
+
     final List<Metric> expectedMetricList =
         cwMetricHelper.listExpectedMetrics(context, expectedMetric, caller);
     Set<String> skippedDimensionNameList = new HashSet<>();
@@ -97,7 +107,6 @@ public class CWMetricValidator implements IValidator {
                 .getDimensions()
                 .removeIf((dimension) -> skippedDimensionNameList.contains(dimension.getName()));
           }
-
           log.info("check if all the expected metrics are found");
           compareMetricLists(expectedMetricList, actualMetricList);
         });
@@ -206,6 +215,7 @@ public class CWMetricValidator implements IValidator {
     this.expectedMetric = expectedMetricTemplate;
     this.cloudWatchService = new CloudWatchService(context.getRegion());
     this.cwMetricHelper = new CWMetricHelper();
+    this.k8sExpectedValuesHelper = new K8sExpectedValuesHelper();
     this.maxRetryCount = 30;
   }
 }
