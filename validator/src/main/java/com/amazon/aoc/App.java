@@ -106,8 +106,11 @@ public class App implements Callable<Integer> {
 
   @CommandLine.Option(
       names = {"--kubeCfgFilePath"},
-      defaultValue = "")
+      defaultValue = "/root/kubecfg")
   private String kubeCfgFilePath;
+
+  @CommandLine.Option(names = {"--kubernetes-context"})
+  private String kubernetesContext;
 
   private static final String TEST_CASE_DIM_KEY = "testcase";
   private static final String CANARY_NAMESPACE = "Otel/Canary";
@@ -136,7 +139,7 @@ public class App implements Callable<Integer> {
     context.setTestcase(testcase);
     context.setLanguage(language);
     context.setKubeCfgFilePath(this.kubeCfgFilePath);
-
+    context.setKubernetesContext(buildJsonContext(kubernetesContext, KubernetesContext.class));
     log.info(context);
 
     // load config
