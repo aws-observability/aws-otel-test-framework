@@ -87,3 +87,11 @@ variable "rollup" {
   type    = bool
   default = true
 }
+
+variable "kubernetes_context_json" {
+  default = "{}"
+}
+
+variable "kubecfg_file_path" {
+  default = ""
+}

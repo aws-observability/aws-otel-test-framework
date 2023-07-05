@@ -7,6 +7,7 @@ services:
     volumes:
       - ~/.aws:/root/.aws
       - ./output:/var/output
+      - ${kubecfg_file_path}:/root/kubecfg
     environment:
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
@@ -33,3 +34,4 @@ services:
       - "--alarm-names=${incoming_packets_alarm}"
       - "--cortex-instance-endpoint=${cortex_instance_endpoint}"
       - "--rollup=${rollup}"
+      - "--kubernetes-context=${kubernetes_context_json}"

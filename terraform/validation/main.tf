@@ -42,6 +42,7 @@ data "template_file" "docker_compose" {
     ec2_context_json        = replace(var.ec2_context_json, "\"", "\\\"")
     ecs_context_json        = replace(var.ecs_context_json, "\"", "\\\"")
     cloudwatch_context_json = replace(var.cloudwatch_context_json, "\"", "\\\"")
+    kubernetes_context_json = replace(var.kubernetes_context_json, "\"", "\\\"")
 
     # alarm related
     cpu_alarm              = var.cpu_alarm
@@ -50,6 +51,7 @@ data "template_file" "docker_compose" {
 
     cortex_instance_endpoint = var.cortex_instance_endpoint
     rollup                   = var.rollup
+    kubecfg_file_path = var.kubecfg_file_path
   }
 
 }
