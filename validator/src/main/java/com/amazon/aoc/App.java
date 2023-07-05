@@ -108,7 +108,7 @@ public class App implements Callable<Integer> {
 
   @CommandLine.Option(
       names = {"--kubeCfgFilePath"},
-      defaultValue = "")
+      defaultValue = "/root/kubecfg")
   private String kubeCfgFilePath;
 
   @CommandLine.Option(
