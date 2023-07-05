@@ -22,6 +22,7 @@ public enum ExceptionCode {
   S3_BUCKET_IS_EXISTED_GLOBALLY(20014, "s3 bucket is already existed globally"),
 
   EXPECTED_METRIC_NOT_FOUND(30001, "expected metric not found"),
+  UNEXPECTED_METRIC_FOUND(30002, "unexpected metric found"),
 
   // validating errors
   TRACE_ID_NOT_MATCHED(50001, "trace id not matched"),

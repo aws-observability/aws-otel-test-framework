@@ -7,26 +7,19 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.logs.model.FilteredLogEvent;
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.FilenameUtils;
-
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FilenameUtils;
 
 @Log4j2
-public class ConatinerInsightECSStructuredLogValidator
-        extends AbstractStructuredLogValidator {
+public class ConatinerInsightECSStructuredLogValidator extends AbstractStructuredLogValidator {
 
-  private static final List<String> LOG_TYPE_TO_VALIDATE = Arrays.asList(
-          "Instance",
-          "InstanceDiskIO",
-          "InstanceFS",
-          "InstanceNet"
-  );
+  private static final List<String> LOG_TYPE_TO_VALIDATE =
+      Arrays.asList("Instance", "InstanceDiskIO", "InstanceFS", "InstanceNet");
 
   private static final int MAX_RETRY_COUNT = 15;
   private static final int QUERY_LIMIT = 100;
@@ -41,13 +34,12 @@ public class ConatinerInsightECSStructuredLogValidator
 
   @Override
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
-    logGroupName = String.format(LOGGROUPPATH,
-            context.getCloudWatchContext().getClusterName());
+    logGroupName = String.format(LOGGROUPPATH, context.getCloudWatchContext().getClusterName());
     MustacheHelper mustacheHelper = new MustacheHelper();
     for (String logType : LOG_TYPE_TO_VALIDATE) {
-      FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
-              expectedDataTemplate.getPath().toString(),
-              logType + ".json"));
+      FileConfig fileConfig =
+          new LocalPathExpectedTemplate(
+              FilenameUtils.concat(expectedDataTemplate.getPath().toString(), logType + ".json"));
       String templateInput = mustacheHelper.render(fileConfig, context);
       schemasToValidate.put(logType, parseJsonSchema(templateInput));
     }
@@ -69,12 +61,12 @@ public class ConatinerInsightECSStructuredLogValidator
     log.info("Fetch and validate logs with types: " + String.join(", ", logTypes));
     for (String logType : logTypes) {
       String filterPattern = String.format(FORMATPATTERN, logType);
-      List<FilteredLogEvent> logEvents = cloudWatchService.filterLogs(logGroupName, filterPattern,
-              startTime.toEpochMilli(), QUERY_LIMIT);
+      List<FilteredLogEvent> logEvents =
+          cloudWatchService.filterLogs(
+              logGroupName, filterPattern, startTime.toEpochMilli(), QUERY_LIMIT);
       for (FilteredLogEvent logEvent : logEvents) {
         validateJsonSchema(logEvent.getMessage());
       }
     }
   }
-
 }

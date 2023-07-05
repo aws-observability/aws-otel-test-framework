@@ -12,12 +12,11 @@ import com.amazonaws.services.cloudwatch.model.Dimension;
 import com.amazonaws.services.cloudwatch.model.GetMetricStatisticsRequest;
 import com.amazonaws.services.cloudwatch.model.Statistic;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.extern.log4j.Log4j2;
-
 import java.io.File;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Arrays;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class PerformanceValidator implements IValidator {
@@ -83,35 +82,34 @@ public class PerformanceValidator implements IValidator {
     final Integer durationMs = validationConfig.getCollectionPeriod() * 60000;
     final Date startTime = new Date(System.currentTimeMillis() - durationMs);
 
-    final String dataRateKey = validationConfig.getDataMode() + "-"
-        + validationConfig.getDataRate();
-    List<Dimension> dimensions = Arrays.asList(
-        createDimension("testcase", validationConfig.getTestcase()),
-        createDimension("commit_id", validationConfig.getCommitId()),
-        createDimension("data_rate", dataRateKey),
-        createDimension("InstanceId", validationConfig.getInstanceId()),
-        createDimension("instance_type", validationConfig.getInstanceType()),
-        createDimension("launch_date", validationConfig.getLaunchDate()),
-        createDimension("exe", validationConfig.getExe()),
-        createDimension("process_name", validationConfig.getProcessName()),
-        createDimension("testing_ami", validationConfig.getTestingAmi()),
-        createDimension("negative_soaking", validationConfig.getNegativeSoaking())
-    );
+    final String dataRateKey =
+        validationConfig.getDataMode() + "-" + validationConfig.getDataRate();
+    List<Dimension> dimensions =
+        Arrays.asList(
+            createDimension("testcase", validationConfig.getTestcase()),
+            createDimension("commit_id", validationConfig.getCommitId()),
+            createDimension("data_rate", dataRateKey),
+            createDimension("InstanceId", validationConfig.getInstanceId()),
+            createDimension("instance_type", validationConfig.getInstanceType()),
+            createDimension("launch_date", validationConfig.getLaunchDate()),
+            createDimension("exe", validationConfig.getExe()),
+            createDimension("process_name", validationConfig.getProcessName()),
+            createDimension("testing_ami", validationConfig.getTestingAmi()),
+            createDimension("negative_soaking", validationConfig.getNegativeSoaking()));
 
     // Create requests
-    final GetMetricStatisticsRequest request = new GetMetricStatisticsRequest()
-        .withNamespace(context.getMetricNamespace())
-        .withPeriod(validationConfig.getDatapointPeriod())
-        .withStartTime(startTime)
-        .withEndTime(endTime)
-        .withDimensions(dimensions)
-        .withStatistics(Statistic.Average, Statistic.Maximum);
-    final GetMetricStatisticsRequest cpuStatsRequest = request
-        .clone()
-        .withMetricName(validationConfig.getCpuMetricName());
-    final GetMetricStatisticsRequest memoryStatsRequest = request
-        .clone()
-        .withMetricName(validationConfig.getMemoryMetricName());
+    final GetMetricStatisticsRequest request =
+        new GetMetricStatisticsRequest()
+            .withNamespace(context.getMetricNamespace())
+            .withPeriod(validationConfig.getDatapointPeriod())
+            .withStartTime(startTime)
+            .withEndTime(endTime)
+            .withDimensions(dimensions)
+            .withStatistics(Statistic.Average, Statistic.Maximum);
+    final GetMetricStatisticsRequest cpuStatsRequest =
+        request.clone().withMetricName(validationConfig.getCpuMetricName());
+    final GetMetricStatisticsRequest memoryStatsRequest =
+        request.clone().withMetricName(validationConfig.getMemoryMetricName());
 
     CloudWatchService cloudWatchService = new CloudWatchService(context.getRegion());
     RetryHelper.retry(
@@ -126,23 +124,23 @@ public class PerformanceValidator implements IValidator {
           Double avgMemory = getAverageStats(memoryDatapoints) / BYTES_IN_MEGABYTES;
           Double maxMemory = getMaxStats(memoryDatapoints) / BYTES_IN_MEGABYTES;
 
-          final PerformanceResult result = new PerformanceResult(
-              validationConfig.getTestcase(),
-              validationConfig.getInstanceType(),
-              validationConfig.getOtReceivers(),
-              validationConfig.getOtProcessors(),
-              validationConfig.getOtExporters(),
-              validationConfig.getDataType(),
-              validationConfig.getDataMode(),
-              validationConfig.getDataRate(),
-              avgCpu,
-              avgMemory,
-              maxCpu,
-              maxMemory,
-              validationConfig.getCommitId(),
-              validationConfig.getCollectionPeriod(),
-              validationConfig.getTestingAmi()
-          );
+          final PerformanceResult result =
+              new PerformanceResult(
+                  validationConfig.getTestcase(),
+                  validationConfig.getInstanceType(),
+                  validationConfig.getOtReceivers(),
+                  validationConfig.getOtProcessors(),
+                  validationConfig.getOtExporters(),
+                  validationConfig.getDataType(),
+                  validationConfig.getDataMode(),
+                  validationConfig.getDataRate(),
+                  avgCpu,
+                  avgMemory,
+                  maxCpu,
+                  maxMemory,
+                  validationConfig.getCommitId(),
+                  validationConfig.getCollectionPeriod(),
+                  validationConfig.getTestingAmi());
 
           try {
             new ObjectMapper().writeValue(new File("/var/output/" + outputFileName), result);
