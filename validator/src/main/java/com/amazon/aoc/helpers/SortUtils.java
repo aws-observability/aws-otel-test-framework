@@ -1,7 +1,6 @@
 package com.amazon.aoc.helpers;
 
 import com.amazon.aoc.models.xray.Entity;
-
 import java.util.List;
 
 public final class SortUtils {
@@ -36,7 +35,6 @@ public final class SortUtils {
           }
 
           return entity1.getStartTime() < entity2.getStartTime() ? -1 : 1;
-        }
-    );
+        });
   }
 }

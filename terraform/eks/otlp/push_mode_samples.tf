@@ -17,12 +17,6 @@
 # Push mode deployments
 ##########################################
 
-# is_adot_operator is true if the current test case is testing ADOT Operator.
-variable "is_adot_operator" {
-  type    = bool
-  default = false
-}
-
 locals {
   aoc_label_selector        = "aoc"
   sample_app_label_selector = "sample-app"
@@ -52,6 +46,9 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
       metadata {
         labels = {
           app = local.sample_app_label_selector
+        }
+        annotations = {
+          "instrumentation.opentelemetry.io/inject-java" = var.is_inject_auto_instrumentation
         }
       }
 
@@ -92,7 +89,12 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
 
           env {
             name  = "OTEL_RESOURCE_ATTRIBUTES"
-            value = "service.namespace=${var.sample_app.metric_namespace},service.name=${var.aoc_service.name}"
+            value = "service.namespace=${var.sample_app.metric_namespace}"
+          }
+
+          env {
+            name  = "OTEL_SERVICE_NAME"
+            value = var.aoc_service.name
           }
 
           env {

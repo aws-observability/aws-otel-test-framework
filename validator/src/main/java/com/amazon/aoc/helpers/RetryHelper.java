@@ -16,9 +16,8 @@
 package com.amazon.aoc.helpers;
 
 import com.amazon.aoc.enums.GenericConstants;
-import lombok.extern.log4j.Log4j2;
-
 import java.util.concurrent.TimeUnit;
+import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class RetryHelper {
@@ -44,8 +43,8 @@ public class RetryHelper {
       } catch (Exception ex) {
         exceptionInTheEnd = ex;
         if (retryCount != 0) { // don't sleep before leave this loop
-          log.info("retrying after {} seconds",
-              TimeUnit.MILLISECONDS.toSeconds(sleepInMilliSeconds));
+          log.info(
+              "retrying after {} seconds", TimeUnit.MILLISECONDS.toSeconds(sleepInMilliSeconds));
           TimeUnit.MILLISECONDS.sleep(sleepInMilliSeconds);
         }
       }

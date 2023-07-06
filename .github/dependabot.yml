@@ -6,50 +6,59 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "tuesday"
 
   - package-ecosystem: "gomod"
     # Files stored in `cmd/aoutil` directory
     directory: "/cmd/aoutil"
     schedule:
       interval: "weekly"
+      day: "tuesday"
 
   - package-ecosystem: "gomod"
     # Files stored in `/mocked_servers/grpc_metrics` directory
     directory: "/mocked_servers/grpc_metrics"
     schedule:
       interval: "weekly"
+      day: "tuesday"
 
   - package-ecosystem: "gomod"
     # Files stored in `/mocked_servers/grpc_trace` directory
     directory: "/mocked_servers/grpc_trace"
     schedule:
       interval: "weekly"
+      day: "tuesday"
 
   - package-ecosystem: "gomod"
     # Files stored in `/mocked_servers/https` directory
     directory: "/mocked_servers/https"
     schedule:
       interval: "weekly"
+      day: "tuesday"
 
   - package-ecosystem: "gradle"
     # build.gradle stored in repository root
     directory: "/"
     schedule:
       interval: "weekly"
+      day: "tuesday"
 
   - package-ecosystem: "gradle"
     # build.gradle stored in `/load-generator` directory
     directory: "/load-generator"
     schedule:
       interval: "weekly"
+      day: "tuesday"
 
   - package-ecosystem: "gradle"
     # build.gradle file stored in `/trace-java-client` directory
     directory: "/trace-java-client"
     schedule:
       interval: "weekly"
+      day: "tuesday"
   
   - package-ecosystem: "npm"
     directory: "/cdk_infra"
     schedule:
       interval: "weekly"
+      day: "tuesday"

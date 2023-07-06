@@ -3,10 +3,9 @@ package com.amazon.aoc.helpers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.amazon.aoc.models.xray.Entity;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
+import org.junit.Test;
 
 public class SortUtilsTest {
 
@@ -26,16 +25,10 @@ public class SortUtilsTest {
     assertThat(entities).containsSequence(generated.get(0), generated.get(1), generated.get(2));
   }
 
-
   /**
    * Expected entity structure of this test after sorting.
-   * <p>
-   * ent0 ent1  ent2
-   *  |
-   * ent3 ent4 ent5
-   *       |
-   *   ent6 ent7
-   * </p>
+   *
+   * <p>ent0 ent1 ent2 | ent3 ent4 ent5 | ent6 ent7
    */
   @Test
   public void testNestedEntitySort() {
@@ -73,7 +66,7 @@ public class SortUtilsTest {
     Entity current = new Entity();
     List<Entity> entityList = new ArrayList<>();
     entityList.add(current);
-    current.setSubsegments(entityList);  // set up an infinite children loop
+    current.setSubsegments(entityList); // set up an infinite children loop
 
     SortUtils.recursiveEntitySort(entityList);
 

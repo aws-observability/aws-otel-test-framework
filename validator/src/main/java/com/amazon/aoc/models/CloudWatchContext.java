@@ -27,6 +27,8 @@ public class CloudWatchContext {
   private App haproxy;
   private App memcached;
 
+  private Boolean ignoreEmptyDimSet;
+
   public void setAppMesh(App appMesh) {
     appMesh.setName("appMesh");
     this.appMesh = appMesh;
