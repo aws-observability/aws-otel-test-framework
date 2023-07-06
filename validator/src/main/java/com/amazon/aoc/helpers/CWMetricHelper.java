@@ -23,15 +23,12 @@ import com.amazonaws.services.cloudwatch.model.Metric;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * helper class for getting expected metrics from templates.
- */
+/** helper class for getting expected metrics from templates. */
 public class CWMetricHelper {
   private static final String DEFAULT_DIMENSION_NAME = "OTelLib";
   MustacheHelper mustacheHelper = new MustacheHelper();
@@ -39,17 +36,14 @@ public class CWMetricHelper {
   /**
    * get expected metrics from template with injecting context.
    *
-   * @param context        testing context
+   * @param context testing context
    * @param expectedMetric expected template
-   * @param caller         http caller, none caller, could be null
+   * @param caller http caller, none caller, could be null
    * @return list of metrics
    * @throws Exception when caller throws exception or template can not be found
    */
   public List<Metric> listExpectedMetrics(
-      Context context,
-      FileConfig expectedMetric,
-      ICaller caller
-  ) throws Exception {
+      Context context, FileConfig expectedMetric, ICaller caller) throws Exception {
     // call endpoint
     if (caller != null) {
       caller.callSampleApp();
@@ -60,9 +54,10 @@ public class CWMetricHelper {
 
     // load metrics from yaml
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    List<Metric> expectedMetricList = mapper.readValue(
-          yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
-          new TypeReference<List<Metric>>() {});
+    List<Metric> expectedMetricList =
+        mapper.readValue(
+            yamlExpectedMetrics.getBytes(StandardCharsets.UTF_8),
+            new TypeReference<List<Metric>>() {});
 
     if (context.getIsRollup()) {
       return this.rollupMetric(expectedMetricList);
@@ -72,15 +67,11 @@ public class CWMetricHelper {
   }
 
   /**
-   * rollup the metrics
-   * 1. all dimension rollup
-   * 2. zero dimension rollup
-   * 3. single dimension rollup
-   * Ex. A metric A with dimensions OtelLib, Dimension_1, Dimension_2 will be
-   * rolled up to four metrics:
-   * 1. All dimension rollup: A [OtelLib, Dimension_1, Dimension_2].
-   * 2. Zero dimension rollup: A [OtelLib].
-   * 3. Single dimension rollup: A [OtelLib, Dimension_1], A [OtelLib, Dimension_2]
+   * rollup the metrics 1. no dimension rollup 2. zero dimension rollup 3. single dimension rollup
+   * Ex. A metric A with dimensions OtelLib, Dimension_1, Dimension_2 will be rolled up to four
+   * metrics: 1. No dimension rollup: A [OtelLib, Dimension_1, Dimension_2]. 2. Zero dimension
+   * rollup: A [OtelLib]. 3. Single dimension rollup: A [OtelLib, Dimension_1], A [OtelLib,
+   * Dimension_2]
    *
    * @param metricList after rolled up
    * @return list of rolled up metrics
@@ -112,9 +103,9 @@ public class CWMetricHelper {
         allDimensionsMetric
             .getDimensions()
             .add(
-              new Dimension()
-                .withName(otellibDimension.getName())
-                .withValue(otellibDimension.getValue()));
+                new Dimension()
+                    .withName(otellibDimension.getName())
+                    .withValue(otellibDimension.getValue()));
       }
       rollupMetricList.add(allDimensionsMetric);
 
@@ -126,9 +117,9 @@ public class CWMetricHelper {
       if (otelLibDimensionExisted) {
         zeroDimensionMetric.setDimensions(
             Arrays.asList(
-              new Dimension()
-                .withName(otellibDimension.getName())
-                .withValue(otellibDimension.getValue())));
+                new Dimension()
+                    .withName(otellibDimension.getName())
+                    .withValue(otellibDimension.getValue())));
       }
       rollupMetricList.add(zeroDimensionMetric);
 
@@ -140,9 +131,9 @@ public class CWMetricHelper {
         if (otelLibDimensionExisted) {
           singleDimensionMetric.setDimensions(
               Arrays.asList(
-                new Dimension()
-                  .withName(otellibDimension.getName())
-                  .withValue(otellibDimension.getValue())));
+                  new Dimension()
+                      .withName(otellibDimension.getName())
+                      .withValue(otellibDimension.getValue())));
         }
         singleDimensionMetric.getDimensions().add(dimension);
         rollupMetricList.add(singleDimensionMetric);

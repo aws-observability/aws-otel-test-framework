@@ -13,12 +13,12 @@ export class VPCStack extends Stack {
       vpnGateway: false,
       subnetConfiguration: [
         {
-          cidrMask: 24,
+          cidrMask: 19,
           subnetType: ec2.SubnetType.PRIVATE_WITH_EGRESS,
           name: 'private_subnet'
         },
         {
-          cidrMask: 24,
+          cidrMask: 19,
           subnetType: ec2.SubnetType.PUBLIC,
           name: 'public_subnet'
         }

@@ -127,7 +127,7 @@ terraform destroy -auto-approve
 ````
  
 ### 2.4 Run in EKS
-**Prerequisite:** you are required to create an EKS cluster in your account
+**Prerequisite:** you are required to create an EKS cluster in your account. See cdk_infra directory for deploying clusters. 
 ````
 cd terraform/eks && terraform init && terraform apply -auto-approve \
     -var="aoc_image_repo={{the docker image you just pushed}}" \

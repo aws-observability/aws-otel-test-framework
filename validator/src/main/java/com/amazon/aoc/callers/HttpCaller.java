@@ -22,12 +22,11 @@ import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.SampleAppResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.extern.log4j.Log4j2;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-
-import java.util.concurrent.atomic.AtomicReference;
 
 @Log4j2
 public class HttpCaller implements ICaller {
@@ -36,6 +35,7 @@ public class HttpCaller implements ICaller {
 
   /**
    * construct httpCaller.
+   *
    * @param endpoint the endpoint to call, for example "http://127.0.0.1:8080"
    * @param path the path to call, for example "/test"
    */
@@ -68,7 +68,7 @@ public class HttpCaller implements ICaller {
               // try to get the trace id from header
               // this is a specific logic for xray sdk, which injects trace id in header
               log.info("getting trace id from header");
-              //  X-Amzn-Trace-Id: Root=1-5f84a611-f2f5df6827016222af9d8b60
+              // X-Amzn-Trace-Id: Root=1-5f84a611-f2f5df6827016222af9d8b60
               String traceId =
                   response.header(GenericConstants.HTTP_HEADER_TRACE_ID.getVal()).substring(5);
               sampleAppResponse = new SampleAppResponse();

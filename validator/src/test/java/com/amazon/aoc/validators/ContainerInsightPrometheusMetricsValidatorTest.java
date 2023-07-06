@@ -9,16 +9,13 @@ import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.cloudwatch.model.MetricDataResult;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.List;
-
+import org.junit.Test;
 
 public class ContainerInsightPrometheusMetricsValidatorTest {
   String clusterName = "fakedClusterName";
   String eksNamespace = "fakedNamespace";
-
 
   @Test
   public void testValidationSucceed() throws Exception {
@@ -32,9 +29,10 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
     ContainerInsightPrometheusMetricsValidator validator =
         new ContainerInsightPrometheusMetricsValidator();
     validator.init(
-        getContext(), null, null,
-        PredefinedExpectedTemplate.CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC
-    );
+        getContext(),
+        null,
+        null,
+        PredefinedExpectedTemplate.CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC);
     validator.setCloudWatchService(cloudWatchService);
     validator.setMaxRetryCount(1);
     validator.setInitialSleepTime(0);
@@ -51,9 +49,10 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
     ContainerInsightPrometheusMetricsValidator validator =
         new ContainerInsightPrometheusMetricsValidator();
     validator.init(
-        getECSContext(), null, null,
-        PredefinedExpectedTemplate.CONTAINER_INSIGHT_ECS_PROMETHEUS_METRIC
-    );
+        getECSContext(),
+        null,
+        null,
+        PredefinedExpectedTemplate.CONTAINER_INSIGHT_ECS_PROMETHEUS_METRIC);
     validator.setCloudWatchService(cloudWatchService);
     validator.setMaxRetryCount(1);
     validator.setInitialSleepTime(0);
@@ -66,12 +65,7 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
     String region = "us-west-2";
 
     // faked context
-    Context context = new Context(
-        testingId,
-        region,
-        false,
-        true
-    );
+    Context context = new Context(testingId, region, false, true);
     context.setMetricNamespace(namespace);
 
     CloudWatchContext.App app = new CloudWatchContext.App();
@@ -89,7 +83,7 @@ public class ContainerInsightPrometheusMetricsValidatorTest {
   private Context getECSContext() {
     CloudWatchContext.App jmx = new CloudWatchContext.App();
     jmx.setJob("jmx");
-    jmx.setTaskDefinitionFamilies(new String[]{"jmxawsvpc", "jmxfargate"});
+    jmx.setTaskDefinitionFamilies(new String[] {"jmxawsvpc", "jmxfargate"});
     CloudWatchContext cloudWatchContext = new CloudWatchContext();
     cloudWatchContext.setJmx(jmx);
     cloudWatchContext.setClusterName(this.clusterName);

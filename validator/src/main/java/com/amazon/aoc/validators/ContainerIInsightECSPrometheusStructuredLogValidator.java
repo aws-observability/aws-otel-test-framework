@@ -21,11 +21,10 @@ import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.models.Context;
 import com.fasterxml.jackson.databind.JsonNode;
-import lombok.extern.log4j.Log4j2;
-import org.apache.commons.io.FilenameUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+import lombok.extern.log4j.Log4j2;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  * Validates ECS Prometheus structured logs.
@@ -42,8 +41,10 @@ public class ContainerIInsightECSPrometheusStructuredLogValidator
   @Override
   void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     // /aws/ecs/containerinsights/aoc-prometheus-dashboard-1/prometheus
-    logGroupName = String.format("/aws/ecs/containerinsights/%s/%s",
-        context.getCloudWatchContext().getClusterName(), "prometheus");
+    logGroupName =
+        String.format(
+            "/aws/ecs/containerinsights/%s/%s",
+            context.getCloudWatchContext().getClusterName(), "prometheus");
     log.info("log group name is {}", logGroupName);
 
     // It's almost same as EKS prometheus but we use different key to find schema.
@@ -51,9 +52,10 @@ public class ContainerIInsightECSPrometheusStructuredLogValidator
     MustacheHelper mustacheHelper = new MustacheHelper();
 
     for (CloudWatchContext.App app : validateApps) {
-      FileConfig fileConfig = new LocalPathExpectedTemplate(FilenameUtils.concat(
-          expectedDataTemplate.getPath().toString(),
-          app.getName() + ".json"));
+      FileConfig fileConfig =
+          new LocalPathExpectedTemplate(
+              FilenameUtils.concat(
+                  expectedDataTemplate.getPath().toString(), app.getName() + ".json"));
       String templateInput = mustacheHelper.render(fileConfig, context);
       // NOTE: EKS use namespace, we use task family for matching log event to schema.
       for (String taskDefinitionFamily : app.getTaskDefinitionFamilies()) {
@@ -63,13 +65,16 @@ public class ContainerIInsightECSPrometheusStructuredLogValidator
       }
       logStreamNames.add(app.getJob());
     }
-    log.info("apps to validate {} schema to validate {}", validateApps.size(),
+    log.info(
+        "apps to validate {} schema to validate {}",
+        validateApps.size(),
         schemasToValidate.keySet());
   }
 
   @Override
   String getJsonSchemaMappingKey(JsonNode logEventNode) {
-    // We use TaskDefinitionFamily to check because ServiceName is optional in EMF log.
+    // We use TaskDefinitionFamily to check because ServiceName is optional in EMF
+    // log.
     return logEventNode.get("TaskDefinitionFamily").asText();
   }
 

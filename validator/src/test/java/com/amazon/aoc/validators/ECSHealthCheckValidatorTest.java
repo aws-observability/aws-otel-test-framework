@@ -10,12 +10,11 @@ import com.amazon.aoc.services.TaskService;
 import com.amazonaws.services.ecs.model.Container;
 import com.amazonaws.services.ecs.model.DescribeTasksResult;
 import com.amazonaws.services.ecs.model.Task;
-import org.junit.Before;
-import org.junit.Test;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.junit.Before;
+import org.junit.Test;
 
 public class ECSHealthCheckValidatorTest {
   private ECSHealthCheckValidator ecsHealthCheckValidator;
@@ -105,12 +104,7 @@ public class ECSHealthCheckValidatorTest {
     String region = "us-west-2";
 
     // faked context
-    Context context = new Context(
-            testingId,
-            region,
-            false,
-            true
-    );
+    Context context = new Context(testingId, region, false, true);
     ECSContext ecsContext = new ECSContext();
     ecsContext.setEcsClusterArn("DummyClusterArn");
     ecsContext.setEcsTaskDefArn("DummyTaskDefArn");

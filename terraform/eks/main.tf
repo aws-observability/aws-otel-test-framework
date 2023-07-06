@@ -21,18 +21,6 @@ locals {
   eks_pod_config_path = fileexists("${var.testcase}/eks_pod_config.tpl") ? "${var.testcase}/eks_pod_config.tpl" : module.common.default_eks_pod_config_path
 }
 
-terraform {
-  required_providers {
-    kubernetes = {
-      version = "~> 2.0"
-    }
-    kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = ">= 1.7.0"
-    }
-  }
-}
-
 module "common" {
   source = "../common"
 
@@ -105,14 +93,6 @@ resource "kubernetes_namespace" "aoc_ns" {
 resource "kubernetes_namespace" "aoc_fargate_ns" {
   metadata {
     name = "aoc-fargate-ns-${module.common.testing_id}"
-  }
-}
-
-data "aws_subnet_ids" "private_subnets" {
-  vpc_id = data.aws_eks_cluster.testing_cluster.vpc_config[0].vpc_id
-  filter {
-    name   = "mapPublicIpOnLaunch"
-    values = ["false"] # insert values here
   }
 }
 
@@ -242,6 +222,7 @@ module "validator" {
     }
     }) : jsonencode({
     clusterName : var.eks_cluster_name
+    ignoreEmptyDimSet : var.ignore_empty_dim_set
   })
   cortex_instance_endpoint = var.cortex_instance_endpoint
   rollup                   = var.rollup

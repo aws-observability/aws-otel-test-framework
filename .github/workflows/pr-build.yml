@@ -18,16 +18,31 @@ jobs:
       uses: actions/setup-java@v3
       with:
         distribution: 'zulu'
-        java-version: 8
+        java-version: 17
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew :validator:build
+  validator-image-build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+    - name: Build validator image
+      uses: docker/build-push-action@v4
+      with:
+        context: ./validator
+        push: false
+        tags: latest
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+        platforms : linux/amd64, linux/arm64
   go-test:
     runs-on: ubuntu-latest
     steps:
     - name: Set up Go 1.x
-      uses: actions/setup-go@v3
+      uses: actions/setup-go@v4
       with:
         go-version: '~1.18.6'
     - name: Checkout repo

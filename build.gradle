@@ -9,6 +9,9 @@
 plugins {
     // Apply the java plugin to add support for Java
     id 'java'
+    id 'com.github.ben-manes.versions' version '0.47.0'
+    id 'se.patrikerdes.use-latest-versions' version '0.2.18'
+
 }
 
 repositories {
@@ -17,7 +20,7 @@ repositories {
 
 dependencies {
     // This dependency is used by the application.
-    implementation 'com.google.guava:guava:31.1-jre'
+    implementation 'com.google.guava:guava:32.0.0-jre'
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13.2'
@@ -27,6 +30,8 @@ allprojects {
     repositories {
         mavenCentral()
     }
+    apply plugin: 'se.patrikerdes.use-latest-versions'
+    apply plugin: 'com.github.ben-manes.versions'
 }
 
 subprojects {

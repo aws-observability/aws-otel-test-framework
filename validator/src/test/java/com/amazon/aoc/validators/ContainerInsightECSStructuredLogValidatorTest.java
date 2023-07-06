@@ -10,22 +10,20 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.logs.model.FilteredLogEvent;
-import org.junit.Test;
-
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.File;
+import org.junit.Test;
 
 public class ContainerInsightECSStructuredLogValidatorTest {
 
   String clusterName = "fakedClusterName";
   private static final String PATH =
       "/src/test/java/com/amazon/aoc/validators/ecsinstancelogtemplate/";
-
 
   @Test
   public void testFetchAndValidateLogs() throws Exception {
@@ -45,11 +43,7 @@ public class ContainerInsightECSStructuredLogValidatorTest {
     ConatinerInsightECSStructuredLogValidator validator =
         new ConatinerInsightECSStructuredLogValidator();
     validator.init(
-        getContext(),
-        validationConfig,
-        null,
-        PredefinedExpectedTemplate.CONTAINER_INSIGHT_ECS_LOG
-    );
+        getContext(), validationConfig, null, PredefinedExpectedTemplate.CONTAINER_INSIGHT_ECS_LOG);
     Instant startTime = Instant.EPOCH;
     validator.setCloudWatchService(cloudWatchService);
     validator.fetchAndValidateLogs(startTime);
@@ -61,12 +55,7 @@ public class ContainerInsightECSStructuredLogValidatorTest {
     String region = "us-west-2";
 
     // faked context
-    Context context = new Context(
-        testingId,
-        region,
-        false,
-        true
-    );
+    Context context = new Context(testingId, region, false, true);
     context.setMetricNamespace(namespace);
     CloudWatchContext cloudWatchContext = new CloudWatchContext();
     cloudWatchContext.setClusterName(this.clusterName);
@@ -77,8 +66,7 @@ public class ContainerInsightECSStructuredLogValidatorTest {
 
   private List<FilteredLogEvent> getlogEvents() throws IOException {
     List<FilteredLogEvent> events = new ArrayList<>();
-    String path = System.getProperty("user.dir")
-        + PATH;
+    String path = System.getProperty("user.dir") + PATH;
     File file = new File(path);
     File[] tempList = file.listFiles();
     for (int i = 0; i < tempList.length; i++) {

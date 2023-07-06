@@ -105,7 +105,9 @@ module "aoc_oltp" {
   }
   sample_app_service_account_name = kubernetes_service_account.sample-app-sa.metadata.0.name
   is_adot_operator                = replace(var.testcase, "_adot_operator", "") != var.testcase
-  depends_on                      = [module.iam_assumable_role_sample_app]
+  is_inject_auto_instrumentation  = var.is_inject_auto_instrumentation
+
+  depends_on = [module.iam_assumable_role_sample_app, kubernetes_manifest.java_auto_instrumentation_deployment]
 }
 
 locals {
@@ -288,6 +290,31 @@ resource "null_resource" "aoc_deployment_adot_operator" {
     command = "kubectl apply --kubeconfig=${local_file.kubeconfig.filename} -f ${local_file.adot_collector_deployment.0.filename}"
   }
 
+  depends_on = [module.adot_operator]
+}
+
+resource "kubernetes_manifest" "java_auto_instrumentation_deployment" {
+  count = var.aoc_base_scenario == "oltp" && replace(var.testcase, "_adot_operator", "") != var.testcase && var.is_inject_auto_instrumentation ? 1 : 0
+
+  manifest = {
+    apiVersion = "opentelemetry.io/v1alpha1"
+    kind       = "Instrumentation"
+
+    metadata = {
+      name      = "my-instrumentation"
+      namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
+    }
+
+    spec = {
+      sampler = {
+        type     = "parentbased_traceidratio"
+        argument = "1.0"
+      }
+      java = {
+        image = "${var.java_auto_instrumentation_repository}:${var.java_auto_instrumentation_tag}"
+      }
+    }
+  }
   depends_on = [module.adot_operator]
 }
 
