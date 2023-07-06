@@ -104,15 +104,14 @@ public class LoadBalanceValidator implements IValidator {
                 if (!targetCollectorId.equals(retrievedTrace.get(collectorId).toString())) {
                   log.info("id values do not match");
                   log.info("value of target id: {}", targetCollectorId);
-                  log.info(
-                      "value of retrieved id: {}", retrievedTrace.get(collectorId).toString());
+                  log.info("value of retrieved id: {}", retrievedTrace.get(collectorId).toString());
                   log.info("==========================================");
                   throw new BaseException(ExceptionCode.COLLECTOR_ID_NOT_MATCHED);
                 }
               }
             }
           });
-      
+
       successes += 1;
       log.info("Total number of successful runs: {}", successes);
     }
