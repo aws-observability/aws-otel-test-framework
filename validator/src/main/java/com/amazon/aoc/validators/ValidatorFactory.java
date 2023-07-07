@@ -48,7 +48,7 @@ public class ValidatorFactory {
         expectedData = validationConfig.getExpectedTraceTemplate();
         break;
       case "loadbalancing":
-        validator = new LoadBalanceValidator();
+        validator = new LoadBalancingValidator();
         break;
       case "cw-metric":
         validator = new CWMetricValidator();

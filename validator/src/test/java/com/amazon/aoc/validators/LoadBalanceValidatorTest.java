@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 import com.amazon.aoc.callers.HttpCaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
-import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.models.ValidationConfig;
@@ -58,7 +57,7 @@ public class LoadBalanceValidatorTest {
     runValidation(validationConfig, context, mockedTraceList);
   }
 
-  /** test validation when fails due to difference collector ids */
+  /** test validation when it fails due to different collector ids */
   @Test
   public void testValidationFailedExpectedMatchingId() throws Exception {
     ValidationConfig validationConfig = new ValidationConfig();
@@ -66,7 +65,7 @@ public class LoadBalanceValidatorTest {
     Context context = initContext();
 
     String mockedTrace =
-        "[{ \"segments\": [{ \"document\": '{ \"metadata\": { \"default\": {\"collector-id\": 3} }, \"subsegments\": [{ \"metadata\": { \"default\": {\"collector-id\": 2} }}, { \"metadata\": { \"default\": {\"collector-id\": 3} }}] }' }] }]";
+        "[{ \"segments\": [{ \"document\": '{ \"metadata\": { \"default\": {\"collector-id\": 2} }, \"subsegments\": [{ \"metadata\": { \"default\": {\"collector-id\": 3} }}, { \"metadata\": { \"default\": {\"collector-id\": 3} }}] }' }] }]";
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     List<Trace> mockedTraceList =
@@ -79,7 +78,6 @@ public class LoadBalanceValidatorTest {
     assertEquals(e.getCode(), ExceptionCode.COLLECTOR_ID_NOT_MATCHED.getCode());
   }
 
-  /** test validation when it fails due to not enough spans for the test */
   @Test
   public void testValidationFailedExpectedMoreSpans() throws Exception {
     ValidationConfig validationConfig = new ValidationConfig();
@@ -102,15 +100,11 @@ public class LoadBalanceValidatorTest {
 
   private Context initContext() {
     // fake vars
-    String namespace = "fakednamespace";
     String testingId = "fakedTesingId";
     String region = "us-west-2";
 
     // faked context
     Context context = new Context(testingId, region, false, true);
-    context.setMetricNamespace(namespace);
-    context.setCloudWatchContext(new CloudWatchContext());
-    context.getCloudWatchContext().setIgnoreEmptyDimSet(false);
     return context;
   }
 
@@ -128,7 +122,7 @@ public class LoadBalanceValidatorTest {
     when(xrayService.listTraceByIds(any())).thenReturn(mockActualTrace);
 
     // start validation
-    LoadBalanceValidator validator = new LoadBalanceValidator();
+    LoadBalancingValidator validator = new LoadBalancingValidator();
     validator.init(
         context, validationConfig, httpCaller, validationConfig.getExpectedTraceTemplate());
     validator.setXRayService(xrayService);
