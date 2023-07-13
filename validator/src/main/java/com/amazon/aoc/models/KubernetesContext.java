@@ -14,5 +14,6 @@ public class KubernetesContext {
 
   private String podUid;
 
-  private String creationTimeStamp;
+  // Waiting for RFC3339 format to be used by default
+  // private String creationTimeStamp;
 }
