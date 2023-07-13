@@ -156,10 +156,11 @@ public class App implements Callable<Integer> {
     return null;
   }
 
-  // Deserialize kubernetes context passed in at validation start time and then build expected metrics.
+  // Deserialize kubernetes context passed in at validation start time and then build expected
+  // metrics.
   private void buildKubernetesContext(Context context) throws Exception {
     context.setKubernetesContext(buildJsonContext(kubernetesContext, KubernetesContext.class));
-    if(context.getKubeCfgFilePath() != null && !context.getKubeCfgFilePath().isEmpty()){
+    if (context.getKubeCfgFilePath() != null && !context.getKubeCfgFilePath().isEmpty()) {
       K8sExpectedValuesHelper.populateExpectedMetrics(context);
     }
   }

@@ -20,7 +20,6 @@ import com.amazon.aoc.enums.GenericConstants;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
-import com.amazon.aoc.helpers.K8sExpectedValuesHelper;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.helpers.SortUtils;
@@ -42,7 +41,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.log4j.Log4j2;
-import org.apache.commons.lang3.StringUtils;
 
 @Log4j2
 public class TraceValidator implements IValidator {
