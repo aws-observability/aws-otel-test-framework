@@ -6,6 +6,7 @@ import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.Configuration;
 import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.util.Config;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,12 +31,23 @@ public class K8sExpectedValuesHelper {
         context
             .getKubernetesContext()
             .setNodeName(Objects.requireNonNull(pod.getSpec()).getNodeName());
-        System.out.println("start time: " + pod.getMetadata().getCreationTimestamp());
-        // need to convert this to the same format that the processor uses to export timestamps
-        context
-            .getKubernetesContext()
-            .setCreationTimeStamp(
-                Objects.requireNonNull(pod.getMetadata().getCreationTimestamp()).toString());
+
+        OffsetDateTime test = pod.getMetadata().getCreationTimestamp();
+        /*
+        This datetimeformatter hard codes the UTC zone to match the datetime format exported by the k8sattr processor
+        and the k8s api go package https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1@v0.27.1#Time
+        Attempting to use a pattern such as ofPattern("yyyy-MM-dd HH:mm:ss xxx v") throws an error
+        because the timezone cannot be inferred. For example "Unable to extract ZoneId from temporal 2023-07-06T00:35:31Z"
+        Currently waiting for RF3339 format to be used before asserting against creation timestamps.
+        https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/24016
+          String creationTimestamp =
+            pod.getMetadata()
+                .getCreationTimestamp()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss xx 'UTC'"));
+
+        context.getKubernetesContext().setCreationTimeStamp(creationTimestamp);
+         */
+
         break;
       }
     }
