@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class K8sExpectedValuesHelper {
 
-  public void getExpectedMetrics(Context context) throws Exception {
+  public static void populateExpectedMetrics(Context context) throws Exception {
     ApiClient client = Config.fromConfig(context.getKubeCfgFilePath());
     Configuration.setDefaultApiClient(client);
 
