@@ -62,14 +62,7 @@ public class CWMetricValidator implements IValidator {
   @Override
   public void validate() throws Exception {
     log.info("Start metric validating");
-    // Populate the context kubernetes context values which will be used in the expected data
-    // template. This must happen before the expected metric list is built. This probably isn't the
-    // correct place for this but this is just for a POC.
-    if (context.getKubeCfgFilePath() != null) {
-      k8sExpectedValuesHelper.getExpectedMetrics(context);
-    }
     // get expected metrics and remove the to be skipped dimensions
-
     final List<Metric> expectedMetricList =
         cwMetricHelper.listExpectedMetrics(context, expectedMetric, caller);
     Set<String> skippedDimensionNameList = new HashSet<>();

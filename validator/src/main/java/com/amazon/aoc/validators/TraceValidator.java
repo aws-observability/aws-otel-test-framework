@@ -20,6 +20,7 @@ import com.amazon.aoc.enums.GenericConstants;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
+import com.amazon.aoc.helpers.K8sExpectedValuesHelper;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.helpers.SortUtils;
@@ -41,6 +42,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.StringUtils;
 
 @Log4j2
 public class TraceValidator implements IValidator {
@@ -105,8 +107,9 @@ public class TraceValidator implements IValidator {
                       if (!m.matches()) {
                         log.error("data model validation failed");
                         log.info("mis matched data model field list");
-                        log.info("value of stored trace map: {}", entry.getValue());
-                        log.info("value of retrieved map: {}", retrievedTrace.get(entry.getKey()));
+                        log.info("value of stored trace map: {}", entry.getValue().toString());
+                        log.info(
+                            "value of retrieved map: {}", retrievedTrace.get(targetKey).toString());
                         log.info("==========================================");
                         throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
                       }
@@ -175,6 +178,7 @@ public class TraceValidator implements IValidator {
 
     try {
       // flattened JSON object to a map
+      System.out.println("expected json:" + jsonExpectedTrace);
       flattenedJsonMapForStoredTraces = JsonFlattener.flattenAsMap(jsonExpectedTrace);
       flattenedJsonMapForStoredTraces.put("[0].trace_id", sampleAppResponse.getTraceId());
     } catch (Exception e) {

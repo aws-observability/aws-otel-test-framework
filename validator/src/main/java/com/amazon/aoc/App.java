@@ -16,6 +16,7 @@
 package com.amazon.aoc;
 
 import com.amazon.aoc.helpers.ConfigLoadHelper;
+import com.amazon.aoc.helpers.K8sExpectedValuesHelper;
 import com.amazon.aoc.models.*;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazon.aoc.validators.ValidatorFactory;
@@ -139,7 +140,7 @@ public class App implements Callable<Integer> {
     context.setTestcase(testcase);
     context.setLanguage(language);
     context.setKubeCfgFilePath(this.kubeCfgFilePath);
-    context.setKubernetesContext(buildJsonContext(kubernetesContext, KubernetesContext.class));
+    buildKubernetesContext(context);
     log.info(context);
 
     // load config
@@ -153,6 +154,14 @@ public class App implements Callable<Integer> {
     Duration duration = Duration.between(startTime, endTime);
     log.info("Validation has completed in {} minutes.", duration.toMinutes());
     return null;
+  }
+
+  // Deserialize kubernetes context passed in at validation start time and then build expected metrics.
+  private void buildKubernetesContext(Context context) throws Exception {
+    context.setKubernetesContext(buildJsonContext(kubernetesContext, KubernetesContext.class));
+    if(context.getKubeCfgFilePath() != null && !context.getKubeCfgFilePath().isEmpty()){
+      K8sExpectedValuesHelper.populateExpectedMetrics(context);
+    }
   }
 
   private void validate(Context context, List<ValidationConfig> validationConfigList)
