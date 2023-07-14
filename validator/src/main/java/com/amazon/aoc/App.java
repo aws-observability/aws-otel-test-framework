@@ -16,7 +16,6 @@
 package com.amazon.aoc;
 
 import com.amazon.aoc.helpers.ConfigLoadHelper;
-import com.amazon.aoc.helpers.K8sExpectedValuesHelper;
 import com.amazon.aoc.models.*;
 import com.amazon.aoc.models.kubernetes.KubernetesContext;
 import com.amazon.aoc.models.kubernetes.KubernetesContextFactory;
@@ -111,6 +110,15 @@ public class App implements Callable<Integer> {
       names = {"--kubeCfgFilePath"},
       defaultValue = "/root/kubecfg")
   private String kubeCfgFilePath;
+  @CommandLine.Option(
+      names = {"--k8s-deployment-name"},
+      defaultValue = "")
+  private String k8sDeploymentName;
+
+  @CommandLine.Option(
+      names = {"--k8s-namespace"},
+      defaultValue = "")
+  private String k8sNamespace;
 
   @CommandLine.Option(
       names = {"--k8s-deployment-name"},

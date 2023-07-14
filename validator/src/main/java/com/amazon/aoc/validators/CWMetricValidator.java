@@ -20,7 +20,6 @@ import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.CWMetricHelper;
-import com.amazon.aoc.helpers.K8sExpectedValuesHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
@@ -45,8 +44,6 @@ public class CWMetricValidator implements IValidator {
 
   private CloudWatchService cloudWatchService;
   private CWMetricHelper cwMetricHelper;
-
-  private K8sExpectedValuesHelper k8sExpectedValuesHelper;
   private int maxRetryCount;
 
   // for unit test
@@ -208,7 +205,6 @@ public class CWMetricValidator implements IValidator {
     this.expectedMetric = expectedMetricTemplate;
     this.cloudWatchService = new CloudWatchService(context.getRegion());
     this.cwMetricHelper = new CWMetricHelper();
-    this.k8sExpectedValuesHelper = new K8sExpectedValuesHelper();
     this.maxRetryCount = 30;
   }
 }
