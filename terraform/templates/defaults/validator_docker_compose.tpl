@@ -34,4 +34,6 @@ services:
       - "--alarm-names=${incoming_packets_alarm}"
       - "--cortex-instance-endpoint=${cortex_instance_endpoint}"
       - "--rollup=${rollup}"
-      - "--kubernetes-context=${kubernetes_context_json}"
+      - "--kubeCfgFilePath=/root/kubecfg"
+      - "--k8s-deployment-name=${k8s_deployment_name}"
+      - "--k8s-namespace=${k8s_namespace}"

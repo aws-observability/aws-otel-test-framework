@@ -88,10 +88,17 @@ variable "rollup" {
   default = true
 }
 
-variable "kubernetes_context_json" {
-  default = "{}"
-}
-
 variable "kubecfg_file_path" {
   default = ""
+  type    = string
+}
+
+variable "k8s_deployment_name" {
+  default = ""
+  type    = string
+}
+
+variable "k8s_namespace" {
+  default = ""
+  type    = string
 }
