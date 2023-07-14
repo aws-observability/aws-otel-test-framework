@@ -110,6 +110,7 @@ public class App implements Callable<Integer> {
       names = {"--kubeCfgFilePath"},
       defaultValue = "")
   private String kubeCfgFilePath;
+
   @CommandLine.Option(
       names = {"--k8s-deployment-name"},
       defaultValue = "")
@@ -119,7 +120,6 @@ public class App implements Callable<Integer> {
       names = {"--k8s-namespace"},
       defaultValue = "")
   private String k8sNamespace;
-
 
   private static final String TEST_CASE_DIM_KEY = "testcase";
   private static final String CANARY_NAMESPACE = "Otel/Canary";
@@ -166,7 +166,9 @@ public class App implements Callable<Integer> {
   // Deserialize kubernetes context passed in at validation start time and then build expected
   // metrics.
   private KubernetesContext buildKubernetesContext() throws Exception {
-    KubernetesContextFactory factory = new KubernetesContextFactory(this.kubeCfgFilePath,this.k8sDeploymentName, this.k8sNamespace);
+    KubernetesContextFactory factory =
+        new KubernetesContextFactory(
+            this.kubeCfgFilePath, this.k8sDeploymentName, this.k8sNamespace);
     return factory.create();
   }
 
