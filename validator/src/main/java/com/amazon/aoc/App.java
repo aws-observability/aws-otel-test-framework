@@ -16,9 +16,9 @@
 package com.amazon.aoc;
 
 import com.amazon.aoc.helpers.ConfigLoadHelper;
-import com.amazon.aoc.helpers.K8sExpectedValuesHelper;
 import com.amazon.aoc.models.*;
 import com.amazon.aoc.models.kubernetes.KubernetesContext;
+import com.amazon.aoc.models.kubernetes.KubernetesContextFactory;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazon.aoc.validators.ValidatorFactory;
 import com.amazonaws.services.cloudwatch.model.Dimension;
@@ -110,9 +110,16 @@ public class App implements Callable<Integer> {
       names = {"--kubeCfgFilePath"},
       defaultValue = "/root/kubecfg")
   private String kubeCfgFilePath;
+  @CommandLine.Option(
+      names = {"--k8s-deployment-name"},
+      defaultValue = "")
+  private String k8sDeploymentName;
 
-  @CommandLine.Option(names = {"--kubernetes-context"})
-  private String kubernetesContext;
+  @CommandLine.Option(
+      names = {"--k8s-namespace"},
+      defaultValue = "")
+  private String k8sNamespace;
+
 
   private static final String TEST_CASE_DIM_KEY = "testcase";
   private static final String CANARY_NAMESPACE = "Otel/Canary";
@@ -140,8 +147,7 @@ public class App implements Callable<Integer> {
     context.setCortexInstanceEndpoint(this.cortexInstanceEndpoint);
     context.setTestcase(testcase);
     context.setLanguage(language);
-    context.setKubeCfgFilePath(this.kubeCfgFilePath);
-    buildKubernetesContext(context);
+    context.setKubernetesContext(this.buildKubernetesContext());
     log.info(context);
 
     // load config
@@ -159,11 +165,9 @@ public class App implements Callable<Integer> {
 
   // Deserialize kubernetes context passed in at validation start time and then build expected
   // metrics.
-  private void buildKubernetesContext(Context context) throws Exception {
-    context.setKubernetesContext(buildJsonContext(kubernetesContext, KubernetesContext.class));
-    if (context.getKubeCfgFilePath() != null && !context.getKubeCfgFilePath().isEmpty()) {
-      K8sExpectedValuesHelper.populateExpectedMetrics(context);
-    }
+  private KubernetesContext buildKubernetesContext() throws Exception {
+    KubernetesContextFactory factory = new KubernetesContextFactory(this.kubeCfgFilePath,this.k8sDeploymentName, this.k8sNamespace);
+    return factory.create();
   }
 
   private void validate(Context context, List<ValidationConfig> validationConfigList)

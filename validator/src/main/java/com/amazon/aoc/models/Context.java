@@ -66,7 +66,5 @@ public class Context {
    */
   private String cortexInstanceEndpoint;
 
-  private String kubeCfgFilePath;
-
   private KubernetesContext kubernetesContext;
 }
