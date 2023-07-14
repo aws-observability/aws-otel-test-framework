@@ -121,16 +121,6 @@ public class App implements Callable<Integer> {
       defaultValue = "")
   private String k8sNamespace;
 
-  @CommandLine.Option(
-      names = {"--k8s-deployment-name"},
-      defaultValue = "")
-  private String k8sDeploymentName;
-
-  @CommandLine.Option(
-      names = {"--k8s-namespace"},
-      defaultValue = "")
-  private String k8sNamespace;
-
   private static final String TEST_CASE_DIM_KEY = "testcase";
   private static final String CANARY_NAMESPACE = "Otel/Canary";
   private static final String CANARY_METRIC_NAME = "Success";
