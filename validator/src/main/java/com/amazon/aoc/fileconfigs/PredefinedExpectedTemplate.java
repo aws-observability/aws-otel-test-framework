@@ -47,6 +47,8 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   XRAY_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedAWSSDKTrace.mustache"),
   XRAY_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedHTTPTrace.mustache"),
   SPARK_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedHTTPTrace.mustache"),
+  SPARK_SDK_HTTP_EXPECTED_K8S_ATTR_TRACE(
+      "/expected-data-template/spark/sparkAppExpectedHTTPK8sAttrTrace.mustache"),
   SPARK_SDK_AWSSDK_EXPECTED_TRACE(
       "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache"),
   SPARK_SDK_EC2_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedEC2Trace.mustache"),
