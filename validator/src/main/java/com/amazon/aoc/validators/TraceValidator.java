@@ -105,8 +105,9 @@ public class TraceValidator implements IValidator {
                       if (!m.matches()) {
                         log.error("data model validation failed");
                         log.info("mis matched data model field list");
-                        log.info("value of stored trace map: {}", entry.getValue());
-                        log.info("value of retrieved map: {}", retrievedTrace.get(entry.getKey()));
+                        log.info("value of stored trace map: {}", entry.getValue().toString());
+                        log.info(
+                            "value of retrieved map: {}", retrievedTrace.get(targetKey).toString());
                         log.info("==========================================");
                         throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
                       }
