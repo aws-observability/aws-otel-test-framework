@@ -1,6 +1,6 @@
 package com.amazon.aoc.models.kubernetes;
 
-import com.amazon.aoc.helpers.KubernetesMetadataHelper;
+import com.amazon.aoc.services.KubernetesService;
 import io.kubernetes.client.openapi.models.V1Pod;
 import java.util.Objects;
 
@@ -10,32 +10,32 @@ public class KubernetesContextFactory {
 
   private final String namespace;
 
-  private final KubernetesMetadataHelper kubernetesMetadataHelper;
+  private final KubernetesService kubernetesService;
 
   public KubernetesContextFactory(
       String kubeConfigFilePath, String deploymentName, String namespace) throws Exception {
     this.kubeConfigFilePath = kubeConfigFilePath;
     this.deploymentName = deploymentName;
     this.namespace = namespace;
-    this.kubernetesMetadataHelper = new KubernetesMetadataHelper(this.kubeConfigFilePath);
+    this.kubernetesService = new KubernetesService(this.kubeConfigFilePath);
   }
 
   public KubernetesContextFactory(
       String kubeConfigFilePath,
       String deploymentName,
       String namespace,
-      KubernetesMetadataHelper kubernetesMetadataHelper) {
+      KubernetesService kubernetesService) {
     this.kubeConfigFilePath = kubeConfigFilePath;
     this.deploymentName = deploymentName;
     this.namespace = namespace;
-    this.kubernetesMetadataHelper = kubernetesMetadataHelper;
+    this.kubernetesService = kubernetesService;
   }
 
   public KubernetesContext create() throws Exception {
     KubernetesContext kubernetesContext =
         new KubernetesContext(this.deploymentName, this.namespace);
 
-    V1Pod pod = kubernetesMetadataHelper.getSampleAppPod(this.deploymentName, this.namespace);
+    V1Pod pod = kubernetesService.getSampleAppPod(this.deploymentName, this.namespace);
     if (pod != null) {
       kubernetesContext.setNamespace(Objects.requireNonNull(pod.getMetadata()).getNamespace());
       kubernetesContext.setPodName(pod.getMetadata().getName());

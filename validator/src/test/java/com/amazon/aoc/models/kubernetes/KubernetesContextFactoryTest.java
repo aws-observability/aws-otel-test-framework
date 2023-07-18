@@ -3,7 +3,7 @@ package com.amazon.aoc.models.kubernetes;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-import com.amazon.aoc.helpers.KubernetesMetadataHelper;
+import com.amazon.aoc.services.KubernetesService;
 import io.kubernetes.client.extended.kubectl.Kubectl;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1Pod;
@@ -27,21 +27,21 @@ public class KubernetesContextFactoryTest {
                     .namespace(mockNamespace)
                     .uid(mockUid))
             .spec(new V1PodSpec().nodeName(mockNodeName));
-    KubernetesMetadataHelper mockKuberenetesMetadataHelper = mock(KubernetesMetadataHelper.class);
-    when(mockKuberenetesMetadataHelper.getSampleAppPod(mockDeploymentName, mockNamespace))
+    KubernetesService mockKubernetesService = mock(KubernetesService.class);
+    when(mockKubernetesService.getSampleAppPod(mockDeploymentName, mockNamespace))
         .thenReturn(mockPod);
     KubernetesContextFactory mockFactory =
         new KubernetesContextFactory(
-            "./kubecfg", mockDeploymentName, mockNamespace, mockKuberenetesMetadataHelper);
+            "./kubecfg", mockDeploymentName, mockNamespace, mockKubernetesService);
 
     MockedStatic<Kubectl> staticMock = mockStatic(Kubectl.class);
 
-    KubernetesContext actualKuberentesContext = mockFactory.create();
+    KubernetesContext actualKubernetesContext = mockFactory.create();
 
-    assertEquals(mockDeploymentName, actualKuberentesContext.getDeploymentName());
-    assertEquals(mockNamespace, actualKuberentesContext.getNamespace());
-    assertEquals(mockUid, actualKuberentesContext.getPodUid());
-    assertEquals(mockNodeName, actualKuberentesContext.getNodeName());
+    assertEquals(mockDeploymentName, actualKubernetesContext.getDeploymentName());
+    assertEquals(mockNamespace, actualKubernetesContext.getNamespace());
+    assertEquals(mockUid, actualKubernetesContext.getPodUid());
+    assertEquals(mockNodeName, actualKubernetesContext.getNodeName());
     staticMock.close();
   }
 }
