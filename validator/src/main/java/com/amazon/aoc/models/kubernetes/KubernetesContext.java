@@ -21,6 +21,4 @@ public class KubernetesContext {
     this.deploymentName = deploymentName;
     this.namespace = namespace;
   }
-
-  public KubernetesContext() {}
 }
