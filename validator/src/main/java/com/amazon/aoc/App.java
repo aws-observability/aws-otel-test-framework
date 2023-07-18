@@ -107,7 +107,7 @@ public class App implements Callable<Integer> {
   private boolean isRollup;
 
   @CommandLine.Option(
-      names = {"--kubeCfgFilePath"},
+      names = {"--kubecfg-file-path"},
       defaultValue = "")
   private String kubeCfgFilePath;
 
