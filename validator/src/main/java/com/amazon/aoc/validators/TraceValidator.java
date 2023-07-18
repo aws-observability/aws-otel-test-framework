@@ -68,8 +68,14 @@ public class TraceValidator extends XrayValidator {
                       if (!m.matches()) {
                         log.error("data model validation failed");
                         log.info("mis matched data model field list");
+<<<<<<< HEAD
                         log.info("value of stored trace map: {}", entry.getValue());
                         log.info("value of actual trace map: {}", actualTrace.get(entry.getKey()));
+=======
+                        log.info("value of stored trace map: {}", entry.getValue().toString());
+                        log.info(
+                            "value of retrieved map: {}", retrievedTrace.get(targetKey).toString());
+>>>>>>> 4f1ee2e ([dev] Add ability to fetch expected values from k8s pods (#1322))
                         log.info("==========================================");
                         throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
                       }

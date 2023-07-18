@@ -50,6 +50,9 @@ data "template_file" "docker_compose" {
 
     cortex_instance_endpoint = var.cortex_instance_endpoint
     rollup                   = var.rollup
+    kubecfg_file_path        = var.kubecfg_file_path
+    k8s_deployment_name      = var.k8s_deployment_name
+    k8s_namespace            = var.k8s_namespace
   }
 
 }

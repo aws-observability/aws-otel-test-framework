@@ -27,6 +27,7 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   OTLP_TO_AMP_EXPECTED_METRIC("/expected-data-template/otlpToAMPExpectedMetric.mustache"),
   DEFAULT_EXPECTED_METRIC("/expected-data-template/defaultExpectedMetric.mustache"),
   ENHANCED_EXPECTED_METRIC("/expected-data-template/enhancedExpectedMetric.mustache"),
+  K8S_ATTR_EXPECTED_METRIC("/expected-data-template/k8sExpectedMetric.mustache"),
   ENHANCED_EXPECTED_METRIC_TESTING_ID(
       "/expected-data-template/enhancedExpectedMetricTestingId.mustache"),
   STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),
@@ -47,6 +48,8 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   XRAY_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedAWSSDKTrace.mustache"),
   XRAY_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/xraySDKexpectedHTTPTrace.mustache"),
   SPARK_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedHTTPTrace.mustache"),
+  SPARK_SDK_HTTP_EXPECTED_K8S_ATTR_TRACE(
+      "/expected-data-template/spark/sparkAppExpectedHTTPK8sAttrTrace.mustache"),
   SPARK_SDK_AWSSDK_EXPECTED_TRACE(
       "/expected-data-template/spark/sparkAppExpectedAWSSDKTrace.mustache"),
   SPARK_SDK_EC2_EXPECTED_TRACE("/expected-data-template/spark/sparkAppExpectedEC2Trace.mustache"),
