@@ -20,7 +20,7 @@ public class KubernetesContextFactory {
     this.kubernetesService = new KubernetesService(this.kubeConfigFilePath);
   }
 
-  public KubernetesContextFactory(
+  KubernetesContextFactory(
       String kubeConfigFilePath,
       String deploymentName,
       String namespace,
