@@ -176,7 +176,6 @@ public class TraceValidator implements IValidator {
 
     try {
       // flattened JSON object to a map
-      System.out.println("expected json:" + jsonExpectedTrace);
       flattenedJsonMapForStoredTraces = JsonFlattener.flattenAsMap(jsonExpectedTrace);
       flattenedJsonMapForStoredTraces.put("[0].trace_id", sampleAppResponse.getTraceId());
     } catch (Exception e) {
