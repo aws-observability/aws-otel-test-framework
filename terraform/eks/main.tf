@@ -228,7 +228,7 @@ module "validator" {
   rollup                   = var.rollup
 
   depends_on = [
-    module.aoc_oltp,
+    module.aoc_otlp,
     module.adot_operator,
     kubectl_manifest.logs_sample_fargate_deploy,
     null_resource.prom_base_ready_check,
