@@ -4,12 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 import com.amazon.aoc.services.KubernetesService;
-import io.kubernetes.client.extended.kubectl.Kubectl;
 import io.kubernetes.client.openapi.models.V1ObjectMeta;
 import io.kubernetes.client.openapi.models.V1Pod;
 import io.kubernetes.client.openapi.models.V1PodSpec;
 import org.junit.Test;
-import org.mockito.MockedStatic;
 
 public class KubernetesContextFactoryTest {
 
@@ -34,14 +32,11 @@ public class KubernetesContextFactoryTest {
         new KubernetesContextFactory(
             "./kubecfg", mockDeploymentName, mockNamespace, mockKubernetesService);
 
-    MockedStatic<Kubectl> staticMock = mockStatic(Kubectl.class);
-
     KubernetesContext actualKubernetesContext = mockFactory.create();
 
     assertEquals(mockDeploymentName, actualKubernetesContext.getDeploymentName());
     assertEquals(mockNamespace, actualKubernetesContext.getNamespace());
     assertEquals(mockUid, actualKubernetesContext.getPodUid());
     assertEquals(mockNodeName, actualKubernetesContext.getNodeName());
-    staticMock.close();
   }
 }
