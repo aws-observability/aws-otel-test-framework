@@ -1,0 +1,7 @@
+-
+  validationType: "cw-metric"
+  httpPath: "/outgoing-http-call"
+  httpMethod: "get"
+  callingType: "http"
+  expectedMetricTemplate: "K8S_ATTR_EXPECTED_METRIC"
+

@@ -62,6 +62,23 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
           image_pull_policy = "Always"
           command           = length(local.eks_pod_config["command"]) != 0 ? local.eks_pod_config["command"] : null
           args              = length(local.eks_pod_config["args"]) != 0 ? local.eks_pod_config["args"] : null
+          env {
+            name = "K8S_POD_NAME"
+            value_from {
+              field_ref {
+                field_path = "metadata.name"
+              }
+            }
+          }
+
+          env {
+            name = "K8S_NAMESPACE"
+            value_from {
+              field_ref {
+                field_path = "metadata.namespace"
+              }
+            }
+          }
 
           env {
             name  = "OTEL_EXPORTER_OTLP_ENDPOINT"
@@ -90,7 +107,7 @@ resource "kubernetes_deployment" "push_mode_sample_app_deployment" {
 
           env {
             name  = "OTEL_RESOURCE_ATTRIBUTES"
-            value = "service.namespace=${var.sample_app.metric_namespace}"
+            value = "service.namespace=${var.sample_app.metric_namespace},k8s.pod.name=$(K8S_POD_NAME),k8s.namespace.name=$(K8S_NAMESPACE)"
           }
 
           env {
