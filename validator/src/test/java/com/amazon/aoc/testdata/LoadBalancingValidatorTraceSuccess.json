@@ -1,0 +1,7 @@
+[
+    { "segments": [
+        { "document": 
+            "{ \"metadata\": { \"default\": {\"collector-id\": 3} }, \"subsegments\": [{ \"metadata\": { \"default\": {\"collector-id\": 3} }}, { \"metadata\": { \"default\": {\"collector-id\": 3} }}] }" 
+        }] 
+    }
+]

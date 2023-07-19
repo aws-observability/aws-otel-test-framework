@@ -30,14 +30,16 @@ import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.XRayService;
 import com.amazonaws.services.xray.model.Trace;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import org.junit.Test;
 
 /** this class covers the tests for LoadBalanceValidator. */
-public class LoadBalanceValidatorTest {
+public class LoadBalancingValidatorTest {
 
   /** test validation when it succeeds */
   @Test
@@ -46,10 +48,19 @@ public class LoadBalanceValidatorTest {
     validationConfig.setCallingType("http");
     Context context = initContext();
 
-    String mockedTrace =
-        "[{ \"segments\": [{ \"document\": '{ \"metadata\": { \"default\": {\"collector-id\": 3} }, \"subsegments\": [{ \"metadata\": { \"default\": {\"collector-id\": 3} }}, { \"metadata\": { \"default\": {\"collector-id\": 3} }}] }' }] }]";
+    ObjectMapper mapper = new ObjectMapper();
+    JsonNode jsonNode =
+        mapper.readValue(
+            new File(
+                "./src/test/java/com/amazon/aoc/testdata/LoadBalancingValidatorTraceSuccess.json"),
+            JsonNode.class);
+    String mockedTrace = mapper.writeValueAsString(jsonNode);
 
-    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+    // String mockedTrace = "[{ \"segments\": [{ \"document\": '{ \"metadata\": { \"default\":
+    // {\"collector-id\": 3} }, \"subsegments\": [{ \"metadata\": { \"default\": {\"collector-id\":
+    // 3} }}, { \"metadata\": { \"default\": {\"collector-id\": 3} }}] }' }] }]";
+
+    mapper = new ObjectMapper(new YAMLFactory());
     List<Trace> mockedTraceList =
         mapper.readValue(
             mockedTrace.getBytes(StandardCharsets.UTF_8), new TypeReference<List<Trace>>() {});
@@ -124,8 +135,11 @@ public class LoadBalanceValidatorTest {
     // start validation
     LoadBalancingValidator validator = new LoadBalancingValidator();
     validator.init(
-        context, validationConfig, httpCaller, validationConfig.getExpectedTraceTemplate());
-    validator.setXRayService(xrayService);
+        context,
+        validationConfig,
+        httpCaller,
+        validationConfig.getExpectedTraceTemplate(),
+        xrayService);
     validator.validate();
   }
 }
