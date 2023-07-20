@@ -7,6 +7,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    groups:
+      github-actions-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     # Files stored in `cmd/aoutil` directory
@@ -14,6 +18,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    groups:
+      aotutil-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     # Files stored in `/mocked_servers/grpc_metrics` directory
@@ -21,6 +29,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    mocked-server-grpc-metric-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     # Files stored in `/mocked_servers/grpc_trace` directory
@@ -28,6 +39,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    mocked-server-grpc-race-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gomod"
     # Files stored in `/mocked_servers/https` directory
@@ -35,6 +49,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    mocked-server-https-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gradle"
     # build.gradle stored in repository root
@@ -42,6 +59,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    root-gradle-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gradle"
     # build.gradle stored in `/load-generator` directory
@@ -49,6 +69,9 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    load-gen-gradle-deps:
+        patterns:
+          - "*"
 
   - package-ecosystem: "gradle"
     # build.gradle file stored in `/trace-java-client` directory
@@ -56,9 +79,15 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+    trace-java-client-gradle-deps:
+        patterns:
+          - "*"
   
   - package-ecosystem: "npm"
     directory: "/cdk_infra"
     schedule:
       interval: "weekly"
       day: "tuesday"
+    cdk-infra-deps:
+        patterns:
+          - "*"
