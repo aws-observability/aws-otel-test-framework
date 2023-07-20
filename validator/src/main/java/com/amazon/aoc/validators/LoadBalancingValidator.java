@@ -61,24 +61,23 @@ public class LoadBalancingValidator extends XrayValidator {
           true,
           () -> {
             // get retrieved trace from x-ray service
-            Map<String, Object> retrievedTrace = this.getActualTrace(traceId);
-            log.info("value of retrieved trace map: {}", retrievedTrace);
+            Map<String, Object> actualTrace = this.getActualTrace(traceId);
+            log.info("value of actual trace map: {}", actualTrace);
 
             List<String> collectorIdList =
-                retrievedTrace.keySet().stream()
+                actualTrace.keySet().stream()
                     .filter(s -> s.endsWith("collector-id"))
                     .collect(Collectors.toList());
             if (!checkSpanCount(collectorIdList)) {
               throw new BaseException(ExceptionCode.NOT_ENOUGH_SPANS);
             }
 
-            String targetCollectorId = retrievedTrace.get(collectorIdList.get(0)).toString();
+            String targetCollectorId = actualTrace.get(collectorIdList.get(0)).toString();
             for (String collectorIdKey : collectorIdList.subList(1, collectorIdList.size())) {
-              if (!targetCollectorId.equals(retrievedTrace.get(collectorIdKey).toString())) {
+              if (!targetCollectorId.equals(actualTrace.get(collectorIdKey).toString())) {
                 log.info("id values do not match");
                 log.info("value of target id: {}", targetCollectorId);
-                log.info(
-                    "value of retrieved id: {}", retrievedTrace.get(collectorIdKey).toString());
+                log.info("value of actual id: {}", actualTrace.get(collectorIdKey).toString());
                 log.info("==========================================");
                 throw new BaseException(ExceptionCode.COLLECTOR_ID_NOT_MATCHED);
               }

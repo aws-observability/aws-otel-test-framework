@@ -52,7 +52,7 @@ public class TraceValidator extends XrayValidator {
                   () -> {
                     // get retrieved trace from x-ray service
                     Map<String, Object> actualTrace = this.getActualTrace(traceId);
-                    log.info("value of retrieved trace map: {}", actualTrace);
+                    log.info("value of actual trace map: {}", actualTrace);
 
                     // data model validation of other fields of segment document
                     for (Map.Entry<String, Object> entry : storedTrace.entrySet()) {
@@ -69,7 +69,7 @@ public class TraceValidator extends XrayValidator {
                         log.error("data model validation failed");
                         log.info("mis matched data model field list");
                         log.info("value of stored trace map: {}", entry.getValue());
-                        log.info("value of retrieved map: {}", actualTrace.get(entry.getKey()));
+                        log.info("value of actual trace map: {}", actualTrace.get(entry.getKey()));
                         log.info("==========================================");
                         throw new BaseException(ExceptionCode.DATA_MODEL_NOT_MATCHED);
                       }
