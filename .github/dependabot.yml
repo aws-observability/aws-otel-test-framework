@@ -29,7 +29,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
-    mocked-server-grpc-metric-deps:
+    groups:
+      mocked-server-grpc-metric-deps:
         patterns:
           - "*"
 
@@ -39,7 +40,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
-    mocked-server-grpc-race-deps:
+    groups:
+      mocked-server-grpc-race-deps:
         patterns:
           - "*"
 
@@ -49,7 +51,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
-    mocked-server-https-deps:
+    groups:
+      mocked-server-https-deps:
         patterns:
           - "*"
 
@@ -59,7 +62,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
-    root-gradle-deps:
+    groups:
+      root-gradle-deps:
         patterns:
           - "*"
 
@@ -69,7 +73,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
-    load-gen-gradle-deps:
+    groups:
+      load-gen-gradle-deps:
         patterns:
           - "*"
 
@@ -79,7 +84,8 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
-    trace-java-client-gradle-deps:
+    groups:
+      trace-java-client-gradle-deps:
         patterns:
           - "*"
   
@@ -88,6 +94,7 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
-    cdk-infra-deps:
+    groups:
+      cdk-infra-deps:
         patterns:
           - "*"
