@@ -96,7 +96,7 @@ clusters:
     launch_type: ec2
     instance_type: "m5.large"
   - name: dev-collector-ci-arm64-1-23
-    version: "1.22"
+    version: "1.23"
     launch_type: ec2
     instance_type: m6g.large
   - name: dev-collector-ci-arm64-1-26
