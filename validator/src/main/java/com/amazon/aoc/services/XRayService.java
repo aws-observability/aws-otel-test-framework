@@ -41,4 +41,19 @@ public class XRayService {
 
     return batchGetTracesResult.getTraces();
   }
+
+  /**
+   * Get trace object by id.
+   *
+   * @param traceId trace id
+   * @return trace object
+   */
+  public Trace getTraceById(String traceId) {
+    BatchGetTracesResult batchGetTracesResult =
+        awsxRay.batchGetTraces(new BatchGetTracesRequest().withTraceIds(traceId));
+    if (batchGetTracesResult.getTraces().isEmpty()) {
+      return null;
+    }
+    return batchGetTracesResult.getTraces().get(0);
+  }
 }
