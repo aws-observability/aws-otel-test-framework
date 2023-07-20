@@ -24,13 +24,14 @@ import static org.mockito.Mockito.when;
 import com.amazon.aoc.callers.HttpCaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
+import com.amazon.aoc.fileconfigs.LocalPathExpectedTemplate;
+import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.XRayService;
 import com.amazonaws.services.xray.model.Trace;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
@@ -47,20 +48,15 @@ public class LoadBalancingValidatorTest {
     ValidationConfig validationConfig = new ValidationConfig();
     validationConfig.setCallingType("http");
     Context context = initContext();
+    MustacheHelper mustacheHelper = new MustacheHelper();
 
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode jsonNode =
-        mapper.readValue(
-            new File(
-                "./src/test/java/com/amazon/aoc/testdata/LoadBalancingValidatorTraceSuccess.json"),
-            JsonNode.class);
-    String mockedTrace = mapper.writeValueAsString(jsonNode);
+    String testFilePath =
+        new File("./src/test/java/com/amazon/aoc/testdata/LoadBalancingSuccess.mustache")
+            .getAbsolutePath();
+    String mockedTrace =
+        mustacheHelper.render(new LocalPathExpectedTemplate("file://" + testFilePath), null);
 
-    // String mockedTrace = "[{ \"segments\": [{ \"document\": '{ \"metadata\": { \"default\":
-    // {\"collector-id\": 3} }, \"subsegments\": [{ \"metadata\": { \"default\": {\"collector-id\":
-    // 3} }}, { \"metadata\": { \"default\": {\"collector-id\": 3} }}] }' }] }]";
-
-    mapper = new ObjectMapper(new YAMLFactory());
+    ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     List<Trace> mockedTraceList =
         mapper.readValue(
             mockedTrace.getBytes(StandardCharsets.UTF_8), new TypeReference<List<Trace>>() {});
@@ -74,9 +70,13 @@ public class LoadBalancingValidatorTest {
     ValidationConfig validationConfig = new ValidationConfig();
     validationConfig.setCallingType("http");
     Context context = initContext();
+    MustacheHelper mustacheHelper = new MustacheHelper();
 
+    String testFilePath =
+        new File("./src/test/java/com/amazon/aoc/testdata/LoadBalancingFailureMatchingIds.mustache")
+            .getAbsolutePath();
     String mockedTrace =
-        "[{ \"segments\": [{ \"document\": '{ \"metadata\": { \"default\": {\"collector-id\": 2} }, \"subsegments\": [{ \"metadata\": { \"default\": {\"collector-id\": 3} }}, { \"metadata\": { \"default\": {\"collector-id\": 3} }}] }' }] }]";
+        mustacheHelper.render(new LocalPathExpectedTemplate("file://" + testFilePath), null);
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     List<Trace> mockedTraceList =
@@ -94,9 +94,13 @@ public class LoadBalancingValidatorTest {
     ValidationConfig validationConfig = new ValidationConfig();
     validationConfig.setCallingType("http");
     Context context = initContext();
+    MustacheHelper mustacheHelper = new MustacheHelper();
 
+    String testFilePath =
+        new File("./src/test/java/com/amazon/aoc/testdata/LoadBalancingFailureSpanCount.mustache")
+            .getAbsolutePath();
     String mockedTrace =
-        "[{ \"segments\": [{ \"document\": '{ \"metadata\": { \"default\": {\"collector-id\": 3} }, \"subsegments\": [] }' }] }]";
+        mustacheHelper.render(new LocalPathExpectedTemplate("file://" + testFilePath), null);
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
     List<Trace> mockedTraceList =

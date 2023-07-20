@@ -28,7 +28,6 @@ import com.amazon.aoc.services.XRayService;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.extern.log4j.Log4j2;
 
@@ -66,21 +65,22 @@ public class LoadBalancingValidator extends XrayValidator {
             // get retrieved trace from x-ray service
             Map<String, Object> retrievedTrace = this.getRetrievedTrace(traceIdList);
             log.info("value of retrieved trace map: {}", retrievedTrace);
-            Set<String> set =
+
+            List<String> collectorIdList =
                 retrievedTrace.keySet().stream()
                     .filter(s -> s.endsWith("collector-id"))
-                    .collect(Collectors.toSet());
-            if (!checkSpanCount(set)) {
+                    .collect(Collectors.toList());
+            if (!checkSpanCount(collectorIdList)) {
               throw new BaseException(ExceptionCode.NOT_ENOUGH_SPANS);
             }
-            String targetCollectorId =
-                retrievedTrace.get(set.stream().findFirst().get()).toString();
-            set.remove(set.stream().findFirst().get());
-            for (String collectorId : set) {
-              if (!targetCollectorId.equals(retrievedTrace.get(collectorId).toString())) {
+
+            String targetCollectorId = retrievedTrace.get(collectorIdList.get(0)).toString();
+            for (String collectorIdKey : collectorIdList.subList(1, collectorIdList.size())) {
+              if (!targetCollectorId.equals(retrievedTrace.get(collectorIdKey).toString())) {
                 log.info("id values do not match");
                 log.info("value of target id: {}", targetCollectorId);
-                log.info("value of retrieved id: {}", retrievedTrace.get(collectorId).toString());
+                log.info(
+                    "value of retrieved id: {}", retrievedTrace.get(collectorIdKey).toString());
                 log.info("==========================================");
                 throw new BaseException(ExceptionCode.COLLECTOR_ID_NOT_MATCHED);
               }
@@ -100,7 +100,7 @@ public class LoadBalancingValidator extends XrayValidator {
     return sampleAppResponse.getTraceId();
   }
 
-  private boolean checkSpanCount(Set<String> spanSet) throws Exception {
+  private boolean checkSpanCount(List<String> spanSet) throws Exception {
     if (spanSet.size() < 2) {
       log.error("not enough spans in trace map (need at least 2)");
       log.info("==========================================");
