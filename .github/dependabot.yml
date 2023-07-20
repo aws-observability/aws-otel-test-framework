@@ -66,6 +66,12 @@ updates:
       root-gradle-deps:
         patterns:
           - "*"
+    ignore:
+      - dependency-name: "json-schema-validator"
+        update-types:
+          - "version-update:semver-major"
+          - "version-update:semver-minor"
+
 
   - package-ecosystem: "gradle"
     # build.gradle stored in `/load-generator` directory
