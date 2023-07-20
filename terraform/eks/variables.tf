@@ -31,9 +31,9 @@ variable "sample_app_image_repo" {
 }
 
 // aoc_base_scenario refers to the base scenario that the aoc is used for.
-// options: oltp, prometheus, infra
+// options: otlp, prometheus, infra
 variable "aoc_base_scenario" {
-  default = "oltp"
+  default = "otlp"
 }
 
 // aoc_deploy_mode refers to the mode to deploy the Collector CR. This is only used when we test the Operator.
@@ -93,7 +93,8 @@ variable "java_auto_instrumentation_repository" {
 
 # latest tag is not available
 variable "java_auto_instrumentation_tag" {
-  type = string
+  type    = string
+  default = ""
 }
 
 variable "ignore_empty_dim_set" {
