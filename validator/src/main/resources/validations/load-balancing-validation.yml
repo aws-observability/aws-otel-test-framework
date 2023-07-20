@@ -1,5 +1,0 @@
--
-  validationType: "loadbalancing"
-  httpPath: "/gen-mult-spans"
-  httpMethod: "get"
-  callingType: "http"
