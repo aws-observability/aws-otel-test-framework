@@ -36,7 +36,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import org.junit.Test;
 
 /** this class covers the tests for LoadBalanceValidator. */
@@ -57,9 +56,9 @@ public class LoadBalancingValidatorTest {
         mustacheHelper.render(new LocalPathExpectedTemplate("file://" + testFilePath), null);
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    List<Trace> mockedTraceList =
+    Trace mockedTraceList =
         mapper.readValue(
-            mockedTrace.getBytes(StandardCharsets.UTF_8), new TypeReference<List<Trace>>() {});
+            mockedTrace.getBytes(StandardCharsets.UTF_8), new TypeReference<Trace>() {});
 
     runValidation(validationConfig, context, mockedTraceList);
   }
@@ -79,9 +78,9 @@ public class LoadBalancingValidatorTest {
         mustacheHelper.render(new LocalPathExpectedTemplate("file://" + testFilePath), null);
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    List<Trace> mockedTraceList =
+    Trace mockedTraceList =
         mapper.readValue(
-            mockedTrace.getBytes(StandardCharsets.UTF_8), new TypeReference<List<Trace>>() {});
+            mockedTrace.getBytes(StandardCharsets.UTF_8), new TypeReference<Trace>() {});
 
     BaseException e =
         assertThrows(
@@ -103,9 +102,9 @@ public class LoadBalancingValidatorTest {
         mustacheHelper.render(new LocalPathExpectedTemplate("file://" + testFilePath), null);
 
     ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
-    List<Trace> mockedTraceList =
+    Trace mockedTraceList =
         mapper.readValue(
-            mockedTrace.getBytes(StandardCharsets.UTF_8), new TypeReference<List<Trace>>() {});
+            mockedTrace.getBytes(StandardCharsets.UTF_8), new TypeReference<Trace>() {});
 
     BaseException e =
         assertThrows(
@@ -124,8 +123,7 @@ public class LoadBalancingValidatorTest {
   }
 
   private void runValidation(
-      ValidationConfig validationConfig, Context context, List<Trace> mockActualTrace)
-      throws Exception {
+      ValidationConfig validationConfig, Context context, Trace mockActualTrace) throws Exception {
     // fake and mock a http caller
     String traceId = "fakedtraceid";
     HttpCaller httpCaller = mock(HttpCaller.class);
@@ -134,7 +132,7 @@ public class LoadBalancingValidatorTest {
     when(httpCaller.callSampleApp()).thenReturn(sampleAppResponse);
 
     XRayService xrayService = mock(XRayService.class);
-    when(xrayService.listTraceByIds(any())).thenReturn(mockActualTrace);
+    when(xrayService.getTraceById(any())).thenReturn(mockActualTrace);
 
     // start validation
     LoadBalancingValidator validator = new LoadBalancingValidator();

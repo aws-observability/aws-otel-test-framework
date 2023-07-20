@@ -32,6 +32,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.github.wnameless.json.flattener.JsonFlattener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.extern.log4j.Log4j2;
@@ -58,13 +59,30 @@ public abstract class XrayValidator implements IValidator {
   }
 
   // this method will hit get trace from x-ray service and get retrieved trace
-  public Map<String, Object> getRetrievedTrace(List<String> traceIdList) throws Exception {
-    List<Trace> retrieveTraceList = xrayService.listTraceByIds(traceIdList);
-    if (retrieveTraceList == null || retrieveTraceList.isEmpty()) {
+  public Map<String, Map<String, Object>> getActualTraces(List<String> traceIdList)
+      throws Exception {
+    List<Trace> actualTraceList = xrayService.listTraceByIds(traceIdList);
+    if (actualTraceList == null || actualTraceList.isEmpty()) {
       throw new BaseException(ExceptionCode.EMPTY_LIST);
     }
 
-    return this.flattenDocument(retrieveTraceList.get(0).getSegments());
+    Map<String, Map<String, Object>> actualTraceListFlattened =
+        new HashMap<String, Map<String, Object>>();
+    for (Trace trace : actualTraceList) {
+      actualTraceListFlattened.put(trace.getId(), this.flattenDocument(trace.getSegments()));
+    }
+
+    return actualTraceListFlattened;
+  }
+
+  // this method will hit get trace from x-ray service and get retrieved trace
+  public Map<String, Object> getActualTrace(String traceId) throws Exception {
+    Trace actualTrace = xrayService.getTraceById(traceId);
+    if (actualTrace == null) {
+      throw new BaseException(ExceptionCode.NULL_VAR);
+    }
+
+    return this.flattenDocument(actualTrace.getSegments());
   }
 
   private Map<String, Object> flattenDocument(List<Segment> segmentList) {

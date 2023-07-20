@@ -36,6 +36,7 @@ public enum ExceptionCode {
   HEALTH_STATUS_NOT_MATCHED(50009, "health_check status not matched"),
   NOT_ENOUGH_SPANS(50010, "not enough spans in the trace"),
   COLLECTOR_ID_NOT_MATCHED(50011, "span collector-id attribute does not match"),
+  NULL_VAR(50012, "variable is null"),
 
   // build validator
   VALIDATION_TYPE_NOT_EXISTED(60001, "validation type not existed"),

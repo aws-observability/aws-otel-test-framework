@@ -25,7 +25,6 @@ import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.XRayService;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,7 +51,6 @@ public class LoadBalancingValidator extends XrayValidator {
     while (successes < 5) {
       // Call sample app and get traceId
       String traceId = this.getSampleAppResponse();
-      List<String> traceIdList = Collections.singletonList(traceId);
 
       log.info("value of Sample App traceId: {}", traceId);
 
@@ -63,7 +61,7 @@ public class LoadBalancingValidator extends XrayValidator {
           true,
           () -> {
             // get retrieved trace from x-ray service
-            Map<String, Object> retrievedTrace = this.getRetrievedTrace(traceIdList);
+            Map<String, Object> retrievedTrace = this.getActualTrace(traceId);
             log.info("value of retrieved trace map: {}", retrievedTrace);
 
             List<String> collectorIdList =
