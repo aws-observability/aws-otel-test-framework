@@ -231,7 +231,7 @@ module "validator" {
   k8s_namespace            = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
 
   depends_on = [
-    module.aoc_oltp,
+    module.aoc_otlp,
     module.adot_operator,
     kubectl_manifest.logs_sample_fargate_deploy,
     null_resource.prom_base_ready_check,
