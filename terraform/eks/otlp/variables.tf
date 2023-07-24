@@ -60,3 +60,8 @@ variable "is_adot_operator" {
   type    = bool
   default = false
 }
+
+variable "sample_app_deployment_name" {
+  type    = string
+  default = "sample-app"
+}

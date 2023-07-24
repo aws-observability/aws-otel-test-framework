@@ -1,0 +1,122 @@
+-
+  metricName: latency_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: k8s.namespace.name
+      value: {{kubernetesContext.namespace}}
+    -
+      name: k8s.pod.name
+      value: {{kubernetesContext.podName}}
+    -
+      name: k8s.pod.uid
+      value: {{kubernetesContext.podUid}}
+    -
+      name: k8s.deployment.name
+      value: {{kubernetesContext.deploymentName}}
+    -
+      name: k8s.node.name
+      value: {{kubernetesContext.nodeName}}
+
+-
+  metricName: apiBytesSent_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: k8s.namespace.name
+      value: {{kubernetesContext.namespace}}
+    -
+      name: k8s.pod.name
+      value: {{kubernetesContext.podName}}
+    -
+      name: k8s.pod.uid
+      value: {{kubernetesContext.podUid}}
+    -
+      name: k8s.deployment.name
+      value: {{kubernetesContext.deploymentName}}
+    -
+      name: k8s.node.name
+      value: {{kubernetesContext.nodeName}}
+
+
+-
+  metricName: totalApiBytesSent_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: k8s.namespace.name
+      value: {{kubernetesContext.namespace}}
+    -
+      name: k8s.pod.name
+      value: {{kubernetesContext.podName}}
+    -
+      name: k8s.pod.uid
+      value: {{kubernetesContext.podUid}}
+    -
+      name: k8s.deployment.name
+      value: {{kubernetesContext.deploymentName}}
+    -
+      name: k8s.node.name
+      value: {{kubernetesContext.nodeName}}
+
+-
+  metricName: queueSizeChange_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: k8s.namespace.name
+      value: {{kubernetesContext.namespace}}
+    -
+      name: k8s.pod.name
+      value: {{kubernetesContext.podName}}
+    -
+      name: k8s.pod.uid
+      value: {{kubernetesContext.podUid}}
+    -
+      name: k8s.deployment.name
+      value: {{kubernetesContext.deploymentName}}
+    -
+      name: k8s.node.name
+      value: {{kubernetesContext.nodeName}}
+
+
+-
+  metricName: actualQueueSize_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: k8s.namespace.name
+      value: {{kubernetesContext.namespace}}
+    -
+      name: k8s.pod.name
+      value: {{kubernetesContext.podName}}
+    -
+      name: k8s.pod.uid
+      value: {{kubernetesContext.podUid}}
+    -
+      name: k8s.deployment.name
+      value: {{kubernetesContext.deploymentName}}
+    -
+      name: k8s.node.name
+      value: {{kubernetesContext.nodeName}}
+
+
+-
+  metricName: lastLatency_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: k8s.namespace.name
+      value: {{kubernetesContext.namespace}}
+    -
+      name: k8s.pod.name
+      value: {{kubernetesContext.podName}}
+    -
+      name: k8s.pod.uid
+      value: {{kubernetesContext.podUid}}
+    -
+      name: k8s.deployment.name
+      value: {{kubernetesContext.deploymentName}}
+    -
+      name: k8s.node.name
+      value: {{kubernetesContext.nodeName}}

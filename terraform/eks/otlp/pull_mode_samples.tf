@@ -22,7 +22,7 @@ resource "kubernetes_deployment" "pull_mode_sample_app_deployment" {
   count = var.sample_app.mode == "pull" ? 1 : 0
 
   metadata {
-    name      = "sample-app"
+    name      = var.sample_app_deployment_name
     namespace = var.aoc_namespace
     labels = {
       app = "sample-app"
