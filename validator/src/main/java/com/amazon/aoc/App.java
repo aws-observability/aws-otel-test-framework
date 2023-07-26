@@ -164,12 +164,16 @@ public class App implements Callable<Integer> {
   }
 
   // Deserialize kubernetes context passed in at validation start time and then build expected
-  // metrics.
+  // metrics. Only builds context if a kubecfg file path is given.
   private KubernetesContext buildKubernetesContext() throws Exception {
-    KubernetesContextFactory factory =
-        new KubernetesContextFactory(
-            this.kubeCfgFilePath, this.k8sDeploymentName, this.k8sNamespace);
-    return factory.create();
+    if (!this.kubeCfgFilePath.isEmpty()) {
+      KubernetesContextFactory factory =
+          new KubernetesContextFactory(
+              this.kubeCfgFilePath, this.k8sDeploymentName, this.k8sNamespace);
+      return factory.create();
+    }
+    log.info("did not build kubernetes context. kubecfg file path was empty");
+    return null;
   }
 
   private void validate(Context context, List<ValidationConfig> validationConfigList)
