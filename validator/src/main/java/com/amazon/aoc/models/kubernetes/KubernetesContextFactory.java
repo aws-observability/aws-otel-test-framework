@@ -2,7 +2,6 @@ package com.amazon.aoc.models.kubernetes;
 
 import com.amazon.aoc.services.KubernetesService;
 import io.kubernetes.client.openapi.models.V1Pod;
-import java.io.IOException;
 import java.util.Objects;
 import lombok.extern.log4j.Log4j2;
 
@@ -35,11 +34,11 @@ public class KubernetesContextFactory {
 
   public KubernetesContext create() throws Exception {
     if (this.kubernetesService == null) {
-      try {
-        this.kubernetesService = new KubernetesService(this.kubeConfigFilePath);
-      } catch (IOException e) {
-        log.error("failed to build kubernetes service", e);
+      if (this.kubeConfigFilePath.isEmpty()) {
+        log.info("did not build kubernetes context. kubecfg file path was empty");
         return null;
+      } else {
+        this.kubernetesService = new KubernetesService(this.kubeConfigFilePath);
       }
     }
 
