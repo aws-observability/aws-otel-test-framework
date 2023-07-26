@@ -3,21 +3,22 @@ package com.amazon.aoc.models.kubernetes;
 import com.amazon.aoc.services.KubernetesService;
 import io.kubernetes.client.openapi.models.V1Pod;
 import java.util.Objects;
+import lombok.extern.log4j.Log4j2;
 
+@Log4j2
 public class KubernetesContextFactory {
   private final String kubeConfigFilePath;
   private final String deploymentName;
 
   private final String namespace;
 
-  private final KubernetesService kubernetesService;
+  private KubernetesService kubernetesService;
 
   public KubernetesContextFactory(
-      String kubeConfigFilePath, String deploymentName, String namespace) throws Exception {
+      String kubeConfigFilePath, String deploymentName, String namespace) {
     this.kubeConfigFilePath = kubeConfigFilePath;
     this.deploymentName = deploymentName;
     this.namespace = namespace;
-    this.kubernetesService = new KubernetesService(this.kubeConfigFilePath);
   }
 
   KubernetesContextFactory(
@@ -32,6 +33,15 @@ public class KubernetesContextFactory {
   }
 
   public KubernetesContext create() throws Exception {
+    if (this.kubernetesService == null) {
+      if (this.kubeConfigFilePath.isEmpty()) {
+        log.info("did not build kubernetes context. kubecfg file path was empty");
+        return null;
+      } else {
+        this.kubernetesService = new KubernetesService(this.kubeConfigFilePath);
+      }
+    }
+
     KubernetesContext kubernetesContext =
         new KubernetesContext(this.deploymentName, this.namespace);
 
