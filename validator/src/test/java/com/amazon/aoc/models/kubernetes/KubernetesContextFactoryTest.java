@@ -1,6 +1,7 @@
 package com.amazon.aoc.models.kubernetes;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 
 import com.amazon.aoc.services.KubernetesService;
@@ -10,6 +11,13 @@ import io.kubernetes.client.openapi.models.V1PodSpec;
 import org.junit.Test;
 
 public class KubernetesContextFactoryTest {
+
+  @Test
+  public void testCreateContextEmptyStrings() throws Exception {
+    KubernetesContextFactory mockFactory = new KubernetesContextFactory("", "", "");
+    KubernetesContext actualKubernetesContext = mockFactory.create();
+    assertNull(actualKubernetesContext);
+  }
 
   @Test
   public void testCreateContextHappyPath() throws Exception {

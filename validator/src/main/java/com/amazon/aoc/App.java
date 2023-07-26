@@ -164,7 +164,7 @@ public class App implements Callable<Integer> {
   }
 
   // Deserialize kubernetes context passed in at validation start time and then build expected
-  // metrics.
+  // metrics. Only builds context if a kubecfg file path is given.
   private KubernetesContext buildKubernetesContext() throws Exception {
     KubernetesContextFactory factory =
         new KubernetesContextFactory(
