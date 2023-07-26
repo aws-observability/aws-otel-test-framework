@@ -89,7 +89,7 @@ variable "rollup" {
 }
 
 variable "kubecfg_file_path" {
-  default = ""
+  default = "/dev/null"
   type    = string
 }
 
