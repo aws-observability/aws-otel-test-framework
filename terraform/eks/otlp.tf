@@ -145,6 +145,11 @@ resource "kubernetes_config_map" "mocked_server_cert" {
 
 locals {
   configuration_uri = var.configuration_source == "file" ? "/aoc/aoc-config.yml" : module.remote_configuration[0].configuration_uri
+  collector_args = length(var.feature_gate) != 0 ? [
+    "--config", local.configuration_uri, "--feature-gates", var.feature_gate
+    ] : [
+    "--config", local.configuration_uri
+  ]
 }
 
 # deploy aoc and mocked server
@@ -213,8 +218,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
           name              = "aoc"
           image             = module.common.aoc_image
           image_pull_policy = "Always"
-          args = [
-          "--config", local.configuration_uri]
+          args              = local.collector_args
 
           resources {
             limits = {

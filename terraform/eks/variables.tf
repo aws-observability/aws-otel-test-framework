@@ -103,3 +103,12 @@ variable "ignore_empty_dim_set" {
 
   description = "Toggles whether or not the validator will ignore an empty EMF dimension set"
 }
+
+variable "feature_gate" {
+  type        = string
+  default     = ""
+  description = <<EOT
+  Used to toggle a single feature gate in the collector during startup. Pass in only the feature gate name
+  for example +aws.statsd.populateInstrumentationScope
+  EOT
+}
