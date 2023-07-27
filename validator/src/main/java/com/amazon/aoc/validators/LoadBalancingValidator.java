@@ -102,8 +102,8 @@ public class LoadBalancingValidator extends XrayValidator {
     return sampleAppResponse.getTraceId();
   }
 
-  private boolean checkSpanCount(List<String> spanSet) {
-    if (spanSet.size() < 2) {
+  private boolean checkSpanCount(List<String> spanList) {
+    if (spanList.size() < 2) {
       log.error("not enough spans in trace map (need at least 2)");
       log.info("==========================================");
       return false;
