@@ -141,7 +141,8 @@ public class LoadBalancingValidatorTest {
         validationConfig,
         httpCaller,
         validationConfig.getExpectedTraceTemplate(),
-        xrayService);
+        xrayService,
+        1);
     validator.validate();
   }
 }
