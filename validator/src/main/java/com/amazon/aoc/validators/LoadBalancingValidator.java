@@ -33,14 +33,19 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class LoadBalancingValidator extends XrayValidator {
 
+  private int retrySleepDurationMs =
+      Integer.parseInt(GenericConstants.SLEEP_IN_MILLISECONDS.getVal());
+
   public void init(
       Context context,
       ValidationConfig validationConfig,
       ICaller caller,
       FileConfig expectedTrace,
-      XRayService xrayService)
+      XRayService xrayService,
+      Integer retrySleepDurationMs)
       throws Exception {
     init(context, validationConfig, caller, expectedTrace);
+    this.retrySleepDurationMs = retrySleepDurationMs;
     this.xrayService = xrayService;
   }
 
@@ -57,7 +62,7 @@ public class LoadBalancingValidator extends XrayValidator {
       // Retry 5 times to since segments might not be immediately available in X-Ray service
       RetryHelper.retry(
           5,
-          Integer.parseInt(GenericConstants.SLEEP_IN_MILLISECONDS.getVal()),
+          retrySleepDurationMs,
           true,
           () -> {
             // get retrieved trace from x-ray service
@@ -97,8 +102,8 @@ public class LoadBalancingValidator extends XrayValidator {
     return sampleAppResponse.getTraceId();
   }
 
-  private boolean checkSpanCount(List<String> spanSet) throws Exception {
-    if (spanSet.size() < 2) {
+  private boolean checkSpanCount(List<String> spanList) {
+    if (spanList.size() < 2) {
       log.error("not enough spans in trace map (need at least 2)");
       log.info("==========================================");
       return false;
