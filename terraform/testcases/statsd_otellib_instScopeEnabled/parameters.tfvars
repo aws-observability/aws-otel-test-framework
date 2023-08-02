@@ -11,7 +11,3 @@ soaking_data_mode = "metric"
 soaking_data_type = "statsd"
 
 feature_gate = "+aws.statsd.populateInstrumentationScope"
-
-aoc_image_repo = "public.ecr.aws/aws-otel-test/adot-collector-integration-test"
-
-aoc_version = "v0.30.0-9468cd0"
