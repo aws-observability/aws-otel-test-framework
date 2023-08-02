@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocatio
 
 plugins {
     id 'java-library'
-    id 'com.github.johnrengelman.shadow' version '7.1.2'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
 description 'Jaeger and Zipkin Trace data emitter library'
@@ -21,7 +21,7 @@ dependencies {
     implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.13.0'
     implementation group: 'io.jaegertracing', name: 'jaeger-core', version: '1.8.1'
     implementation group: 'io.jaegertracing', name: 'jaeger-thrift', version: '1.8.1'
-    implementation group: 'io.zipkin.zipkin2', name: 'zipkin', version: '2.24.2'
+    implementation group: 'io.zipkin.zipkin2', name: 'zipkin', version: '2.24.3'
     implementation group: 'io.zipkin.reporter2', name: 'zipkin-sender-okhttp3', version: '2.16.4'
     implementation group: 'io.zipkin.brave', name: 'brave', version: '5.16.0'
 
