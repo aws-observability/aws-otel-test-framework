@@ -73,7 +73,7 @@ updates:
           - "version-update:semver-minor"
       - dependency-name: "com.github.johnrengelman.shadow"
           update-types:
-            - "version-update:semver-minor"
+          - "version-update:semver-major"
 
   - package-ecosystem: "gradle"
     # build.gradle stored in `/load-generator` directory
