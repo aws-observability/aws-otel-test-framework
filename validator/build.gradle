@@ -69,14 +69,10 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.4'
 
   // mockito
-<<<<<<< HEAD
-  testImplementation "org.mockito:mockito-core:5.4.0"
-=======
   testImplementation "org.mockito:mockito-core:5.3.1"
 
   // k8s client
   implementation "io.kubernetes:client-java-extended:18.0.0"
->>>>>>> 4f1ee2e ([dev] Add ability to fetch expected values from k8s pods (#1322))
 }
 
 application {
