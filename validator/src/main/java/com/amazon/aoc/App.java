@@ -17,6 +17,8 @@ package com.amazon.aoc;
 
 import com.amazon.aoc.helpers.ConfigLoadHelper;
 import com.amazon.aoc.models.*;
+import com.amazon.aoc.models.kubernetes.KubernetesContext;
+import com.amazon.aoc.models.kubernetes.KubernetesContextFactory;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazon.aoc.validators.ValidatorFactory;
 import com.amazonaws.services.cloudwatch.model.Dimension;
@@ -104,6 +106,21 @@ public class App implements Callable<Integer> {
       defaultValue = "true")
   private boolean isRollup;
 
+  @CommandLine.Option(
+      names = {"--kubecfg-file-path"},
+      defaultValue = "")
+  private String kubeCfgFilePath;
+
+  @CommandLine.Option(
+      names = {"--k8s-deployment-name"},
+      defaultValue = "")
+  private String k8sDeploymentName;
+
+  @CommandLine.Option(
+      names = {"--k8s-namespace"},
+      defaultValue = "")
+  private String k8sNamespace;
+
   private static final String TEST_CASE_DIM_KEY = "testcase";
   private static final String CANARY_NAMESPACE = "Otel/Canary";
   private static final String CANARY_METRIC_NAME = "Success";
@@ -130,7 +147,7 @@ public class App implements Callable<Integer> {
     context.setCortexInstanceEndpoint(this.cortexInstanceEndpoint);
     context.setTestcase(testcase);
     context.setLanguage(language);
-
+    context.setKubernetesContext(this.buildKubernetesContext());
     log.info(context);
 
     // load config
@@ -144,6 +161,15 @@ public class App implements Callable<Integer> {
     Duration duration = Duration.between(startTime, endTime);
     log.info("Validation has completed in {} minutes.", duration.toMinutes());
     return null;
+  }
+
+  // Deserialize kubernetes context passed in at validation start time and then build expected
+  // metrics. Only builds context if a kubecfg file path is given.
+  private KubernetesContext buildKubernetesContext() throws Exception {
+    KubernetesContextFactory factory =
+        new KubernetesContextFactory(
+            this.kubeCfgFilePath, this.k8sDeploymentName, this.k8sNamespace);
+    return factory.create();
   }
 
   private void validate(Context context, List<ValidationConfig> validationConfigList)

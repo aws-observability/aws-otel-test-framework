@@ -15,6 +15,7 @@
 
 package com.amazon.aoc.models;
 
+import com.amazon.aoc.models.kubernetes.KubernetesContext;
 import java.util.List;
 import lombok.Data;
 import lombok.NonNull;
@@ -64,4 +65,6 @@ public class Context {
    * cortex parameters
    */
   private String cortexInstanceEndpoint;
+
+  private KubernetesContext kubernetesContext;
 }

@@ -50,6 +50,13 @@ data "template_file" "docker_compose" {
 
     cortex_instance_endpoint = var.cortex_instance_endpoint
     rollup                   = var.rollup
+    // a volume source must always be provided to prevent docker startup failures
+    kubecfg_volume_source = var.kubecfg_file_path
+    // only provide a kubecfg filepath to validator flag if the default variable value has been overridden.
+    kubecfg_file_path = var.kubecfg_file_path == "/dev/null" ? "" : "/root/kubecfg"
+
+    k8s_deployment_name = var.k8s_deployment_name
+    k8s_namespace       = var.k8s_namespace
   }
 
 }

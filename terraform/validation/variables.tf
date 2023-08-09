@@ -87,3 +87,18 @@ variable "rollup" {
   type    = bool
   default = true
 }
+
+variable "kubecfg_file_path" {
+  default = "/dev/null"
+  type    = string
+}
+
+variable "k8s_deployment_name" {
+  default = ""
+  type    = string
+}
+
+variable "k8s_namespace" {
+  default = ""
+  type    = string
+}
