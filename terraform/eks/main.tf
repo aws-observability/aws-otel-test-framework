@@ -227,7 +227,7 @@ module "validator" {
   cortex_instance_endpoint = var.cortex_instance_endpoint
   rollup                   = var.rollup
   kubecfg_file_path        = abspath("./${local_file.kubeconfig.filename}")
-  k8s_deployment_name      = var.aoc_base_scenario == "oltp" ? module.aoc_oltp[0].sample_app_deployment_name : ""
+  k8s_deployment_name      = var.aoc_base_scenario == "otlp" ? module.aoc_otlp[0].sample_app_deployment_name : ""
   k8s_namespace            = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
 
   depends_on = [
