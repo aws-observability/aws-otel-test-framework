@@ -23,7 +23,7 @@ module "aoc_msk_cluster" {
 
 locals {
   is_otlp_base_scenario = var.aoc_base_scenario == "otlp"
-  is_operator_testcase = strcontains(var.testcase, "_adot_operator")
+  is_operator_testcase  = strcontains(var.testcase, "_adot_operator")
 }
 
 module "basic_components" {
