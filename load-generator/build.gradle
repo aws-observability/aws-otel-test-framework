@@ -14,7 +14,7 @@ plugins {
     id 'application'
 
     // lombok
-    id "io.freefair.lombok" version "8.1.0"
+    id "io.freefair.lombok" version "8.2.2"
 
     // jib
     id 'com.google.cloud.tools.jib'
@@ -33,12 +33,12 @@ dependencies {
 
     implementation "io.grpc:grpc-netty-shaded:1.57.1"
 
-    implementation platform("io.opentelemetry:opentelemetry-bom:1.28.0")
+    implementation platform("io.opentelemetry:opentelemetry-bom:1.29.0")
     implementation "io.opentelemetry:opentelemetry-api"
     implementation "io.opentelemetry:opentelemetry-sdk"
     implementation "io.opentelemetry:opentelemetry-exporter-otlp"
 
-    implementation "io.opentelemetry:opentelemetry-semconv:1.28.0-alpha"
+    implementation "io.opentelemetry:opentelemetry-semconv:1.29.0-alpha"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
     implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.14.0"
     implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.14.0"

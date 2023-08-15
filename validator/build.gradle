@@ -5,7 +5,7 @@ plugins {
   id 'com.google.cloud.tools.jib' version "3.3.2"
 
   // lombok
-  id "io.freefair.lombok" version "8.1.0"
+  id "io.freefair.lombok" version "8.2.2"
   id("com.diffplug.spotless") version "6.20.0"
 
 }
@@ -47,7 +47,7 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.4'
 
   // aws sdk
-  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.524')
+  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.529')
   implementation 'com.amazonaws:aws-java-sdk-s3'
   implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
   implementation 'com.amazonaws:aws-java-sdk-xray'
@@ -69,10 +69,10 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.4'
 
   // mockito
-  testImplementation "org.mockito:mockito-core:5.3.1"
+  testImplementation "org.mockito:mockito-core:5.4.0"
 
   // k8s client
-  implementation "io.kubernetes:client-java-extended:18.0.0"
+  implementation "io.kubernetes:client-java-extended:18.0.1"
 }
 
 application {
