@@ -9,5 +9,3 @@ soaking_data_mode = "metric"
 
 # data model type. possible values: otlp, xray, etc
 soaking_data_type = "statsd"
-
-feature_gate = "+aws.statsd.populateInstrumentationScope"
