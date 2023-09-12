@@ -19,7 +19,7 @@ jobs:
         distribution: 'zulu'
         java-version: 17
     - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v3
+      uses: aws-actions/configure-aws-credentials@v4
       with:
         role-to-assume: ${{ secrets.INTEG_TEST_TFW_ROLE_ARN }}
         role-duration-seconds: 1200
