@@ -37,10 +37,10 @@ application {
 dependencies {
     implementation "com.sparkjava:spark-core:2.9.4"
     implementation "com.squareup.okhttp3:okhttp:4.11.0"
-    implementation "software.amazon.awssdk:s3:2.20.92"
-    implementation "io.grpc:grpc-api:1.56.1"
-    implementation "io.grpc:grpc-netty-shaded:1.55.1"
-    implementation "org.slf4j:slf4j-simple:2.0.7"
+    implementation "software.amazon.awssdk:s3:2.20.145"
+    implementation "io.grpc:grpc-api:1.58.0"
+    implementation "io.grpc:grpc-netty-shaded:1.58.0"
+    implementation "org.slf4j:slf4j-simple:2.0.9"
 
     implementation project(":trace-java-client")
 

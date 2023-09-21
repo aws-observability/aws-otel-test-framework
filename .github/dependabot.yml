@@ -67,11 +67,13 @@ updates:
         patterns:
           - "*"
     ignore:
-      - dependency-name: "json-schema-validator"
+      - dependency-name: "com.github.fge:json-schema-validator"
         update-types:
           - "version-update:semver-major"
           - "version-update:semver-minor"
-
+      - dependency-name: "com.github.johnrengelman.shadow"
+        update-types:
+          - "version-update:semver-major"
 
   - package-ecosystem: "gradle"
     # build.gradle stored in `/load-generator` directory

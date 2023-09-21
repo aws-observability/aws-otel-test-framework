@@ -21,9 +21,14 @@ module "aoc_msk_cluster" {
   dedup_topic         = "eks${var.eks_cluster_name}"
 }
 
+locals {
+  is_otlp_base_scenario = var.aoc_base_scenario == "otlp"
+  is_operator_testcase  = strcontains(var.testcase, "_adot_operator")
+}
+
 module "basic_components" {
   source = "../basic_components"
-  count  = var.aoc_base_scenario == "otlp" ? 1 : 0
+  count  = local.is_otlp_base_scenario ? 1 : 0
 
   region                         = var.region
   testcase                       = var.testcase
@@ -41,7 +46,7 @@ module "basic_components" {
 }
 
 module "remote_configuration" {
-  count  = var.configuration_source != "file" && var.aoc_base_scenario == "otlp" ? 1 : 0
+  count  = var.configuration_source != "file" && local.is_otlp_base_scenario ? 1 : 0
   source = "../remote_configuration"
 
   content    = module.basic_components[0].otconfig_content
@@ -83,7 +88,7 @@ resource "kubernetes_service_account" "sample-app-sa" {
 
 module "aoc_otlp" {
   source = "./otlp"
-  count  = var.aoc_base_scenario == "otlp" ? 1 : 0
+  count  = local.is_otlp_base_scenario ? 1 : 0
 
   region              = var.region
   testing_id          = module.common.testing_id
@@ -104,7 +109,7 @@ module "aoc_otlp" {
     http_port = module.common.http_port
   }
   sample_app_service_account_name = kubernetes_service_account.sample-app-sa.metadata.0.name
-  is_adot_operator                = replace(var.testcase, "_adot_operator", "") != var.testcase
+  is_adot_operator                = local.is_operator_testcase
   is_inject_auto_instrumentation  = var.is_inject_auto_instrumentation
 
   depends_on = [module.iam_assumable_role_sample_app, kubectl_manifest.java_auto_instrumentation_deployment]
@@ -116,7 +121,7 @@ locals {
 }
 
 resource "kubernetes_config_map" "aoc_config_map" {
-  count = var.aoc_base_scenario == "otlp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
+  count = local.is_otlp_base_scenario && !local.is_operator_testcase ? 1 : 0
 
   metadata {
     name      = "otel-config"
@@ -131,7 +136,7 @@ resource "kubernetes_config_map" "aoc_config_map" {
 
 # load the faked cert for mocked server
 resource "kubernetes_config_map" "mocked_server_cert" {
-  count = var.aoc_base_scenario == "otlp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
+  count = local.is_otlp_base_scenario && !local.is_operator_testcase ? 1 : 0
 
   metadata {
     name      = "mocked-server-cert"
@@ -154,7 +159,7 @@ locals {
 
 # deploy aoc and mocked server
 resource "kubernetes_deployment" "aoc_deployment" {
-  count = var.aoc_base_scenario == "otlp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
+  count = local.is_otlp_base_scenario && !local.is_operator_testcase ? 1 : 0
 
   metadata {
     name      = "aoc"
@@ -244,7 +249,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
 # create service upon the mocked server
 resource "kubernetes_service" "mocked_server_service" {
-  count = var.aoc_base_scenario == "otlp" && replace(var.testcase, "_adot_operator", "") == var.testcase ? 1 : 0
+  count = local.is_otlp_base_scenario && !local.is_operator_testcase ? 1 : 0
 
   metadata {
     name      = "mocked-server"
@@ -263,7 +268,7 @@ resource "kubernetes_service" "mocked_server_service" {
 }
 
 data "template_file" "adot_collector_config_file" {
-  count = var.aoc_base_scenario == "otlp" && replace(var.testcase, "_adot_operator", "") != var.testcase ? 1 : 0
+  count = local.is_otlp_base_scenario && local.is_operator_testcase ? 1 : 0
 
   template = file("./adot-operator/adot_collector_deployment.tpl")
 
@@ -279,7 +284,7 @@ data "template_file" "adot_collector_config_file" {
 }
 
 resource "local_file" "adot_collector_deployment" {
-  count = var.aoc_base_scenario == "otlp" && replace(var.testcase, "_adot_operator", "") != var.testcase ? 1 : 0
+  count = local.is_otlp_base_scenario && local.is_operator_testcase ? 1 : 0
 
   filename = "adot_collector.yaml"
   content  = data.template_file.adot_collector_config_file.0.rendered
@@ -288,7 +293,7 @@ resource "local_file" "adot_collector_deployment" {
 }
 
 resource "null_resource" "aoc_deployment_adot_operator" {
-  count = var.aoc_base_scenario == "otlp" && replace(var.testcase, "_adot_operator", "") != var.testcase ? 1 : 0
+  count = local.is_otlp_base_scenario && local.is_operator_testcase ? 1 : 0
 
   provisioner "local-exec" {
     command = "kubectl apply --kubeconfig=${local_file.kubeconfig.filename} -f ${local_file.adot_collector_deployment.0.filename}"
@@ -298,7 +303,7 @@ resource "null_resource" "aoc_deployment_adot_operator" {
 }
 
 resource "kubectl_manifest" "java_auto_instrumentation_deployment" {
-  count = var.aoc_base_scenario == "otlp" && replace(var.testcase, "_adot_operator", "") != var.testcase && var.is_inject_auto_instrumentation ? 1 : 0
+  count = local.is_otlp_base_scenario && local.is_operator_testcase && var.is_inject_auto_instrumentation ? 1 : 0
 
   yaml_body  = <<-EOF
     apiVersion: opentelemetry.io/v1alpha1
@@ -317,7 +322,7 @@ resource "kubectl_manifest" "java_auto_instrumentation_deployment" {
 }
 
 resource "kubernetes_service" "sample_app_service" {
-  count = var.aoc_base_scenario == "otlp" ? 1 : 0
+  count = local.is_otlp_base_scenario ? 1 : 0
 
   metadata {
     name      = "sample-app"
@@ -338,7 +343,7 @@ resource "kubernetes_service" "sample_app_service" {
 }
 
 resource "kubernetes_ingress" "app" {
-  count                  = var.deployment_type == "fargate" && var.aoc_base_scenario == "otlp" ? 1 : 0
+  count                  = var.deployment_type == "fargate" && local.is_otlp_base_scenario ? 1 : 0
   wait_for_load_balancer = true
   metadata {
     name      = "sample-app-ingress"
