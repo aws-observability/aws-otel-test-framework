@@ -11,4 +11,3 @@ soaking_data_mode = "metric"
 soaking_data_type = "statsd"
 
 feature_gate = "+aws.statsd.populateInstrumentationScope"
-

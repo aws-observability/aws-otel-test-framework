@@ -14,7 +14,7 @@ plugins {
     id 'application'
 
     // lombok
-    id "io.freefair.lombok" version "8.3"
+    id "io.freefair.lombok" version "8.1.0"
 
     // jib
     id 'com.google.cloud.tools.jib'
@@ -26,19 +26,19 @@ repositories {
 
 dependencies {
     // This dependency is used by the application.
-    implementation "com.google.guava:guava:32.1.2-jre"
+    implementation "com.google.guava:guava:32.1.1-jre"
 
-    implementation "io.grpc:grpc-bom:1.58.0"
-    implementation "io.grpc:grpc-api:1.58.0"
+    implementation "io.grpc:grpc-bom:1.56.1"
+    implementation "io.grpc:grpc-api:1.56.1"
 
-    implementation "io.grpc:grpc-netty-shaded:1.58.0"
+    implementation "io.grpc:grpc-netty-shaded:1.56.1"
 
-    implementation platform("io.opentelemetry:opentelemetry-bom:1.30.1")
+    implementation platform("io.opentelemetry:opentelemetry-bom:1.28.0")
     implementation "io.opentelemetry:opentelemetry-api"
     implementation "io.opentelemetry:opentelemetry-sdk"
     implementation "io.opentelemetry:opentelemetry-exporter-otlp"
 
-    implementation "io.opentelemetry:opentelemetry-semconv:1.30.1-alpha"
+    implementation "io.opentelemetry:opentelemetry-semconv:1.28.0-alpha"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
     implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.14.0"
     implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.14.0"
@@ -47,8 +47,8 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
 
     // Command cli
-    implementation 'info.picocli:picocli:4.7.5'
-    compileOnly 'info.picocli:picocli-codegen:4.7.5'
+    implementation 'info.picocli:picocli:4.7.4'
+    compileOnly 'info.picocli:picocli-codegen:4.7.4'
 
     // log
     implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.20.0'

@@ -13,7 +13,7 @@ jobs:
   validator-build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Set up JDK 1.8
       uses: actions/setup-java@v3
       with:
@@ -26,11 +26,11 @@ jobs:
   validator-image-build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
+      uses: docker/setup-buildx-action@v2
     - name: Build validator image
-      uses: docker/build-push-action@v5
+      uses: docker/build-push-action@v4
       with:
         context: ./validator
         push: false
@@ -44,16 +44,16 @@ jobs:
     - name: Set up Go 1.x
       uses: actions/setup-go@v4
       with:
-        go-version: '~1.21.1'
+        go-version: '~1.18.6'
     - name: Checkout repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
     - name: Unit test
       run: make go-test
   cdk-test:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
-      uses: actions/checkout@v4
+      uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
         node-version: 16

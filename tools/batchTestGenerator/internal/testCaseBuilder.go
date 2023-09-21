@@ -18,8 +18,6 @@ var ec2AMIs = []string{
 	"arm_debian10",
 	"amazonlinux2",
 	"arm_amazonlinux2",
-	"amazonlinux3",
-	"arm_amazonlinux3",
 	"windows2022",
 	"windows2019",
 	"suse15",
