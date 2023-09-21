@@ -22,3 +22,4 @@ services:
       resources:
         limits:
           memory: 16G
+

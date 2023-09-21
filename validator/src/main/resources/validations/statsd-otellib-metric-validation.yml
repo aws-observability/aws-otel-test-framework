@@ -4,3 +4,4 @@
   httpPath: "/statsd"
   callingType: "http"
   expectedMetricTemplate: "STATSD_OTELLIB_EXPECTED_METRIC"
+

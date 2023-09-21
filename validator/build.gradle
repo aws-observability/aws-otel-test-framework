@@ -73,6 +73,7 @@ dependencies {
 
   // k8s client
   implementation "io.kubernetes:client-java-extended:18.0.1"
+
 }
 
 application {
