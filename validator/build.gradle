@@ -2,7 +2,7 @@ plugins {
   id 'java'
 
   id 'application'
-  id 'com.google.cloud.tools.jib' version "3.3.2"
+  id 'com.google.cloud.tools.jib' version "3.4.0"
 
   // lombok
   id "io.freefair.lombok" version "8.3"
@@ -47,7 +47,7 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.5'
 
   // aws sdk
-  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.553')
+  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.557')
   implementation 'com.amazonaws:aws-java-sdk-s3'
   implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
   implementation 'com.amazonaws:aws-java-sdk-xray'
