@@ -1,0 +1,55 @@
+extensions:
+  pprof:
+    endpoint: 0.0.0.0:1777
+
+receivers:
+  filelog:
+    include: [/logs/*.log]
+    encoding: "ascii"
+    start_at: beginning
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'collector-monitoring'
+          scrape_interval: 10s
+          static_configs:
+            - targets: ['localhost:8888']
+processors:
+  batch:
+exporters:
+  logging:
+    verbosity: detailed
+  awscloudwatchlogs:
+    log_group_name: "/test/logs"
+    log_stream_name: "logstream-tests"
+    raw_log: true
+
+
+  awsemf:
+    log_group_name: "emf-metrics-log-group"
+    log_stream_name: "emf-metrics-log-stream"
+    metric_declarations:
+      - dimensions: [[],[]]
+        metric_name_selectors:
+          - "^otelcol_process.*"
+      - dimensions: [[receiver],[]]
+        metric_name_selectors:
+          - "^otelcol_receiver.*"
+      - dimensions: [[exporter],[]]
+        metric_name_selectors:
+          - "^otelcol_exporter.*"
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+#      processors: [batch]
+      exporters: [logging,awscloudwatchlogs]
+    metrics:
+      receivers: [prometheus]
+      exporters: [awsemf]
+  extensions: [pprof]
+  telemetry:
+    logs:
+      level: info
+    metrics:
+      level: detailed
