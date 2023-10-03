@@ -1,0 +1,26 @@
+extensions:
+  file_storage:
+    directory: /logs/
+    compaction:
+      on_start: true
+      directory: /logs/
+receivers:
+  filelog:
+    include: [/logs/*.log]
+    encoding: "ascii"
+    storage: file_storage
+
+exporters:
+  logging:
+    verbosity: detailed
+  awscloudwatchlogs:
+    log_group_name: "/test/logs"
+    log_stream_name: "logstream-storageextension"
+    raw_log: true
+
+service:
+  extensions: [file_storage]
+  pipelines:
+    logs:
+      receivers: [filelog]
+      exporters: [logging,awscloudwatchlogs]

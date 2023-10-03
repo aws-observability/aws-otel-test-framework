@@ -1,0 +1,18 @@
+receivers:
+  filelog:
+    include: [/logs/*.log]
+    start_at: beginning
+
+exporters:
+  logging:
+    verbosity: detailed
+  awscloudwatchlogs:
+    log_group_name: "/test/logs"
+    log_stream_name: "logstream-log4j"
+    raw_log: true
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      exporters: [logging,awscloudwatchlogs]

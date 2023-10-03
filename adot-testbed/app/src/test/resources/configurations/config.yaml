@@ -1,7 +1,11 @@
 extensions:
   pprof:
     endpoint: 0.0.0.0:1777
-
+  file_storage:
+    directory: /logs/
+    compaction:
+      on_start: true
+      directory: /logs/
 receivers:
   filelog:
     include: [/logs/*.log]
@@ -23,7 +27,6 @@ exporters:
     log_group_name: "/test/logs"
     log_stream_name: "logstream-tests"
     raw_log: true
-
 
   awsemf:
     log_group_name: "emf-metrics-log-group"
@@ -47,7 +50,7 @@ service:
     metrics:
       receivers: [prometheus]
       exporters: [awsemf]
-  extensions: [pprof]
+  extensions: [pprof, file_storage]
   telemetry:
     logs:
       level: info
