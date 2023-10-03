@@ -61,7 +61,6 @@ class LogsTests {
             .waitingFor(Wait.forLogMessage(".*Serving Prometheus metrics.*", 1))
             .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.filelog.receiver,+adot.awscloudwatchlogs.exporter,+adot.file_storage.extension");
 
-        collector.withFileSystemBind(System.getProperty("user.home") + "/.aws", "/home/aoc/.aws");
         if (LOCAL_CREDENTIALS != null && !LOCAL_CREDENTIALS.isEmpty()) {
             collector.withCopyFileToContainer(MountableFile.forHostPath(LOCAL_CREDENTIALS), "/home/aoc/.aws/");
         } else {
@@ -72,19 +71,17 @@ class LogsTests {
         return collector;
     }
 
-    void testSendLogs(String logName) throws Exception {
+    void testSendLogs(String logName, String logline) throws Exception {
         var fileWriter = new FileWriter(tempFile);
         var lines = new HashSet<String>();
 
-        IntStream.range(0, 10).forEach(x -> {
-            try {
-                String line = UUID.randomUUID().toString();
-                lines.add(line);
-                fileWriter.write(line + "\n");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
+        try {
+            String line = logline;
+            lines.add(line);
+            fileWriter.write(line + "\n");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         fileWriter.flush();
 
         var cwClient = CloudWatchLogsClient.builder()
@@ -120,16 +117,9 @@ class LogsTests {
 
         collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml");
         collector.waitingFor(Wait.forHealthcheck());
-        // Write content to the file
-        try {
-            FileWriter fileWriter = new FileWriter(tempFile);
-            fileWriter.write("<165>1 2023-19-22T18:09:11Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry...");
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing to the file", e);
-        }
-        testSendLogs("logstream-rfcsyslog");
+        String logline = "<165>1 2023-19-22T18:09:11Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry...";
+
+        testSendLogs("logstream-rfcsyslog" , logline);
         collector.stop();
     }
 
@@ -138,15 +128,9 @@ class LogsTests {
 
         collector = createAndStartCollector("/configurations/config-log4j.yaml");
         collector.waitingFor(Wait.forHealthcheck());
-        try {
-            FileWriter fileWriter = new FileWriter(tempFile);
-            fileWriter.write("[otel.javaagent 2023-09-25 16:56:22:242 +0000] [OkHttp ConnectionPool] DEBUG okhttp3.internal.concurrent.TaskRunner - Q10002 run again after 300 s : OkHttp ConnectionPool");
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing to the file ", e);
-        }
-        testSendLogs("logstream-log4j");
+        String logline = "[otel.javaagent 2023-09-25 16:56:22:242 +0000] [OkHttp ConnectionPool] DEBUG okhttp3.internal.concurrent.TaskRunner - Q10002 run again after 300 s : OkHttp ConnectionPool";
+
+        testSendLogs("logstream-log4j", logline);
         collector.stop();
     }
 }

@@ -1,7 +1,10 @@
 receivers:
   filelog:
-    include: [/logs/log4j.log]
+    include: [/logs/*.log]
     start_at: beginning
+    operators:
+      - type: syslog_parser
+        protocol: rfc5424
 
 exporters:
   logging:
