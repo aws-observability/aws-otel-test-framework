@@ -8,8 +8,7 @@ import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
 import net.bytebuddy.asm.Advice;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
@@ -22,8 +21,12 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
-
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.io.InputStream;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.Duration;
@@ -43,24 +46,27 @@ import static org.junit.jupiter.api.Assertions.*;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LogsTests {
     private static final String LOCAL_CREDENTIALS = System.getProperty("adot.testbed.localcreds");
-    private final String TEST_IMAGE = "public.ecr.aws/aws-otel-test/adot-collector-integration-test:v0.33.1-3fe9d45";
+    private static final String TEST_IMAGE = System.getenv("TEST_IMAGE") != null && !System.getenv("TEST_IMAGE").isEmpty()
+        ? System.getenv("TEST_IMAGE")
+        : "public.ecr.aws/aws-otel-test/adot-collector-integration-test:v0.33.1-3fe9d45";
     private final Logger collectorLogger = LoggerFactory.getLogger("collector");
-    private final File tempFile = File.createTempFile("testlog", ".log");
+//    private final File tempFile = File.createTempFile("testlog", ".log");
 
     private GenericContainer<?> collector;
 
     LogsTests() throws Exception {
     }
 
-    private GenericContainer<?> createAndStartCollector(String configFilePath) throws IOException {
+    private GenericContainer<?> createAndStartCollector(String configFilePath, String logFilePath) throws IOException {
         var collector = new GenericContainer<>(TEST_IMAGE)
             .withExposedPorts(4317)
             .withCopyFileToContainer(MountableFile.forClasspathResource(configFilePath), "/etc/collector/config.yaml")
-            .withFileSystemBind(tempFile.getAbsolutePath(), "/logs/logs.log")
             .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
-            .waitingFor(Wait.forLogMessage(".*Serving Prometheus metrics.*", 1))
+            .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
             .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.filelog.receiver,+adot.awscloudwatchlogs.exporter,+adot.file_storage.extension");
 
+        //Mount the log file for the file log receiver to parse
+        collector.withCopyFileToContainer(MountableFile.forClasspathResource(logFilePath), logFilePath );
         if (LOCAL_CREDENTIALS != null && !LOCAL_CREDENTIALS.isEmpty()) {
             collector.withCopyFileToContainer(MountableFile.forHostPath(LOCAL_CREDENTIALS), "/home/aoc/.aws/");
         } else {
@@ -71,18 +77,46 @@ class LogsTests {
         return collector;
     }
 
-    void testSendLogs(String logName, String logline) throws Exception {
-        var fileWriter = new FileWriter(tempFile);
+    @Test
+    void testSyslog() throws Exception {
+        collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml", "/logs/RFC5424.log");
+        collector.waitingFor(Wait.forHealthcheck());
+
+        validateLogs("logstream-rfcsyslog" , "/logs/RFC5424.log");
+        collector.stop();
+    }
+
+    @Test
+    void testLog4j() throws Exception {
+        collector = createAndStartCollector("/configurations/config-log4j.yaml", "/logs/log4j.log");
+        collector.waitingFor(Wait.forHealthcheck());
+
+        validateLogs("logstream-log4j" , "/logs/log4j.log");
+        collector.stop();
+    }
+
+    @Test
+    void testJson() throws Exception {
+        collector = createAndStartCollector("/configurations/config-json.yaml", "/logs/testingJSON.log");
+        collector.waitingFor(Wait.forHealthcheck());
+
+        validateLogs("logstream-json" , "/logs/testingJSON.log");
+        collector.stop();
+    }
+
+    void validateLogs(String logName, String logFilePath) throws Exception {
+        var file = new File(logFilePath);
         var lines = new HashSet<String>();
 
-        try {
-            String line = logline;
-            lines.add(line);
-            fileWriter.write(line + "\n");
+        try (InputStream inputStream = getClass().getResourceAsStream(logFilePath);
+             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error reading from the file: " + logFilePath, e);
         }
-        fileWriter.flush();
 
         var cwClient = CloudWatchLogsClient.builder()
             .build();
@@ -111,26 +145,4 @@ class LogsTests {
             });
     }
 
-
-    @Test
-    void testSyslog() throws Exception {
-
-        collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml");
-        collector.waitingFor(Wait.forHealthcheck());
-        String logline = "<165>1 2023-19-22T18:09:11Z mymachine.example.com evntslog - ID47 [exampleSDID@32473 iut=\"3\" eventSource=\"Application\" eventID=\"1011\"] BOMAn application event log entry...";
-
-        testSendLogs("logstream-rfcsyslog" , logline);
-        collector.stop();
-    }
-
-    @Test
-    void testLog4j() throws Exception {
-
-        collector = createAndStartCollector("/configurations/config-log4j.yaml");
-        collector.waitingFor(Wait.forHealthcheck());
-        String logline = "[otel.javaagent 2023-09-25 16:56:22:242 +0000] [OkHttp ConnectionPool] DEBUG okhttp3.internal.concurrent.TaskRunner - Q10002 run again after 300 s : OkHttp ConnectionPool";
-
-        testSendLogs("logstream-log4j", logline);
-        collector.stop();
-    }
 }

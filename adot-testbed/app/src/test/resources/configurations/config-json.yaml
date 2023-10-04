@@ -1,0 +1,21 @@
+receivers:
+  filelog:
+    include: [/logs/testingJSON.log]
+    encoding: utf-8
+    start_at: beginning
+    operators:
+      - type: json_parser
+
+exporters:
+  logging:
+    verbosity: detailed
+  awscloudwatchlogs:
+    log_group_name: "/test/logs"
+    log_stream_name: "logstream-json"
+    raw_log: true
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      exporters: [logging,awscloudwatchlogs]
