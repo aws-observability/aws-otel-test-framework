@@ -89,7 +89,7 @@ class LogsTests {
     void testLog4j() throws Exception {
         collector = createAndStartCollector("/configurations/config-log4j.yaml", "/logs/log4j.log");
 
-        validateLogs("logstream-log4j" , "/logs/log4j.log");
+        validateLogs("log4j-logstream" , "/logs/log4j.log");
         collector.stop();
     }
 
@@ -97,7 +97,7 @@ class LogsTests {
     void testJson() throws Exception {
         collector = createAndStartCollector("/configurations/config-json.yaml", "/logs/testingJSON.log");
 
-        validateLogs("logstream-json" , "/logs/testingJSON.log");
+        validateLogs("json-logstream" , "/logs/testingJSON.log");
         collector.stop();
     }
 
@@ -129,7 +129,7 @@ class LogsTests {
                 var now = Instant.now();
                 var start = now.minus(Duration.ofMinutes(2));
                 var end = now.plus(Duration.ofMinutes(2));
-                var response = cwClient.getLogEvents(GetLogEventsRequest.builder().logGroupName("/test/logs")
+                var response = cwClient.getLogEvents(GetLogEventsRequest.builder().logGroupName("adot-testbed/logs-component-testing/logs")
                     .logStreamName(logName)
                     .startTime(start.toEpochMilli())
                     .endTime(end.toEpochMilli())
