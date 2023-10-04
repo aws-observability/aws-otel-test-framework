@@ -48,9 +48,8 @@ class LogsTests {
     private static final String LOCAL_CREDENTIALS = System.getProperty("adot.testbed.localcreds");
     private static final String TEST_IMAGE = System.getenv("TEST_IMAGE") != null && !System.getenv("TEST_IMAGE").isEmpty()
         ? System.getenv("TEST_IMAGE")
-        : "public.ecr.aws/aws-otel-test/adot-collector-integration-test:v0.33.1-3fe9d45";
+        : "public.ecr.aws/aws-otel-test/adot-collector-integration-test:latest";
     private final Logger collectorLogger = LoggerFactory.getLogger("collector");
-//    private final File tempFile = File.createTempFile("testlog", ".log");
 
     private GenericContainer<?> collector;
 
@@ -68,19 +67,19 @@ class LogsTests {
         //Mount the log file for the file log receiver to parse
         collector.withCopyFileToContainer(MountableFile.forClasspathResource(logFilePath), logFilePath );
         if (LOCAL_CREDENTIALS != null && !LOCAL_CREDENTIALS.isEmpty()) {
-            collector.withCopyFileToContainer(MountableFile.forHostPath(LOCAL_CREDENTIALS), "/home/aoc/.aws/");
+            collector.withCopyFileToContainer(MountableFile.forHostPath(LOCAL_CREDENTIALS), "/root/.aws/");
         } else {
             collector.withEnv(System.getenv());
         }
 
         collector.start();
+        collector.waitingFor(Wait.forHealthcheck());
         return collector;
     }
 
     @Test
     void testSyslog() throws Exception {
         collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml", "/logs/RFC5424.log");
-        collector.waitingFor(Wait.forHealthcheck());
 
         validateLogs("logstream-rfcsyslog" , "/logs/RFC5424.log");
         collector.stop();
@@ -89,7 +88,6 @@ class LogsTests {
     @Test
     void testLog4j() throws Exception {
         collector = createAndStartCollector("/configurations/config-log4j.yaml", "/logs/log4j.log");
-        collector.waitingFor(Wait.forHealthcheck());
 
         validateLogs("logstream-log4j" , "/logs/log4j.log");
         collector.stop();
@@ -98,7 +96,6 @@ class LogsTests {
     @Test
     void testJson() throws Exception {
         collector = createAndStartCollector("/configurations/config-json.yaml", "/logs/testingJSON.log");
-        collector.waitingFor(Wait.forHealthcheck());
 
         validateLogs("logstream-json" , "/logs/testingJSON.log");
         collector.stop();
