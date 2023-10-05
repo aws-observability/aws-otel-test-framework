@@ -1,6 +1,6 @@
 receivers:
   filelog:
-    include: [/logs/*.log]
+    include: [/logs/log4j.log]
     start_at: beginning
 
 exporters:
@@ -8,7 +8,7 @@ exporters:
     verbosity: detailed
   awscloudwatchlogs:
     log_group_name: "adot-testbed/logs-component-testing/logs"
-    log_stream_name: "log4j-logstream"
+    log_stream_name: ${LOG_STREAM_NAME}
     log_retention: 7
     raw_log: true
 
