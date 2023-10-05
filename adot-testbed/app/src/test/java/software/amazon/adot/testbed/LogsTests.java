@@ -111,7 +111,7 @@ class LogsTests {
         collector.stop();
     }
 
-    void validateLogs(String logName, String logFilePath) throws Exception {
+    void validateLogs(String testLogStreamName, String logFilePath) throws Exception {
         var file = new File(logFilePath);
         var lines = new HashSet<String>();
 
@@ -140,7 +140,7 @@ class LogsTests {
                 var start = now.minus(Duration.ofMinutes(2));
                 var end = now.plus(Duration.ofMinutes(2));
                 var response = cwClient.getLogEvents(GetLogEventsRequest.builder().logGroupName("adot-testbed/logs-component-testing/logs")
-                    .logStreamName(logName)
+                    .logStreamName(testLogStreamName)
                     .startTime(start.toEpochMilli())
                     .endTime(end.toEpochMilli())
                     .build());
