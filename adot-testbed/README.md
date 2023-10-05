@@ -1,6 +1,6 @@
 # Introduction
 
-The tests require that AWS credentias are sent to the container under test. Please follow this procedure.
+The tests require that AWS credentials are sent to the container under test. Please follow this procedure.
 
 
 ```
