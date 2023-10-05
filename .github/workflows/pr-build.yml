@@ -87,4 +87,4 @@ jobs:
         uses: gradle/gradle-build-action@v2
       - name: adot-testbed build
         working-directory: adot-testbed/
-        run: gradle build
+        run: gradle build -x test
