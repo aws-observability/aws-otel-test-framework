@@ -43,5 +43,4 @@ application {
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
-    systemProperty("adot.testbed.localcreds", System.getProperty("adot.testbed.localcreds"))
 }

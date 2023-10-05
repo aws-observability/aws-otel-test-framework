@@ -41,7 +41,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Testcontainers(disabledWithoutDocker = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class LogsTests {
-    private static final String LOCAL_CREDENTIALS = System.getProperty("adot.testbed.localcreds");
     private static final String TEST_IMAGE = System.getenv("TEST_IMAGE") != null && !System.getenv("TEST_IMAGE").isEmpty()
         ? System.getenv("TEST_IMAGE")
         : "public.ecr.aws/aws-otel-test/adot-collector-integration-test:latest";
@@ -58,6 +57,11 @@ class LogsTests {
         // Create an environment variable map
         Map<String, String> envVariables = new HashMap<>();
         envVariables.put("LOG_STREAM_NAME", uniqueLogStreamName);
+        //Set credentials
+        envVariables.put("AWS_REGION", System.getenv("AWS_REGION"));
+        envVariables.put("AWS_ACCESS_KEY_ID", System.getenv("AWS_ACCESS_KEY_ID"));
+        envVariables.put("AWS_SECRET_ACCESS_KEY", System.getenv("AWS_SECRET_ACCESS_KEY"));
+        envVariables.put("AWS_SESSION_TOKEN", System.getenv("AWS_SESSION_TOKEN"));
 
         var collector = new GenericContainer<>(TEST_IMAGE)
             .withExposedPorts(4317)
@@ -69,11 +73,6 @@ class LogsTests {
 
         //Mount the log file for the file log receiver to parse
         collector.withCopyFileToContainer(MountableFile.forClasspathResource(logFilePath), logFilePath );
-        if (LOCAL_CREDENTIALS != null && !LOCAL_CREDENTIALS.isEmpty()) {
-            collector.withCopyFileToContainer(MountableFile.forHostPath(LOCAL_CREDENTIALS), "/root/.aws/");
-        } else {
-            collector.withEnv(System.getenv());
-        }
 
         collector.start();
         collector.waitingFor(Wait.forHealthcheck());
