@@ -43,7 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class LogsTests {
     private static final String TEST_IMAGE = System.getenv("TEST_IMAGE") != null && !System.getenv("TEST_IMAGE").isEmpty()
         ? System.getenv("TEST_IMAGE")
-        : "public.ecr.aws/aws-otel-test/adot-collector-integration-test:latest";
+        : "public.ecr.aws/aws-observability/aws-otel-collector:latest";
     private final Logger collectorLogger = LoggerFactory.getLogger("collector");
     private static final String uniqueID = UUID.randomUUID().toString();
 
@@ -62,9 +62,12 @@ class LogsTests {
         envVariables.put("AWS_ACCESS_KEY_ID", System.getenv("AWS_ACCESS_KEY_ID"));
         envVariables.put("AWS_SECRET_ACCESS_KEY", System.getenv("AWS_SECRET_ACCESS_KEY"));
         envVariables.put("AWS_SESSION_TOKEN", System.getenv("AWS_SESSION_TOKEN"));
+        // Check if AWS_SESSION_TOKEN is not null before adding it
+        if (System.getenv("AWS_SESSION_TOKEN") != null) {
+            envVariables.put("AWS_SESSION_TOKEN", System.getenv("AWS_SESSION_TOKEN"));
+        }
 
         var collector = new GenericContainer<>(TEST_IMAGE)
-            .withExposedPorts(4317)
             .withCopyFileToContainer(MountableFile.forClasspathResource(configFilePath), "/etc/collector/config.yaml")
             .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
             .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
