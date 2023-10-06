@@ -61,7 +61,6 @@ class LogsTests {
         envVariables.put("AWS_REGION", System.getenv("AWS_REGION"));
         envVariables.put("AWS_ACCESS_KEY_ID", System.getenv("AWS_ACCESS_KEY_ID"));
         envVariables.put("AWS_SECRET_ACCESS_KEY", System.getenv("AWS_SECRET_ACCESS_KEY"));
-        envVariables.put("AWS_SESSION_TOKEN", System.getenv("AWS_SESSION_TOKEN"));
         // Check if AWS_SESSION_TOKEN is not null before adding it
         if (System.getenv("AWS_SESSION_TOKEN") != null) {
             envVariables.put("AWS_SESSION_TOKEN", System.getenv("AWS_SESSION_TOKEN"));
