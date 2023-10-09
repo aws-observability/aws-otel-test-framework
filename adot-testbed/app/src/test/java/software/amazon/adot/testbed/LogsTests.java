@@ -70,7 +70,7 @@ class LogsTests {
             .withCopyFileToContainer(MountableFile.forClasspathResource(configFilePath), "/etc/collector/config.yaml")
             .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
             .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
-            .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.filelog.receiver,+adot.awscloudwatchlogs.exporter,+adot.file_storage.extension")
+            .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.receiver.filelog,+adot.exporter.awscloudwatchlogs,+adot.extension.file_storage")
             .withEnv(envVariables);
 
         //Mount the log file for the file log receiver to parse
