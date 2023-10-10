@@ -26,6 +26,7 @@ dependencies {
     testImplementation("software.amazon.awssdk:cloudwatchlogs")
     testImplementation("com.github.rholder:guava-retrying:2.0.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
+    testImplementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

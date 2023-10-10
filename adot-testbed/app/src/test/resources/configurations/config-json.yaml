@@ -13,7 +13,6 @@ exporters:
     log_group_name: "adot-testbed/logs-component-testing/logs"
     log_stream_name: ${LOG_STREAM_NAME}
     log_retention: 7
-    raw_log: true
 
 service:
   pipelines:

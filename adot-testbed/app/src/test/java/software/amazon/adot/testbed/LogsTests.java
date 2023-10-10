@@ -14,6 +14,8 @@ import java.util.stream.IntStream;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
@@ -33,6 +35,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.HashSet;
 import java.util.UUID;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -125,6 +128,8 @@ class LogsTests {
         var cwClient = CloudWatchLogsClient.builder()
             .build();
 
+        var objectMapper = new ObjectMapper();
+
         RetryerBuilder.<Void>newBuilder()
             .retryIfException()
             .retryIfRuntimeException()
@@ -144,7 +149,22 @@ class LogsTests {
 
                 var events = response.events();
                 var receivedMessages = events.stream().map(x -> x.message()).collect(Collectors.toSet());
-                assertThat(receivedMessages.containsAll(lines)).isTrue();
+
+                // Extract the "body" field from each received message that is received from cloudwatch in JSON Format
+                var messageToValidate = receivedMessages.stream()
+                    .map(message -> {
+                        try {
+                            JsonNode jsonNode = objectMapper.readTree(message);
+                            return jsonNode.get("body").asText();
+                        } catch (Exception e) {
+                            return null;
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toSet());
+
+                //Validate body field in JSON-messageToValidate with actual log line from the log file.
+                assertThat(messageToValidate.containsAll(lines)).isTrue();
                 return null;
             });
     }
