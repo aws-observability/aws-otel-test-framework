@@ -1,43 +1,40 @@
 package software.amazon.adot.testbed;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.UUID;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.file.Path;
+import java.net.URISyntaxException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.rholder.retry.RetryerBuilder;
 import com.github.rholder.retry.StopStrategies;
 import com.github.rholder.retry.WaitStrategies;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.MountableFile;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileWriter;
-import java.time.Duration;
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.UUID;
-import java.util.Objects;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -49,7 +46,7 @@ class LogsTests {
         : "public.ecr.aws/aws-observability/aws-otel-collector:latest";
     private final Logger collectorLogger = LoggerFactory.getLogger("collector");
     private static final String uniqueID = UUID.randomUUID().toString();
-
+    private final Path logDirectory = Files.createTempDirectory("filerotationlogs");
     private GenericContainer<?> collector;
 
     private GenericContainer<?> createAndStartCollector(String configFilePath, String logFilePath, String logStreamName) throws IOException {
@@ -65,16 +62,25 @@ class LogsTests {
         if (System.getenv("AWS_SESSION_TOKEN") != null) {
             envVariables.put("AWS_SESSION_TOKEN", System.getenv("AWS_SESSION_TOKEN"));
         }
+//        envVariables.put("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "true");
 
         var collector = new GenericContainer<>(TEST_IMAGE)
             .withCopyFileToContainer(MountableFile.forClasspathResource(configFilePath), "/etc/collector/config.yaml")
             .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
             .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
-            .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.receiver.filelog,+adot.exporter.awscloudwatchlogs,+adot.extension.file_storage")
-            .withEnv(envVariables);
+            .withEnv(envVariables)
+            .withClasspathResourceMapping("/logs", "/logs", BindMode.READ_WRITE)
+
+            .withPrivilegedMode(true)
+            .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.filelog.receiver,+adot.awscloudwatchlogs.exporter,+adot.file_storage.extension");
 
         //Mount the log file for the file log receiver to parse
-        collector.withCopyFileToContainer(MountableFile.forClasspathResource(logFilePath), logFilePath );
+        collector.withCopyFileToContainer(MountableFile.forClasspathResource(logFilePath), logFilePath);
+        collector.withFileSystemBind(logDirectory.toString(),"/filerotation", BindMode.READ_WRITE);
+//        collector.withFileSystemBind(tempFile.getAbsolutePath(), "/filerotation", BindMode.READ_WRITE);
+//        collector.withFileSystemBind(tempFileB.getAbsolutePath(), "/logs/filerotationlogs/logsB.log", BindMode.READ_WRITE);
+//        collector.withCopyFileToContainer(MountableFile.forClasspathResource("/logs/"), "/logs/",  );
+//        collector.withCommand("sh", "-c", "chmod -R a+rw " + "/logs");
 
         collector.start();
         collector.waitingFor(Wait.forHealthcheck());
@@ -86,7 +92,9 @@ class LogsTests {
         String logStreamName = "rfcsyslog-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml", "/logs/RFC5424.log", logStreamName);
 
-        validateLogs(logStreamName , "/logs/RFC5424.log");
+        List<String> logFilePaths = new ArrayList<>();
+        logFilePaths.add("/logs/testingJSON.log");
+        validateLogs(logStreamName , logFilePaths, true);
         collector.stop();
     }
 
@@ -95,7 +103,9 @@ class LogsTests {
         String logStreamName = "log4j-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-log4j.yaml", "/logs/log4j.log", logStreamName);
 
-        validateLogs(logStreamName , "/logs/log4j.log");
+        List<String> logFilePaths = new ArrayList<>();
+        logFilePaths.add("/logs/testingJSON.log");
+        validateLogs(logStreamName , logFilePaths, true);
         collector.stop();
     }
 
@@ -104,22 +114,131 @@ class LogsTests {
         String logStreamName = "json-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-json.yaml", "/logs/testingJSON.log", logStreamName);
 
-        validateLogs(logStreamName , "/logs/testingJSON.log");
+        List<String> logFilePaths = new ArrayList<>();
+        logFilePaths.add("/logs/testingJSON.log");
+        validateLogs(logStreamName , logFilePaths, true);
         collector.stop();
     }
 
-    void validateLogs(String testLogStreamName, String logFilePath) throws Exception {
-        var file = new File(logFilePath);
+    @Test
+    void testCollectorRestartAfterCrash() throws Exception {
+        String logStreamName = "storageExtension-logstream-" + uniqueID;
+        collector = createAndStartCollector("/configurations/config-storageExtension.yaml", "/logs/storageExtension.log", logStreamName);
+        String resourceFilePath = "/logs/storageExtension.log"; // Path to the resource file
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        try (OutputStream outputStream = new FileOutputStream(new File(getClass().getResource(resourceFilePath).toURI()), true);
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+            // Append the lines to the file
+            writer.write("[otel.javaagent 2023-09-28 16:56:22:242 +0000] [OkHttp ConnectionPool] DEBUG okhttp3.internal.concurrent.TaskRunner - Q10002 run again after 300 s : OkHttp ConnectionPool- First Entry");
+            writer.newLine();
+            writer.write("[otel.javaagent 2023-09-29 16:56:22:242 +0000] [OkHttp ConnectionPool] DEBUG okhttp3.internal.concurrent.TaskRunner - Q10002 run again after 300 s : OkHttp ConnectionPool- Second Entry");
+            writer.newLine();
+            writer.write("[otel.javaagent 2023-09-29 16:56:22:242 +0000] [OkHttp ConnectionPool] DEBUG okhttp3.internal.concurrent.TaskRunner - Q10002 run again after 300 s : OkHttp ConnectionPool- Third Entry");
+            writer.newLine();
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException("Error writing to the file: " + resourceFilePath, e);
+        }
+
+        List<String> logFilePaths = new ArrayList<>();
+        logFilePaths.add(resourceFilePath);
+        validateLogs(logStreamName , logFilePaths, true);
+        collector.stop();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        try (OutputStream outputStream = new FileOutputStream(new File(getClass().getResource(resourceFilePath).toURI()), true);
+             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(outputStream))) {
+            // Append the lines to the file
+            writer.write("[otel.javaagent 2023-09-28 16:56:22:242 +0000] [OkHttp ConnectionPool] DEBUG okhttp3.internal.concurrent.TaskRunner - Q10002 run again after 300 s : OkHttp ConnectionPool- Fourth Entry");
+            writer.newLine();
+            writer.write("[otel.javaagent 2023-09-29 16:56:22:242 +0000] [OkHttp ConnectionPool] DEBUG okhttp3.internal.concurrent.TaskRunner - Q10002 run again after 300 s : OkHttp ConnectionPool- Fifth Entry");
+            writer.newLine();
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException("Error writing to the file: " + resourceFilePath, e);
+        }
+
+        collector.start();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        }
+        validateLogs(logStreamName , logFilePaths, true);
+        collector.stop();
+    }
+
+    @Test
+    void testFileRotation() throws Exception {
+        String logStreamName = "fileRotation-logstream-" + uniqueID;
+        String resourceFilePath = "/logs/filerotationlogs/log4j.log"; // Path to the resource file
+        collector = createAndStartCollector("/configurations/config-fileRotation.yaml", resourceFilePath, logStreamName);
+
+        Thread.sleep(10000);
+
+        // Create and write data to File A
+        File tempFile = new File(logDirectory.toString(), "testlogA.log");
+        try (FileWriter fileWriter = new FileWriter(tempFile)) {
+            fileWriter.write("Message in File A" + "\n");
+            fileWriter.flush();
+            fileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing to File A.", e);
+        }
+        Thread.sleep(10000);
+
+        File renameFile = new File(logDirectory.toString(), "testlogA-1234.log");
+        tempFile.renameTo(renameFile);
+
+        Thread.sleep(10000);
+
+        File tempFileB = new File(logDirectory.toString(), "testlogA.log");
+        try (FileWriter newfileWriter = new FileWriter(tempFileB)) {
+            newfileWriter.write("Message in renamed file - line 1" + "\n");
+            newfileWriter.write("Message in renamed file - line 2" + "\n");
+            newfileWriter.write("Message in renamed file - line 3" + "\n");
+            newfileWriter.flush();
+            newfileWriter.close();
+        } catch (IOException e) {
+            throw new RuntimeException("Error writing to File B.", e);
+        }
+        Thread.sleep(10000);
+
+        List<String> logFilePaths = new ArrayList<>();
+        String expectedLogPath = logDirectory.toString();
+        logFilePaths.add(expectedLogPath + "/testlogA-1234.log");
+        logFilePaths.add(expectedLogPath + "/testlogA.log");
+
+        validateLogs(logStreamName, logFilePaths, false);
+
+        collector.stop();
+    }
+
+
+    void validateLogs(String testLogStreamName, List<String> logFilePaths, boolean areResourceFiles) throws Exception {
         var lines = new HashSet<String>();
 
-        try (InputStream inputStream = getClass().getResourceAsStream(logFilePath);
-             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
+        for (String logFilePath : logFilePaths) {
+            InputStream inputStream;
+            if (areResourceFiles) {
+                inputStream = getClass().getResourceAsStream(logFilePath);
+            } else {
+                inputStream = new FileInputStream(logFilePath);
             }
-        } catch (IOException e) {
-            throw new RuntimeException("Error reading from the file: " + logFilePath, e);
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    lines.add(line);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Error reading from the file: " + logFilePath, e);
+            }
         }
 
         var cwClient = CloudWatchLogsClient.builder()
@@ -160,6 +279,11 @@ class LogsTests {
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
 
+                System.out.println("Log lines From Cloudwatch");
+                messageToValidate.forEach(System.out::println);
+
+                System.out.println("Expected logs");
+                lines.forEach(System.out::println);
                 //Validate body field in JSON-messageToValidate with actual log line from the log file.
                 assertThat(messageToValidate.containsAll(lines)).isTrue();
                 assertThat(messageToValidate).containsExactlyInAnyOrderElementsOf(lines);
