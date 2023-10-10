@@ -14,7 +14,7 @@ plugins {
     id 'application'
 
     // lombok
-    id "io.freefair.lombok" version "8.3"
+    id "io.freefair.lombok" version "8.4"
 
     // jib
     id 'com.google.cloud.tools.jib'
