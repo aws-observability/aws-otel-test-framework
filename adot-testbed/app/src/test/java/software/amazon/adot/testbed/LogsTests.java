@@ -162,6 +162,7 @@ class LogsTests {
 
                 //Validate body field in JSON-messageToValidate with actual log line from the log file.
                 assertThat(messageToValidate.containsAll(lines)).isTrue();
+                assertThat(messageToValidate).containsExactlyInAnyOrderElementsOf(lines);
                 return null;
             });
     }
