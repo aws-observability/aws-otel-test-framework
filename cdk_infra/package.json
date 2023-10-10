@@ -40,7 +40,7 @@
     "@aws-cdk/lambda-layer-kubectl-v25": "^2.0.4",
     "@aws-cdk/lambda-layer-kubectl-v26": "^2.0.1",
     "aws-cdk-lib": "^2.96.2",
-    "constructs": "^10.2.70",
+    "constructs": "^10.3.0",
     "js-yaml": "^4.1.0",
     "source-map-support": "^0.5.21"
   }
