@@ -3,12 +3,16 @@ package software.amazon.adot.testbed;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.file.Path;
+import java.nio.file.Files;
 import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.Instant;
@@ -83,17 +87,19 @@ class LogsTests {
 //        collector.withCommand("sh", "-c", "chmod -R a+rw " + "/logs");
 
         collector.start();
-        collector.waitingFor(Wait.forHealthcheck());
+//        collector.waitingFor(Wait.forHealthcheck());
         return collector;
     }
 
+    LogsTests() throws Exception {
+    }
     @Test
     void testSyslog() throws Exception {
         String logStreamName = "rfcsyslog-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml", "/logs/RFC5424.log", logStreamName);
 
         List<String> logFilePaths = new ArrayList<>();
-        logFilePaths.add("/logs/testingJSON.log");
+        logFilePaths.add("/logs/RFC5424.log");
         validateLogs(logStreamName , logFilePaths, true);
         collector.stop();
     }
@@ -104,7 +110,7 @@ class LogsTests {
         collector = createAndStartCollector("/configurations/config-log4j.yaml", "/logs/log4j.log", logStreamName);
 
         List<String> logFilePaths = new ArrayList<>();
-        logFilePaths.add("/logs/testingJSON.log");
+        logFilePaths.add("/logs/log4j.log");
         validateLogs(logStreamName , logFilePaths, true);
         collector.stop();
     }
@@ -176,7 +182,7 @@ class LogsTests {
     @Test
     void testFileRotation() throws Exception {
         String logStreamName = "fileRotation-logstream-" + uniqueID;
-        String resourceFilePath = "/logs/filerotationlogs/log4j.log"; // Path to the resource file
+        String resourceFilePath = "/logs/log4j.log"; // Path to the resource file
         collector = createAndStartCollector("/configurations/config-fileRotation.yaml", resourceFilePath, logStreamName);
 
         Thread.sleep(10000);

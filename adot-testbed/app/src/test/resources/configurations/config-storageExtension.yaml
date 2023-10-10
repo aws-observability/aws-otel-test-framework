@@ -1,17 +1,20 @@
+extensions:
+  file_storage:
+    directory: /logs/
+
 receivers:
   filelog:
-    include: [/filerotation/testlogA.log]
-    start_at: beginning
+    include: [/logs/storageExtension.log]
+    storage: file_storage
 
 exporters:
-  logging:
-    verbosity: detailed
   awscloudwatchlogs:
     log_group_name: "adot-testbed/logs-component-testing/logs"
     log_stream_name: ${LOG_STREAM_NAME}
     log_retention: 7
 
 service:
+  extensions: [ file_storage ]
   pipelines:
     logs:
       receivers: [filelog]
