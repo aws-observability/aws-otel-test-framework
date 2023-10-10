@@ -1,0 +1,19 @@
+receivers:
+  filelog:
+    include: [/logs/RFC5424.log]
+    start_at: beginning
+    operators:
+      - type: syslog_parser
+        protocol: rfc5424
+
+exporters:
+  awscloudwatchlogs:
+    log_group_name: "adot-testbed/logs-component-testing/logs"
+    log_stream_name: ${LOG_STREAM_NAME}
+    log_retention: 7
+
+service:
+  pipelines:
+    logs:
+      receivers: [filelog]
+      exporters: [awscloudwatchlogs]
