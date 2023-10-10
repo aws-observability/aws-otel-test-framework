@@ -55,11 +55,11 @@ class LogsTests {
     LogsTests() throws Exception {
     }
 
-    private GenericContainer<?> createAndStartCollector(String configFilePath, String logFilePath, String uniqueLogStreamName) throws IOException {
+    private GenericContainer<?> createAndStartCollector(String configFilePath, String logFilePath, String logStreamName) throws IOException {
 
         // Create an environment variable map
         Map<String, String> envVariables = new HashMap<>();
-        envVariables.put("LOG_STREAM_NAME", uniqueLogStreamName);
+        envVariables.put("LOG_STREAM_NAME", logStreamName);
         //Set credentials
         envVariables.put("AWS_REGION", System.getenv("AWS_REGION"));
         envVariables.put("AWS_ACCESS_KEY_ID", System.getenv("AWS_ACCESS_KEY_ID"));

@@ -7,8 +7,6 @@ receivers:
       - type: json_parser
 
 exporters:
-  logging:
-    verbosity: detailed
   awscloudwatchlogs:
     log_group_name: "adot-testbed/logs-component-testing/logs"
     log_stream_name: ${LOG_STREAM_NAME}
@@ -18,4 +16,4 @@ service:
   pipelines:
     logs:
       receivers: [filelog]
-      exporters: [logging,awscloudwatchlogs]
+      exporters: [awscloudwatchlogs]
