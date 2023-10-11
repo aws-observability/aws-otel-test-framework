@@ -2,11 +2,11 @@ plugins {
   id 'java'
 
   id 'application'
-  id 'com.google.cloud.tools.jib' version "3.3.2"
+  id 'com.google.cloud.tools.jib' version "3.4.0"
 
   // lombok
-  id "io.freefair.lombok" version "8.3"
-  id("com.diffplug.spotless") version "6.21.0"
+  id "io.freefair.lombok" version "8.4"
+  id("com.diffplug.spotless") version "6.22.0"
 
 }
 
@@ -29,10 +29,10 @@ dependencies {
   implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.20.0'
 
   // mustache template
-  implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.10'
+  implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.11'
 
   // apache io utils
-  implementation group: 'commons-io', name: 'commons-io', version: '2.13.0'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
 
   // yaml reader
   implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.15.2'
@@ -47,7 +47,7 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.5'
 
   // aws sdk
-  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.553')
+  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.565')
   implementation 'com.amazonaws:aws-java-sdk-s3'
   implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
   implementation 'com.amazonaws:aws-java-sdk-xray'
@@ -69,7 +69,7 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.5'
 
   // mockito
-  testImplementation "org.mockito:mockito-core:5.5.0"
+  testImplementation "org.mockito:mockito-core:5.6.0"
 
   // k8s client
   implementation "io.kubernetes:client-java-extended:18.0.1"
