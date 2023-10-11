@@ -1,6 +1,6 @@
 receivers:
   filelog:
-    include: [/filerotation/testlogA.log]
+    include: [/tempLogs/testlogA.log]
     start_at: beginning
 
 exporters:

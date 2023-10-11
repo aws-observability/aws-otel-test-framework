@@ -4,7 +4,7 @@ extensions:
 
 receivers:
   filelog:
-    include: [/logs/storageExtension.log]
+    include: [/tempLogs/storageExtension.log]
     storage: file_storage
 
 exporters:
