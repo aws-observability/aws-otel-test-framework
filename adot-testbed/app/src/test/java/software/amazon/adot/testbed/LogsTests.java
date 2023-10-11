@@ -57,7 +57,7 @@ class LogsTests {
         : "public.ecr.aws/aws-observability/aws-otel-collector:latest";
     private final Logger collectorLogger = LoggerFactory.getLogger("collector");
     private static final String uniqueID = UUID.randomUUID().toString();
-    private final Path logDirectory = Files.createTempDirectory("tempLogs");
+    private Path logDirectory;
     private GenericContainer<?> collector;
 
     private GenericContainer<?> createAndStartCollector(String configFilePath, String logStreamName) throws IOException {
@@ -73,16 +73,17 @@ class LogsTests {
         if (System.getenv("AWS_SESSION_TOKEN") != null) {
             envVariables.put("AWS_SESSION_TOKEN", System.getenv("AWS_SESSION_TOKEN"));
         }
-//        envVariables.put("TESTCONTAINERS_RYUK_CONTAINER_PRIVILEGED", "true");
-
+        try {
+            logDirectory = Files.createTempDirectory("tempLogs");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to create log directory", e);
+        }
         var collector = new GenericContainer<>(TEST_IMAGE)
             .withCopyFileToContainer(MountableFile.forClasspathResource(configFilePath), "/etc/collector/config.yaml")
             .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
             .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
             .withEnv(envVariables)
             .withClasspathResourceMapping("/logs", "/logs", BindMode.READ_WRITE)
-
-//            .withPrivilegedMode(true)
             .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.filelog.receiver,+adot.awscloudwatchlogs.exporter,+adot.file_storage.extension");
 
        //Mount the Temp directory
@@ -92,8 +93,6 @@ class LogsTests {
         return collector;
     }
 
-    LogsTests() throws Exception {
-    }
     @Test
     void testSyslog() throws Exception {
         String logStreamName = "rfcsyslog-logstream-" + uniqueID;
