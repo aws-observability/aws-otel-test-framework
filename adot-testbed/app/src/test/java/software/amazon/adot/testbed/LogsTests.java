@@ -151,8 +151,6 @@ class LogsTests {
 
         collector.stop();
 
-        Thread.sleep(5000);
-
         // write to the file when collector is stopped
         try {
             fileWriter.write("First Message after collector is stopped" + "\n");
@@ -201,7 +199,6 @@ class LogsTests {
         } catch (IOException e) {
             throw new RuntimeException("Error writing to File B.", e);
         }
-        Thread.sleep(5000);
 
         List<String> logFilePaths = new ArrayList<>();
         String expectedLogPath = logDirectory.toString();
