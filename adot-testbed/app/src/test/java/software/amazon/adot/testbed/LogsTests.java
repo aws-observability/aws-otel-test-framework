@@ -3,7 +3,7 @@ package software.amazon.adot.testbed;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.FileOutputStream;
@@ -140,11 +140,11 @@ class LogsTests {
         File tempFile = new File(logDirectory.toString(), "storageExtension.log");
         Thread.sleep(5000);
 
-        FileWriter fileWriter = new FileWriter(tempFile);
-        fileWriter.write("First Message, collector is running" + "\n");
-        fileWriter.write("Second Message, collector is running" + "\n");
-        fileWriter.write("Third Message,  collector is running" + "\n");
-        fileWriter.flush();
+        PrintWriter printWriter = new PrintWriter(tempFile);
+        printWriter.println("First Message, collector is running");
+        printWriter.println("Second Message, collector is running");
+        printWriter.println("Third Message,  collector is running");
+        printWriter.flush();
 
         Thread.sleep(5000);
         List<InputStream> inputStreams = new ArrayList<>();
@@ -157,12 +157,12 @@ class LogsTests {
         collector.stop();
 
         // write to the file when collector is stopped
-        fileWriter.write("First Message after collector is stopped" + "\n");
-        fileWriter.write("Second Message after the collector is stopped" + "\n");
-        fileWriter.write("Third Message after the collector is stopped" + "\n");
-        fileWriter.flush();
+        printWriter.println("First Message after collector is stopped");
+        printWriter.println("Second Message after the collector is stopped");
+        printWriter.println("Third Message after the collector is stopped");
+        printWriter.flush();
 
-        fileWriter.close();
+        printWriter.close();
         //restarting the collector
         collector.start();
 
@@ -181,10 +181,10 @@ class LogsTests {
         // Create and write data to File A
         File tempFile = new File(logDirectory.toString(), "testlogA.log");
 
-        FileWriter fileWriter = new FileWriter(tempFile);
-        fileWriter.write("Message in File A" + "\n");
-        fileWriter.flush();
-        fileWriter.close();
+        PrintWriter printWriter = new PrintWriter(tempFile);
+        printWriter.println("Message in File A");
+        printWriter.flush();
+        printWriter.close();
 
         Thread.sleep(5000);
 
@@ -195,13 +195,12 @@ class LogsTests {
         //Create testLogA again to imitate file rotation
         File tempFileB = new File(logDirectory.toString(), "testlogA.log");
 
-        FileWriter newfileWriter = new FileWriter(tempFileB);
-        newfileWriter.write("Message in renamed file - line 1" + "\n");
-        newfileWriter.write("Message in renamed file - line 2" + "\n");
-        newfileWriter.write("Message in renamed file - line 3" + "\n");
-        newfileWriter.flush();
-        newfileWriter.close();
-
+        PrintWriter newprintWriter = new PrintWriter(tempFileB);
+        newprintWriter.println("Message in renamed file - line 1");
+        newprintWriter.println("Message in renamed file - line 2");
+        newprintWriter.println("Message in renamed file - line 3");
+        newprintWriter.flush();
+        newprintWriter.close();
 
         List<InputStream> inputStreams = new ArrayList<>();
         String expectedLogPath = logDirectory.toString();
