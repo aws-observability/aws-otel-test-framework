@@ -100,7 +100,7 @@ class LogsTests {
 
         List<String> logFilePaths = new ArrayList<>();
         logFilePaths.add("/logs/RFC5424.log");
-        validateLogs(logStreamName , logFilePaths, true);
+        validateLogs(logStreamName , logFilePaths);
         collector.stop();
     }
 
@@ -111,7 +111,7 @@ class LogsTests {
 
         List<String> logFilePaths = new ArrayList<>();
         logFilePaths.add("/logs/log4j.log");
-        validateLogs(logStreamName , logFilePaths, true);
+        validateLogs(logStreamName , logFilePaths);
         collector.stop();
     }
 
@@ -122,7 +122,7 @@ class LogsTests {
 
         List<String> logFilePaths = new ArrayList<>();
         logFilePaths.add("/logs/testingJSON.log");
-        validateLogs(logStreamName , logFilePaths, true);
+        validateLogs(logStreamName , logFilePaths);
         collector.stop();
     }
 
@@ -147,7 +147,7 @@ class LogsTests {
         String expectedLogPath = logDirectory.toString();
         logFilePaths.add(expectedLogPath + "/storageExtension.log");
 
-        validateLogs(logStreamName , logFilePaths, false);
+        validateLogs(logStreamName , logFilePaths);
 
         collector.stop();
 
@@ -166,7 +166,7 @@ class LogsTests {
        //restarting the collector
         collector.start();
 
-        validateLogs(logStreamName , logFilePaths, false);
+        validateLogs(logStreamName , logFilePaths);
         collector.stop();
     }
 
@@ -208,19 +208,19 @@ class LogsTests {
         logFilePaths.add(expectedLogPath + "/testlogA-1234.log");
         logFilePaths.add(expectedLogPath + "/testlogA.log");
 
-        validateLogs(logStreamName, logFilePaths, false);
+        validateLogs(logStreamName, logFilePaths);
 
         collector.stop();
     }
 
 
-    void validateLogs(String testLogStreamName, List<String> logFilePaths, boolean areResourceFiles) throws Exception {
+    void validateLogs(String testLogStreamName, List<String> logFilePaths) throws Exception {
         var lines = new HashSet<String>();
 
         for (String logFilePath : logFilePaths) {
             InputStream inputStream;
             //Check whether the filePath is from resource folder.
-            if (areResourceFiles) {
+            if (getClass().getResource(logFilePath) != null) {
                 inputStream = getClass().getResourceAsStream(logFilePath);
             } else {
                 inputStream = new FileInputStream(logFilePath);

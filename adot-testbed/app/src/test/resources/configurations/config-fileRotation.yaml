@@ -1,11 +1,8 @@
 receivers:
   filelog:
     include: [/tempLogs/testlogA.log]
-    start_at: beginning
 
 exporters:
-  logging:
-    verbosity: detailed
   awscloudwatchlogs:
     log_group_name: "adot-testbed/logs-component-testing/logs"
     log_stream_name: ${LOG_STREAM_NAME}
