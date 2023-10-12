@@ -92,15 +92,17 @@ class LogsTests {
         collector.start();
         return collector;
     }
-
     @Test
     void testSyslog() throws Exception {
         String logStreamName = "rfcsyslog-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml", logStreamName);
 
-        List<String> logFilePaths = new ArrayList<>();
-        logFilePaths.add("/logs/RFC5424.log");
-        validateLogs(logStreamName , logFilePaths);
+        List<InputStream> inputStreams = new ArrayList<>();
+        InputStream inputStream = getClass().getResourceAsStream("/logs/RFC5424.log");
+        inputStreams.add(inputStream);
+
+        validateLogs(logStreamName, inputStreams);
+
         collector.stop();
     }
 
@@ -109,9 +111,11 @@ class LogsTests {
         String logStreamName = "log4j-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-log4j.yaml", logStreamName);
 
-        List<String> logFilePaths = new ArrayList<>();
-        logFilePaths.add("/logs/log4j.log");
-        validateLogs(logStreamName , logFilePaths);
+        List<InputStream> inputStreams = new ArrayList<>();
+        InputStream inputStream = getClass().getResourceAsStream("/logs/log4j.log");
+        inputStreams.add(inputStream);
+
+        validateLogs(logStreamName, inputStreams);
         collector.stop();
     }
 
@@ -120,9 +124,12 @@ class LogsTests {
         String logStreamName = "json-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-json.yaml", logStreamName);
 
-        List<String> logFilePaths = new ArrayList<>();
-        logFilePaths.add("/logs/testingJSON.log");
-        validateLogs(logStreamName , logFilePaths);
+        List<InputStream> inputStreams = new ArrayList<>();
+        InputStream inputStream = getClass().getResourceAsStream("/logs/testingJSON.log");
+        inputStreams.add(inputStream);
+
+        validateLogs(logStreamName, inputStreams);
+
         collector.stop();
     }
 
@@ -134,37 +141,33 @@ class LogsTests {
         Thread.sleep(5000);
 
         FileWriter fileWriter = new FileWriter(tempFile);
-        try {
-            fileWriter.write("First Message, collector is running" + "\n");
-            fileWriter.write("Second Message, collector is running" + "\n");
-            fileWriter.write("Third Message,  collector is running" + "\n");
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing to File A.", e);
-        }
+        fileWriter.write("First Message, collector is running" + "\n");
+        fileWriter.write("Second Message, collector is running" + "\n");
+        fileWriter.write("Third Message,  collector is running" + "\n");
         fileWriter.flush();
 
-        List<String> logFilePaths = new ArrayList<>();
+        Thread.sleep(5000);
+        List<InputStream> inputStreams = new ArrayList<>();
         String expectedLogPath = logDirectory.toString();
-        logFilePaths.add(expectedLogPath + "/storageExtension.log");
+        String logPath = expectedLogPath + "/storageExtension.log";
 
-        validateLogs(logStreamName , logFilePaths);
+        InputStream inputStream = new FileInputStream(logPath);
+        inputStreams.add(inputStream);
 
         collector.stop();
 
         // write to the file when collector is stopped
-        try {
-            fileWriter.write("First Message after collector is stopped" + "\n");
-            fileWriter.write("Second Message after the collector is stopped" + "\n");
-            fileWriter.write("Third Message after the collector is stopped" + "\n");
-            fileWriter.flush();
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing to File A.", e);
-        }
+        fileWriter.write("First Message after collector is stopped" + "\n");
+        fileWriter.write("Second Message after the collector is stopped" + "\n");
+        fileWriter.write("Third Message after the collector is stopped" + "\n");
+        fileWriter.flush();
+
         fileWriter.close();
-       //restarting the collector
+        //restarting the collector
         collector.start();
 
-        validateLogs(logStreamName , logFilePaths);
+        validateLogs(logStreamName, inputStreams);
+
         collector.stop();
     }
 
@@ -177,59 +180,56 @@ class LogsTests {
 
         // Create and write data to File A
         File tempFile = new File(logDirectory.toString(), "testlogA.log");
-        try (FileWriter fileWriter = new FileWriter(tempFile)) {
-            fileWriter.write("Message in File A" + "\n");
-            fileWriter.flush();
-            fileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing to File A.", e);
-        }
+
+        FileWriter fileWriter = new FileWriter(tempFile);
+        fileWriter.write("Message in File A" + "\n");
+        fileWriter.flush();
+        fileWriter.close();
+
         Thread.sleep(5000);
 
+       //Rename testLogA
         File renameFile = new File(logDirectory.toString(), "testlogA-1234.log");
         tempFile.renameTo(renameFile);
 
+        //Create testLogA again to imitate file rotation
         File tempFileB = new File(logDirectory.toString(), "testlogA.log");
-        try (FileWriter newfileWriter = new FileWriter(tempFileB)) {
-            newfileWriter.write("Message in renamed file - line 1" + "\n");
-            newfileWriter.write("Message in renamed file - line 2" + "\n");
-            newfileWriter.write("Message in renamed file - line 3" + "\n");
-            newfileWriter.flush();
-            newfileWriter.close();
-        } catch (IOException e) {
-            throw new RuntimeException("Error writing to File B.", e);
-        }
 
-        List<String> logFilePaths = new ArrayList<>();
+        FileWriter newfileWriter = new FileWriter(tempFileB);
+        newfileWriter.write("Message in renamed file - line 1" + "\n");
+        newfileWriter.write("Message in renamed file - line 2" + "\n");
+        newfileWriter.write("Message in renamed file - line 3" + "\n");
+        newfileWriter.flush();
+        newfileWriter.close();
+
+
+        List<InputStream> inputStreams = new ArrayList<>();
         String expectedLogPath = logDirectory.toString();
-        logFilePaths.add(expectedLogPath + "/testlogA-1234.log");
-        logFilePaths.add(expectedLogPath + "/testlogA.log");
 
-        validateLogs(logStreamName, logFilePaths);
+        String logPath1 = expectedLogPath + "/testlogA-1234.log";
+        String logPath2 = expectedLogPath + "/testlogA.log";
+
+        InputStream inputStream1 = new FileInputStream(logPath1);
+        InputStream inputStream2 = new FileInputStream(logPath2);
+        inputStreams.add(inputStream1);
+        inputStreams.add(inputStream2);
+
+        validateLogs(logStreamName, inputStreams);
 
         collector.stop();
     }
 
-
-    void validateLogs(String testLogStreamName, List<String> logFilePaths) throws Exception {
+    void validateLogs(String testLogStreamName, List<InputStream> inputStreams) throws Exception {
         var lines = new HashSet<String>();
 
-        for (String logFilePath : logFilePaths) {
-            InputStream inputStream;
-            //Check whether the filePath is from resource folder.
-            if (getClass().getResource(logFilePath) != null) {
-                inputStream = getClass().getResourceAsStream(logFilePath);
-            } else {
-                inputStream = new FileInputStream(logFilePath);
-            }
-
+        for (InputStream inputStream : inputStreams) {
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     lines.add(line);
                 }
             } catch (IOException e) {
-                throw new RuntimeException("Error reading from the file: " + logFilePath, e);
+                throw new RuntimeException("Error reading from the file: " + inputStream, e);
             }
         }
 
@@ -270,13 +270,6 @@ class LogsTests {
                     })
                     .filter(Objects::nonNull)
                     .collect(Collectors.toSet());
-
-                //Print
-                System.out.println("Actual Logs - Log lines From Cloudwatch");
-                messageToValidate.forEach(System.out::println);
-
-                System.out.println("Expected logs- Log lines from log file");
-                lines.forEach(System.out::println);
 
                 //Validate body field in JSON-messageToValidate with actual log line from the log file.
                 assertThat(messageToValidate.containsAll(lines)).isTrue();
