@@ -84,7 +84,7 @@ class LogsTests {
             .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
             .withEnv(envVariables)
             .withClasspathResourceMapping("/logs", "/logs", BindMode.READ_WRITE)
-            .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.filelog.receiver,+adot.awscloudwatchlogs.exporter,+adot.file_storage.extension");
+            .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.receiver.filelog,+adot.exporter.awscloudwatchlogs,+adot.extension.file_storage");
 
        //Mount the Temp directory
         collector.withFileSystemBind(logDirectory.toString(),"/tempLogs", BindMode.READ_WRITE);
@@ -146,7 +146,6 @@ class LogsTests {
         printWriter.println("Third Message, collector is running");
         printWriter.flush();
 
-        Thread.sleep(5000);
         List<InputStream> inputStreams = new ArrayList<>();
         String expectedLogPath = logDirectory.toString();
         String logPath = expectedLogPath + "/storageExtension.log";
