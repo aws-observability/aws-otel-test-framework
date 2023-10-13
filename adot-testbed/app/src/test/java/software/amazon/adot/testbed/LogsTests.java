@@ -186,7 +186,14 @@ class LogsTests {
         printWriter.flush();
         printWriter.close();
 
-        Thread.sleep(5000);
+        List<InputStream> inputStreams = new ArrayList<>();
+        String expectedLogPath = logDirectory.toString();
+
+        String logPath = expectedLogPath + "/testlogA.log";
+        InputStream inputStream = new FileInputStream(logPath);
+        inputStreams.add(inputStream);
+        validateLogs(logStreamName, inputStreams);
+        inputStreams.remove(inputStream);
 
        //Rename testLogA
         File renameFile = new File(logDirectory.toString(), "testlogA-1234.log");
@@ -202,8 +209,6 @@ class LogsTests {
         newprintWriter.flush();
         newprintWriter.close();
 
-        List<InputStream> inputStreams = new ArrayList<>();
-        String expectedLogPath = logDirectory.toString();
 
         String logPath1 = expectedLogPath + "/testlogA-1234.log";
         String logPath2 = expectedLogPath + "/testlogA.log";
