@@ -143,7 +143,7 @@ class LogsTests {
         PrintWriter printWriter = new PrintWriter(tempFile);
         printWriter.println("First Message, collector is running");
         printWriter.println("Second Message, collector is running");
-        printWriter.println("Third Message,  collector is running");
+        printWriter.println("Third Message, collector is running");
         printWriter.flush();
 
         Thread.sleep(5000);
@@ -154,7 +154,14 @@ class LogsTests {
         InputStream inputStream = new FileInputStream(logPath);
         inputStreams.add(inputStream);
 
+        validateLogs(logStreamName, inputStreams);
+
         collector.stop();
+
+        // Create a new InputStream for the second call
+        InputStream secondInputStream = new FileInputStream(logPath);
+        List<InputStream> secondInputStreams = new ArrayList<>();
+        secondInputStreams.add(secondInputStream);
 
         // write to the file when collector is stopped
         printWriter.println("First Message after collector is stopped");
@@ -163,10 +170,10 @@ class LogsTests {
         printWriter.flush();
 
         printWriter.close();
-        //restarting the collector
+        // Restart the collector
         collector.start();
 
-        validateLogs(logStreamName, inputStreams);
+        validateLogs(logStreamName, secondInputStreams);
 
         collector.stop();
     }
