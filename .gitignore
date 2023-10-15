@@ -58,6 +58,7 @@ override.tf.json
 terraform.rc
 
 !gradle/wrapper/gradle-wrapper.jar
+!adot-testbed/gradle/wrapper/gradle-wrapper.jar
 
 **/.DS_Store
 
