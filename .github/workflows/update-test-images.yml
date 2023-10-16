@@ -21,6 +21,8 @@ jobs:
   run-image-build:
     runs-on: ubuntu-latest
     steps:
+      - name: Remove cache
+        run: rm -rf /opt/hostedtoolcache
       - uses: actions/checkout@v4
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
