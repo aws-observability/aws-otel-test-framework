@@ -3,19 +3,19 @@ clusters:
   - name: m5-amd64-Cluster
     launch_type: ec2
     instance_type: m5.large
-    version: "1.22"
+    version: "1.24"
   - name: t4g-arm64-Cluster
     launch_type: ec2
     instance_type: t4g.large
-    version: "1.23"
+    version: "1.24"
   - name: m6g-arm64-Cluster
     launch_type: ec2
     instance_type: m6g.large
-    version: "1.24"
+    version: "1.25"
   - name: fargateCluster0
     launch_type: fargate
-    version: "1.25"
-  - name: m6g-arm64-Cluster-1-26
+    version: "1.26"
+  - name: m6g-arm64-Cluster-1-27
     launch_type: ec2
     instance_type: m6g.large
-    version: "1.26"
+    version: "1.27"
