@@ -440,14 +440,14 @@ data "aws_ami" "selected" {
 }
 
 # this ami is used to launch the emitter instance
-data "aws_ami" "amazonlinux3" {
+data "aws_ami" "amazonlinux2" {
   most_recent = true
 
   # https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html#finding-quick-start-ami
   filter {
     name = "name"
     values = [
-    "al2023-ami-2023*"]
+    "amzn2-ami-kernel-5*"]
   }
 
   filter {
