@@ -73,7 +73,6 @@ dependencies {
 
   // k8s client
   implementation "io.kubernetes:client-java-extended:18.0.1"
-  testImplementation("com.github.rholder:guava-retrying:2.0.0")
 }
 
 application {

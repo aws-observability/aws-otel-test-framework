@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 public class CWLogValidator implements IValidator {
 
 
-
 //    String getJsonSchemaMappingKey(JsonNode jsonNode) {
 //        // Your implementation for getting the JSON schema mapping key
 //        return null;
