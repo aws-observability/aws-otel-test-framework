@@ -52,7 +52,7 @@ public class ValidatorFactory {
         break;
       case "cw-logs":
         validator = new CWLogValidator();
-        expectedData = validationConfig.getExpectedMetricTemplate();
+        expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;
       case "cw-metric":
         validator = new CWMetricValidator();

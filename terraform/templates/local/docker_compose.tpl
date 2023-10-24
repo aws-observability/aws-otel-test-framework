@@ -48,5 +48,7 @@ services:
       - JAEGER_RECEIVER_ENDPOINT=aws-ot-collector:${http_port}
       - ZIPKIN_RECEIVER_ENDPOINT=aws-ot-collector:${http_port}
       - OTEL_METRICS_EXPORTER=otlp
+      - OTEL_LOGS_EXPORTER=otlp
+      - SAMPLE_APP_LOG_LEVEL=INFO
     depends_on:
       - aws-ot-collector

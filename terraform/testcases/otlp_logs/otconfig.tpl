@@ -20,7 +20,7 @@ exporters:
 
 service:
   pipelines:
-    metrics:
+    logs:
       receivers: [otlp]
       processors: [batch]
       exporters: [logging, awscloudwatchlogs]
