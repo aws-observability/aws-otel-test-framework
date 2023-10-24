@@ -14,7 +14,7 @@ exporters:
   logging:
     verbosity: detailed
   awscloudwatchlogs:
-    log_group_name: "otlp-receiver"
+    log_group_name: "/aws/ecs/aoc-testing-${testing_id}/OTLPLogs"
     log_stream_name: "otlp-logs"
     region: ${region}
 
