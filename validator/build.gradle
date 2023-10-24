@@ -72,7 +72,7 @@ dependencies {
   testImplementation "org.mockito:mockito-core:5.6.0"
 
   // k8s client
-  implementation "io.kubernetes:client-java-extended:18.0.1"
+  implementation "io.kubernetes:client-java-extended:19.0.0"
 }
 
 application {
