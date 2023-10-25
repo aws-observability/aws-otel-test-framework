@@ -16,6 +16,9 @@ spec:
       containers:
         - name: aws-otel-collector
           image: ${OTELIMAGE}
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
           env:
             - name: K8S_NODE_NAME
               valueFrom:
