@@ -149,14 +149,15 @@ public class App implements Callable<Integer> {
     context.setLanguage(language);
     context.setKubernetesContext(this.buildKubernetesContext());
     log.info(context);
+    log.info("URL is: " + configPath);
 
     // load config
     List<ValidationConfig> validationConfigList =
         new ConfigLoadHelper().loadConfigFromFile(configPath);
-
+    log.info("App - config was loaded");
     // run validation
     validate(context, validationConfigList);
-
+    log.info("App - validation completed");
     Instant endTime = Instant.now();
     Duration duration = Duration.between(startTime, endTime);
     log.info("Validation has completed in {} minutes.", duration.toMinutes());

@@ -73,7 +73,7 @@ resource "null_resource" "validator" {
   provisioner "local-exec" {
     command = <<-EOT
       docker-compose -f ${local.docker_compose_path} down
-      docker-compose -f ${local.docker_compose_path} build
+      docker-compose -f ${local.docker_compose_path} build --no-cache
       docker-compose -f ${local.docker_compose_path} up --abort-on-container-exit
     EOT
   }
