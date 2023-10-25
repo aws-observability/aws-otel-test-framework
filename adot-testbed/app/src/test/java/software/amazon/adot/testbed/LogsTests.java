@@ -83,6 +83,7 @@ class LogsTests {
             .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
             .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
             .withEnv(envVariables)
+            .withCreateContainerCmdModifier(cmd -> cmd.withUser("aoc"))
             .withClasspathResourceMapping("/logs", "/logs", BindMode.READ_WRITE)
             .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.receiver.filelog,+adot.exporter.awscloudwatchlogs,+adot.extension.file_storage");
 
