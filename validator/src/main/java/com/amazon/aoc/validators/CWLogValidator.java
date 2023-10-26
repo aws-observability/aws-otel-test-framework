@@ -28,6 +28,8 @@ public class CWLogValidator implements IValidator {
 
   protected String logStreamName = "otlp-logs";
 
+  private static final String LOGGROUPPATH = "/aws/ecs/otlp/%s/logs";
+
   protected CloudWatchService cloudWatchService;
   private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
   private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
@@ -35,6 +37,7 @@ public class CWLogValidator implements IValidator {
   private static final int QUERY_LIMIT = 100;
   private JsonSchema schema;
   protected String logGroupName;
+
   private Context context;
 
   protected final ObjectMapper mapper = new ObjectMapper();
@@ -48,7 +51,7 @@ public class CWLogValidator implements IValidator {
       throws Exception {
     this.context = context;
     cloudWatchService = new CloudWatchService(context.getRegion());
-    logGroupName = String.format("otlp-receiver", context.getCloudWatchContext().getClusterName());
+    logGroupName = String.format(LOGGROUPPATH, context.getTestingId());
     MustacheHelper mustacheHelper = new MustacheHelper();
     String templateInput = mustacheHelper.render(expectedDataTemplate, context);
     JsonNode jsonNode = JsonLoader.fromString(templateInput);
@@ -99,8 +102,6 @@ public class CWLogValidator implements IValidator {
       if (report.isSuccess()) {
         log.info("Report was a success");
       } else {
-        // This will probably generate a lot of extra logs
-        // may want to log this to a different level in the future.
         log.info("[StructuredLogValidator] failed to validate schema \n");
         log.info(report.toString() + "\n");
       }
