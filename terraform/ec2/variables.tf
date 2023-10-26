@@ -21,7 +21,7 @@ variable "package_s3_bucket" {
 }
 
 variable "testing_ami" {
-  default = "amazonlinux3"
+  default = "amazonlinux2"
 }
 
 variable "sidecar_instance_type" {
