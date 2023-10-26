@@ -1,14 +1,17 @@
 package com.amazon.aoc.validators;
 
+import com.amazon.aoc.callers.ICaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
+import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.logs.model.OutputLogEvent;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.fge.jsonschema.main.JsonSchema;
 import com.github.fge.jsonschema.main.JsonSchemaFactory;
 import com.github.fge.jsonschema.report.ListReportProvider;
@@ -21,11 +24,7 @@ import java.util.*;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class CWLogValidator extends AbstractStructuredLogValidator {
-  protected Map<String, JsonSchema> schemasToValidate = new HashMap<>();
-  protected Set<String> validatedSchema = new HashSet<>();
-  protected Set<String> logStreamNames = new HashSet<>();
-  protected String logGroupName;
+public class CWLogValidator implements IValidator {
 
   protected String logStreamName = "otlp-logs";
 
@@ -35,14 +34,23 @@ public class CWLogValidator extends AbstractStructuredLogValidator {
   private static final int MAX_RETRY_COUNT = 12;
   private static final int QUERY_LIMIT = 100;
   private JsonSchema schema;
-
+  protected String logGroupName;
   private Context context;
 
+  protected final ObjectMapper mapper = new ObjectMapper();
+
   @Override
-  public void init(Context context, FileConfig expectedDataTemplate) throws Exception {
+  public void init(
+      Context context,
+      ValidationConfig validationConfig,
+      ICaller caller,
+      FileConfig expectedDataTemplate)
+      throws Exception {
     log.info("CWLog init starting");
     this.context = context;
+    cloudWatchService = new CloudWatchService(context.getRegion());
     logGroupName = String.format("otlp-receiver", context.getCloudWatchContext().getClusterName());
+    log.info("CW Log group name is: " + logGroupName);
     //    cloudWatchService = new CloudWatchService(context.getRegion());
     MustacheHelper mustacheHelper = new MustacheHelper();
     String templateInput = mustacheHelper.render(expectedDataTemplate, context);
@@ -54,6 +62,7 @@ public class CWLogValidator extends AbstractStructuredLogValidator {
     JsonSchema schema = jsonSchemaFactory.getJsonSchema(jsonNode);
     this.schema = schema;
     log.info(("CWLog init ending"));
+    caller.callSampleApp();
   }
 
   //  @Override
@@ -81,11 +90,6 @@ public class CWLogValidator extends AbstractStructuredLogValidator {
   //  }
 
   @Override
-  String getJsonSchemaMappingKey(JsonNode jsonNode) {
-    return jsonNode.get("Type").asText();
-  }
-
-  @Override
   public void validate() throws Exception {
     log.info(("CWLog validate starting"));
     RetryHelper.retry(
@@ -100,7 +104,6 @@ public class CWLogValidator extends AbstractStructuredLogValidator {
         });
   }
 
-  @Override
   protected void fetchAndValidateLogs(Instant startTime) throws Exception {
     log.info(("CWLog fetch starting"));
     List<OutputLogEvent> logEvents =
@@ -119,7 +122,6 @@ public class CWLogValidator extends AbstractStructuredLogValidator {
     }
   }
 
-  @Override
   protected void validateJsonSchema(String logEventMsg) throws Exception {
     log.info("In validateJsonSchema");
     JsonNode logEventNode = mapper.readTree(logEventMsg);
@@ -139,7 +141,6 @@ public class CWLogValidator extends AbstractStructuredLogValidator {
     }
   }
 
-  @Override
   protected int getMaxRetryCount() {
     return MAX_RETRY_COUNT;
   }

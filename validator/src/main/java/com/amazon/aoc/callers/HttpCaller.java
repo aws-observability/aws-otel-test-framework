@@ -55,7 +55,7 @@ public class HttpCaller implements ICaller {
     AtomicReference<SampleAppResponse> sampleAppResponseAtomicReference = new AtomicReference<>();
     log.info("Sample app - Atomic reference");
     RetryHelper.retry(
-        40,
+        15,
         () -> {
           try (Response response = client.newCall(request).execute()) {
             String responseBody = response.body().string();
