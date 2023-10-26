@@ -97,7 +97,6 @@ class LogsTests {
     void testSyslog() throws Exception {
         String logStreamName = "rfcsyslog-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml", logStreamName);
-        Thread.sleep(50000);
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/RFC5424.log");
         inputStreams.add(inputStream);
@@ -111,7 +110,6 @@ class LogsTests {
     void testLog4j() throws Exception {
         String logStreamName = "log4j-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-log4j.yaml", logStreamName);
-        Thread.sleep(50000);
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/log4j.log");
         inputStreams.add(inputStream);
@@ -124,7 +122,6 @@ class LogsTests {
     void testJson() throws Exception {
         String logStreamName = "json-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-json.yaml", logStreamName);
-        Thread.sleep(50000);
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/testingJSON.log");
         inputStreams.add(inputStream);
