@@ -250,6 +250,33 @@ sudo dpkg -i amazon-ssm-agent.deb
 sudo systemctl enable amazon-ssm-agent
 EOF
     }
+    #AL3
+    amazonlinux3 = {
+      os_family          = "amazon_linux"
+      ami_search_pattern = "al2023-ami-2023*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "linux"
+      arch               = "amd64"
+      login_user         = "ec2-user"
+      user_data          = <<EOF
+#! /bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+EOF
+    }
+    arm_amazonlinux3 = {
+      os_family          = "amazon_linux"
+      ami_search_pattern = "al2023-ami-2023*"
+      ami_owner          = "amazon"
+      ami_product_code   = []
+      family             = "linux"
+      arch               = "arm64"
+      login_user         = "ec2-user"
+      instance_type      = "c6g.large"
+      user_data          = <<EOF
+#! /bin/bash
+sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
+EOF
     #AL2
     amazonlinux2 = {
       os_family          = "amazon_linux"
