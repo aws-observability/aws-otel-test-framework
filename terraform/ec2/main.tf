@@ -405,11 +405,9 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
   provisioner "remote-exec" {
     inline = [
       "sudo yum update -y",
-      "sudo yum install -y libxcrypt-compat",
-      "sudo yum install -y docker",
+      "sudo amazon-linux-extra install docker -y",
       "sudo service docker start",
       "sudo usermod -a -G docker ec2-user",
-      "sudo ln -s /usr/lib/libcrypt.so /usr/lib/libcrypt.so.1",
       "sudo curl -L 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' -o /usr/local/bin/docker-compose",
       "sudo chmod +x /usr/local/bin/docker-compose",
       "sudo `aws ecr get-login --no-include-email --region ${var.region}`",
