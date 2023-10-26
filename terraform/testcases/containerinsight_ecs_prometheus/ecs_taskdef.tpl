@@ -2,6 +2,7 @@
     {
       "name": "aoc-collector",
       "image": "${aoc_image}",
+      "user": 0
       "cpu": 10,
       "memory": 256,
       "secrets": [
