@@ -47,15 +47,12 @@ public class HttpCaller implements ICaller {
 
   @Override
   public SampleAppResponse callSampleApp() throws Exception {
-    log.info("Sample app was called");
     OkHttpClient client = new OkHttpClient();
-    log.info("Sample app - OkHttpClient");
     Request request = new Request.Builder().url(url).build();
-    log.info("Sample app - request builder");
+
     AtomicReference<SampleAppResponse> sampleAppResponseAtomicReference = new AtomicReference<>();
-    log.info("Sample app - Atomic reference");
     RetryHelper.retry(
-        15,
+        40,
         () -> {
           try (Response response = client.newCall(request).execute()) {
             String responseBody = response.body().string();

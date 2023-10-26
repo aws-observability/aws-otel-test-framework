@@ -23,9 +23,7 @@ import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.TaskService;
-import lombok.extern.log4j.Log4j2;
 
-@Log4j2
 public class ValidatorFactory {
   private Context context;
 
@@ -42,7 +40,6 @@ public class ValidatorFactory {
    */
   public IValidator launchValidator(ValidationConfig validationConfig) throws Exception {
     // get validator
-    log.info("validator factory launch started");
     IValidator validator;
     FileConfig expectedData = null;
     switch (validationConfig.getValidationType()) {
@@ -54,12 +51,10 @@ public class ValidatorFactory {
         validator = new LoadBalancingValidator();
         break;
       case "cw-metric":
-        log.info("cw-metrics got picked");
         validator = new CWMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
       case "cw-logs":
-        log.info("cw-logs got picked");
         validator = new CWLogValidator();
         expectedData = validationConfig.getExpectedLogStructureTemplate();
         break;

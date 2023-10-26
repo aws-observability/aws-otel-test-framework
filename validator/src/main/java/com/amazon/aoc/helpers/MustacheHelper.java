@@ -45,13 +45,9 @@ public class MustacheHelper {
   private String render(URL path, Object dataToInject) throws IOException {
     log.info("fetch config: {}", path);
     String templateContent = IOUtils.toString(path);
-    log.info("Got template Content");
     Mustache mustache = mustacheFactory.compile(new StringReader(templateContent), path.getPath());
-    log.info("Got mustache");
     StringWriter stringWriter = new StringWriter();
-    log.info("fGot stringWriter");
     mustache.execute(stringWriter, dataToInject).flush();
-    log.info("Mustache executed");
     return stringWriter.getBuffer().toString();
   }
 }

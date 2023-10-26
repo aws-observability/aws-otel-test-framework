@@ -46,60 +46,23 @@ public class CWLogValidator implements IValidator {
       ICaller caller,
       FileConfig expectedDataTemplate)
       throws Exception {
-    log.info("CWLog init starting");
     this.context = context;
     cloudWatchService = new CloudWatchService(context.getRegion());
     logGroupName = String.format("otlp-receiver", context.getCloudWatchContext().getClusterName());
-    log.info("CW Log group name is: " + logGroupName);
-    //    cloudWatchService = new CloudWatchService(context.getRegion());
     MustacheHelper mustacheHelper = new MustacheHelper();
     String templateInput = mustacheHelper.render(expectedDataTemplate, context);
-    log.info("Template input: " + templateInput);
     JsonNode jsonNode = JsonLoader.fromString(templateInput);
-    log.info("Trying to get jsonNode string: " + jsonNode.textValue());
     JsonSchemaFactory jsonSchemaFactory =
         JsonSchemaFactory.newBuilder()
             .setReportProvider(new ListReportProvider(LogLevel.INFO, LogLevel.FATAL))
             .freeze();
     JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(jsonNode);
     this.schema = jsonSchema;
-    log.info(("CWLog init ending"));
-    Map<String, Object> mapping = new ObjectMapper().readValue(templateInput, HashMap.class);
-    //    ObjectMapper mapper = new ObjectMapper();
-    //    ObjectNode jsonObject = mapper.readValue(templateInput, ObjectNode.class);
-    //    Map<String, Object> result =
-    //        mapper.convertValue(jsonObject, new TypeReference<Map<String, Object>>() {});
-    log.info("Mapper is:" + mapping.toString());
     caller.callSampleApp();
   }
 
-  //  @Override
-  //  public void init(
-  //      Context context,
-  //      ValidationConfig validationConfig,
-  //      ICaller caller,
-  //      FileConfig expectedDataTemplate)
-  //      throws Exception {
-  //    log.info("CWLog init starting");
-  //    this.context = context;
-  //    logGroupName = String.format("otlp-receiver",
-  // context.getCloudWatchContext().getClusterName());
-  //    cloudWatchService = new CloudWatchService(context.getRegion());
-  //    MustacheHelper mustacheHelper = new MustacheHelper();
-  //    String templateInput = mustacheHelper.render(expectedDataTemplate, context);
-  //    JsonNode jsonNode = JsonLoader.fromString(templateInput);
-  //    JsonSchemaFactory jsonSchemaFactory =
-  //        JsonSchemaFactory.newBuilder()
-  //            .setReportProvider(new ListReportProvider(LogLevel.INFO, LogLevel.FATAL))
-  //            .freeze();
-  //    JsonSchema schema = jsonSchemaFactory.getJsonSchema(jsonNode);
-  //    this.schema = schema;
-  //    log.info(("CWLog init ending"));
-  //  }
-
   @Override
   public void validate() throws Exception {
-    log.info(("CWLog validate starting"));
     RetryHelper.retry(
         getMaxRetryCount(),
         CHECK_INTERVAL_IN_MILLI,
@@ -107,13 +70,11 @@ public class CWLogValidator implements IValidator {
         () -> {
           Instant startTime =
               Instant.now().minusSeconds(CHECK_DURATION_IN_SECONDS).truncatedTo(ChronoUnit.MINUTES);
-          log.info("Start time is: " + startTime.toEpochMilli());
           fetchAndValidateLogs(startTime);
         });
   }
 
   protected void fetchAndValidateLogs(Instant startTime) throws Exception {
-    log.info(("CWLog fetch starting"));
     List<OutputLogEvent> logEvents =
         cloudWatchService.getLogs(
             logGroupName, logStreamName, startTime.toEpochMilli(), QUERY_LIMIT);
@@ -124,9 +85,7 @@ public class CWLogValidator implements IValidator {
               "[StructuredLogValidator] no logs found under log stream %s" + " in log group %s",
               logStreamName, logGroupName));
     }
-    log.info("Number of log events: " + logEvents.size());
     for (OutputLogEvent logEvent : logEvents) {
-      log.info("Log message: " + logEvent.getMessage());
       if (logEvent.getMessage().contains("Executing outgoing-http-call")) {
         validateJsonSchema(logEvent.getMessage());
       }
@@ -134,14 +93,10 @@ public class CWLogValidator implements IValidator {
   }
 
   protected void validateJsonSchema(String logEventMsg) throws Exception {
-    log.info("In validateJsonSchema");
     JsonNode logEventNode = mapper.readTree(logEventMsg);
-    log.info("In validateJsonSchema - post readTree");
     if (schema != null) {
-      log.info("In validateJsonSchema - schema isn't null");
       ProcessingReport report = schema.validate(JsonLoader.fromString(logEventNode.toString()));
       if (report.isSuccess()) {
-        //        validatedSchema.add(key);
         log.info("Report was a success");
       } else {
         // This will probably generate a lot of extra logs
