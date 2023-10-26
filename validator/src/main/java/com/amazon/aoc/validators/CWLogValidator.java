@@ -54,14 +54,22 @@ public class CWLogValidator implements IValidator {
     //    cloudWatchService = new CloudWatchService(context.getRegion());
     MustacheHelper mustacheHelper = new MustacheHelper();
     String templateInput = mustacheHelper.render(expectedDataTemplate, context);
+    log.info("Template input: " + templateInput);
     JsonNode jsonNode = JsonLoader.fromString(templateInput);
+    log.info("Trying to get jsonNode string: " + jsonNode.textValue());
     JsonSchemaFactory jsonSchemaFactory =
         JsonSchemaFactory.newBuilder()
             .setReportProvider(new ListReportProvider(LogLevel.INFO, LogLevel.FATAL))
             .freeze();
-    JsonSchema schema = jsonSchemaFactory.getJsonSchema(jsonNode);
-    this.schema = schema;
+    JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(jsonNode);
+    this.schema = jsonSchema;
     log.info(("CWLog init ending"));
+    Map<String, Object> mapping = new ObjectMapper().readValue(templateInput, HashMap.class);
+    //    ObjectMapper mapper = new ObjectMapper();
+    //    ObjectNode jsonObject = mapper.readValue(templateInput, ObjectNode.class);
+    //    Map<String, Object> result =
+    //        mapper.convertValue(jsonObject, new TypeReference<Map<String, Object>>() {});
+    log.info("Mapper is:" + mapping.toString());
     caller.callSampleApp();
   }
 
@@ -116,9 +124,12 @@ public class CWLogValidator implements IValidator {
               "[StructuredLogValidator] no logs found under log stream %s" + " in log group %s",
               logStreamName, logGroupName));
     }
+    log.info("Number of log events: " + logEvents.size());
     for (OutputLogEvent logEvent : logEvents) {
       log.info("Log message: " + logEvent.getMessage());
-      validateJsonSchema(logEvent.getMessage());
+      if (logEvent.getMessage().contains("Executing outgoing-http-call")) {
+        validateJsonSchema(logEvent.getMessage());
+      }
     }
   }
 

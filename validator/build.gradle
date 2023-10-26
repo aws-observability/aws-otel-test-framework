@@ -53,6 +53,7 @@ dependencies {
   implementation 'com.amazonaws:aws-java-sdk-xray'
   implementation 'com.amazonaws:aws-java-sdk-logs'
   implementation 'com.amazonaws:aws-java-sdk-sts'
+  implementation group: 'javax.json', name: 'javax.json-api', version: '1.0-b01'
 
   // aws ecs sdk
   implementation 'com.amazonaws:aws-java-sdk-ecs'
