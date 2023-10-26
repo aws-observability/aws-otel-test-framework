@@ -83,6 +83,7 @@ class LogsTests {
             .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
             .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
             .withEnv(envVariables)
+            .withCreateContainerCmdModifier(cmd -> cmd.withUser("root"))
             .withClasspathResourceMapping("/logs", "/logs", BindMode.READ_WRITE)
             .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.receiver.filelog,+adot.exporter.awscloudwatchlogs,+adot.extension.file_storage");
 
@@ -96,7 +97,6 @@ class LogsTests {
     void testSyslog() throws Exception {
         String logStreamName = "rfcsyslog-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml", logStreamName);
-
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/RFC5424.log");
         inputStreams.add(inputStream);
@@ -110,7 +110,6 @@ class LogsTests {
     void testLog4j() throws Exception {
         String logStreamName = "log4j-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-log4j.yaml", logStreamName);
-
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/log4j.log");
         inputStreams.add(inputStream);
@@ -123,7 +122,6 @@ class LogsTests {
     void testJson() throws Exception {
         String logStreamName = "json-logstream-" + uniqueID;
         collector = createAndStartCollector("/configurations/config-json.yaml", logStreamName);
-
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/testingJSON.log");
         inputStreams.add(inputStream);
