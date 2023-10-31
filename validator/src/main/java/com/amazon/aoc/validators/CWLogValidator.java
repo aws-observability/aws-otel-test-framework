@@ -41,6 +41,7 @@ public class CWLogValidator implements IValidator {
   private ICaller caller;
 
   private Context context;
+  private String templateInput;
 
   private ProcessingReport processingReport = null;
 
@@ -58,7 +59,7 @@ public class CWLogValidator implements IValidator {
     cloudWatchService = new CloudWatchService(context.getRegion());
     logGroupName = String.format(LOGGROUPPATH, context.getTestingId());
     MustacheHelper mustacheHelper = new MustacheHelper();
-    String templateInput = mustacheHelper.render(expectedDataTemplate, context);
+    this.templateInput = mustacheHelper.render(expectedDataTemplate, context);
     JsonNode jsonNode = JsonLoader.fromString(templateInput);
     JsonSchemaFactory jsonSchemaFactory =
         JsonSchemaFactory.newBuilder()
@@ -100,6 +101,9 @@ public class CWLogValidator implements IValidator {
         validateJsonSchema(logEvent.getMessage());
       }
     }
+    if (processingReport == null || !processingReport.isSuccess()) {
+      throw new BaseException(ExceptionCode.EXPECTED_LOG_NOT_FOUND);
+    }
   }
 
   protected void validateJsonSchema(String logEventMsg) throws Exception {
@@ -111,6 +115,8 @@ public class CWLogValidator implements IValidator {
       } else {
         log.info("[StructuredLogValidator] failed to validate schema \n");
         log.info(processingReport.toString() + "\n");
+        log.info(("Actual Message: " + logEventMsg));
+        log.info("Expected Schema: " + templateInput);
       }
     }
   }

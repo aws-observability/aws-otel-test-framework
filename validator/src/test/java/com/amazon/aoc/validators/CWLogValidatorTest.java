@@ -6,6 +6,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.amazon.aoc.callers.HttpCaller;
+import com.amazon.aoc.exception.BaseException;
+import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.models.CloudWatchContext;
 import com.amazon.aoc.models.Context;
 import com.amazon.aoc.models.SampleAppResponse;
@@ -62,8 +64,9 @@ public class CWLogValidatorTest {
         "{\n"
             + "    \"body\": \"Executing outgoing-http-call\",\n"
             + "    \"severity_number\": 9,\n"
-            + "    \"severity_text\": \"ERROR\",\n"
+            + "    \"severity_text\": \"INFO\",\n"
             + "    \"flags\": 1,\n"
+            + "    \"span_id\": \"c6f853c5f487c5e6\",\n"
             + "    \"resource\": {\n"
             + "        \"service.name\": \"aws-otel-integ-test\"}}";
 
@@ -71,9 +74,10 @@ public class CWLogValidatorTest {
     outputLogEvent.setMessage(message);
     List<OutputLogEvent> eventList = new ArrayList<>();
     eventList.add(outputLogEvent);
-    CWLogValidator validator = runValidation(validationConfig, context, eventList);
-    ProcessingReport report = validator.getProcessingReport();
-    assertFalse(report.isSuccess());
+    BaseException e =
+        assertThrows(
+            BaseException.class, () -> runValidation(validationConfig, context, eventList));
+    assertEquals(e.getCode(), ExceptionCode.EXPECTED_LOG_NOT_FOUND.getCode());
   }
 
   @Test
@@ -90,8 +94,10 @@ public class CWLogValidatorTest {
         "{\n"
             + "    \"body\": \"bad-body\",\n"
             + "    \"severity_number\": 9,\n"
-            + "    \"severity_text\": \"ERROR\",\n"
+            + "    \"severity_text\": \"INFO\",\n"
             + "    \"flags\": 1,\n"
+            + "    \"trace_id\": \"6541324dc3026f11c99345889da1a47d\",\n"
+            + "    \"span_id\": \"c6f853c5f487c5e6\",\n"
             + "    \"resource\": {\n"
             + "        \"service.name\": \"aws-otel-integ-test\"}}";
 
@@ -99,9 +105,10 @@ public class CWLogValidatorTest {
     outputLogEvent.setMessage(message);
     List<OutputLogEvent> eventList = new ArrayList<>();
     eventList.add(outputLogEvent);
-    CWLogValidator validator = runValidation(validationConfig, context, eventList);
-    ProcessingReport report = validator.getProcessingReport();
-    assertNull(report);
+    BaseException e =
+        assertThrows(
+            BaseException.class, () -> runValidation(validationConfig, context, eventList));
+    assertEquals(e.getCode(), ExceptionCode.EXPECTED_LOG_NOT_FOUND.getCode());
   }
 
   private Context initContext() {
@@ -130,7 +137,6 @@ public class CWLogValidatorTest {
 
     CloudWatchService cloudWatchService = mock(CloudWatchService.class);
 
-    // mock listMetrics
     when(cloudWatchService.getLogs(any(), any(), anyLong(), anyInt())).thenReturn(mockActualEvents);
 
     // start validation
