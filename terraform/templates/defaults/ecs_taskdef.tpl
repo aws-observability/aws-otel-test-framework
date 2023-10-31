@@ -50,14 +50,6 @@
             "value": "127.0.0.1:${http_port}"
         },
         {
-            "name": "OTEL_METRICS_EXPORTER",
-            "value": "none"
-        },
-        {
-            "name": "OTEL_TRACES_EXPORTER",
-            "value": "otlp"
-        },
-        {
             "name": "OTEL_LOGS_EXPORTER",
             "value": "otlp"
         },
