@@ -40,7 +40,7 @@ jobs:
         with:
           arguments: build
       - name: Set up terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
       - name: run imagebuild
         working-directory: terraform/imagebuild
         run: |
