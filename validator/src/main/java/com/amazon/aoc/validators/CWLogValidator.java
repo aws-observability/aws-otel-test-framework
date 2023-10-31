@@ -38,6 +38,8 @@ public class CWLogValidator implements IValidator {
   private JsonSchema schema;
   protected String logGroupName;
 
+  private ICaller caller;
+
   private Context context;
 
   protected final ObjectMapper mapper = new ObjectMapper();
@@ -50,6 +52,7 @@ public class CWLogValidator implements IValidator {
       FileConfig expectedDataTemplate)
       throws Exception {
     this.context = context;
+    this.caller = caller;
     cloudWatchService = new CloudWatchService(context.getRegion());
     logGroupName = String.format(LOGGROUPPATH, context.getTestingId());
     MustacheHelper mustacheHelper = new MustacheHelper();
@@ -61,11 +64,11 @@ public class CWLogValidator implements IValidator {
             .freeze();
     JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(jsonNode);
     this.schema = jsonSchema;
-    caller.callSampleApp();
   }
 
   @Override
   public void validate() throws Exception {
+    caller.callSampleApp();
     RetryHelper.retry(
         getMaxRetryCount(),
         CHECK_INTERVAL_IN_MILLI,
