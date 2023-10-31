@@ -25,14 +25,14 @@ dependencies {
   testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
 
   // log
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.21.0'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.21.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.21.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.21.1'
 
   // mustache template
   implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.11'
 
   // apache io utils
-  implementation group: 'commons-io', name: 'commons-io', version: '2.14.0'
+  implementation group: 'commons-io', name: 'commons-io', version: '2.15.0'
 
   // yaml reader
   implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.15.3'
@@ -47,7 +47,7 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.5'
 
   // aws sdk
-  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.572')
+  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.577')
   implementation 'com.amazonaws:aws-java-sdk-s3'
   implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
   implementation 'com.amazonaws:aws-java-sdk-xray'
