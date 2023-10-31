@@ -1,0 +1,32 @@
+{
+  "title": "structured log schema",
+  "description": "json schema for the container insights receiver ECS EC2 structured log",
+  "type": "object",
+
+  "properties": {
+    "body": {},
+    "severity_number": {},
+    "severity_text": {},
+    "flags": {},
+    "trace_id": {},
+    "span_id": {},
+    "resource": {
+      "properties": {
+        "service.name": {}
+      },
+      "required": [
+        "service.name"
+      ]
+    }
+  },
+  "required": [
+    "body",
+    "severity_number",
+    "severity_text",
+    "flags",
+    "trace_id",
+    "span_id",
+    "resource"
+  ],
+  "additionalProperties": true
+}

@@ -33,7 +33,7 @@ public class CWLogValidator implements IValidator {
   protected CloudWatchService cloudWatchService;
   private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
   private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
-  private static final int MAX_RETRY_COUNT = 12;
+  private static int MAX_RETRY_COUNT = 12;
   private static final int QUERY_LIMIT = 100;
   private JsonSchema schema;
   protected String logGroupName;
@@ -41,6 +41,8 @@ public class CWLogValidator implements IValidator {
   private ICaller caller;
 
   private Context context;
+
+  private ProcessingReport processingReport = null;
 
   protected final ObjectMapper mapper = new ObjectMapper();
 
@@ -68,7 +70,9 @@ public class CWLogValidator implements IValidator {
 
   @Override
   public void validate() throws Exception {
-    caller.callSampleApp();
+    if (caller != null) {
+      caller.callSampleApp();
+    }
     RetryHelper.retry(
         getMaxRetryCount(),
         CHECK_INTERVAL_IN_MILLI,
@@ -101,17 +105,29 @@ public class CWLogValidator implements IValidator {
   protected void validateJsonSchema(String logEventMsg) throws Exception {
     JsonNode logEventNode = mapper.readTree(logEventMsg);
     if (schema != null) {
-      ProcessingReport report = schema.validate(JsonLoader.fromString(logEventNode.toString()));
-      if (report.isSuccess()) {
+      processingReport = schema.validate(JsonLoader.fromString(logEventNode.toString()));
+      if (processingReport.isSuccess()) {
         log.info("Report was a success");
       } else {
         log.info("[StructuredLogValidator] failed to validate schema \n");
-        log.info(report.toString() + "\n");
+        log.info(processingReport.toString() + "\n");
       }
     }
   }
 
   protected int getMaxRetryCount() {
     return MAX_RETRY_COUNT;
+  }
+
+  protected ProcessingReport getProcessingReport() {
+    return processingReport;
+  }
+
+  public void setCloudWatchService(CloudWatchService cloudWatchService) {
+    this.cloudWatchService = cloudWatchService;
+  }
+
+  public void setMaxRetryCount(int maxRetryCount) {
+    this.MAX_RETRY_COUNT = maxRetryCount;
   }
 }
