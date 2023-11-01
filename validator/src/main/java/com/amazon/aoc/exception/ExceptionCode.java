@@ -37,6 +37,7 @@ public enum ExceptionCode {
   NOT_ENOUGH_SPANS(50010, "not enough spans in the trace"),
   COLLECTOR_ID_NOT_MATCHED(50011, "span collector-id attribute does not match"),
   NULL_VAR(50012, "variable is null"),
+  EXPECTED_LOG_NOT_FOUND(50013, "expected log not found"),
 
   // build validator
   VALIDATION_TYPE_NOT_EXISTED(60001, "validation type not existed"),

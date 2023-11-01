@@ -42,16 +42,20 @@
             "value": "${sample_app_listen_address}"
         },
         {
-        "name": "JAEGER_RECEIVER_ENDPOINT",
-        "value": "127.0.0.1:${http_port}"
+            "name": "JAEGER_RECEIVER_ENDPOINT",
+            "value": "127.0.0.1:${http_port}"
         },
         {
-        "name": "ZIPKIN_RECEIVER_ENDPOINT",
-        "value": "127.0.0.1:${http_port}"
+            "name": "ZIPKIN_RECEIVER_ENDPOINT",
+            "value": "127.0.0.1:${http_port}"
         },
         {
-        "name": "OTEL_METRICS_EXPORTER",
-        "value": "otlp"
+            "name": "OTEL_LOGS_EXPORTER",
+            "value": "otlp"
+        },
+        {
+            "name": "SAMPLE_APP_LOG_LEVEL",
+            "value": "INFO"
         }
       ],
       "dependsOn": [

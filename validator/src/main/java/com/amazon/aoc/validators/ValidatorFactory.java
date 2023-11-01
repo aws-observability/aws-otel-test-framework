@@ -54,6 +54,10 @@ public class ValidatorFactory {
         validator = new CWMetricValidator();
         expectedData = validationConfig.getExpectedMetricTemplate();
         break;
+      case "cw-logs":
+        validator = new CWLogValidator();
+        expectedData = validationConfig.getExpectedLogStructureTemplate();
+        break;
       case "ecs-describe-task":
         validator = new ECSHealthCheckValidator(new TaskService(), 10);
         expectedData = validationConfig.getExpectedMetricTemplate();
