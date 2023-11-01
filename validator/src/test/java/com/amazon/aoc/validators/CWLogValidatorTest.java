@@ -14,7 +14,6 @@ import com.amazon.aoc.models.SampleAppResponse;
 import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.logs.model.OutputLogEvent;
-import com.github.fge.jsonschema.report.ProcessingReport;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
