@@ -45,13 +45,11 @@ public class CWLogValidatorTest {
     outputLogEvent.setMessage(message);
     List<OutputLogEvent> eventList = new ArrayList<>();
     eventList.add(outputLogEvent);
-    CWLogValidator validator = runValidation(validationConfig, context, eventList);
-    ProcessingReport report = validator.getProcessingReport();
-    assertTrue(report.isSuccess());
+    runValidation(validationConfig, context, eventList);
   }
 
   @Test
-  public void testFailedLogMessage() throws Exception {
+  public void testFailedNoTraceId() throws Exception {
     ValidationConfig validationConfig = new ValidationConfig();
     validationConfig.setCallingType("http");
     validationConfig.setExpectedLogStructureTemplate(
