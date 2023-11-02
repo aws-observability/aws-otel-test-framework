@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   newrelic:
     apikey: super-secret-api-key
     traces:

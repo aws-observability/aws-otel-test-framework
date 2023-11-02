@@ -20,8 +20,6 @@ processors:
             new_value: "${testing_id}"
 
 exporters:
-  logging:
-    verbosity: detailed
   awsemf:
     region: '${region}'
 
@@ -30,7 +28,7 @@ service:
     metrics:
       receivers: [otlp]
       processors: [metricstransform, batch]
-      exporters: [logging, awsemf]
+      exporters: [awsemf]
   extensions: [pprof]
   telemetry:
     logs:

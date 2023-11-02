@@ -20,8 +20,6 @@ processors:
           threshold_ms: 200
 
 exporters:
-  logging:
-    verbosity: detailed
   awsxray:
     region: ${region}
     local_mode: true

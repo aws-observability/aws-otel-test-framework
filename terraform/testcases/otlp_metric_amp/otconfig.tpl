@@ -14,8 +14,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   prometheusremotewrite:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
     timeout: 10s
@@ -27,7 +25,7 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [prometheusremotewrite,logging]
+      exporters: [prometheusremotewrite]
   extensions: [pprof, sigv4auth]
   telemetry:
     logs:

@@ -8,8 +8,6 @@ receivers:
       batch:
 
     exporters:
-      logging:
-        verbosity: detailed
       awsemf:
         region: '${region}'
 
@@ -18,7 +16,7 @@ receivers:
         metrics:
           receivers: [otlp]
           processors: [batch]
-          exporters: [logging,awsemf]
+          exporters: [awsemf]
       telemetry:
         logs:
           level: ${log_level}

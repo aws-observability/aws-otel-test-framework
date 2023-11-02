@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   signalfx:
     access_token: dummytoken
     ingest_url: "https://${mock_endpoint}"

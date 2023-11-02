@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   otlp:
     endpoint: ${mock_endpoint}
     tls:

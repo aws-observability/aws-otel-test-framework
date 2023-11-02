@@ -154,8 +154,6 @@ exporters:
         metric_name_selectors:
           - "^envoy_http_downstream_rq_xx$"
 
-  logging:
-    verbosity: detailed
 
 service:
   telemetry:

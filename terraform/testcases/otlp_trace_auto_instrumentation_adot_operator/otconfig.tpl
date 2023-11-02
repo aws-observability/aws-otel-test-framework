@@ -8,8 +8,6 @@ receivers:
       batch:
 
     exporters:
-      logging:
-        verbosity: detailed
       awsxray:
         local_mode: true
         region: '${region}'
@@ -19,7 +17,7 @@ receivers:
         traces:
           receivers: [otlp]
           processors: [batch]
-          exporters: [logging,awsxray]
+          exporters: [awsxray]
       telemetry:
         logs:
           level: ${log_level}

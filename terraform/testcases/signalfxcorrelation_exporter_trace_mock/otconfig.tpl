@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   signalfx_correlation:
     endpoint: "https://${mock_endpoint}"
 

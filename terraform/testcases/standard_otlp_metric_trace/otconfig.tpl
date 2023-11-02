@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   awsemf:
     region: ${region}
     no_verify_ssl: false
@@ -26,11 +24,11 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, awsemf]
+      exporters: [awsemf]
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, awsxray]
+      exporters: [awsxray]
   extensions: [pprof]
   telemetry:
     logs:
