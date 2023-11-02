@@ -18,6 +18,7 @@ exporters:
     verbosity: detailed
   prometheusremotewrite:
     endpoint: ${cortex_instance_endpoint}/api/v1/remote_write
+    add_metric_suffixes: false
     timeout: 10s
     auth:
       authenticator: sigv4auth
