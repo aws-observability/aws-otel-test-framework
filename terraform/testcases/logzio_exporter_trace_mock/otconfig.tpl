@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   logzio/traces:
     account_token: testToken
     endpoint: "https://${mock_endpoint}"

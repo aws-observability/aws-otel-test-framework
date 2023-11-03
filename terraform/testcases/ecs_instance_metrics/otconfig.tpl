@@ -39,14 +39,12 @@ exporters:
           - instance_cpu_limit
           - instance_memory_working_set
           - instance_memory_limit
-  logging:
-    verbosity: detailed
 service:
   pipelines:
     metrics:
       receivers: [awscontainerinsightreceiver]
       processors: [batch/metrics]
-      exporters: [awsemf,logging]
+      exporters: [awsemf]
   telemetry:
     logs:
       level: ${log_level}

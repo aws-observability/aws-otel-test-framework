@@ -22,13 +22,11 @@ exporters:
     timeout: 10s
     auth:
       authenticator: sigv4auth
-  logging:
-    verbosity: detailed
 service:
   pipelines:
     metrics:
      receivers: [prometheus]
-     exporters: [prometheusremotewrite, logging]
+     exporters: [prometheusremotewrite]
   extensions: [sigv4auth]
   telemetry:
     logs:

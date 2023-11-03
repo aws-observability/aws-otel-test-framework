@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   sapm:
     endpoint: "https://${mock_endpoint}"
 

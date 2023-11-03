@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   newrelic:
     apikey: super-secret-api-key
     traces:
@@ -25,7 +23,7 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, newrelic]
+      exporters: [newrelic]
   extensions: [pprof]
   telemetry:
     logs:

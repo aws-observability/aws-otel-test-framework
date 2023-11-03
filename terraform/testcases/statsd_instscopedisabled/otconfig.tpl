@@ -6,13 +6,11 @@ exporters:
   awsemf:
     namespace: '${otel_service_namespace}/${otel_service_name}'
     region: '${region}'
-  logging:
-    verbosity: detailed
 service:
   pipelines:
     metrics:
       receivers: [statsd]
-      exporters: [awsemf, logging]
+      exporters: [awsemf]
   telemetry:
     logs:
       level: ${log_level}

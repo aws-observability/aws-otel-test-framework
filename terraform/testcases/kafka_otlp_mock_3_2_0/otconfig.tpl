@@ -20,8 +20,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   awsxray:
     region: '${region}'
     local_mode: true
@@ -41,11 +39,11 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [logging,kafka/exporter]
+      exporters: [kafka/exporter]
     traces/2:
       receivers: [kafka/receiver]
       processors: [batch]
-      exporters: [logging,awsxray]
+      exporters: [awsxray]
   extensions: [pprof]
   telemetry:
     logs:

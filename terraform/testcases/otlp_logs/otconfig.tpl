@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   awscloudwatchlogs:
     log_group_name: "/aws/ecs/otlp/${testing_id}/logs"
     log_stream_name: "otlp-logs"
@@ -23,7 +21,7 @@ service:
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, awscloudwatchlogs]
+      exporters: [awscloudwatchlogs]
   extensions: [pprof]
   telemetry:
     logs:

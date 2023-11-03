@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   awsemf:
     region: '${region}'
 
@@ -21,7 +19,7 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, awsemf]
+      exporters: [awsemf]
   extensions: [pprof]
   telemetry:
     logs:

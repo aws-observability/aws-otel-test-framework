@@ -3,8 +3,6 @@ receivers:
     endpoint: 0.0.0.0:${udp_port}
     aggregation_interval: 20s
 exporters:
-  logging:
-    verbosity: detailed
   otlphttp:
     metrics_endpoint: "https://${mock_endpoint}"
     tls:
