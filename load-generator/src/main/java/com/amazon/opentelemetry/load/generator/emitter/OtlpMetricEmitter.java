@@ -29,6 +29,8 @@ import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 import lombok.extern.log4j.Log4j2;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -119,7 +121,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
     if(meter!= null) {
       log.info("Registering counter metrics...");
       counters = new LongCounter[param.getDatapointCount()];
-      for(int id=0 ; id < param.getMetricCount(); id++) {
+      for(int id=0 ; id < param.getDatapointCount(); id++) {
         counters[id] = meter.counterBuilder(API_COUNTER_METRIC + id)
                 .setDescription("API request load sent in bytes")
                 .setUnit("one")
