@@ -119,7 +119,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
     if(meter!= null) {
       log.info("Registering counter metrics...");
       counters = new LongCounter[param.getDatapointCount()];
-      for(int id=0 ; id < param.getMetricCount(); id++) {
+      for(int id=0 ; id < param.getDatapointCount(); id++) {
         counters[id] = meter.counterBuilder(API_COUNTER_METRIC + id)
                 .setDescription("API request load sent in bytes")
                 .setUnit("one")
