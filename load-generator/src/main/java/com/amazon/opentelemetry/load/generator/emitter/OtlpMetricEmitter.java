@@ -121,15 +121,16 @@ public class OtlpMetricEmitter extends MetricEmitter {
         if (meter != null) {
             log.info("Registering gauge metrics...");
             gaugeValues = new long[param.getRate() * 5];
-            for (int i = 0; i < param.getRate() * 5; i++) {
-                meter.gaugeBuilder(API_LATENCY_METRIC + i)
+            int id = 0;
+            for (long gaugeValue : gaugeValues) {
+                meter.gaugeBuilder(API_LATENCY_METRIC + id++)
                         .setDescription("API latency time")
                         .setUnit("ms")
                         .ofLongs().buildWithCallback(measurement ->
                                 {
                                     Attributes atr = Attributes.of(AttributeKey.stringKey(DIMENSION_API_NAME), API_NAME,
                                             AttributeKey.stringKey(DIMENSION_STATUS_CODE), "200");
-                                    measurement.record(gaugeValues[0], atr);
+                                    measurement.record(gaugeValue, atr);
                                 }
                         );
             }
