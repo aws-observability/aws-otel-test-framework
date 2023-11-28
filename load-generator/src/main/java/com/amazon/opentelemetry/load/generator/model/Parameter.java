@@ -27,12 +27,8 @@ import lombok.ToString;
 public class Parameter {
 
   private int rate;
-  private long flushInterval;
   private String dataFormat;
   private String endpoint;
-  private int metricCount;
-  private int datapointCount;
-  private long observationInterval;
   private String metricType;
 
 }

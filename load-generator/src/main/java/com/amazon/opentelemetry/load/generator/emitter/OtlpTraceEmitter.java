@@ -38,6 +38,7 @@ public class OtlpTraceEmitter extends TraceEmitter {
 
   Tracer tracer;
 
+  private static int value = 0;
   public OtlpTraceEmitter(Parameter param) {
     super();
     this.param = param;
@@ -74,7 +75,7 @@ public class OtlpTraceEmitter extends TraceEmitter {
   @Override
   public void nextDataPoint() {
     Span exampleSpan = tracer.spanBuilder("Example Span").setSpanKind(SpanKind.SERVER).startSpan();
-
+    exampleSpan.setAttribute("counter", value++);
     exampleSpan.setAttribute("good", "true");
     exampleSpan.setAttribute("exampleNumber", UUID.randomUUID().toString());
     exampleSpan.end();
