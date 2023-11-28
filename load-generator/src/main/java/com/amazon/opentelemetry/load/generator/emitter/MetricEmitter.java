@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public abstract class MetricEmitter implements Emitter {
-  protected static final long FLUSH_INTERVAL = 5000;
+  protected static final long FLUSH_INTERVAL = 1000;
   protected static final String DIMENSION_API_NAME = "apiName";
   protected static final String DIMENSION_STATUS_CODE = "statusCode";
   protected static String API_COUNTER_METRIC = "apiBytesSent";

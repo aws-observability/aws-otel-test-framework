@@ -64,7 +64,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
                 }
                 break;
             case "gauge":
-                for (int i = 0; i < param.getRate() * 5; i++) {
+                for (int i = 0; i < param.getRate(); i++) {
                     this.gaugeValues[i] = ThreadLocalRandom.current().nextLong(-100, 100);
                 }
                 break;
@@ -105,8 +105,8 @@ public class OtlpMetricEmitter extends MetricEmitter {
     private void createCounters(Meter meter) {
         if (meter != null) {
             log.info("Registering counter metrics...");
-            counters = new LongCounter[param.getRate() * 5];
-            for (int i = 0; i < param.getRate() * 5; i++) {
+            counters = new LongCounter[param.getRate()];
+            for (int i = 0; i < param.getRate(); i++) {
                 counters[i] = meter.counterBuilder(API_COUNTER_METRIC + i)
                         .setDescription("API request load sent in bytes")
                         .setUnit("one")
@@ -120,7 +120,7 @@ public class OtlpMetricEmitter extends MetricEmitter {
     private void createGauges(Meter meter) {
         if (meter != null) {
             log.info("Registering gauge metrics...");
-            gaugeValues = new long[param.getRate() * 5];
+            gaugeValues = new long[param.getRate()];
             int id = 0;
             for (long gaugeValue : gaugeValues) {
                 meter.gaugeBuilder(API_LATENCY_METRIC + id++)

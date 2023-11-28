@@ -67,7 +67,7 @@ public class StatsdMetricEmitter extends MetricEmitter {
         payload = new StringBuilder();
         String attributes = "#mykey:myvalue,datapoint_id:";
         log.debug("Updating metrics...");
-        for (int i = 0; i < this.param.getRate() * 5; i++) {
+        for (int i = 0; i < this.param.getRate(); i++) {
             payload.append("statsdTestMetric").append(i).append(":")
                     .append(ThreadLocalRandom.current().nextInt(-100, 100))
                     .append("|g|").append(attributes).append(i).append("\n");
