@@ -24,7 +24,7 @@ public abstract class TraceEmitter implements Emitter {
 
   @Override
   public void start(Runnable emitter) {
-    scheduler.scheduleAtFixedRate(emitter, TimeUnit.SECONDS.toMillis(5000),
+    scheduler.scheduleAtFixedRate(emitter, 0,
         TimeUnit.SECONDS.toNanos(1) / this.param.getRate(), TimeUnit.NANOSECONDS);
   };
 }
