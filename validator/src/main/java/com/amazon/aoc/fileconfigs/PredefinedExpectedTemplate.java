@@ -60,8 +60,6 @@ public enum PredefinedExpectedTemplate implements FileConfig {
       "/expected-data-template/springboot/springbootAppExpectedHTTPTrace.mustache"),
   SPRINGBOOT_SDK_AWSSDK_EXPECTED_TRACE(
       "/expected-data-template/springboot/springbootAppExpectedAWSSDKTrace.mustache"),
-  SPRINGBOOT_SDK_AWSSDK_2_EXPECTED_TRACE(
-      "/expected-data-template/springboot/springbootAppExpectedAWSSDK2Trace.mustache"),
   GO_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/go/goAppExpectedHTTPTrace.mustache"),
   GO_SDK_AWSSDK_EXPECTED_TRACE("/expected-data-template/go/goAppExpectedAWSSDKTrace.mustache"),
   JS_SDK_HTTP_EXPECTED_TRACE("/expected-data-template/js/jsAppExpectedHTTPTrace.mustache"),
