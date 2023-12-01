@@ -22,6 +22,10 @@ import picocli.CommandLine.Option;
 @Command(footer = "Common parameter options for both Metric and Trace")
 public class CommonOption {
 
+  @Option(names = {"-r", "--rate"},
+          description = "the number of data points will be sent per second",
+          defaultValue = "10")
+  private int rate;
   @Option(names = {"-u", "--url"},
       description = "adot-collector receiver endpoint",
       defaultValue = "localhost:4317")
@@ -35,6 +39,7 @@ public class CommonOption {
 
   public Parameter buildParameter() {
     return Parameter.builder()
+        .rate(rate)
         .dataFormat(dataFormat)
         .endpoint(endpoint)
         .build();

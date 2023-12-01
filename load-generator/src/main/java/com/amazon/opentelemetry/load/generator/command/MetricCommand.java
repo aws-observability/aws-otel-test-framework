@@ -19,10 +19,8 @@ import com.amazon.opentelemetry.load.generator.emitter.Emitter;
 import com.amazon.opentelemetry.load.generator.emitter.EmitterFactory;
 import com.amazon.opentelemetry.load.generator.model.DataType;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
-import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 import picocli.CommandLine.Option;
@@ -36,10 +34,6 @@ public class MetricCommand implements Runnable {
 
   @Mixin
   CommonOption commonOption = new CommonOption();
-  @CommandLine.Option(names = {"-r", "--rate"},
-          description = "the number of data points will be sent per second",
-          defaultValue = "10")
-  private int rate;
 
   @Option(names = {"-mt", "--metricType"},
           description = "Specify the type of metric - counter or gauge",
@@ -51,8 +45,6 @@ public class MetricCommand implements Runnable {
   public void run() {
     Parameter param = commonOption.buildParameter();
     param.setMetricType(metricType);
-    param.setRate(rate);
-
 
     log.info("param: {} " + param);
 

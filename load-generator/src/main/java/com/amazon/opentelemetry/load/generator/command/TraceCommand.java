@@ -21,7 +21,6 @@ import com.amazon.opentelemetry.load.generator.model.DataType;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
-import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
 
@@ -35,17 +34,10 @@ public class TraceCommand implements Runnable {
   @Mixin
   CommonOption commonOption = new CommonOption();
 
-  @CommandLine.Option(names = {"-r", "--rate"},
-          description = "the number of data points will be sent per second",
-          defaultValue = "10")
-  private int rate;
-
   @SneakyThrows
   @Override
   public void run() {
     Parameter param = commonOption.buildParameter();
-    param.setRate(rate);
-
     log.info("param: {} " + param);
 
     Emitter emitter = EmitterFactory.getEmitter(param, DataType.Trace);

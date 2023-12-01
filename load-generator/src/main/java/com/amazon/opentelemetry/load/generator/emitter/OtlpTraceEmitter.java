@@ -59,7 +59,7 @@ public class OtlpTraceEmitter extends TraceEmitter {
                     .addSpanProcessor(
                             BatchSpanProcessor.builder(OtlpGrpcSpanExporter.getDefault())
                                     .setMaxQueueSize(5000)
-                                    .setScheduleDelay(Duration.ofMillis(1000)).build())
+                                    .setScheduleDelay(Duration.ofMillis(FLUSH_INTERVAL)).build())
                     .setIdGenerator(AwsXrayIdGenerator.getInstance())
                     .setResource(resource)
                     .build())
