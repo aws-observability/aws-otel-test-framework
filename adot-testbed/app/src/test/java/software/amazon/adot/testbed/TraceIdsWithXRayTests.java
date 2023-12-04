@@ -77,7 +77,7 @@ class TraceIdsWithXRayTests {
             .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
             .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
             .withEnv(envVariables)
-            .withCommand("--config", "/etc/collector/config.yaml", "AWS_REGION=us-west-2");
+            .withCommand("--config", "/etc/collector/config.yaml");
 
         collector.start();
         return collector;
@@ -120,7 +120,7 @@ class TraceIdsWithXRayTests {
         }
 
         // Takes a few seconds for traces to appear in XRay
-        Thread.sleep(15000);
+        Thread.sleep(20000);
 
         assertThat(traceIds).hasSize(numOfTraces);
         return traceIds;
