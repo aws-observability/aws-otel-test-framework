@@ -30,7 +30,7 @@ jobs:
           role-to-assume: ${{ secrets.TEST_FW_ASSUMABLE_ROLE_ARN }}
           aws-region: us-west-2
           role-duration-seconds: 7200
-      - uses: actions/setup-java@v3
+      - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: 17
