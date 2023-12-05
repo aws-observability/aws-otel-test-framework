@@ -16,6 +16,9 @@ spec:
       containers:
         - name: aws-otel-collector
           image: ${OTELIMAGE}
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
           env:
             - name: K8S_NODE_NAME
               valueFrom:
@@ -59,10 +62,10 @@ spec:
               mountPath: /conf
           resources:
             limits:
-              cpu:  200m
+              cpu:  100m
               memory: 200Mi
             requests:
-              cpu: 200m
+              cpu: 100m
               memory: 200Mi
       volumes:
         - configMap:

@@ -11,18 +11,17 @@ processors:
   batch:
 
 exporters:
-  awsxray:
+  awscloudwatchlogs:
+    log_group_name: "/aws/ecs/otlp/${testing_id}/logs"
+    log_stream_name: "otlp-logs"
     region: ${region}
-    local_mode: true
-    no_verify_ssl: false
-    endpoint: "${mock_endpoint}"
 
 service:
   pipelines:
-    traces:
+    logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [awsxray]
+      exporters: [awscloudwatchlogs]
   extensions: [pprof]
   telemetry:
     logs:

@@ -1,0 +1,6 @@
+-
+  validationType: "cw-logs"
+  httpPath: "/outgoing-http-call"
+  httpMethod: "get"
+  callingType: "http"
+  expectedLogStructureTemplate: "DEFAULT_EXPECTED_LOG"

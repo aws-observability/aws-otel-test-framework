@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   otlphttp:
     traces_endpoint: "https://${mock_endpoint}"
     tls:
@@ -24,7 +22,7 @@ service:
     traces:
       receivers: [jaeger]
       processors: [batch]
-      exporters: [otlphttp, logging]
+      exporters: [otlphttp]
   extensions: [pprof]
   telemetry:
     logs:

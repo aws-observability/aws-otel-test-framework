@@ -153,10 +153,8 @@ public class App implements Callable<Integer> {
     // load config
     List<ValidationConfig> validationConfigList =
         new ConfigLoadHelper().loadConfigFromFile(configPath);
-
     // run validation
     validate(context, validationConfigList);
-
     Instant endTime = Instant.now();
     Duration duration = Duration.between(startTime, endTime);
     log.info("Validation has completed in {} minutes.", duration.toMinutes());

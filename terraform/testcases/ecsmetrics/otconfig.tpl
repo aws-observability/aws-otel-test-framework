@@ -94,15 +94,13 @@ exporters:
     region: '${region}'
     resource_to_telemetry_conversion:
       enabled: true
-  logging:
-    verbosity: detailed
 
 service:
   pipelines:
     metrics:
       receivers: [awsecscontainermetrics]
       processors: [filter, metricstransform, resource]
-      exporters: [awsemf,logging]
+      exporters: [awsemf]
   extensions: [pprof]
   telemetry:
     logs:

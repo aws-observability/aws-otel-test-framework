@@ -20,8 +20,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   awsemf:
     region: '${region}'
   kafka/exporter:
@@ -39,10 +37,10 @@ service:
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, kafka/exporter]
+      exporters: [kafka/exporter]
     metrics/2:
       receivers: [kafka/receiver]
-      exporters: [logging, awsemf]
+      exporters: [awsemf]
   extensions: [pprof]
   telemetry:
     logs:

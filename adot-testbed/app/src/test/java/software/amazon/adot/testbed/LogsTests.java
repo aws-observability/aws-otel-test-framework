@@ -49,7 +49,6 @@ class LogsTests extends CollectorSetup {
     void testSyslog() throws Exception {
         String logStreamName = "rfcsyslog-logstream-" + uniqueID;
         collector = createAndStartCollectorForLogs("/configurations/config-rfcsyslog.yaml", logStreamName);
-
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/RFC5424.log");
         inputStreams.add(inputStream);
@@ -63,7 +62,6 @@ class LogsTests extends CollectorSetup {
     void testLog4j() throws Exception {
         String logStreamName = "log4j-logstream-" + uniqueID;
         collector = createAndStartCollectorForLogs("/configurations/config-log4j.yaml", logStreamName);
-
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/log4j.log");
         inputStreams.add(inputStream);
@@ -76,7 +74,6 @@ class LogsTests extends CollectorSetup {
     void testJson() throws Exception {
         String logStreamName = "json-logstream-" + uniqueID;
         collector = createAndStartCollectorForLogs("/configurations/config-json.yaml", logStreamName);
-
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/testingJSON.log");
         inputStreams.add(inputStream);

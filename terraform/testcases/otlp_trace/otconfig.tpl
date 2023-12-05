@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   awsxray:
     local_mode: true
     region: '${region}'
@@ -22,7 +20,7 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging,awsxray]
+      exporters: [awsxray]
   extensions: [pprof]
   telemetry:
     logs:

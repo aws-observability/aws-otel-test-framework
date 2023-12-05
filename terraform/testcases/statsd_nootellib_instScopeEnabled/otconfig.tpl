@@ -15,13 +15,11 @@ exporters:
           - "statsdTestMetric1h_*"
           - "statsdTestMetric1c_*"
 
-  logging:
-    verbosity: detailed
 service:
   pipelines:
     metrics:
       receivers: [statsd]
-      exporters: [awsemf, logging]
+      exporters: [awsemf]
   telemetry:
     logs:
       level: ${log_level}

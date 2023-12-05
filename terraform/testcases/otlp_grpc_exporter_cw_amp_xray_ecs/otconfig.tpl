@@ -124,27 +124,25 @@ exporters:
   awsxray:
     local_mode: true
     region: '${region}'
-  logging:
-    verbosity: detailed
 
 service:
   pipelines:
     metrics/container/cw:
       receivers: [awsecscontainermetrics]
       processors: [ filter, metricstransform, resource, batch]
-      exporters: [awsemf,logging]
+      exporters: [awsemf]
     metrics/container/amp:
       receivers: [ awsecscontainermetrics ]
       processors: [ filter, metricstransform, resource, batch ]
-      exporters: [ prometheusremotewrite, logging ]
+      exporters: [ prometheusremotewrite]
     metrics/application/cw:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
-      exporters: [ awsemf,logging ]
+      exporters: [ awsemf]
     metrics/application/amp:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]
-      exporters: [ prometheusremotewrite, logging ]
+      exporters: [ prometheusremotewrite]
     traces/application/xray:
       receivers: [ otlp ]
       processors: [ resourcedetection, batch ]

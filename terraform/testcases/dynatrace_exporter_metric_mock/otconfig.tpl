@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   dynatrace:
     api_token: mytoken
     endpoint: "https://${mock_endpoint}"

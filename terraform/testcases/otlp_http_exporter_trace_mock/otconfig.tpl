@@ -11,8 +11,6 @@ processors:
   batch:
 
 exporters:
-  logging:
-    verbosity: detailed
   otlphttp:
     traces_endpoint: "https://${mock_endpoint}"
     tls:

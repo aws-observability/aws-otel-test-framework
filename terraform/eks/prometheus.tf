@@ -45,7 +45,7 @@ resource "kubernetes_deployment" "standalone_aoc_deployment" {
           }
           resources {
             limits = {
-              cpu    = "0.2"
+              cpu    = "100m"
               memory = "256Mi"
             }
           }
