@@ -1,28 +1,19 @@
 package software.amazon.adot.testbed;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Files;
-
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
+
+import com.github.rholder.retry.RetryerBuilder;
+import com.github.rholder.retry.StopStrategies;
+import com.github.rholder.retry.WaitStrategies;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.TestInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.FixedHostPortGenericContainer;
-import org.testcontainers.containers.InternetProtocol;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.MountableFile;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +33,7 @@ import io.opentelemetry.sdk.trace.samplers.Sampler;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
 import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
 import io.opentelemetry.sdk.trace.export.BatchSpanProcessor;
+import io.opentelemetry.sdk.trace.IdGenerator;
 
 import software.amazon.awssdk.http.SdkHttpClient;
 import software.amazon.awssdk.regions.Region;
@@ -51,54 +43,25 @@ import software.amazon.awssdk.services.xray.model.BatchGetTracesResponse;
 
 @Testcontainers(disabledWithoutDocker = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class TraceIdsWithXRayTests {
-        private static final String TEST_IMAGE = System.getenv("TEST_IMAGE") != null && !System.getenv("TEST_IMAGE").isEmpty()
-        ? System.getenv("TEST_IMAGE")
-        : "public.ecr.aws/aws-observability/aws-otel-collector:latest";
-    private final Logger collectorLogger = LoggerFactory.getLogger("collector");
-    private GenericContainer<?> collector;
-
-    private GenericContainer<?> createAndStartCollector(String configFilePath) throws IOException {
-
-        // Create an environment variable map
-        Map<String, String> envVariables = new HashMap<>();
-        // Set credentials
-        envVariables.put("AWS_REGION", System.getenv("AWS_REGION"));
-        envVariables.put("AWS_ACCESS_KEY_ID", System.getenv("AWS_ACCESS_KEY_ID"));
-        envVariables.put("AWS_SECRET_ACCESS_KEY", System.getenv("AWS_SECRET_ACCESS_KEY"));
-        // Check if AWS_SESSION_TOKEN is not null before adding it
-        if (System.getenv("AWS_SESSION_TOKEN") != null) {
-            envVariables.put("AWS_SESSION_TOKEN", System.getenv("AWS_SESSION_TOKEN"));
-        }
-
-        var collector = new FixedHostPortGenericContainer<>(TEST_IMAGE)
-            .withCopyFileToContainer(MountableFile.forClasspathResource(configFilePath), "/etc/collector/config.yaml")
-            .withFixedExposedPort(4317, 4317, InternetProtocol.TCP)
-            .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
-            .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
-            .withEnv(envVariables)
-            .withCommand("--config", "/etc/collector/config.yaml");
-
-        collector.start();
-        return collector;
-    }
+class TraceIdsWithXRayTests extends CollectorSetup {
+    private static final IdGenerator XRAY_ID_GENERATOR = AwsXrayIdGenerator.getInstance();
 
     @Test
     void testXRayTraceIdSendToXRay() throws Exception {
-        List<String> traceIds = createTraces(true);
+        List<String> traceIds = createTraces(XRAY_ID_GENERATOR);
         validateTracesInXRay(traceIds);
     }
 
     @Test
     void testW3CTraceIdSendToXRay() throws Exception {
-        List<String> traceIds = createTraces(false);
+        List<String> traceIds = createTraces(null);
         validateTracesInXRay(traceIds);
     }
 
-    List<String> createTraces(boolean useXRayIDGenerator) throws Exception {
-        collector = createAndStartCollector("/configurations/config-xrayExporter.yaml");
+    List<String> createTraces(IdGenerator idGenerator) throws Exception {
+        collector = createAndStartCollectorForXray("/configurations/config-xrayExporter.yaml");
 
-        OpenTelemetry otel = openTelemetry(useXRayIDGenerator);
+        OpenTelemetry otel = openTelemetry(idGenerator);
         Tracer tracer = otel.getTracer("adot-trace-test");
 
         Attributes attributes = Attributes.of(
@@ -119,28 +82,37 @@ class TraceIdsWithXRayTests {
             span.end();
         }
 
-        // Takes a few seconds for traces to appear in XRay
-        Thread.sleep(20000);
-
         assertThat(traceIds).hasSize(numOfTraces);
         return traceIds;
     }
 
-    void validateTracesInXRay(List<String> traceIds) {
+    void validateTracesInXRay(List<String> traceIds) throws Exception {
         Region region = Region.of(System.getenv("AWS_REGION"));
         XRayClient xray = XRayClient.builder()
             .region(region)
             .build();
-        BatchGetTracesResponse tracesResponse = xray.batchGetTraces(BatchGetTracesRequest.builder()
-            .traceIds(traceIds)
-            .build());
 
-        // Assertions
-        Set<String> traceIdsSet = new HashSet<String>(traceIds);
-        assertThat(tracesResponse.traces()).hasSize(traceIds.size());
-        tracesResponse.traces().forEach(trace -> {
-            assertThat(traceIdsSet.contains(trace.id())).isTrue();
-        });
+        RetryerBuilder.<Void>newBuilder()
+            .retryIfException()
+            .retryIfRuntimeException()
+            .retryIfExceptionOfType(java.lang.AssertionError.class)
+            .withWaitStrategy(WaitStrategies.fixedWait(10, TimeUnit.SECONDS))
+            .withStopStrategy(StopStrategies.stopAfterAttempt(5))
+            .build()
+            .call(() -> {
+                BatchGetTracesResponse tracesResponse = xray.batchGetTraces(BatchGetTracesRequest.builder()
+                    .traceIds(traceIds)
+                    .build());
+
+                // Assertions
+                Set<String> traceIdsSet = new HashSet<String>(traceIds);
+                assertThat(tracesResponse.traces()).hasSize(traceIds.size());
+                tracesResponse.traces().forEach(trace -> {
+                    assertThat(traceIdsSet.contains(trace.id())).isTrue();
+                });
+
+                return null;
+            });
     }
 
     @AfterEach
@@ -150,7 +122,7 @@ class TraceIdsWithXRayTests {
         GlobalOpenTelemetry.resetForTest();
     }
 
-    public OpenTelemetry openTelemetry(boolean useXRayIDGenerator) {
+    private OpenTelemetry openTelemetry(IdGenerator idGenerator) {
         Resource resource = Resource.getDefault().toBuilder()
             .put(ResourceAttributes.SERVICE_NAME, "xray-test")
             .put(ResourceAttributes.SERVICE_VERSION, "0.1.0")
@@ -173,9 +145,9 @@ class TraceIdsWithXRayTests {
                     .build())
             .setResource(resource);
             
-        if (useXRayIDGenerator) {
+        if (idGenerator != null) {
             tracerProvider = tracerProviderBuilder
-                .setIdGenerator(AwsXrayIdGenerator.getInstance())
+                .setIdGenerator(idGenerator)
                 .build();
         } else {
             tracerProvider = tracerProviderBuilder.build();

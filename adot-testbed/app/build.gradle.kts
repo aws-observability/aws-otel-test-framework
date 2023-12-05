@@ -29,13 +29,11 @@ dependencies {
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
 
     // Trace ID (W3C & XRay) tests with XRay Exporter
-    api(platform("io.opentelemetry:opentelemetry-bom:1.30.0"))
+    api(platform("io.opentelemetry:opentelemetry-bom-alpha:1.30.0-alpha"))
     testImplementation("io.opentelemetry:opentelemetry-exporter-otlp")
+    testImplementation("io.opentelemetry:opentelemetry-sdk");
+    testImplementation("io.opentelemetry:opentelemetry-semconv");
     testImplementation("io.opentelemetry.contrib:opentelemetry-aws-xray:1.30.0")
-    testImplementation("io.opentelemetry:opentelemetry-sdk:1.30.0");
-    testImplementation("io.opentelemetry:opentelemetry-sdk-metrics:1.30.0");
-    testImplementation("io.opentelemetry:opentelemetry-exporter-logging:1.30.0");
-    testImplementation("io.opentelemetry:opentelemetry-semconv:1.30.0-alpha");
     testImplementation("software.amazon.awssdk:xray")
 }
 
