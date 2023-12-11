@@ -103,40 +103,41 @@ public class OtlpMetricEmitter extends MetricEmitter {
     }
 
     private void createCounters(Meter meter) {
-        if (meter != null) {
-            log.info("Registering counter metrics...");
-            counters = new LongCounter[param.getRate()];
-            for (int i = 0; i < param.getRate(); i++) {
-                counters[i] = meter.counterBuilder(API_COUNTER_METRIC + i)
-                        .setDescription("API request load sent in bytes")
-                        .setUnit("one")
-                        .build();
-            }
-        } else {
+        if (meter == null) {
             log.error("Metric provider was not found!");
+            return;
+        }
+        log.info("Registering counter metrics...");
+        counters = new LongCounter[param.getRate()];
+        for (int i = 0; i < param.getRate(); i++) {
+            counters[i] = meter.counterBuilder(API_COUNTER_METRIC + i)
+                    .setDescription("API request load sent in bytes")
+                    .setUnit("one")
+                    .build();
         }
     }
 
     private void createGauges(Meter meter) {
-        if (meter != null) {
-            log.info("Registering gauge metrics...");
-            gaugeValues = new long[param.getRate()];
-            int id = 0;
-            for (long gaugeValue : gaugeValues) {
-                meter.gaugeBuilder(API_LATENCY_METRIC + id++)
-                        .setDescription("API latency time")
-                        .setUnit("ms")
-                        .ofLongs().buildWithCallback(measurement ->
-                                {
-                                    Attributes atr = Attributes.of(AttributeKey.stringKey(DIMENSION_API_NAME), API_NAME,
-                                            AttributeKey.stringKey(DIMENSION_STATUS_CODE), "200");
-                                    measurement.record(gaugeValue, atr);
-                                }
-                        );
-            }
-        } else {
+        if (meter == null) {
             log.error("Metric provider was not found!");
+            return;
         }
+        log.info("Registering gauge metrics...");
+        gaugeValues = new long[param.getRate()];
+        int id = 0;
+        for (long gaugeValue : gaugeValues) {
+            meter.gaugeBuilder(API_LATENCY_METRIC + id++)
+                    .setDescription("API latency time")
+                    .setUnit("ms")
+                    .ofLongs().buildWithCallback(measurement ->
+                            {
+                                Attributes atr = Attributes.of(AttributeKey.stringKey(DIMENSION_API_NAME), API_NAME,
+                                        AttributeKey.stringKey(DIMENSION_STATUS_CODE), "200");
+                                measurement.record(gaugeValue, atr);
+                            }
+                    );
+        }
+
     }
 
 }
