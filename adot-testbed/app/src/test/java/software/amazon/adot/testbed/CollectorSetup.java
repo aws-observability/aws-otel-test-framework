@@ -55,8 +55,9 @@ abstract class CollectorSetup {
             .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
             .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
             .withEnv(createCollectorEnvVars(logStreamName))
+            .withCreateContainerCmdModifier(cmd -> cmd.withUser("root"))
             .withClasspathResourceMapping("/logs", "/logs", BindMode.READ_WRITE)
-            .withCommand("--config", "/etc/collector/config.yaml", "--feature-gates=+adot.receiver.filelog,+adot.exporter.awscloudwatchlogs,+adot.extension.file_storage");
+            .withCommand("--config", "/etc/collector/config.yaml");
 
         //Mount the Temp directory
         collector.withFileSystemBind(logDirectory.toString(),"/tempLogs", BindMode.READ_WRITE);
