@@ -19,7 +19,6 @@ import com.amazon.opentelemetry.load.generator.emitter.Emitter;
 import com.amazon.opentelemetry.load.generator.emitter.EmitterFactory;
 import com.amazon.opentelemetry.load.generator.model.DataType;
 import com.amazon.opentelemetry.load.generator.model.Parameter;
-import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.log4j.Log4j2;
 import picocli.CommandLine.Command;
@@ -36,26 +35,6 @@ public class MetricCommand implements Runnable {
   @Mixin
   CommonOption commonOption = new CommonOption();
 
-  @Option(names = {"-f", "--flushInterval"},
-      description = "the metric collection export interval (in ms)",
-      defaultValue = "1000")
-  private long flushIntervalMillis;
-
-  @Option(names = {"-m", "--metricCount"},
-          description = "the number of metrics that should be created for each metric type",
-          defaultValue = "1")
-  private int metricCount;
-
-  @Option(names = {"-dp", "--datapointCount"},
-          description = "the number of datapoints that should be created for each metric",
-          defaultValue = "1")
-  private int datapointCount;
-
-  @Option(names = {"-o", "--observationInterval"},
-          description = "the interval (in ms) at which metric observations/values are updated",
-          defaultValue = "1000")
-  private long observationIntervalMillis;
-
   @Option(names = {"-mt", "--metricType"},
           description = "Specify the type of metric - counter or gauge",
           defaultValue = "counter")
@@ -65,12 +44,7 @@ public class MetricCommand implements Runnable {
   @Override
   public void run() {
     Parameter param = commonOption.buildParameter();
-    param.setFlushInterval(flushIntervalMillis);
-    param.setMetricCount(metricCount);
-    param.setDatapointCount(datapointCount);
-    param.setObservationInterval(observationIntervalMillis);
     param.setMetricType(metricType);
-
 
     log.info("param: {} " + param);
 
