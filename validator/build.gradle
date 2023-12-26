@@ -35,7 +35,7 @@ dependencies {
   implementation group: 'commons-io', name: 'commons-io', version: '2.15.1'
 
   // yaml reader
-  implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.16.0'
+  implementation group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '2.16.1'
 
   // json flattener
   implementation group: 'com.github.wnameless', name: 'json-flattener', version: '0.7.1'
@@ -47,7 +47,7 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.5'
 
   // aws sdk
-  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.618')
+  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.625')
   implementation 'com.amazonaws:aws-java-sdk-s3'
   implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
   implementation 'com.amazonaws:aws-java-sdk-xray'
