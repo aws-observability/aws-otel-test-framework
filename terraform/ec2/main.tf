@@ -117,6 +117,7 @@ resource "aws_instance" "sidecar" {
     # That counts as an extra hop to access the IMDS. The default value is 1.
     http_put_response_hop_limit = 2
   }
+
 }
 
 # launch ec2 instance to install aoc [todo, support more amis, only amazonlinux2 ubuntu, windows2019 is supported now]
@@ -169,15 +170,12 @@ resource "null_resource" "check_patch" {
 ############################################
 # setup mocked server cert and host binding
 ############################################
-data "template_file" "mocked_server_cert_for_windows" {
-  template = file("../../mocked_servers/https/certificates/ssl/certificate.crt")
-}
 resource "null_resource" "setup_mocked_server_cert_for_windows" {
   depends_on = [null_resource.check_patch]
   count      = local.selected_ami["family"] == "windows" ? 1 : 0
 
   provisioner "file" {
-    content     = data.template_file.mocked_server_cert_for_windows.rendered
+    content     = templatefile("../../mocked_servers/https/certificates/ssl/certificate.crt",{})
     destination = "C:\\ca-bundle.crt"
 
     connection {
@@ -367,40 +365,35 @@ resource "null_resource" "install_collector_from_ssm" {
 ########################################
 # Start Sample app and mocked server
 #########################################
-data "template_file" "docker_compose" {
-  template = file(local.docker_compose_path)
-
-  vars = {
-    region                         = var.region
-    sample_app_image               = local.sample_app_image
-    sample_app_external_port       = module.common.sample_app_lb_port
-    sample_app_listen_address_port = module.common.sample_app_listen_address_port
-    listen_address                 = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
-    otel_resource_attributes       = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
-    testing_id                     = module.common.testing_id
-    grpc_endpoint                  = "${aws_instance.aoc.private_ip}:${module.common.grpc_port}"
-    udp_endpoint                   = "${aws_instance.aoc.private_ip}:${module.common.udp_port}"
-    http_endpoint                  = "${aws_instance.aoc.private_ip}:${module.common.http_port}"
-
-    mocked_server_image = local.mocked_server_image
-    data_mode           = var.soaking_data_mode
-    rate                = var.soaking_data_rate
-    data_type           = var.soaking_data_type
-  }
-}
 
 resource "null_resource" "setup_sample_app_and_mock_server" {
   count      = var.disable_mocked_server ? 0 : 1
   depends_on = [null_resource.check_patch]
   provisioner "file" {
-    content     = data.template_file.docker_compose.rendered
-    destination = "/tmp/docker-compose.yml"
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = local.private_key_content
-      host        = aws_instance.sidecar.public_ip
-    }
+    content     = templatefile(local.docker_compose_path,{
+      region                         = var.region
+      sample_app_image               = local.sample_app_image
+      sample_app_external_port       = module.common.sample_app_lb_port
+      sample_app_listen_address_port = module.common.sample_app_listen_address_port
+      listen_address                 = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
+      otel_resource_attributes       = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
+      testing_id                     = module.common.testing_id
+      grpc_endpoint                  = "${aws_instance.aoc.private_ip}:${module.common.grpc_port}"
+      udp_endpoint                   = "${aws_instance.aoc.private_ip}:${module.common.udp_port}"
+      http_endpoint                  = "${aws_instance.aoc.private_ip}:${module.common.http_port}"
+
+      mocked_server_image = local.mocked_server_image
+      data_mode           = var.soaking_data_mode
+      rate                = var.soaking_data_rate
+      data_type           = var.soaking_data_type
+      })
+      destination = "/tmp/docker-compose.yml"
+      connection {
+        type        = "ssh"
+        user        = "ec2-user"
+        private_key = local.private_key_content
+        host        = aws_instance.sidecar.public_ip
+      }
   }
   provisioner "remote-exec" {
     inline = [
@@ -424,23 +417,6 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
   }
 }
 
-## install cwagent on the instance to collect metric from otel-collector
-data "template_file" "cwagent_config" {
-  count    = var.install_cwagent ? 1 : 0
-  template = file(local.ami_family["soaking_cwagent_config"])
-
-  vars = {
-    soaking_metric_namespace = var.soaking_metric_namespace
-    testcase                 = split("/", var.testcase)[2]
-    commit_id                = var.commit_id
-    launch_date              = var.launch_date
-    negative_soaking         = var.negative_soaking
-    data_rate                = "${var.soaking_data_mode}-${var.soaking_data_rate}"
-    instance_type            = aws_instance.aoc.instance_type
-    testing_ami              = var.testing_ami
-  }
-}
-
 # install cwagent
 resource "null_resource" "install_cwagent" {
   count = var.install_cwagent ? 1 : 0
@@ -449,7 +425,16 @@ resource "null_resource" "install_cwagent" {
   depends_on = [null_resource.start_collector]
   // copy cwagent config to the instance
   provisioner "file" {
-    content     = data.template_file.cwagent_config[0].rendered
+    content     = templatefile(local.ami_family["soaking_cwagent_config"],{
+      soaking_metric_namespace = var.soaking_metric_namespace
+      testcase                 = split("/", var.testcase)[2]
+      commit_id                = var.commit_id
+      launch_date              = var.launch_date
+      negative_soaking         = var.negative_soaking
+      data_rate                = "${var.soaking_data_mode}-${var.soaking_data_rate}"
+      instance_type            = aws_instance.aoc.instance_type
+      testing_ami              = var.testing_ami
+    })
     destination = local.ami_family["soaking_cwagent_config_destination"]
 
     connection {
@@ -543,6 +528,3 @@ output "public_ip" {
   value = aws_instance.aoc.public_ip
 }
 
-output "docker_compose" {
-  value = data.template_file.docker_compose.rendered
-}

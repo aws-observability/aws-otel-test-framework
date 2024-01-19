@@ -20,53 +20,45 @@ locals {
 
 }
 
-## render docker compose file
-data "template_file" "docker_compose" {
-  template = file("../templates/defaults/validator_docker_compose.tpl")
-
-  vars = {
-    validation_config            = var.validation_config
-    testing_id                   = var.testing_id
-    account_id                   = var.account_id
-    region                       = var.region
-    availability_zone            = var.availability_zone
-    sample_app_endpoint          = var.sample_app_endpoint
-    mocked_server_validating_url = var.mocked_server_validating_url
-    metric_namespace             = var.metric_namespace
-    canary                       = var.canary
-    testcase                     = var.testcase
-    language                     = var.language
-
-    # Escaping (") in the JSON when using as a terraform string variable.
-    # For more information: https://www.terraform.io/docs/configuration-0-11/interpolation.html#built-in-functions
-    ec2_context_json        = replace(var.ec2_context_json, "\"", "\\\"")
-    ecs_context_json        = replace(var.ecs_context_json, "\"", "\\\"")
-    cloudwatch_context_json = replace(var.cloudwatch_context_json, "\"", "\\\"")
-
-    # alarm related
-    cpu_alarm              = var.cpu_alarm
-    mem_alarm              = var.mem_alarm
-    incoming_packets_alarm = var.incoming_packets_alarm
-
-    cortex_instance_endpoint = var.cortex_instance_endpoint
-    rollup                   = var.rollup
-    // a volume source must always be provided to prevent docker startup failures
-    kubecfg_volume_source = var.kubecfg_file_path
-    // only provide a kubecfg filepath to validator flag if the default variable value has been overridden.
-    kubecfg_file_path = var.kubecfg_file_path == "/dev/null" ? "" : "/root/kubecfg"
-
-    k8s_deployment_name = var.k8s_deployment_name
-    k8s_namespace       = var.k8s_namespace
-  }
-
-}
 
 resource "local_file" "docker_compose_file" {
-  content = data.template_file.docker_compose.rendered
+  content = templatefile("../templates/defaults/validator_docker_compose.tpl",
+    {
+      validation_config            = var.validation_config
+      testing_id                   = var.testing_id
+      account_id                   = var.account_id
+      region                       = var.region
+      availability_zone            = var.availability_zone
+      sample_app_endpoint          = var.sample_app_endpoint
+      mocked_server_validating_url = var.mocked_server_validating_url
+      metric_namespace             = var.metric_namespace
+      canary                       = var.canary
+      testcase                     = var.testcase
+      language                     = var.language
+
+      # Escaping (") in the JSON when using as a terraform string variable.
+      # For more information: https://www.terraform.io/docs/configuration-0-11/interpolation.html#built-in-functions
+      ec2_context_json        = replace(var.ec2_context_json, "\"", "\\\"")
+      ecs_context_json        = replace(var.ecs_context_json, "\"", "\\\"")
+      cloudwatch_context_json = replace(var.cloudwatch_context_json, "\"", "\\\"")
+
+      # alarm related
+      cpu_alarm              = var.cpu_alarm
+      mem_alarm              = var.mem_alarm
+      incoming_packets_alarm = var.incoming_packets_alarm
+
+      cortex_instance_endpoint = var.cortex_instance_endpoint
+      rollup                   = var.rollup
+      // a volume source must always be provided to prevent docker startup failures
+      kubecfg_volume_source = var.kubecfg_file_path
+      // only provide a kubecfg filepath to validator flag if the default variable value has been overridden.
+      kubecfg_file_path = var.kubecfg_file_path == "/dev/null" ? "" : "/root/kubecfg"
+
+      k8s_deployment_name = var.k8s_deployment_name
+      k8s_namespace       = var.k8s_namespace
+    })
 
   filename = local.docker_compose_path
-
-  depends_on = [data.template_file.docker_compose]
 }
 
 resource "null_resource" "validator" {

@@ -38,7 +38,7 @@ output "otconfig_content" {
 }
 
 output "mocked_server_cert_content" {
-  value = data.template_file.mocked_server_cert.rendered
+  value = local.mocked_server_cert_rendered_template
 }
 
 output "sample_app_image_repo" {
