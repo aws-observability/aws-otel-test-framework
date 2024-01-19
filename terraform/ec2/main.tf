@@ -175,7 +175,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
   count      = local.selected_ami["family"] == "windows" ? 1 : 0
 
   provisioner "file" {
-    content     = templatefile("../../mocked_servers/https/certificates/ssl/certificate.crt",{})
+    content     = templatefile("../../mocked_servers/https/certificates/ssl/certificate.crt", {})
     destination = "C:\\ca-bundle.crt"
 
     connection {
@@ -370,7 +370,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
   count      = var.disable_mocked_server ? 0 : 1
   depends_on = [null_resource.check_patch]
   provisioner "file" {
-    content     = templatefile(local.docker_compose_path,{
+    content = templatefile(local.docker_compose_path, {
       region                         = var.region
       sample_app_image               = local.sample_app_image
       sample_app_external_port       = module.common.sample_app_lb_port
@@ -386,14 +386,14 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       data_mode           = var.soaking_data_mode
       rate                = var.soaking_data_rate
       data_type           = var.soaking_data_type
-      })
-      destination = "/tmp/docker-compose.yml"
-      connection {
-        type        = "ssh"
-        user        = "ec2-user"
-        private_key = local.private_key_content
-        host        = aws_instance.sidecar.public_ip
-      }
+    })
+    destination = "/tmp/docker-compose.yml"
+    connection {
+      type        = "ssh"
+      user        = "ec2-user"
+      private_key = local.private_key_content
+      host        = aws_instance.sidecar.public_ip
+    }
   }
   provisioner "remote-exec" {
     inline = [
@@ -425,7 +425,7 @@ resource "null_resource" "install_cwagent" {
   depends_on = [null_resource.start_collector]
   // copy cwagent config to the instance
   provisioner "file" {
-    content     = templatefile(local.ami_family["soaking_cwagent_config"],{
+    content = templatefile(local.ami_family["soaking_cwagent_config"], {
       soaking_metric_namespace = var.soaking_metric_namespace
       testcase                 = split("/", var.testcase)[2]
       commit_id                = var.commit_id

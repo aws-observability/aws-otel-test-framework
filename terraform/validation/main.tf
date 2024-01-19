@@ -56,7 +56,7 @@ resource "local_file" "docker_compose_file" {
 
       k8s_deployment_name = var.k8s_deployment_name
       k8s_namespace       = var.k8s_namespace
-    })
+  })
 
   filename = local.docker_compose_path
 }

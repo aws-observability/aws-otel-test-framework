@@ -96,7 +96,7 @@ locals {
     extra_data = var.extra_data
   })
 
-  mocked_server_cert_rendered_template = templatefile("../../mocked_servers/https/certificates/ssl/ca-bundle.crt",{})
+  mocked_server_cert_rendered_template = templatefile("../../mocked_servers/https/certificates/ssl/ca-bundle.crt", {})
 }
 
 data "aws_ecr_repository" "sample_apps" {
