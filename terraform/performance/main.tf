@@ -60,10 +60,10 @@ locals {
   ot_exporters           = lookup(local.ot_components, "exporters", [])
 }
 
-data "template_file" "validation_config" {
-  template = file("../templates/defaults/performance_validation.tpl")
 
-  vars = {
+
+resource "local_file" "validation_config_file" {
+  content = templatefile("../templates/defaults/performance_validation.tpl", {
     cpuMetricName    = local.ami_family["soaking_cpu_metric_name"]
     memoryMetricName = local.ami_family["soaking_mem_metric_name"]
     collectionPeriod = var.collection_period
@@ -82,15 +82,10 @@ data "template_file" "validation_config" {
     processName      = local.ami_family["soaking_process_name"]
     testingAmi       = var.testing_ami
     negativeSoaking  = module.ec2_setup.negative_soaking
-  }
-}
-
-resource "local_file" "validation_config_file" {
-  content = data.template_file.validation_config.rendered
+  })
 
   filename = "../../validator/src/main/resources/validations/${local.validation_config_file}"
 
-  depends_on = [data.template_file.validation_config]
 }
 
 ##########################################

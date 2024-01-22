@@ -95,10 +95,8 @@ locals {
     // Opaque place to put any data that is test dependent so that we dont need to add flags for every test
     extra_data = var.extra_data
   })
-}
 
-data "template_file" "mocked_server_cert" {
-  template = file("../../mocked_servers/https/certificates/ssl/ca-bundle.crt")
+  mocked_server_cert_rendered_template = templatefile("../../mocked_servers/https/certificates/ssl/ca-bundle.crt", {})
 }
 
 data "aws_ecr_repository" "sample_apps" {
