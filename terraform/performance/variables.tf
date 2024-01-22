@@ -70,3 +70,7 @@ variable "sidecar_instance_type" {
 variable "kafka_version" {
   default = ""
 }
+
+variable "mock_endpoint" {
+  default = "mocked-server/put-data"
+}

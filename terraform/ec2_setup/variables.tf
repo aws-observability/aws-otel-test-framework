@@ -16,6 +16,10 @@
 variable "testing_ami" {
 }
 
+variable "mock_endpoint" {
+  default = "mocked-server/put-data"
+}
+
 variable "sidecar_instance_type" {
   default = "c5a.large"
 }
