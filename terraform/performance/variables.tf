@@ -64,7 +64,7 @@ variable "soaking_sample_app" {
 }
 
 variable "sidecar_instance_type" {
-  default = "c5a.large"
+  default = "m5.2xlarge"
 }
 
 variable "kafka_version" {
