@@ -64,9 +64,13 @@ variable "soaking_sample_app" {
 }
 
 variable "sidecar_instance_type" {
-  default = "m5.2xlarge"
+  default = "c5a.large"
 }
 
 variable "kafka_version" {
   default = ""
+}
+
+variable "mock_endpoint" {
+  default = "mocked-server/put-data"
 }

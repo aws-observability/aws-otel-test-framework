@@ -48,6 +48,9 @@ module "ec2_setup" {
   kafka_version = var.kafka_version
 
   testing_type = "perf"
+
+  mock_endpoint = var.mock_endpoint
+  mocked_server = var.mocked_server
 }
 
 locals {
