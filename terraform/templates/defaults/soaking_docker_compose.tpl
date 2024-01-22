@@ -5,6 +5,7 @@ services:
     ports:
       - "80:8080"
       - "443:443"
+      - "55671:55671"
     deploy:
       resources:
         limits:
