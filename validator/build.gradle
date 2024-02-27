@@ -2,11 +2,11 @@ plugins {
   id 'java'
 
   id 'application'
-  id 'com.google.cloud.tools.jib' version "3.4.0"
+  id 'com.google.cloud.tools.jib' version "3.4.1"
 
   // lombok
-  id "io.freefair.lombok" version "8.4"
-  id("com.diffplug.spotless") version "6.23.3"
+  id "io.freefair.lombok" version "8.6"
+  id("com.diffplug.spotless") version "6.25.0"
 
 }
 
@@ -22,11 +22,11 @@ repositories {
 
 dependencies {
   testImplementation group: 'junit', name: 'junit', version: '4.13.2'
-  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.24.2'
+  testImplementation group: 'org.assertj', name: 'assertj-core', version: '3.25.3'
 
   // log
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.22.1'
-  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.22.1'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.0'
+  implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.23.0'
 
   // mustache template
   implementation group: 'com.github.spullara.mustache.java', name: 'compiler', version: '0.9.11'
@@ -47,7 +47,7 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.5'
 
   // aws sdk
-  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.626')
+  implementation platform('com.amazonaws:aws-java-sdk-bom:1.12.667')
   implementation 'com.amazonaws:aws-java-sdk-s3'
   implementation 'com.amazonaws:aws-java-sdk-cloudwatch'
   implementation 'com.amazonaws:aws-java-sdk-xray'
@@ -69,10 +69,10 @@ dependencies {
   compileOnly 'info.picocli:picocli-codegen:4.7.5'
 
   // mockito
-  testImplementation "org.mockito:mockito-core:5.8.0"
+  testImplementation "org.mockito:mockito-core:5.10.0"
 
   // k8s client
-  implementation "io.kubernetes:client-java-extended:19.0.0"
+  implementation "io.kubernetes:client-java-extended:20.0.0-legacy"
 }
 
 application {
