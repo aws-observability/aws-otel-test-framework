@@ -38,7 +38,7 @@ variable "aoc_vpc_name" {
 }
 
 variable "aoc_image_repo" {
-  default = "public.ecr.aws/aws-observability/aws-otel-collector"
+  default = "public.ecr.aws/aws-otel-test/adot-collector-integration-test"
 }
 
 variable "aoc_version" {
