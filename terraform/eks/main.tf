@@ -180,6 +180,8 @@ module "adot_operator" {
   kubeconfig          = local_file.kubeconfig.filename
   operator_repository = var.operator_repository
   operator_tag        = var.operator_tag
+  aoc_image_repo      = var.aoc_image_repo
+  aoc_version         = var.aoc_version
 }
 
 
