@@ -29,6 +29,12 @@ variable "operator_repository" {
 variable "operator_tag" {
 }
 
+variable "aoc_image_repo" {
+}
+
+variable "aoc_version" {
+}
+
 resource "helm_release" "adot-operator" {
   name = "adot-operator-${var.testing_id}"
 
@@ -47,6 +53,16 @@ resource "helm_release" "adot-operator" {
   set {
     name  = "manager.image.tag"
     value = var.operator_tag
+  }
+
+  set {
+    name  = "manager.collectorImage.tag"
+    value = var.aoc_version
+  }
+
+  set {
+    name  = "manager.collectorImage.repository"
+    value = var.aoc_image_repo
   }
 
   provisioner "local-exec" {
