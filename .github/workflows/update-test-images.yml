@@ -34,7 +34,7 @@ jobs:
         with:
           distribution: 'zulu'
           java-version: 17
-      - uses: gradle/wrapper-validation-action@v2
+      - uses: gradle/wrapper-validation-action@v3
       - name: Build locally with gradle
         uses: gradle/gradle-build-action@v3
         with:
