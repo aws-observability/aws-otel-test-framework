@@ -14,7 +14,7 @@ plugins {
     id 'application'
 
     // lombok
-    id "io.freefair.lombok" version "8.4"
+    id "io.freefair.lombok" version "8.6"
 
     // jib
     id 'com.google.cloud.tools.jib'
@@ -26,33 +26,33 @@ repositories {
 
 dependencies {
     // This dependency is used by the application.
-    implementation "com.google.guava:guava:33.0.0-jre"
+    implementation "com.google.guava:guava:33.2.0-jre"
 
-    implementation "io.grpc:grpc-bom:1.61.0"
-    implementation "io.grpc:grpc-api:1.61.0"
+    implementation "io.grpc:grpc-bom:1.64.0"
+    implementation "io.grpc:grpc-api:1.64.0"
 
-    implementation "io.grpc:grpc-netty-shaded:1.61.0"
+    implementation "io.grpc:grpc-netty-shaded:1.64.0"
 
-    implementation platform("io.opentelemetry:opentelemetry-bom:1.34.1")
+    implementation platform("io.opentelemetry:opentelemetry-bom:1.38.0")
     implementation "io.opentelemetry:opentelemetry-api"
     implementation "io.opentelemetry:opentelemetry-sdk"
     implementation "io.opentelemetry:opentelemetry-exporter-otlp"
 
     implementation "io.opentelemetry:opentelemetry-semconv:1.30.1-alpha"
     implementation "io.opentelemetry:opentelemetry-sdk-extension-aws"
-    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.15.0"
-    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.15.0"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-core:2.15.3"
+    implementation "com.amazonaws:aws-xray-recorder-sdk-aws-sdk:2.15.3"
 
     // Use JUnit test framework
     testImplementation 'junit:junit:4.13.2'
 
     // Command cli
-    implementation 'info.picocli:picocli:4.7.5'
-    compileOnly 'info.picocli:picocli-codegen:4.7.5'
+    implementation 'info.picocli:picocli:4.7.6'
+    compileOnly 'info.picocli:picocli-codegen:4.7.6'
 
     // log
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.22.1'
-    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.22.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.23.1'
+    implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.23.1'
 
     implementation project(":trace-java-client")
 }
