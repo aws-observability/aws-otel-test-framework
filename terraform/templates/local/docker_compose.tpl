@@ -15,7 +15,7 @@ services:
       args:
         BUILDMODE: copy
 
-    command: ["--config=/tmp/otconfig.yaml"]
+    command: ${collector_args}
     volumes:
       - ./otconfig.yml:/tmp/otconfig.yaml
       - "../../mocked_servers/https/certificates/ssl/certificate.crt:/etc/ssl/certs/ca-certificates.crt"
