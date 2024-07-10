@@ -273,6 +273,7 @@ data "template_file" "adot_collector_config_file" {
   template = file("./adot-operator/adot_collector_deployment.tpl")
 
   vars = {
+    AOC_NAME           = var.deployment_type == "fargate" ? "aoc-fargate" : "aoc"
     AOC_NAMESPACE      = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
     AOC_IMAGE          = module.common.aoc_image
     AOC_DEPLOY_MODE    = var.aoc_deploy_mode
