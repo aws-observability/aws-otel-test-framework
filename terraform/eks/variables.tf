@@ -63,7 +63,7 @@ variable "operator_repository" {
 
 variable "operator_tag" {
   type    = string
-  default = "latest"
+  default = "v0.99.0"
 }
 
 // This will only fetch data from the MSK cluster in case this value is set

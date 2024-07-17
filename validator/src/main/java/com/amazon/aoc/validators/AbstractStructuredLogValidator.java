@@ -53,6 +53,7 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
 
   protected CloudWatchService cloudWatchService;
   protected final ObjectMapper mapper = new ObjectMapper();
+  protected ICaller caller;
 
   @Override
   public void init(
@@ -62,6 +63,7 @@ public abstract class AbstractStructuredLogValidator implements IValidator {
       FileConfig expectedDataTemplate)
       throws Exception {
     cloudWatchService = new CloudWatchService(context.getRegion());
+    this.caller = caller;
     init(context, expectedDataTemplate);
 
     if (StringUtils.isNullOrEmpty(logGroupName)) {

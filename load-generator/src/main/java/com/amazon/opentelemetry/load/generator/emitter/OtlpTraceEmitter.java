@@ -27,8 +27,6 @@ import io.opentelemetry.sdk.OpenTelemetrySdk;
 import io.opentelemetry.sdk.extension.aws.trace.AwsXrayIdGenerator;
 import io.opentelemetry.sdk.resources.Resource;
 import io.opentelemetry.sdk.trace.SdkTracerProvider;
-import io.opentelemetry.sdk.trace.SdkTracerProviderBuilder;
-import io.opentelemetry.sdk.trace.export.SimpleSpanProcessor;
 import io.opentelemetry.semconv.resource.attributes.ResourceAttributes;
 
 import java.time.Duration;
@@ -59,7 +57,9 @@ public class OtlpTraceEmitter extends TraceEmitter {
             .setTracerProvider(
             SdkTracerProvider.builder()
                     .addSpanProcessor(
-                            BatchSpanProcessor.builder(OtlpGrpcSpanExporter.getDefault()).build())
+                            BatchSpanProcessor.builder(OtlpGrpcSpanExporter.getDefault())
+                                    .setMaxQueueSize(5000)
+                                    .setScheduleDelay(Duration.ofMillis(FLUSH_INTERVAL)).build())
                     .setIdGenerator(AwsXrayIdGenerator.getInstance())
                     .setResource(resource)
                     .build())
@@ -74,7 +74,6 @@ public class OtlpTraceEmitter extends TraceEmitter {
   @Override
   public void nextDataPoint() {
     Span exampleSpan = tracer.spanBuilder("Example Span").setSpanKind(SpanKind.SERVER).startSpan();
-
     exampleSpan.setAttribute("good", "true");
     exampleSpan.setAttribute("exampleNumber", UUID.randomUUID().toString());
     exampleSpan.end();

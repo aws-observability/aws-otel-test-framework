@@ -27,6 +27,14 @@ dependencies {
     testImplementation("com.github.rholder:guava-retrying:2.0.0")
     testImplementation("org.assertj:assertj-core:3.24.2")
     testImplementation("com.fasterxml.jackson.core:jackson-databind:2.13.0")
+
+    // Trace ID (W3C & XRay) tests with XRay Exporter
+    api(platform("io.opentelemetry:opentelemetry-bom-alpha:1.30.0-alpha"))
+    testImplementation("io.opentelemetry:opentelemetry-exporter-otlp")
+    testImplementation("io.opentelemetry:opentelemetry-sdk");
+    testImplementation("io.opentelemetry:opentelemetry-semconv");
+    testImplementation("io.opentelemetry.contrib:opentelemetry-aws-xray:1.30.0")
+    testImplementation("software.amazon.awssdk:xray")
 }
 
 // Apply a specific Java toolchain to ease working on different environments.

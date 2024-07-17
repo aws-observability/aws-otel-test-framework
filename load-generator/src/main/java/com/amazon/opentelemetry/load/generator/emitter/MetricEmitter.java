@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit;
 
 @Log4j2
 public abstract class MetricEmitter implements Emitter {
-
   protected static final String DIMENSION_API_NAME = "apiName";
   protected static final String DIMENSION_STATUS_CODE = "statusCode";
   protected static String API_COUNTER_METRIC = "apiBytesSent";
@@ -32,8 +31,8 @@ public abstract class MetricEmitter implements Emitter {
 
   @Override
   public void start(Runnable emitter) {
-    log.info("Generating metrics at a rate of(ms) : {}" , this.param.getObservationInterval());
-    scheduler.scheduleAtFixedRate(emitter, 0, this.param.getObservationInterval(), TimeUnit.MILLISECONDS);
+    log.info("Generating metrics at a rate of(ms) : {}" , FLUSH_INTERVAL);
+    scheduler.scheduleAtFixedRate(emitter, 0, FLUSH_INTERVAL, TimeUnit.MILLISECONDS);
   };
 
 }

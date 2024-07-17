@@ -17,9 +17,7 @@ import java.net.URISyntaxException;
 import java.time.Duration;
 import java.time.Instant;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -36,14 +34,7 @@ import com.github.rholder.retry.WaitStrategies;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.BindMode;
-import org.testcontainers.containers.output.Slf4jLogConsumer;
-import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.utility.MountableFile;
 import software.amazon.awssdk.services.cloudwatchlogs.CloudWatchLogsClient;
 import software.amazon.awssdk.services.cloudwatchlogs.model.GetLogEventsRequest;
 
@@ -51,52 +42,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @Testcontainers(disabledWithoutDocker = true)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class LogsTests {
-    private static final String TEST_IMAGE = System.getenv("TEST_IMAGE") != null && !System.getenv("TEST_IMAGE").isEmpty()
-        ? System.getenv("TEST_IMAGE")
-        : "public.ecr.aws/aws-observability/aws-otel-collector:latest";
-    private final Logger collectorLogger = LoggerFactory.getLogger("collector");
+class LogsTests extends CollectorSetup {
     private static final String uniqueID = UUID.randomUUID().toString();
-    private Path logDirectory;
-    private GenericContainer<?> collector;
 
-    private GenericContainer<?> createAndStartCollector(String configFilePath, String logStreamName) throws IOException {
-
-        // Create an environment variable map
-        Map<String, String> envVariables = new HashMap<>();
-        envVariables.put("LOG_STREAM_NAME", logStreamName);
-        //Set credentials
-        envVariables.put("AWS_REGION", System.getenv("AWS_REGION"));
-        envVariables.put("AWS_ACCESS_KEY_ID", System.getenv("AWS_ACCESS_KEY_ID"));
-        envVariables.put("AWS_SECRET_ACCESS_KEY", System.getenv("AWS_SECRET_ACCESS_KEY"));
-        // Check if AWS_SESSION_TOKEN is not null before adding it
-        if (System.getenv("AWS_SESSION_TOKEN") != null) {
-            envVariables.put("AWS_SESSION_TOKEN", System.getenv("AWS_SESSION_TOKEN"));
-        }
-        try {
-            logDirectory = Files.createTempDirectory("tempLogs");
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to create log directory", e);
-        }
-        var collector = new GenericContainer<>(TEST_IMAGE)
-            .withCopyFileToContainer(MountableFile.forClasspathResource(configFilePath), "/etc/collector/config.yaml")
-            .withLogConsumer(new Slf4jLogConsumer(collectorLogger))
-            .waitingFor(Wait.forLogMessage(".*Everything is ready. Begin running and processing data.*", 1))
-            .withEnv(envVariables)
-            .withCreateContainerCmdModifier(cmd -> cmd.withUser("root"))
-            .withClasspathResourceMapping("/logs", "/logs", BindMode.READ_WRITE)
-            .withCommand("--config", "/etc/collector/config.yaml");
-
-       //Mount the Temp directory
-        collector.withFileSystemBind(logDirectory.toString(),"/tempLogs", BindMode.READ_WRITE);
-
-        collector.start();
-        return collector;
-    }
     @Test
     void testSyslog() throws Exception {
         String logStreamName = "rfcsyslog-logstream-" + uniqueID;
-        collector = createAndStartCollector("/configurations/config-rfcsyslog.yaml", logStreamName);
+        collector = createAndStartCollectorForLogs("/configurations/config-rfcsyslog.yaml", logStreamName);
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/RFC5424.log");
         inputStreams.add(inputStream);
@@ -109,7 +61,7 @@ class LogsTests {
     @Test
     void testLog4j() throws Exception {
         String logStreamName = "log4j-logstream-" + uniqueID;
-        collector = createAndStartCollector("/configurations/config-log4j.yaml", logStreamName);
+        collector = createAndStartCollectorForLogs("/configurations/config-log4j.yaml", logStreamName);
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/log4j.log");
         inputStreams.add(inputStream);
@@ -121,7 +73,7 @@ class LogsTests {
     @Test
     void testJson() throws Exception {
         String logStreamName = "json-logstream-" + uniqueID;
-        collector = createAndStartCollector("/configurations/config-json.yaml", logStreamName);
+        collector = createAndStartCollectorForLogs("/configurations/config-json.yaml", logStreamName);
         List<InputStream> inputStreams = new ArrayList<>();
         InputStream inputStream = getClass().getResourceAsStream("/logs/testingJSON.log");
         inputStreams.add(inputStream);
@@ -134,7 +86,7 @@ class LogsTests {
     @Test
     void testCollectorRestartStorageExtension() throws Exception {
         String logStreamName = "storageExtension-logstream-" + uniqueID;
-        collector = createAndStartCollector("/configurations/config-storageExtension.yaml", logStreamName);
+        collector = createAndStartCollectorForLogs("/configurations/config-storageExtension.yaml", logStreamName);
         File tempFile = new File(logDirectory.toString(), "storageExtension.log");
         Thread.sleep(5000);
 
@@ -178,7 +130,7 @@ class LogsTests {
     @Test
     void testFileRotation() throws Exception {
         String logStreamName = "fileRotation-logstream-" + uniqueID;
-        collector = createAndStartCollector("/configurations/config-fileRotation.yaml", logStreamName);
+        collector = createAndStartCollectorForLogs("/configurations/config-fileRotation.yaml", logStreamName);
 
         Thread.sleep(5000);
 

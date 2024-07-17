@@ -16,12 +16,16 @@
 variable "testing_ami" {
 }
 
+variable "mock_endpoint" {
+  default = "mocked-server/put-data"
+}
+
 variable "sidecar_instance_type" {
   default = "c5a.large"
 }
 
 variable "soaking_sample_app_image" {
-  default = "public.ecr.aws/aws-otel-test/aws-otel-load-generator:v0.11.0"
+  default = "public.ecr.aws/aws-otel-test/aws-otel-load-generator:latest"
 }
 
 variable "soaking_sample_app" {

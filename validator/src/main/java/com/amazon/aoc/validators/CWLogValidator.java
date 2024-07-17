@@ -1,13 +1,11 @@
 package com.amazon.aoc.validators;
 
-import com.amazon.aoc.callers.ICaller;
 import com.amazon.aoc.exception.BaseException;
 import com.amazon.aoc.exception.ExceptionCode;
 import com.amazon.aoc.fileconfigs.FileConfig;
 import com.amazon.aoc.helpers.MustacheHelper;
 import com.amazon.aoc.helpers.RetryHelper;
 import com.amazon.aoc.models.Context;
-import com.amazon.aoc.models.ValidationConfig;
 import com.amazon.aoc.services.CloudWatchService;
 import com.amazonaws.services.logs.model.OutputLogEvent;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,23 +22,17 @@ import java.util.*;
 import lombok.extern.log4j.Log4j2;
 
 @Log4j2
-public class CWLogValidator implements IValidator {
+public class CWLogValidator extends AbstractStructuredLogValidator {
 
   protected String logStreamName = "otlp-logs";
 
   private static final String LOGGROUPPATH = "/aws/ecs/otlp/%s/logs";
-
-  protected CloudWatchService cloudWatchService;
   private static final int CHECK_INTERVAL_IN_MILLI = 30 * 1000;
   private static final int CHECK_DURATION_IN_SECONDS = 2 * 60;
   private static int MAX_RETRY_COUNT = 12;
   private static final int QUERY_LIMIT = 100;
   private JsonSchema schema;
-  protected String logGroupName;
 
-  private ICaller caller;
-
-  private Context context;
   private String templateInput;
 
   private ProcessingReport processingReport = null;
@@ -48,14 +40,7 @@ public class CWLogValidator implements IValidator {
   protected final ObjectMapper mapper = new ObjectMapper();
 
   @Override
-  public void init(
-      Context context,
-      ValidationConfig validationConfig,
-      ICaller caller,
-      FileConfig expectedDataTemplate)
-      throws Exception {
-    this.context = context;
-    this.caller = caller;
+  void init(Context context, FileConfig expectedDataTemplate) throws Exception {
     cloudWatchService = new CloudWatchService(context.getRegion());
     logGroupName = String.format(LOGGROUPPATH, context.getTestingId());
     MustacheHelper mustacheHelper = new MustacheHelper();
@@ -67,6 +52,12 @@ public class CWLogValidator implements IValidator {
             .freeze();
     JsonSchema jsonSchema = jsonSchemaFactory.getJsonSchema(jsonNode);
     this.schema = jsonSchema;
+    schemasToValidate.put("json", this.schema);
+  }
+
+  @Override
+  String getJsonSchemaMappingKey(JsonNode jsonNode) {
+    return null;
   }
 
   @Override

@@ -1,20 +1,17 @@
 ### AWS OTel Collector Load Test Generator
 
 ### Parameters for Metric Generation:
-1. Metric Count\
-   --metricCount, -m  : (default=1) the number of metrics that should be generated for each metric type. This amount of metrics will be updated/exported per period. 
+1. Rate\
+   --rate, -r  (eg, 1,000, 10,000 metric counts  per second) : (default=1) the number of metrics that should be generated for each metric type. This amount of metrics will be updated/exported per period. 
 
-2. Datapoint Count\
-   --datapointCount, -dp : (default=1) the number of data-points that should be created for each metric. Number of data-points updated/exported per period shall be equal to Metric Count * Datapoint Count.
-
-3. Observation Interval\
-   --observationInterval, -o : (default=1000 ms) the interval (in ms) at which metric observations/values are updated.
-
-4. Collector Receiver Endpoint\
+2. Collector Receiver Endpoint\
    --url, -u
 
-5. Data Format\
+3. Data Format\
    --dataFormat -d (eg, otlp, statsd)
+
+4. Metric Type
+  --metricType, -mt : (default=counter) Specify the type of metric - counter or gauge.
 
 ### Parameters for Trace Generation:
 
@@ -28,13 +25,8 @@
    --dataFormat -d (eg, otlp, prometheus, xray)
 
 ### OTLP Metrics Load Test Sample Command,
-
-The following is a list of additional optional command line arguments applicable only for configuration of OTLP metrics:
-* `--flushInterval, -f` : (default=1000 ms) the metric collection export interval (in ms).
-* `--metricType, -mt`: (default=counter) Specify the type of metric - counter or gauge.
-
 ```
-./gradlew :load-generator:run --args="metric --metricCount=100 --datapointCount=10 --observationInterval=1000 --flushInterval=1000 --metricType=counter -u=localhost:4317 -d=otlp"
+./gradlew :load-generator:run --args="metric -r=100 -u=localhost:4317 --metricType=counter -d=otlp"
 ```
 
 ### OTLP Trace Load Test Sample Command,
@@ -49,7 +41,7 @@ The following is a list of additional optional command line arguments applicable
 
 ### StatsD Metrics Load Test Sample Command,
 ```
-./gradlew :load-generator:run --args="metric --metricCount=100 --datapointCount=10 --observationInterval=1000 -u=localhost:8125 -d=statsd"
+./gradlew :load-generator:run --args="metric -r=100 -u=localhost:8125 --metricType=counter -d=statsd"
 ```
 
 ### Zipkin Trace Load Test Sample Command,

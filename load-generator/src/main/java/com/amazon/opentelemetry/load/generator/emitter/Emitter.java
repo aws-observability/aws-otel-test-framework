@@ -21,6 +21,9 @@ import java.util.concurrent.ScheduledExecutorService;
 public interface Emitter {
 
   int NUM_THREADS = 5;
+
+  final long FLUSH_INTERVAL = 1000;
+
   ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(NUM_THREADS);
 
   void emitDataLoad() throws Exception;
