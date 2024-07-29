@@ -35,12 +35,19 @@ variable "aoc_image_repo" {
 variable "aoc_version" {
 }
 
+resource "kubernetes_namespace" "adot_operator_ns" {
+  metadata {
+    name = "adot-operator-${var.testing_id}-ns"
+  }
+}
+
 resource "helm_release" "adot-operator" {
   name = "adot-operator-${var.testing_id}"
 
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart      = "opentelemetry-operator"
   version   = "0.63.2"
+  namespace = "adot-operator-${var.testing_id}-ns"
   wait = true
   timeout = 600
 
@@ -68,8 +75,5 @@ resource "helm_release" "adot-operator" {
     value = var.aoc_image_repo
   }
 
-  set {
-    name  = "admissionWebhooks.certManager.enabled"
-    value = true
-  }
+  depends_on          = [kubernetes_namespace.adot_operator_ns]
 }

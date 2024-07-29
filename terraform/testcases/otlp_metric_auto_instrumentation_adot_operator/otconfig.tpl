@@ -1,22 +1,22 @@
 receivers:
-  otlp:
-    protocols:
-      grpc:
-        endpoint: 0.0.0.0:${grpc_port}
+      otlp:
+        protocols:
+          grpc:
+            endpoint: 0.0.0.0:${grpc_port}
 
-processors:
-  batch: {}
+    processors:
+      batch: {}
 
-exporters:
-  awsemf:
-    region: '${region}'
+    exporters:
+      awsemf:
+        region: '${region}'
 
-service:
-  pipelines:
-    metrics:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [awsemf]
-  telemetry:
-    logs:
-      level: ${log_level}
+    service:
+      pipelines:
+        metrics:
+          receivers: [otlp]
+          processors: [batch]
+          exporters: [awsemf]
+      telemetry:
+        logs:
+          level: ${log_level}

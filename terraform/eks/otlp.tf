@@ -267,8 +267,6 @@ resource "kubernetes_service" "mocked_server_service" {
   }
 }
 
-
-
 resource "kubectl_manifest" "aoc_deployment_adot_operator" {
   count = local.is_otlp_base_scenario && local.is_operator_testcase ? 1 : 0
 
