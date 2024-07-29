@@ -5,7 +5,7 @@ receivers:
             endpoint: 0.0.0.0:${grpc_port}
 
     processors:
-      batch:
+      batch: {}
 
     exporters:
       awsemf:
