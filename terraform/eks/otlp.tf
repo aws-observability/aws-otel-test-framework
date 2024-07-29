@@ -70,7 +70,7 @@ module "iam_assumable_role_sample_app" {
   version = "4.7.0"
 }
 
-# service acount name will be passed to the otlp module for use in the push mode sample app
+# service account name will be passed to the otlp module for use in the push mode sample app
 resource "kubernetes_service_account" "sample-app-sa" {
   metadata {
     name      = "sample-app-sa-${module.common.testing_id}"
@@ -267,38 +267,24 @@ resource "kubernetes_service" "mocked_server_service" {
   }
 }
 
-data "template_file" "adot_collector_config_file" {
+
+
+resource "kubectl_manifest" "aoc_deployment_adot_operator" {
   count = local.is_otlp_base_scenario && local.is_operator_testcase ? 1 : 0
 
-  template = file("./adot-operator/adot_collector_deployment.tpl")
-
-  vars = {
-    AOC_NAMESPACE      = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
-    AOC_IMAGE          = module.common.aoc_image
-    AOC_DEPLOY_MODE    = var.aoc_deploy_mode
-    AOC_SERVICEACCOUNT = "aoc-role-${module.common.testing_id}"
-    AOC_CONFIG         = module.basic_components.0.otconfig_content
-  }
-
-  depends_on = [module.adot_operator]
-}
-
-resource "local_file" "adot_collector_deployment" {
-  count = local.is_otlp_base_scenario && local.is_operator_testcase ? 1 : 0
-
-  filename = "adot_collector.yaml"
-  content  = data.template_file.adot_collector_config_file.0.rendered
-
-  depends_on = [module.adot_operator]
-}
-
-resource "null_resource" "aoc_deployment_adot_operator" {
-  count = local.is_otlp_base_scenario && local.is_operator_testcase ? 1 : 0
-
-  provisioner "local-exec" {
-    command = "kubectl apply --kubeconfig=${local_file.kubeconfig.filename} -f ${local_file.adot_collector_deployment.0.filename}"
-  }
-
+  yaml_body  = <<-EOF
+    apiVersion: opentelemetry.io/v1beta1
+    kind: OpenTelemetryCollector
+    metadata:
+      name: aoc
+      namespace: ${var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name}
+    spec:
+      image: ${module.common.aoc_image}
+      mode: ${var.aoc_deploy_mode}
+      serviceAccount: aoc-role-${module.common.testing_id}
+      config:
+        ${module.basic_components.0.otconfig_content}
+    EOF
   depends_on = [module.adot_operator]
 }
 

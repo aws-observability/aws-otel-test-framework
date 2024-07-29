@@ -40,6 +40,9 @@ resource "helm_release" "adot-operator" {
 
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart      = "opentelemetry-operator"
+  version   = "0.63.2"
+  wait = true
+  timeout = 600
 
   values = [
     file("./adot-operator/adot-operator-values.yaml")
@@ -65,7 +68,8 @@ resource "helm_release" "adot-operator" {
     value = var.aoc_image_repo
   }
 
-  provisioner "local-exec" {
-    command = "kubectl wait --kubeconfig=${var.kubeconfig} --timeout=5m --for=condition=available deployment adot-operator-${var.testing_id}-opentelemetry-operator"
+  set {
+    name  = "admissionWebhooks.certManager.enabled"
+    value = true
   }
 }
