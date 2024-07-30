@@ -26,7 +26,6 @@ extensions:
       pipelines:
         metrics:
           receivers: [prometheus]
-          processors: []
           exporters: [prometheusremotewrite]
       extensions: [sigv4auth]
       telemetry:
