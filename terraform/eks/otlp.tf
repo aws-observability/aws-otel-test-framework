@@ -271,7 +271,7 @@ resource "kubectl_manifest" "aoc_deployment_adot_operator" {
   count = local.is_otlp_base_scenario && local.is_operator_testcase ? 1 : 0
 
   yaml_body  = <<-EOF
-    apiVersion: opentelemetry.io/v1beta1
+    apiVersion: opentelemetry.io/v1alpha1
     kind: OpenTelemetryCollector
     metadata:
       name: aoc
@@ -280,7 +280,7 @@ resource "kubectl_manifest" "aoc_deployment_adot_operator" {
       image: ${module.common.aoc_image}
       mode: ${var.aoc_deploy_mode}
       serviceAccount: aoc-role-${module.common.testing_id}
-      config:
+      config: |
         ${module.basic_components.0.otconfig_content}
     EOF
   depends_on = [module.adot_operator]
