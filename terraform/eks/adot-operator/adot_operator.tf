@@ -46,10 +46,10 @@ resource "helm_release" "adot-operator" {
 
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart      = "opentelemetry-operator"
-  version   = "0.63.2"
-  namespace = "adot-operator-${var.testing_id}-ns"
-  wait = true
-  timeout = 600
+  version    = "0.63.2"
+  namespace  = "adot-operator-${var.testing_id}-ns"
+  wait       = true
+  timeout    = 600
 
   values = [
     file("./adot-operator/adot-operator-values.yaml")
@@ -75,5 +75,5 @@ resource "helm_release" "adot-operator" {
     value = var.aoc_image_repo
   }
 
-  depends_on          = [kubernetes_namespace.adot_operator_ns]
+  depends_on = [kubernetes_namespace.adot_operator_ns]
 }
