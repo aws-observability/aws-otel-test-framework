@@ -1,4 +1,4 @@
 kubeRBACProxy:
   image:
     repository: public.ecr.aws/aws-observability/mirror-kube-rbac-proxy
-    tag: "v0.13.0"
+    tag: "v0.15.0"
