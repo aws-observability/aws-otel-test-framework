@@ -64,9 +64,9 @@ resource "local_file" "docker_compose_file" {
 resource "null_resource" "validator" {
   provisioner "local-exec" {
     command = <<-EOT
-      docker-compose -f ${local.docker_compose_path} down
-      docker-compose -f ${local.docker_compose_path} build
-      docker-compose -f ${local.docker_compose_path} up --abort-on-container-exit
+      docker compose -f ${local.docker_compose_path} down
+      docker compose -f ${local.docker_compose_path} build
+      docker compose -f ${local.docker_compose_path} up --abort-on-container-exit
     EOT
   }
 
