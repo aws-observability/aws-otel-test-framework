@@ -6,7 +6,7 @@ validate:
 # You can modify this to whatever temp credential helper you have if your ~/.aws is using credential_process
 # The docker compose file mount ~/.aws into the container for getting AWS credential
 #	awsl isengard get > creds.env
-	docker-compose -f validator_docker_compose.yml up
+	docker compose -f validator_docker_compose.yml up
 
 build:
-	docker-compose -f validator_docker_compose.yml build
+	docker compose -f validator_docker_compose.yml build
