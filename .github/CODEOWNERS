@@ -8,3 +8,7 @@
 #  https://help.github.com/en/articles/about-code-owners
 #
 * @aws-observability/adot-collector-maintainers
+
+terraform/eks/adot-operator                                        @aws-observability/aws-application-signals-maintainers @aws-observability/adot-collector-maintainers
+terraform/testcases/otlp_metric_auto_instrumentation_adot_operator @aws-observability/aws-application-signals-maintainers
+terraform/testcases/otlp_trace_auto_instrumentation_adot_operator  @aws-observability/aws-application-signals-maintainers
