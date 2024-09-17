@@ -120,7 +120,7 @@ data "aws_ami" "amazon_linux_2" {
 resource "aws_launch_template" "launchtemp" {
   name_prefix   = "launchtemp-${module.common.testing_id}-"
   image_id      = data.aws_ami.amazon_linux_2.image_id
-  instance_type = "t2.medium"
+  instance_type = "t3.medium"
   user_data     = base64encode("#!/bin/bash\necho ECS_CLUSTER=aoc-testing-${module.common.testing_id} >> /etc/ecs/ecs.config")
   metadata_options {
     http_endpoint               = "enabled"
