@@ -3,7 +3,7 @@
   "ClusterName": "aoc-testing-bb8b409570942b90",
   "ContainerInstanceId": "8471eea1fc384344a473b708c62d4c4f",
   "InstanceId": "i-06535226c39fa333a",
-  "InstanceType": "t2.medium",
+  "InstanceType": "t3.medium",
   "Sources": [
     "cadvisor",
     "roc",
