@@ -45,7 +45,7 @@ processors:
     
 
 exporters:
-  logging:
+  debug:
   loadbalancing:
     protocol:
       otlp:

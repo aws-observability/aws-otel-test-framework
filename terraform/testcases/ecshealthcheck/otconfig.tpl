@@ -10,12 +10,12 @@ receivers:
         static_configs:
         - targets: [ ${sample_app_listen_address_host}:${sample_app_listen_address_port} ]
 exporters:
-  logging:
+  debug:
 service:
   pipelines:
     metrics:
      receivers: [prometheus]
-     exporters: [logging]
+     exporters: [debug]
   extensions: [health_check]
   telemetry:
     logs:

@@ -429,7 +429,7 @@ data:
               - pod_network_rx_bytes
               - pod_network_tx_bytes
 
-      logging:
+      debug:
         verbosity: detailed
 
     extensions:
@@ -440,5 +440,5 @@ data:
         metrics:
           receivers: [prometheus]
           processors: [metricstransform/label_1, resourcedetection, metricstransform/rename, filter, cumulativetodelta, deltatorate, experimental_metricsgeneration/1, experimental_metricsgeneration/2, metricstransform/label_2, batch]
-          exporters: [logging, awsemf]
+          exporters: [debug, awsemf]
       extensions: [health_check]

@@ -67,8 +67,10 @@ tools/batchTestGenerator/batchTestGenerator
 # ignore any generated test-case-batch files
 test-case-batch
 
-# ignore java validator bin
+# ignore java project bin dirs
 validator/bin
+load-generator/bin
+trace-java-client/bin
 
 .vscode
 

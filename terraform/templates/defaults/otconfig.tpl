@@ -20,7 +20,7 @@ processors:
     timeout: 60s
 
 exporters:
-  logging:
+  debug:
     verbosity: detailed
   awsxray:
     local_mode: true
@@ -33,11 +33,11 @@ service:
     traces:
       receivers: [otlp, awsxray]
       processors: [batch/traces]
-      exporters: [logging, awsxray]
+      exporters: [debug, awsxray]
     metrics:
       receivers: [otlp]
       processors: [batch/metrics]
-      exporters: [logging, awsemf]
+      exporters: [debug, awsemf]
   telemetry:
     logs:
       level: debug
