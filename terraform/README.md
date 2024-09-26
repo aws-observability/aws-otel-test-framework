@@ -58,7 +58,7 @@ an example:
 receivers:
   awsecscontainermetrics:
 exporters:
-  logging:
+  debug:
     verbosity: detailed
   awsemf:
     namespace: '${otel_service_namespace}/${otel_service_name}'
@@ -68,7 +68,7 @@ service:
   pipelines:
     metrics:
       receivers: [awsecscontainermetrics]
-      exporters: [logging, awsemf]
+      exporters: [debug, awsemf]
 ```
 
 #### 3.2 ecs task definition 
