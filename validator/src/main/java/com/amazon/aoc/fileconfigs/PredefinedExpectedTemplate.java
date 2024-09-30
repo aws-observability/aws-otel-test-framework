@@ -30,7 +30,6 @@ public enum PredefinedExpectedTemplate implements FileConfig {
   K8S_ATTR_EXPECTED_METRIC("/expected-data-template/k8sExpectedMetric.mustache"),
   ENHANCED_EXPECTED_METRIC_TESTING_ID(
       "/expected-data-template/enhancedExpectedMetricTestingId.mustache"),
-  STATSD_EXPECTED_METRIC("/expected-data-template/statsdExpectedMetric.mustache"),
   STATSD_OTELLIB_EXPECTED_METRIC("/expected-data-template/statsDOtelLibExpectedMetric.mustache"),
   ECS_CONTAINER_EXPECTED_METRIC("/expected-data-template/ecsContainerExpectedMetric.mustache"),
   CONTAINER_INSIGHT_EKS_PROMETHEUS_METRIC(
