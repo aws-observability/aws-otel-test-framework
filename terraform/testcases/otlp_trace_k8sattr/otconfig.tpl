@@ -2,6 +2,7 @@ receivers:
   otlp:
     protocols:
       grpc:
+        endpoint: 0.0.0.0:${grpc_port}
 
 processors:
   k8sattributes:
