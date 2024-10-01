@@ -1,4 +1,4 @@
-FROM golang:1.19 AS build
+FROM golang:1.23 AS build
 WORKDIR $GOPATH/main
 COPY . .
 RUN go env -w GOPROXY=direct
