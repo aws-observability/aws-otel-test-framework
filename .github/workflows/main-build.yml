@@ -29,6 +29,6 @@ jobs:
       with:
         registry: public.ecr.aws
     - name: Push validator docker image
-      uses: burrunan/gradle-cache-action@v1
+      uses: burrunan/gradle-cache-action@v2
       with:
         arguments: :validator:jib --stacktrace
