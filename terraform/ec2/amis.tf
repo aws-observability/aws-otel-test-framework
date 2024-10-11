@@ -328,7 +328,7 @@ EOF
     # Suse Distribution
     suse15 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-15*"
+      ami_search_pattern = "suse-sles-15-sp5-v????????-hvm-ssd-x86_64"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
@@ -345,7 +345,7 @@ EOF
     }
     arm_suse15 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-15*"
+      ami_search_pattern = "suse-sles-15-sp5-v????????-hvm-ssd-arm64"
       ami_owner          = "amazon"
       ami_product_code   = []
       family             = "linux"
