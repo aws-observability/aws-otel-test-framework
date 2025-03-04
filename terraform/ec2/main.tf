@@ -303,9 +303,21 @@ resource "null_resource" "collector_file_configuration" {
 
 locals {
   configuration_uri = var.configuration_source == "file" ? local.otconfig_destination : module.remote_configuration[0].configuration_uri
+  // adding default if none provided
+  feature_gates = var.otconfig_args == [] ? ["--feature-gates=-adot.exporter.datadogexporter.deprecation"][0] : split("--feature-gates=", var.otconfig_args[0])[1]
   // encode the uri used during tests to base64 to avoid problems while this string is sent across the wire on windows.
   // we are normalizing this behavior across all operating systems.
-  start_command = replace(local.ami_family["start_command"], "CONFIGURATION_URI_PLACEHOLDER", base64encode(local.configuration_uri))
+  command_with_config = replace(
+    local.ami_family["start_command"],
+    "CONFIGURATION_URI_PLACEHOLDER",
+    base64encode(local.configuration_uri)
+  )
+
+  start_command = replace(
+    local.command_with_config,
+    "FEATUREGATE_PLACEHOLDER",
+    local.feature_gates
+  )
 }
 
 resource "null_resource" "start_collector" {
@@ -527,4 +539,3 @@ resource "null_resource" "ssm_canary_metrics" {
 output "public_ip" {
   value = aws_instance.aoc.public_ip
 }
-
