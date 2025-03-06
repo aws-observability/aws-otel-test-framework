@@ -304,7 +304,7 @@ resource "null_resource" "collector_file_configuration" {
 locals {
   configuration_uri = var.configuration_source == "file" ? local.otconfig_destination : module.remote_configuration[0].configuration_uri
   // adding default if none provided
-  feature_gates = var.otconfig_args == [] ? ["--feature-gates=-adot.exporter.datadogexporter.deprecation"][0] : split("--feature-gates=", var.otconfig_args[0])[1]
+  feature_gates = var.otconfig_args == [] ? ["-adot.exporter.datadogexporter.deprecation"][0] : split("--feature-gates=", var.otconfig_args[0])[1]
   // encode the uri used during tests to base64 to avoid problems while this string is sent across the wire on windows.
   // we are normalizing this behavior across all operating systems.
   command_with_config = replace(
