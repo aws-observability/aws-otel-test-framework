@@ -6,26 +6,8 @@ import (
 )
 
 var ec2AMIs = []string{
-	"ubuntu18",
-	"arm_ubuntu18",
-	"ubuntu20",
-	"arm_ubuntu20",
-	"ubuntu22",
-	"arm_ubuntu22",
-	"debian11",
-	"arm_debian11",
-	"debian10",
-	"arm_debian10",
-	"amazonlinux2",
-	"arm_amazonlinux2",
-	"amazonlinux3",
-	"arm_amazonlinux3",
 	"windows2022",
 	"windows2019",
-	"suse15",
-	"suse12",
-	"redhat8",
-	"arm_redhat8",
 }
 
 type TestCaseInfo struct {
