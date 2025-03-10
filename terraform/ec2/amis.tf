@@ -48,7 +48,7 @@ variable "ami_family" {
       install_package          = "aws-otel-collector.msi"
       instance_type            = "c5a.large"
       otconfig_destination     = "C:\\ot-default.yml"
-      download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
+      download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri https://aws-otel-collector-testing-vasi.s3.us-west-2.amazonaws.com/windows/amd64/aws-otel-collector.msi -OutFile C:\\aws-otel-collector.msi\""
       install_command          = "msiexec /i C:\\aws-otel-collector.msi"
       start_command            = "powershell -command \"&{ $url = \\\"$([System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('CONFIGURATION_URI_PLACEHOLDER')))\\\"; . 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation \\\"$url\\\" -FeatureGates \\\"FEATUREGATE_PLACEHOLDER\\\" -Action start}\""
       status_command           = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\""
