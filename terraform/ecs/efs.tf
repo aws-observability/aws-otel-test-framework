@@ -93,6 +93,11 @@ resource "aws_instance" "collector_efs_ec2" {
   depends_on = [aws_efs_mount_target.collector_efs_mount, aws_key_pair.aws_ssh_key]
 }
 
+resource "time_sleep" "wait_90_seconds" {
+  depends_on      = [aws_efs_mount_target.collector_efs_mount]
+  create_duration = "90s"
+}
+
 resource "null_resource" "mount_efs" {
   provisioner "remote-exec" {
     inline = [
@@ -109,7 +114,7 @@ resource "null_resource" "mount_efs" {
     }
   }
 
-  depends_on = [aws_instance.collector_efs_ec2]
+  depends_on = [aws_instance.collector_efs_ec2, time_sleep.wait_90_seconds]
 }
 resource "null_resource" "scp_cert" {
   provisioner "file" {
@@ -146,4 +151,3 @@ output "private_key" {
 output "efs_ip" {
   value = aws_instance.collector_efs_ec2.public_ip
 }
-
