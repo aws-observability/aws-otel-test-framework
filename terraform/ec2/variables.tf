@@ -136,6 +136,10 @@ variable "kafka_version" {
   default = ""
 }
 
+variable "otconfig_args" {
+  default = []
+}
+
 // Source of the collector configuration: file, s3, http and https
 variable "configuration_source" {
   default = "file"

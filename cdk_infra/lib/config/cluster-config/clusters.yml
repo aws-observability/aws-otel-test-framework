@@ -1,28 +1,6 @@
 ---
 clusters:
 # collector test clusters
-  - name: collector-ci-arm64-1-24
-    version: "1.24"
-    launch_type: ec2
-    instance_type: m6g.large
-  - name: collector-ci-amd64-1-24
-    version: "1.24"
-    launch_type: ec2
-    instance_type: "m5.large"
-  - name: collector-ci-fargate-1-24
-    version: "1.24"
-    launch_type: fargate
-  - name: collector-ci-arm64-1-25
-    version: "1.25"
-    launch_type: ec2
-    instance_type: m6g.large
-  - name: collector-ci-amd64-1-25
-    version: "1.25"
-    launch_type: ec2
-    instance_type: "m5.large"
-  - name: collector-ci-fargate-1-25
-    version: "1.25"
-    launch_type: fargate
   - name: collector-ci-arm64-1-26
     version: "1.26"
     launch_type: ec2
@@ -89,58 +67,7 @@ clusters:
   - name: collector-ci-fargate-1-31
     version: "1.31"
     launch_type: fargate
-# java agent test clustesr
-  - name: java-instrumentation-operator-ci-amd64-1-24
-    version: "1.24"
-    launch_type: ec2
-    instance_type: m5.large
-    cert_manager: true
-  - name: java-instrumentation-operator-ci-amd64-1-27
-    version: "1.27"
-    launch_type: ec2
-    instance_type: m5.large
-    cert_manager: true
-  - name: java-instrumentation-operator-ci-arm64-1-24
-    version: "1.24"
-    launch_type: ec2
-    instance_type: m6g.large
-    cert_manager: true
-  - name: java-instrumentation-operator-ci-arm64-1-27
-    version: "1.27"
-    launch_type: ec2
-    instance_type: m6g.large
-    cert_manager: true
-  - name: java-instrumentation-operator-ci-arm64-1-30
-    version: "1.30"
-    launch_type: ec2
-    instance_type: m6g.large
-    cert_manager: true
-  - name: java-instrumentation-operator-ci-arm64-1-31
-    version: "1.31"
-    launch_type: ec2
-    instance_type: m6g.large
-    cert_manager: true
 # operator test clusters
-  - name: operator-ci-amd64-1-24
-    version: "1.24"
-    launch_type: ec2
-    instance_type: m5.large
-    cert_manager: true
-  - name: operator-ci-arm64-1-24
-    version: "1.24"
-    launch_type: ec2
-    instance_type: m6g.large
-    cert_manager: true
-  - name: operator-ci-amd64-1-25
-    version: "1.25"
-    launch_type: ec2
-    instance_type: m5.large
-    cert_manager: true
-  - name: operator-ci-arm64-1-25
-    version: "1.25"
-    launch_type: ec2
-    instance_type: m6g.large
-    cert_manager: true
   - name: operator-ci-amd64-1-26
     version: "1.26"
     launch_type: ec2
