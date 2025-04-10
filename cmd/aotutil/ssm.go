@@ -57,7 +57,7 @@ func ssmCmd(ctx context.Context, cmdCtx *CmdContext) *cobra.Command {
 			ssmWrapper = NewSSM(cfg, logger)
 		},
 	}
-	root.PersistentFlags().DurationVar(&ssmWaitTimeout, "timeout", 15*time.Minute, "abort polling if timeout duration is exceeded")
+	root.PersistentFlags().DurationVar(&ssmWaitTimeout, "timeout", 25*time.Minute, "abort polling if timeout duration is exceeded")
 	root.PersistentFlags().BoolVar(&ignoreError, "ignore-error", false, "exit 0 when patch/report failed")
 
 	oneInstanceId := func(args []string) string {

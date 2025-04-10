@@ -94,7 +94,7 @@ resource "aws_instance" "collector_efs_ec2" {
 }
 
 resource "time_sleep" "wait_90_seconds" {
-  depends_on = [aws_efs_mount_target.collector_efs_mount]
+  depends_on      = [aws_efs_mount_target.collector_efs_mount]
   create_duration = "90s"
 }
 
