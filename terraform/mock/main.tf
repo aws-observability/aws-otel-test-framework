@@ -103,4 +103,3 @@ module "validator" {
 
   depends_on = [null_resource.run_docker_compose]
 }
-

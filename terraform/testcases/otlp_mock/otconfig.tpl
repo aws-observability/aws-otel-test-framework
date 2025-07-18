@@ -15,7 +15,7 @@ exporters:
     region: ${region}
     local_mode: true
     no_verify_ssl: false
-    endpoint: "${mock_endpoint}"
+    endpoint: "https://${mock_endpoint}"
 
 service:
   pipelines:
