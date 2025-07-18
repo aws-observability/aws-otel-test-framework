@@ -47,11 +47,13 @@ public class MockedServerValidator implements IValidator {
         () -> {
           Response response = client.newCall(request).execute();
           if (!response.isSuccessful()) {
+            log.info("mocked server is not available");
             throw new BaseException(ExceptionCode.MOCKED_SERVER_NOT_AVAILABLE);
           }
 
           String responseBody = response.body().string();
           if (!responseBody.equalsIgnoreCase("success")) {
+            log.info("mocked server does not receive data");
             throw new BaseException(ExceptionCode.MOCKED_SERVER_NOT_RECEIVE_DATA);
           }
 
