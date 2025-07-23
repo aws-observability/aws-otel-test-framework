@@ -18,7 +18,7 @@ variable "collector_repo_path" {
 }
 
 variable "mock_endpoint" {
-  default = "mocked-server:55671/put-data"
+  default = "mocked-server/put-data"
 }
 
 variable "otconfig_args" {
