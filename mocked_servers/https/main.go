@@ -22,7 +22,6 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
-	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -32,8 +31,6 @@ const (
 	SuccessMessage     = "success"
 	CertFilePath       = "./certificates/ssl/certificate.crt"
 	KeyFilePath        = "./certificates/private.key"
-	HTTPSPort          = ":55671" // Changed from :443 to :55671
-	HTTPPort           = ":8080"
 )
 
 type transactionStore struct {
@@ -45,10 +42,7 @@ type TransactionPayload struct {
 	TransactionsPerMinute float64 `json:"tpm"`
 }
 
-func healthCheck(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Health check request received on: %s", r.URL.Path)
-	w.Header().Set("Content-Type", "text/plain")
-	w.WriteHeader(http.StatusOK)
+func healthCheck(w http.ResponseWriter, _ *http.Request) {
 	if _, err := io.WriteString(w, HealthCheckMessage); err != nil {
 		log.Printf("Unable to write response: %v", err)
 	}
@@ -65,23 +59,12 @@ func (ts *transactionStore) checkData(w http.ResponseWriter, _ *http.Request) {
 	}
 }
 
-func (ts *transactionStore) dataReceived(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Received request on path: %s", r.URL.Path)
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		log.Printf("Error reading request body: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	log.Printf("Received data: %s", string(body))
-
+func (ts *transactionStore) dataReceived(w http.ResponseWriter, _ *http.Request) {
 	atomic.AddUint32(&ts.transactions, 1)
 
 	// Built-in latency
 	time.Sleep(15 * time.Millisecond)
 	w.WriteHeader(http.StatusOK)
-	log.Printf("Successfully processed request")
 }
 
 // Retrieve number of transactions per minute
@@ -109,20 +92,10 @@ func main() {
 		defer wg.Done()
 
 		dataApp := mux.NewRouter()
-		dataApp.HandleFunc("/health", healthCheck).Methods("GET")
 		dataApp.PathPrefix("/put-data").HandlerFunc(ts.dataReceived)
 		dataApp.HandleFunc("/trace/v1", ts.dataReceived)
 		dataApp.HandleFunc("/metric/v1", ts.dataReceived)
-		log.Printf("Starting HTTPS server on port: %v", HTTPSPort)
-		if err := http.ListenAndServeTLS(HTTPSPort, CertFilePath, KeyFilePath, dataApp); err != nil {
-			log.Printf("Failed to start HTTPS server: %v", err)
-			// Check if certificate files exist
-			if _, err := os.Stat(CertFilePath); os.IsNotExist(err) {
-				log.Printf("Certificate file not found: %s", CertFilePath)
-			}
-			if _, err := os.Stat(KeyFilePath); os.IsNotExist(err) {
-				log.Printf("Key file not found: %s", KeyFilePath)
-			}
+		if err := http.ListenAndServeTLS(":443", CertFilePath, KeyFilePath, dataApp); err != nil {
 			log.Fatalf("HTTPS server error: %v", err)
 		}
 	}(&store)
@@ -131,12 +104,11 @@ func main() {
 		defer wg.Done()
 
 		verifyApp := http.NewServeMux()
-		verifyApp.HandleFunc("/health", healthCheck)
+		verifyApp.HandleFunc("/", healthCheck)
 		verifyApp.HandleFunc("/check-data", ts.checkData)
 		verifyApp.HandleFunc("/tpm", ts.tpm)
-		log.Printf("Starting HTTP verification server on port %v", HTTPPort)
-		if err := http.ListenAndServe(HTTPPort, verifyApp); err != nil {
-			log.Fatalf("Verification server error: %v", err)
+		if err := http.ListenAndServe(":8080", verifyApp); err != nil {
+			log.Fatalf("Verification server error : %v", err)
 		}
 	}(&store)
 
