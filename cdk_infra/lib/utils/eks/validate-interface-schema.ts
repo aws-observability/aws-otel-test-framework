@@ -5,9 +5,6 @@ const validateSchema = require('yaml-schema-validator');
 
 const supportedLaunchTypes = new Set(['fargate', 'ec2']);
 const supportedVersions = new Set([
-  '1.24',
-  '1.25',
-  '1.26',
   '1.27',
   '1.28',
   '1.29',
