@@ -41,6 +41,8 @@ jobs:
           arguments: build
       - name: Set up terraform
         uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.5.7"
       - name: run imagebuild
         working-directory: terraform/imagebuild
         run: |
