@@ -213,8 +213,8 @@ resource "kubernetes_deployment" "aoc_deployment" {
               path = "/"
               port = 8080
             }
-            initial_delay_seconds = 10
-            period_seconds        = 5
+            initial_delay_seconds = 60
+            period_seconds        = 30
           }
         }
 
@@ -227,7 +227,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
           resources {
             limits = {
-              cpu    = "100m"
+              cpu    = "200m"
               memory = "256Mi"
             }
           }

@@ -49,6 +49,8 @@ provider "kubernetes" {
   host                   = data.aws_eks_cluster.testing_cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
   token                  = data.aws_eks_cluster_auth.testing_cluster.token
+  qps             = 25
+  burst           = 100
 }
 
 provider "kubectl" {
