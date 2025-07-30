@@ -3,7 +3,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "4.8.0"
+      version = "4.67.0"
     }
   }
   # for dev env account users will need to manually 

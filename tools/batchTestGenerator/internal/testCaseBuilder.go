@@ -6,8 +6,6 @@ import (
 )
 
 var ec2AMIs = []string{
-	"ubuntu18",
-	"arm_ubuntu18",
 	"ubuntu20",
 	"arm_ubuntu20",
 	"ubuntu22",

@@ -89,34 +89,6 @@ EOF
 ########################################
 variable "amis" {
   default = {
-    # Ubuntu Distribution
-    ubuntu18 = {
-      os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
-      ami_owner          = "amazon"
-      ami_product_code   = []
-      family             = "debian"
-      arch               = "amd64"
-      login_user         = "ubuntu"
-      user_data          = <<EOF
-#! /bin/bash
-sudo snap refresh amazon-ssm-agent
-EOF
-    }
-    arm_ubuntu18 = {
-      os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-bionic-*"
-      ami_owner          = "amazon"
-      ami_product_code   = []
-      family             = "debian"
-      arch               = "arm64"
-      login_user         = "ubuntu"
-      instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-sudo snap refresh amazon-ssm-agent
-EOF
-    }
     ubuntu20 = {
       os_family          = "ubuntu"
       ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-focal*"
