@@ -13,13 +13,6 @@
 # permissions and limitations under the License.
 # -------------------------------------------------------------------------
 
-terraform {
-  required_providers {
-    kubernetes = {
-      version = "2.36.0"
-    }
-  }
-}
 
 locals {
   eks_pod_config = yamldecode(data.template_file.eksconfig.rendered)["sample_app"]
