@@ -79,6 +79,16 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 		"EKS_ADOT_OPERATOR":       {},
 		"EKS_ADOT_OPERATOR_ARM64": {},
 		"EKS_FARGATE":             {},
+		"EKS_127":                 {},
+		"EKS_128":                 {},
+		"EKS_129":                 {},
+		"EKS_130":                 {},
+		"EKS_131":                 {},
+		"EKS_ARM64_127":           {},
+		"EKS_ARM64_128":           {},
+		"EKS_ARM64_129":           {},
+		"EKS_ARM64_130":           {},
+		"EKS_ARM64_131":           {},
 	}
 
 	if numBatches == 1 {

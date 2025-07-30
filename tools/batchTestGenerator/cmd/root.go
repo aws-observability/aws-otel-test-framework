@@ -34,8 +34,16 @@ type commandConfig struct {
 }
 
 var includeAllowlist = map[string]struct{}{
-	"EKS":                     {},
-	"EKS_ARM64":               {},
+	"EKS_127":                 {},
+	"EKS_128":                 {},
+	"EKS_129":                 {},
+	"EKS_130":                 {},
+	"EKS_131":                 {},
+	"EKS_ARM64_127":           {},
+	"EKS_ARM64_128":           {},
+	"EKS_ARM64_129":           {},
+	"EKS_ARM64_130":           {},
+	"EKS_ARM64_131":           {},
 	"ECS":                     {},
 	"EKS_FARGATE":             {},
 	"EC2":                     {},
