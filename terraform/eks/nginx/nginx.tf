@@ -46,20 +46,23 @@ resource "helm_release" "nginx_ingress" {
   chart      = "ingress-nginx"
   version    = "4.4.0"
 
-  set {
-    name  = "controller.metrics.enabled"
-    value = "true"
-  }
-  set {
-    name  = "controller.metrics.service.annotations.prometheus\\.io/port"
-    type  = "string"
-    value = "10254"
-  }
-  set {
-    name  = "controller.metrics.service.annotations.prometheus\\.io/scrape"
-    type  = "string"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "controller.metrics.enabled"
+      value = "true"
+    },
+    {
+      name  = "controller.metrics.service.annotations.prometheus\\.io/port"
+      type  = "string"
+      value = "10254"
+    },
+    {
+      name  = "controller.metrics.service.annotations.prometheus\\.io/scrape"
+      type  = "string"
+      value = "true"
+    }
+  ]
+
 
   provisioner "local-exec" {
     command = "/bin/bash ./nginx/get-service-external-ip.sh"

@@ -55,25 +55,24 @@ resource "helm_release" "adot-operator" {
     file("./adot-operator/adot-operator-values.yaml")
   ]
 
-  set {
-    name  = "manager.image.repository"
-    value = var.operator_repository
-  }
-
-  set {
-    name  = "manager.image.tag"
-    value = var.operator_tag
-  }
-
-  set {
-    name  = "manager.collectorImage.tag"
-    value = var.aoc_version
-  }
-
-  set {
-    name  = "manager.collectorImage.repository"
-    value = var.aoc_image_repo
-  }
+  set = [
+    {
+      name  = "manager.image.repository"
+      value = var.operator_repository
+    },
+    {
+      name  = "manager.image.tag"
+      value = var.operator_tag
+    },
+    {
+      name  = "manager.collectorImage.tag"
+      value = var.aoc_version
+    },
+    {
+      name  = "manager.collectorImage.repository"
+      value = var.aoc_image_repo
+    }
+  ]
 
   depends_on = [kubernetes_namespace.adot_operator_ns]
 }

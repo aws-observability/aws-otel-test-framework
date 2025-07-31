@@ -34,19 +34,20 @@ resource "helm_release" "bitnami" {
   repository = "https://raw.githubusercontent.com/bitnami/charts/eb5f9a9513d987b519f0ecd732e7031241c50328/bitnami"
   chart      = "memcached"
   version    = "5.8.1"
-
-  set {
-    name  = "metrics.enabled"
-    value = "true"
-  }
-  set {
-    name  = "serviceAnnotations.prometheus\\.io/port"
-    type  = "string"
-    value = "9150"
-  }
-  set {
-    name  = "serviceAnnotations.prometheus\\.io/scrape"
-    type  = "string"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "metrics.enabled"
+      value = "true"
+    },
+    {
+      name  = "serviceAnnotations.prometheus\\.io/port"
+      type  = "string"
+      value = "9150"
+    },
+    {
+      name  = "serviceAnnotations.prometheus\\.io/scrape"
+      type  = "string"
+      value = "true"
+    }
+  ]
 }

@@ -92,21 +92,24 @@ resource "helm_release" "eks" {
   repository = "https://aws.github.io/eks-charts"
   chart      = "appmesh-controller"
   version    = "1.9.0"
+  set = [
+    {
+      name  = "serviceAccount.create"
+      type  = "string"
+      value = "false"
+    },
+    {
+      name  = "serviceAccount.name"
+      type  = "string"
+      value = kubernetes_service_account.appmesh_sa.metadata[0].name
+    },
+    {
+      name  = "region"
+      type  = "string"
+      value = var.region
+    }
+  ]
 
-  set {
-    name  = "serviceAccount.create"
-    value = "false"
-  }
-
-  set {
-    name  = "serviceAccount.name"
-    value = kubernetes_service_account.appmesh_sa.metadata[0].name
-  }
-
-  set {
-    name  = "region"
-    value = var.region
-  }
 
   provisioner "local-exec" {
     command = "kubectl --kubeconfig=${var.kubeconfig} apply -k \"github.com/aws/eks-charts/stable/appmesh-controller/crds?ref=v0.0.116\""

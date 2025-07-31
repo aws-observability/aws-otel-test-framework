@@ -130,8 +130,6 @@ resource "kubernetes_config_map" "aoc_config_map" {
 
   data = {
     "aoc-config.yml" = module.basic_components.0.otconfig_content
-    "client.qps"    = "100"
-    "client.burst"  = "400"
   }
   depends_on = [kubernetes_service_account.sample-app-sa]
 }
@@ -144,10 +142,9 @@ resource "kubernetes_config_map" "mocked_server_cert" {
     name      = "mocked-server-cert"
     namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
   }
+
   data = {
     "ca-bundle.crt" = module.basic_components.0.mocked_server_cert_content
-    "client.qps"    = "100"
-    "client.burst"  = "400"
   }
 }
 
@@ -216,8 +213,8 @@ resource "kubernetes_deployment" "aoc_deployment" {
               path = "/"
               port = 8080
             }
-            initial_delay_seconds = 60
-            period_seconds        = 30
+            initial_delay_seconds = 10
+            period_seconds        = 5
           }
         }
 
@@ -230,7 +227,7 @@ resource "kubernetes_deployment" "aoc_deployment" {
 
           resources {
             limits = {
-              cpu    = "200m"
+              cpu    = "100m"
               memory = "256Mi"
             }
           }
@@ -257,10 +254,6 @@ resource "kubernetes_service" "mocked_server_service" {
   metadata {
     name      = "mocked-server"
     namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
-    annotations = {
-      "qps.authentication.k8s.io"   = "100"
-      "burst.authentication.k8s.io" = "400"
-    }
   }
   spec {
     selector = {
@@ -271,9 +264,6 @@ resource "kubernetes_service" "mocked_server_service" {
       port        = 80
       target_port = 8080
     }
-  }
-  timeouts {
-    create = "20m"
   }
 }
 
@@ -321,10 +311,6 @@ resource "kubernetes_service" "sample_app_service" {
   metadata {
     name      = "sample-app"
     namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
-    annotations = {
-      "qps.authentication.k8s.io"   = "100"
-      "burst.authentication.k8s.io" = "400"
-    }
   }
   spec {
     selector = {
@@ -337,9 +323,6 @@ resource "kubernetes_service" "sample_app_service" {
       port        = module.common.sample_app_lb_port
       target_port = module.common.sample_app_listen_address_port
     }
-  }
-  timeouts {
-    create = "20m"
   }
 }
 

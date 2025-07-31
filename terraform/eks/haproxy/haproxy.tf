@@ -35,26 +35,29 @@ resource "helm_release" "haproxy" {
   chart      = "haproxy-ingress"
   version    = "0.13.9"
 
-  set {
-    name  = "defaultBackend.enabled"
-    value = "true"
-  }
-  set {
-    name  = "controller.stats.enabled"
-    value = "true"
-  }
-  set {
-    name  = "controller.metrics.enabled"
-    value = "true"
-  }
-  set {
-    name  = "controller.metrics.service.annotations.prometheus\\.io/port"
-    type  = "string"
-    value = "9101"
-  }
-  set {
-    name  = "controller.metrics.service.annotations.prometheus\\.io/scrape"
-    type  = "string"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "defaultBackend.enabled"
+      value = "true"
+    },
+    {
+      name  = "controller.stats.enabled"
+      value = "true"
+    },
+    {
+      name  = "controller.metrics.enabled"
+      value = "true"
+    },
+    {
+      name  = "controller.metrics.service.annotations.prometheus\\.io/port"
+      type  = "string"
+      value = "9101"
+    },
+    {
+      name  = "controller.metrics.service.annotations.prometheus\\.io/scrape"
+      type  = "string"
+      value = "true"
+    }
+  ]
+
 }
