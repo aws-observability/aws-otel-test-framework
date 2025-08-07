@@ -1,69 +1,82 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "structured log schema",
-    "description": "json schema for the cloudwatch agent k8s structured log",
-    "type": "object",
-    "properties": {
-      "ClusterName":{},
-      "Type":{},
-      "Sources":{},
-      "Timestamp":{},
-      "Version":{},
-      "AutoScalingGroupName":{},
-      "InstanceId":{},
-      "InstanceType":{},
-      "NodeName":{},
-      "PodName":{},
-      "Namespace":{},
-      "interface":{},
-      "pod_interface_network_rx_bytes":{},
-      "pod_interface_network_rx_dropped":{},
-      "pod_interface_network_rx_errors":{},
-      "pod_interface_network_rx_packets":{},
-      "pod_interface_network_total_bytes":{},
-      "pod_interface_network_tx_bytes":{},
-      "pod_interface_network_tx_dropped":{},
-      "pod_interface_network_tx_errors":{},
-      "pod_interface_network_tx_packets":{},
-      "kubernetes":{
-        "type": "object",
-        "properties": {
-          "host": {},
-          "labels": {},
-          "namespace_name":{},
-          "pod_id":{},
-          "pod_name":{},
-          "pod_owners":{},
-          "service_name":{}
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent k8s structured log",
+  "type": "object",
+  "properties": {
+    "ClusterName":{},
+    "Type":{},
+    "Sources":{},
+    "Version":{},
+    "AutoScalingGroupName":{},
+    "InstanceId":{},
+    "InstanceType":{},
+    "NodeName":{},
+    "PodName":{},
+    "Namespace":{},
+    "interface":{},
+    "pod_interface_network_rx_bytes":{},
+    "pod_interface_network_rx_dropped":{},
+    "pod_interface_network_rx_errors":{},
+    "pod_interface_network_rx_packets":{},
+    "pod_interface_network_total_bytes":{},
+    "pod_interface_network_tx_bytes":{},
+    "pod_interface_network_tx_dropped":{},
+    "pod_interface_network_tx_errors":{},
+    "pod_interface_network_tx_packets":{},
+    "kubernetes":{
+      "type": "object",
+      "properties": {
+        "host": {},
+        "labels": {
+          "type": "object",
+          "properties": {
+            "controller-revision-hash": {},
+            "k8s-app": {},
+            "pod-template-generation": {}
+          }
         },
-        "required": ["host","namespace_name","pod_id","pod_name"],
-        "additionalProperties": false
+        "namespace_name":{},
+        "pod_id":{},
+        "pod_name":{},
+        "pod_owners":{
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "owner_kind": {},
+              "owner_name": {}
+            },
+            "required": ["owner_kind", "owner_name"]
+          }
+        }
       },
-      "Service":{}
-    },
-    "required": [
-      "ClusterName",
-      "Type",
-      "Sources",
-      "Timestamp",
-      "Version",
-      "AutoScalingGroupName",
-      "InstanceId",
-      "InstanceType",
-      "NodeName",
-      "PodName",
-      "Namespace",
-      "interface",
-      "kubernetes",
-      "pod_interface_network_rx_bytes",
-      "pod_interface_network_rx_dropped",
-      "pod_interface_network_rx_errors",
-      "pod_interface_network_rx_packets",
-      "pod_interface_network_total_bytes",
-      "pod_interface_network_tx_bytes",
-      "pod_interface_network_tx_dropped",
-      "pod_interface_network_tx_errors",
-      "pod_interface_network_tx_packets"
-    ],
-    "additionalProperties": false
-  }
+      "required": ["host", "labels", "namespace_name", "pod_id", "pod_name", "pod_owners"],
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "ClusterName",
+    "Type",
+    "Sources",
+    "Version",
+    "AutoScalingGroupName",
+    "InstanceId",
+    "InstanceType",
+    "NodeName",
+    "PodName",
+    "Namespace",
+    "interface",
+    "kubernetes",
+    "pod_interface_network_rx_bytes",
+    "pod_interface_network_rx_dropped",
+    "pod_interface_network_rx_errors",
+    "pod_interface_network_rx_packets",
+    "pod_interface_network_total_bytes",
+    "pod_interface_network_tx_bytes",
+    "pod_interface_network_tx_dropped",
+    "pod_interface_network_tx_errors",
+    "pod_interface_network_tx_packets"
+  ],
+  "additionalProperties": false
+}

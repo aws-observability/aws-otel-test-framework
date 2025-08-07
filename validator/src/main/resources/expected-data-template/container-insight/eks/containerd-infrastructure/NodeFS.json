@@ -16,13 +16,11 @@
     "ClusterName": {},
     "Type": {},
     "Sources": {},
-    "Timestamp": {},
     "Version": {},
     "AutoScalingGroupName": {},
     "InstanceId": {},
     "InstanceType": {},
     "NodeName": {},
-    "EBSVolumeId":{},
     "device": {},
     "fstype": {},
     "node_filesystem_available": {},
@@ -32,8 +30,39 @@
     "node_filesystem_inodes_free": {},
     "node_filesystem_inodes": {},
     "_aws": {
+      "type": "object",
       "properties": {
-        "CloudWatchMetrics": {},
+        "CloudWatchMetrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Namespace": {},
+              "Dimensions": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "Metrics": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Name": {},
+                    "Unit": {},
+                    "StorageResolution": {}
+                  },
+                  "required": ["Name", "Unit", "StorageResolution"]
+                }
+              }
+            },
+            "required": ["Namespace", "Dimensions", "Metrics"]
+          }
+        },
         "Timestamp": {}
       },
       "required": [
@@ -47,7 +76,6 @@
     "ClusterName",
     "Type",
     "Sources",
-    "Timestamp",
     "Version",
     "AutoScalingGroupName",
     "InstanceId",
@@ -59,7 +87,9 @@
     "node_filesystem_available",
     "node_filesystem_capacity",
     "node_filesystem_usage",
-    "node_filesystem_utilization"
+    "node_filesystem_utilization",
+    "node_filesystem_inodes_free",
+    "node_filesystem_inodes"
   ],
   "additionalProperties": false
 }

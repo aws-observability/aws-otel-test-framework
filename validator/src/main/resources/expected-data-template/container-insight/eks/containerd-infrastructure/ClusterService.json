@@ -1,50 +1,80 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema#",
-    "title": "structured log schema",
-    "description": "json schema for the cloudwatch agent k8s structured log",
-    "type": "object",
-  
-    "properties": {
-      "ClusterName": {},
-      "Type": {},
-      "NodeName": {},
-      "Sources": {},
-      "Timestamp": {},
-      "Version": {},
-      "Service": {},
-      "Namespace":{},
-      "kubernetes":{
-        "type": "object",
-        "properties": {
-          "service_name": {},
-          "namespace_name": {}
-        },
-        "required": ["service_name"],
-        "additionalProperties": false
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "title": "structured log schema",
+  "description": "json schema for the cloudwatch agent k8s structured log",
+  "type": "object",
+
+  "properties": {
+    "ClusterName": {},
+    "Type": {},
+    "NodeName": {},
+    "Sources": {},
+    "Version": {},
+    "Service": {},
+    "Namespace":{},
+    "kubernetes":{
+      "type": "object",
+      "properties": {
+        "service_name": {},
+        "namespace_name": {}
       },
-      "service_number_of_running_pods":{},
-      "_aws": {
-        "properties": {
-          "CloudWatchMetrics": {},
-          "Timestamp": {}
-        },
-        "required": [
-          "CloudWatchMetrics",
-          "Timestamp"
-        ]
-      }
+      "required": ["service_name", "namespace_name"],
+      "additionalProperties": false
     },
-    "required": [
-      "ClusterName",
-      "Type",
-      "NodeName",
-      "Sources",
-      "Timestamp",
-      "Version",
-      "Service",
-      "kubernetes",
-      "service_number_of_running_pods",
-      "_aws"
-    ],
-    "additionalProperties": false
-  }
+    "service_number_of_running_pods":{},
+    "_aws": {
+      "type": "object",
+      "properties": {
+        "CloudWatchMetrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Namespace": {},
+              "Dimensions": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "Metrics": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Name": {},
+                    "Unit": {},
+                    "StorageResolution": {}
+                  },
+                  "required": ["Name", "Unit", "StorageResolution"]
+                }
+              }
+            },
+            "required": ["Namespace", "Dimensions", "Metrics"]
+          }
+        },
+        "Timestamp": {}
+      },
+      "required": [
+        "CloudWatchMetrics",
+        "Timestamp"
+      ]
+    }
+  },
+  "required": [
+    "ClusterName",
+    "Type",
+    "NodeName",
+    "Sources",
+    "Version",
+    "Service",
+    "Namespace",
+    "kubernetes",
+    "service_number_of_running_pods",
+    "_aws"
+  ],
+  "additionalProperties": false
+}

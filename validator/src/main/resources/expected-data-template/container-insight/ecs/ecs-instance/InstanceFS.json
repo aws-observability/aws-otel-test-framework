@@ -7,12 +7,10 @@
     "ClusterName": {},
     "Type": {},
     "Sources": {},
-    "Timestamp": {},
     "Version": {},
     "AutoScalingGroupName": {},
     "InstanceId": {},
     "InstanceType": {},
-    "EBSVolumeId":{},
     "device": {},
     "ContainerInstanceId": {},
     "fstype": {},
@@ -20,8 +18,8 @@
     "instance_filesystem_capacity": {},
     "instance_filesystem_usage": {},
     "instance_filesystem_utilization":{},
-    "instance_filesystem_inodes_free": {},
     "instance_filesystem_inodes": {},
+    "instance_filesystem_inodes_free": {},
     "_aws": {
       "properties": {
         "CloudWatchMetrics": {},
@@ -38,7 +36,6 @@
     "ClusterName",
     "Type",
     "Sources",
-    "Timestamp",
     "Version",
     "AutoScalingGroupName",
     "InstanceId",
@@ -49,7 +46,9 @@
     "instance_filesystem_available",
     "instance_filesystem_capacity",
     "instance_filesystem_usage",
-    "instance_filesystem_utilization"
+    "instance_filesystem_utilization",
+    "instance_filesystem_inodes",
+    "instance_filesystem_inodes_free"
   ],
   "additionalProperties": false
 }

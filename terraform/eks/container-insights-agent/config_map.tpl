@@ -13,12 +13,15 @@ data:
 
     receivers:
       awscontainerinsightreceiver:
+        container_orchestrator: eks
 
     processors:
       batch/metrics:
         timeout: 60s
 
     exporters:
+      debug:
+        verbosity: detailed
       awsemf:
         namespace: ContainerInsights
         log_group_name: '/aws/containerinsights/{ClusterName}/performance'
@@ -95,6 +98,6 @@ data:
         metrics:
           receivers: [awscontainerinsightreceiver]
           processors: [batch/metrics]
-          exporters: [awsemf]
+          exporters: [awsemf, debug]
 
       extensions: [health_check]

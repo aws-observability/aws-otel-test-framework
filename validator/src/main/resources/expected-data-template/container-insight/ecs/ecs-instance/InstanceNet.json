@@ -7,7 +7,6 @@
     "ClusterName":{},
     "Type":{},
     "Sources":{},
-    "Timestamp":{},
     "Version":{},
     "AutoScalingGroupName":{},
     "InstanceId":{},
@@ -22,21 +21,12 @@
     "instance_interface_network_tx_bytes":{},
     "instance_interface_network_tx_dropped":{},
     "instance_interface_network_tx_errors":{},
-    "instance_interface_network_tx_packets":{},
-    "kubernetes": {
-      "type": "object",
-      "properties": {
-        "host": {}
-      },
-      "required": ["host"],
-      "additionalProperties": false
-    }
+    "instance_interface_network_tx_packets":{}
   },
   "required": [
     "ClusterName",
     "Type",
     "Sources",
-    "Timestamp",
     "Version",
     "AutoScalingGroupName",
     "InstanceId",
