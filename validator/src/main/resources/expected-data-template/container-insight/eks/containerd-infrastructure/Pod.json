@@ -8,7 +8,6 @@
     "ClusterName":{},
     "Type":{},
     "Sources":{},
-    "Timestamp":{},
     "Version":{},
     "AutoScalingGroupName":{},
     "InstanceId":{},
@@ -16,75 +15,94 @@
     "NodeName":{},
     "PodName":{},
     "Namespace":{},
-    "pod_cpu_usage_system":{},
-    "pod_cpu_usage_total":{},
-    "pod_cpu_usage_user":{},
-    "pod_cpu_utilization":{},
     "pod_memory_cache":{},
     "pod_memory_failcnt":{},
-    "pod_memory_hierarchical_pgfault":{},
-    "pod_memory_hierarchical_pgmajfault":{},
     "pod_memory_mapped_file":{},
     "pod_memory_max_usage":{},
-    "pod_memory_pgfault":{},
-    "pod_memory_pgmajfault":{},
     "pod_memory_rss":{},
     "pod_memory_swap":{},
     "pod_memory_usage":{},
-    "pod_memory_utilization":{},
     "pod_memory_working_set":{},
-    "pod_network_rx_bytes":{},
-    "pod_network_rx_dropped":{},
-    "pod_network_rx_errors":{},
-    "pod_network_rx_packets":{},
-    "pod_network_total_bytes":{},
-    "pod_network_tx_bytes":{},
-    "pod_network_tx_dropped":{},
-    "pod_network_tx_errors":{},
-    "pod_network_tx_packets":{},
-    "pod_number_of_running_containers":{},
+    "pod_memory_utilization":{},
+    "pod_memory_limit": {},
+    "pod_memory_request":{},
+    "pod_memory_utilization_over_pod_limit":{},
     "pod_number_of_containers":{},
-    "pod_number_of_container_restarts":{},
+    "pod_number_of_running_containers":{},
     "pod_status":{},
     "kubernetes":{
       "type": "object",
       "properties": {
         "host": {},
-        "labels": {},
+        "labels": {
+          "type": "object",
+          "properties": {
+            "controller-revision-hash": {},
+            "name": {},
+            "pod-template-generation": {}
+          }
+        },
         "namespace_name":{},
         "pod_id":{},
         "pod_name":{},
-        "pod_owners":{},
-        "service_name":{}
+        "pod_owners": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "owner_kind": {},
+              "owner_name": {}
+            },
+            "required": ["owner_kind", "owner_name"]
+          }
+        }
       },
-      "required": ["host","namespace_name","pod_id","pod_name"],
+      "required": ["host", "namespace_name", "pod_id", "pod_name", "labels", "pod_owners"],
       "additionalProperties": false
     },
-    "Service":{},
-    "pod_cpu_limit": {},
-    "pod_memory_limit": {},
-    "pod_cpu_request":{},
-    "pod_cpu_reserved_capacity":{},
-    "pod_cpu_utilization_over_pod_limit":{},
-    "pod_memory_request":{},
-    "pod_memory_reserved_capacity":{},
-    "pod_memory_utilization_over_pod_limit":{},
     "_aws": {
+      "type": "object",
       "properties": {
-        "CloudWatchMetrics": {},
+        "CloudWatchMetrics": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "Namespace": {},
+              "Dimensions": {
+                "type": "array",
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "Metrics": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "Name": {},
+                    "Unit": {},
+                    "StorageResolution": {}
+                  },
+                  "required": ["Name", "Unit", "StorageResolution"]
+                }
+              }
+            },
+            "required": ["Namespace", "Dimensions", "Metrics"]
+          }
+        },
         "Timestamp": {}
       },
-      "required": [
-        "CloudWatchMetrics",
-        "Timestamp"
-      ]
+      "required": ["CloudWatchMetrics", "Timestamp"]
     }
   },
   "required": [
     "ClusterName",
     "Type",
     "Sources",
-    "Timestamp",
     "Version",
     "AutoScalingGroupName",
     "InstanceId",
@@ -93,35 +111,20 @@
     "PodName",
     "Namespace",
     "kubernetes",
-    "pod_cpu_usage_system",
-    "pod_cpu_usage_total",
-    "pod_cpu_usage_user",
-    "pod_cpu_utilization",
     "pod_memory_cache",
     "pod_memory_failcnt",
-    "pod_memory_hierarchical_pgfault",
-    "pod_memory_hierarchical_pgmajfault",
     "pod_memory_mapped_file",
     "pod_memory_max_usage",
-    "pod_memory_pgfault",
-    "pod_memory_pgmajfault",
     "pod_memory_rss",
     "pod_memory_swap",
     "pod_memory_usage",
-    "pod_memory_utilization",
     "pod_memory_working_set",
-    "pod_network_rx_bytes",
-    "pod_network_rx_dropped",
-    "pod_network_rx_errors",
-    "pod_network_rx_packets",
-    "pod_network_total_bytes",
-    "pod_network_tx_bytes",
-    "pod_network_tx_dropped",
-    "pod_network_tx_errors",
-    "pod_network_tx_packets",
-    "pod_number_of_running_containers",
+    "pod_memory_utilization",
+    "pod_memory_limit",
+    "pod_memory_request",
+    "pod_memory_utilization_over_pod_limit",
     "pod_number_of_containers",
-    "pod_number_of_container_restarts",
+    "pod_number_of_running_containers",
     "pod_status",
     "_aws"
   ],
