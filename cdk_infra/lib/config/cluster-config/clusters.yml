@@ -1,17 +1,6 @@
 ---
 clusters:
 # collector test clusters
-  - name: collector-ci-arm64-1-27
-    version: "1.27"
-    launch_type: ec2
-    instance_type: m6g.large
-  - name: collector-ci-amd64-1-27
-    version: "1.27"
-    launch_type: ec2
-    instance_type: "m5.large"
-  - name: collector-ci-fargate-1-27
-    version: "1.27"
-    launch_type: fargate
   - name: collector-ci-arm64-1-28
     version: "1.28"
     launch_type: ec2
@@ -57,16 +46,6 @@ clusters:
     version: "1.31"
     launch_type: fargate
 # operator test clusters
-  - name: operator-ci-amd64-1-27
-    version: "1.27"
-    launch_type: ec2
-    instance_type: m5.large
-    cert_manager: true
-  - name: operator-ci-arm64-1-27
-    version: "1.27"
-    launch_type: ec2
-    instance_type: m6g.large
-    cert_manager: true
   - name: operator-ci-amd64-1-28
     version: "1.28"
     launch_type: ec2
