@@ -64,7 +64,7 @@ jobs:
     # If this step fails, then you should remove it and run the build manually (see below)
     - name: Autobuild
       if: matrix.language != 'java'
-      uses: github/codeql-action/autobuild@16df4fbc19aea13d921737861d6c622bf3cefe23 #v3.30.3
+      uses: github/codeql-action/autobuild@16df4fbc19aea13d921737861d6c622bf3cefe23 #v2.30.3
 
     # ℹ️ Command-line programs to run using the OS shell.
     # 📚 https://git.io/JvXDl
