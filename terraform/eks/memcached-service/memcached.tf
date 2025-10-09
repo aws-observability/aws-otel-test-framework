@@ -36,6 +36,22 @@ resource "helm_release" "bitnami" {
   version    = "5.8.1"
 
   set {
+    name  = "image.repository"
+    value = "bitnamilegacy/memcached"
+  }
+  set {
+    name  = "image.tag"
+    value = "1.6.23-debian-11-r9"
+  }
+  set {
+    name  = "metrics.image.repository"
+    value = "bitnamilegacy/memcached-exporter"
+  }
+  set {
+    name  = "metrics.image.tag"
+    value = "0.14.2-debian-11-r9"
+  }
+  set {
     name  = "metrics.enabled"
     value = "true"
   }

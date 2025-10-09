@@ -9,8 +9,8 @@ terraform {
     kubernetes = {
       version = "2.36.0"
     }
-    helm ={
-      source = "hashicorp/helm"
+    helm = {
+      source  = "hashicorp/helm"
       version = "2.17.0"
     }
     kubectl = {
