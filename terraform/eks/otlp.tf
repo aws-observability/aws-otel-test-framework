@@ -130,8 +130,8 @@ resource "kubernetes_config_map" "aoc_config_map" {
 
   data = {
     "aoc-config.yml" = module.basic_components.0.otconfig_content
-    "client.qps"    = "100"
-    "client.burst"  = "400"
+    "client.qps"     = "100"
+    "client.burst"   = "400"
   }
   depends_on = [kubernetes_service_account.sample-app-sa]
 }
