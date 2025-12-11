@@ -7,7 +7,7 @@ export class VPCStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
     this.vpc = new ec2.Vpc(this, 'EKSVpc', {
-      cidr: '10.0.0.0/16',
+      ipAddresses: ec2.IpAddresses.cidr('10.0.0.0/16'),
       natGateways: 3,
       maxAzs: 3,
       vpnGateway: false,
