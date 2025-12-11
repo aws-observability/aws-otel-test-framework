@@ -24,6 +24,7 @@
     "typeRoots": [
       "./node_modules/@types"
     ],
+    "skipLibCheck": true,
     "outDir": "./dist/lib"
   },
   "exclude": ["cdk.out","build","node_modules", "dist"],

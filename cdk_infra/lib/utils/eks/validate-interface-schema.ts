@@ -5,11 +5,12 @@ const validateSchema = require('yaml-schema-validator');
 
 const supportedLaunchTypes = new Set(['fargate', 'ec2']);
 const supportedVersions = new Set([
-  '1.27',
-  '1.28',
   '1.29',
   '1.30',
-  '1.31'
+  '1.31',
+  '1.32',
+  '1.33',
+  '1.34'
 ]);
 const supportedCPUArchitectures = new Set(['m5', 'm6g', 't4g']);
 const supportedNodeSizes = new Set([
