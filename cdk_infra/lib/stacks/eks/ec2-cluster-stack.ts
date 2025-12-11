@@ -18,6 +18,10 @@ function getReleaseVersion(amiType: string, clusterVersion: string, scope: Const
     parameterName = `/aws/service/eks/optimized-ami/${clusterVersion}/amazon-linux-2/recommended/release_version`;
   } else if (amiType === NodegroupAmiType.AL2_ARM_64) {
     parameterName = `/aws/service/eks/optimized-ami/${clusterVersion}/amazon-linux-2-arm64/recommended/release_version`;
+  } else if (amiType === NodegroupAmiType.AL2023_X86_64_STANDARD) {
+    parameterName = `/aws/service/eks/optimized-ami/${clusterVersion}/amazon-linux-2023/x86_64/standard/recommended/release_version`;
+  } else if (amiType === NodegroupAmiType.AL2023_ARM_64_STANDARD) {
+    parameterName = `/aws/service/eks/optimized-ami/${clusterVersion}/amazon-linux-2023/arm64/standard/recommended/release_version`;
   } else {
     throw new Error(`Unsupported amiType: ${amiType}`);
   }

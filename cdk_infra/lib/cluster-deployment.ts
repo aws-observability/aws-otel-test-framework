@@ -56,6 +56,23 @@ export function deployClusters(
     if (clusterInterface.launch_type === 'ec2') {
       const ec2Cluster = cluster as ec2ClusterInterface;
       validateInterface(ec2Cluster);
+      
+      // Determine AMI type based on Kubernetes version and architecture
+      // K8s 1.33+ only supports AL2023, earlier versions use AL2
+      const k8sVersion = parseFloat(clusterInterface.version);
+      const isArm64 = ec2Cluster.name.match('-arm64-');
+      let amiType: NodegroupAmiType;
+      
+      if (k8sVersion >= 1.33) {
+        amiType = isArm64 
+          ? NodegroupAmiType.AL2023_ARM_64_STANDARD
+          : NodegroupAmiType.AL2023_X86_64_STANDARD;
+      } else {
+        amiType = isArm64 
+          ? NodegroupAmiType.AL2_ARM_64
+          : NodegroupAmiType.AL2_X86_64;
+      }
+      
       clusterStack = new EC2Stack(app, `${ec2Cluster.name}EKSCluster`, {
         name: ec2Cluster.name,
         vpc: vpc,
@@ -63,9 +80,7 @@ export function deployClusters(
         instanceTypes: [
           new InstanceType(ec2Cluster.instance_type.toLowerCase())
         ],
-        amiType: ec2Cluster.name.match('-arm64-')
-          ? NodegroupAmiType.AL2_ARM_64
-          : NodegroupAmiType.AL2_X86_64,
+        amiType: amiType,
         env: envInput
       });
     } else {
