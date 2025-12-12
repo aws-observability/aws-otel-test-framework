@@ -12,7 +12,6 @@ public class ContainerInsightStructuredLogValidatorContainerd
     return Arrays.asList(
         "Cluster",
         "ClusterNamespace",
-        "ClusterService",
         "Container",
         "Node",
         "NodeDiskIO",
