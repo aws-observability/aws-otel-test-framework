@@ -1,9 +1,6 @@
 # Build the war file
 FROM maven:3-openjdk-8 as build
 
-# Update CA certificates to fix TLS handshake issues on ARM64
-RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /app
 COPY . .
 RUN mvn package

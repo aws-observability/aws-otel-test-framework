@@ -1,8 +1,4 @@
 FROM golang:1.23 as build
-
-# Update CA certificates to fix TLS handshake issues on ARM64
-RUN apt-get update && apt-get install -y ca-certificates && update-ca-certificates && rm -rf /var/lib/apt/lists/*
-
 WORKDIR $GOPATH/main
 COPY . .
 RUN go env -w GOPROXY=direct
