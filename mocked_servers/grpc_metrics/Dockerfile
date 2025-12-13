@@ -1,9 +1,9 @@
-FROM golang:1.23 AS build
+FROM --platform=$BUILDPLATFORM golang:1.23 AS build
+ARG TARGETARCH
 WORKDIR $GOPATH/main
 COPY . .
-RUN go env -w GOPROXY=direct
 
-RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux go build -o=/bin/main .
+RUN GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=$TARGETARCH go build -o=/bin/main .
 
 FROM scratch
 COPY --from=build /bin/main /bin/main
