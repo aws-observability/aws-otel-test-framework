@@ -7,7 +7,6 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:${grpc_port}
   kafka/receiver:
-    topic: ${extra_data.msk.topic}
     protocol_version: "${extra_data.msk.kafka_version}"
     auth:
       tls:
@@ -15,6 +14,8 @@ receivers:
     brokers:
 %{ for broker in split(",", extra_data["msk"].bootstrap_brokers_tls) }      - ${broker}
 %{ endfor }
+    traces:
+      topic: ${extra_data.msk.topic}
 
 processors:
   batch:
@@ -28,10 +29,11 @@ exporters:
     auth:
       tls:
         insecure: false
-    topic: ${extra_data.msk.topic}
     brokers:
 %{ for broker in split(",", extra_data["msk"].bootstrap_brokers_tls) }      - ${broker}
 %{ endfor }
+    traces:
+      topic: ${extra_data.msk.topic}
 
 service:
   pipelines:
