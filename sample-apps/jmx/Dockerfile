@@ -1,5 +1,5 @@
 # Build the war file
-FROM maven:3-openjdk-8 as build
+FROM --platform=$BUILDPLATFORM maven:3.9-eclipse-temurin-8 AS build
 
 WORKDIR /app
 COPY . .

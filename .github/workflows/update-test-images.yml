@@ -19,7 +19,7 @@ permissions:
 
 jobs:
   run-image-build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ vars.RUNNER_TYPE || 'ubuntu-latest' }}
     steps:
       - name: Remove cache
         run: rm -rf /opt/hostedtoolcache

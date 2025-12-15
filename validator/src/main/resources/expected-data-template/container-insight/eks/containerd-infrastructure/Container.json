@@ -24,7 +24,6 @@
     "container_memory_working_set":{},
     "container_memory_utilization":{},
     "container_status":{},
-    "container_last_termination_reason":{},
     "kubernetes":{
       "type": "object",
       "properties": {
@@ -32,8 +31,6 @@
         "labels": {
           "type": "object",
           "properties": {
-            "app.kubernetes.io/instance": {},
-            "app.kubernetes.io/name": {},
             "controller-revision-hash": {},
             "k8s-app": {},
             "pod-template-generation": {}
@@ -88,7 +85,6 @@
     "container_memory_working_set",
     "container_memory_utilization",
     "container_status",
-    "container_last_termination_reason",
     "kubernetes"
   ],
   "additionalProperties": false
