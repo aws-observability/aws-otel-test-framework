@@ -45,6 +45,7 @@ jobs:
       uses: actions/setup-go@v5
       with:
         go-version: '~1.21.1'
+        cache-dependency-path: '**/go.sum'
     - name: Checkout repo
       uses: actions/checkout@v4
     - name: Unit test
@@ -84,7 +85,7 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
       - name: Setup Gradle
-        uses: gradle/gradle-build-action@v3
+        uses: gradle/actions/setup-gradle@v5
       - name: adot-testbed build
         working-directory: adot-testbed/
         run: gradle build -x test

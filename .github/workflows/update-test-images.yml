@@ -35,10 +35,10 @@ jobs:
           distribution: 'zulu'
           java-version: 17
       - uses: gradle/wrapper-validation-action@v3
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v5
       - name: Build locally with gradle
-        uses: gradle/gradle-build-action@v3
-        with:
-          arguments: build
+        run: ./gradlew build
       - name: Set up terraform
         uses: hashicorp/setup-terraform@v3
         with:
