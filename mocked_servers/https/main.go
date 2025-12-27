@@ -15,6 +15,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"io"
 	"log"
@@ -95,7 +96,16 @@ func main() {
 		dataApp.PathPrefix("/put-data").HandlerFunc(ts.dataReceived)
 		dataApp.HandleFunc("/trace/v1", ts.dataReceived)
 		dataApp.HandleFunc("/metric/v1", ts.dataReceived)
-		if err := http.ListenAndServeTLS(":443", CertFilePath, KeyFilePath, dataApp); err != nil {
+
+		server := &http.Server{
+			Addr:    ":443",
+			Handler: dataApp,
+			TLSConfig: &tls.Config{
+				MinVersion: tls.VersionTLS12,
+			},
+		}
+
+		if err := server.ListenAndServeTLS(CertFilePath, KeyFilePath); err != nil {
 			log.Fatalf("HTTPS server error: %v", err)
 		}
 	}(&store)
