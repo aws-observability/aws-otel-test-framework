@@ -9,6 +9,7 @@ services:
   sample_app:
     privileged: true
     image: ${sample_app_image}
+    restart: on-failure
     ports:
       - "${sample_app_external_port}:${sample_app_listen_address_port}"
     environment:
