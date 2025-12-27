@@ -32,4 +32,7 @@ rules:
     resources: ["leases"]
     resourceNames: ["otel-container-insight-clusterleader"]
     verbs: ["get","update", "create"]
+  - apiGroups: ["discovery.k8s.io"]
+    resources: ["endpointslices"]
+    verbs: ["get", "list", "watch"]
 
