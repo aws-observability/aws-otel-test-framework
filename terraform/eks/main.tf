@@ -130,6 +130,14 @@ module "iam_assumable_role_admin" {
 
   provider_url = trimprefix(data.aws_eks_cluster.testing_cluster.identity[0].oidc[0].issuer, "https://")
 
+  # Allow dynamically-named service accounts to assume this role
+  # Service accounts are created with unique testing IDs (e.g., aoc-agent-{testing_id})
+  # in dynamically-named namespaces (e.g., aoc-ns-{testing_id})
+  oidc_subjects_with_wildcards = [
+    "system:serviceaccount:aoc-ns-*:*",
+    "system:serviceaccount:aoc-fargate-ns-*:*",
+  ]
+
   role_policy_arns = [
     "arn:aws:iam::aws:policy/CloudWatchAgentServerPolicy",
     "arn:aws:iam::aws:policy/AWSXrayFullAccess",

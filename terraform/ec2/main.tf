@@ -113,9 +113,10 @@ resource "aws_instance" "sidecar" {
     http_endpoint = "enabled"
     http_tokens   = "required"
 
-    # Use 2 hops because some of the test services run inside docker in the instance.
-    # That counts as an extra hop to access the IMDS. The default value is 1.
-    http_put_response_hop_limit = 2
+    # Use 3 hops to ensure Docker containers can reliably refresh credentials from IMDS.
+    # Docker bridge networking adds hops, and AWS SDK credential refresh at ~30min
+    # can fail with lower hop limits. The default value is 1.
+    http_put_response_hop_limit = 3
   }
 
 }
