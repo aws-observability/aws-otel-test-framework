@@ -24,7 +24,7 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew :validator:build
   validator-image-build:
-    runs-on: ${{ vars.ADOTLARGERUNNERS || 'ubuntu-latest }}
+    runs-on: ${{ vars.ADOTLARGERUNNERS || 'ubuntu-latest' }}
     steps:
     - uses: actions/checkout@v4
     - name: Set up Docker Buildx
