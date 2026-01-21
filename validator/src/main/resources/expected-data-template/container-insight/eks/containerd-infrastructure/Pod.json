@@ -15,18 +15,42 @@
     "NodeName":{},
     "PodName":{},
     "Namespace":{},
+    "Service":{},
+    "pod_cpu_limit":{},
+    "pod_cpu_request":{},
+    "pod_cpu_reserved_capacity":{},
+    "pod_cpu_usage_system":{},
+    "pod_cpu_usage_total":{},
+    "pod_cpu_usage_user":{},
+    "pod_cpu_utilization":{},
+    "pod_cpu_utilization_over_pod_limit":{},
     "pod_memory_cache":{},
     "pod_memory_failcnt":{},
+    "pod_memory_hierarchical_pgfault":{},
+    "pod_memory_hierarchical_pgmajfault":{},
+    "pod_memory_limit": {},
     "pod_memory_mapped_file":{},
     "pod_memory_max_usage":{},
+    "pod_memory_pgfault":{},
+    "pod_memory_pgmajfault":{},
+    "pod_memory_request":{},
+    "pod_memory_reserved_capacity":{},
     "pod_memory_rss":{},
     "pod_memory_swap":{},
     "pod_memory_usage":{},
-    "pod_memory_working_set":{},
     "pod_memory_utilization":{},
-    "pod_memory_limit": {},
-    "pod_memory_request":{},
     "pod_memory_utilization_over_pod_limit":{},
+    "pod_memory_working_set":{},
+    "pod_network_rx_bytes":{},
+    "pod_network_rx_dropped":{},
+    "pod_network_rx_errors":{},
+    "pod_network_rx_packets":{},
+    "pod_network_total_bytes":{},
+    "pod_network_tx_bytes":{},
+    "pod_network_tx_dropped":{},
+    "pod_network_tx_errors":{},
+    "pod_network_tx_packets":{},
+    "pod_number_of_container_restarts":{},
     "pod_number_of_containers":{},
     "pod_number_of_running_containers":{},
     "pod_status":{},
@@ -35,12 +59,7 @@
       "properties": {
         "host": {},
         "labels": {
-          "type": "object",
-          "properties": {
-            "controller-revision-hash": {},
-            "name": {},
-            "pod-template-generation": {}
-          }
+          "type": "object"
         },
         "namespace_name":{},
         "pod_id":{},
@@ -55,9 +74,10 @@
             },
             "required": ["owner_kind", "owner_name"]
           }
-        }
+        },
+        "service_name":{}
       },
-      "required": ["host", "namespace_name", "pod_id", "pod_name", "labels", "pod_owners"],
+      "required": ["host", "namespace_name", "pod_id", "pod_name", "pod_owners"],
       "additionalProperties": false
     },
     "_aws": {
@@ -120,9 +140,6 @@
     "pod_memory_usage",
     "pod_memory_working_set",
     "pod_memory_utilization",
-    "pod_memory_limit",
-    "pod_memory_request",
-    "pod_memory_utilization_over_pod_limit",
     "pod_number_of_containers",
     "pod_number_of_running_containers",
     "pod_status",
