@@ -28,7 +28,7 @@ spec:
           command:
             - "/awscollector"
             - "--config=/conf/adot-collector-config.yaml"
-            - "--feature-gates=-processor.resourcedetection.propagateerrors"
+            - "--feature-gates=-processor.resourcedetection.propagateerrors,-receiver.prometheusreceiver.RemoveStartTimeAdjustment"
           env:
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: "ClusterName=${ClusterName}"
