@@ -99,6 +99,11 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     ;;
     esac
 
+    if [ $APPLY_EXIT -ne 0 ]; then
+        echo "Waiting 60s before retry to allow resource cleanup..."
+        sleep 60
+    fi
+
     let ATTEMPTS_LEFT=ATTEMPTS_LEFT-1
 done
 
