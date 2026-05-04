@@ -18,11 +18,11 @@ output "aoc_vpc_id" {
 }
 
 output "aoc_private_subnet_ids" {
-  value = data.aws_subnet_ids.aoc_private_subnet_ids.ids
+  value = data.aws_subnets.aoc_private_subnet_ids.ids
 }
 
 output "aoc_public_subnet_ids" {
-  value = data.aws_subnet_ids.aoc_public_subnet_ids.ids
+  value = data.aws_subnets.aoc_public_subnet_ids.ids
 }
 
 output "aoc_security_group_id" {

@@ -23,7 +23,7 @@ module "common" {
 locals {
   otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
 
-  subnet_ids_list = tolist(data.aws_subnet_ids.aoc_public_subnet_ids.ids)
+  subnet_ids_list = data.aws_subnets.aoc_public_subnet_ids.ids
 
   subnet_ids_random_index = random_id.subnetSelector.dec % length(local.subnet_ids_list)
 
@@ -46,8 +46,11 @@ data "aws_vpc" "aoc_vpc" {
 }
 
 # return private subnets
-data "aws_subnet_ids" "aoc_private_subnet_ids" {
-  vpc_id = data.aws_vpc.aoc_vpc.id
+data "aws_subnets" "aoc_private_subnet_ids" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.aoc_vpc.id]
+  }
   filter {
     name = "tag:Name"
     values = [
@@ -59,8 +62,11 @@ data "aws_subnet_ids" "aoc_private_subnet_ids" {
 }
 
 # return public subnets
-data "aws_subnet_ids" "aoc_public_subnet_ids" {
-  vpc_id = data.aws_vpc.aoc_vpc.id
+data "aws_subnets" "aoc_public_subnet_ids" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.aoc_vpc.id]
+  }
   filter {
     name = "tag:Name"
     values = [
