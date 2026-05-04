@@ -15,7 +15,8 @@ receivers:
 %{ for broker in split(",", extra_data["msk"].bootstrap_brokers_tls) }      - ${broker}
 %{ endfor }
     traces:
-      topic: ${extra_data.msk.topic}
+      topics:
+        - ${extra_data.msk.topic}
 
 processors:
   batch:
