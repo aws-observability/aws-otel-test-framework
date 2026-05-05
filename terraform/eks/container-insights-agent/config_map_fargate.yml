@@ -12,8 +12,8 @@ data:
       prometheus:
         config:
           global:
-            scrape_interval: 1m
-            scrape_timeout: 50s
+            scrape_interval: 15s
+            scrape_timeout: 10s
 
           scrape_configs:
           - job_name: 'kubelets-cadvisor-metrics'
@@ -287,6 +287,7 @@ data:
 
       # converts cumulative sum to delta
       cumulativetodelta:
+        initial_value: keep
         include:
             metrics:
                 - new_container_cpu_usage_seconds_total
@@ -406,7 +407,7 @@ data:
         detectors: [env, eks]
 
       batch:
-        timeout: 60s
+        timeout: 15s
 
     exporters:
       awsemf:
