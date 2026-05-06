@@ -402,9 +402,11 @@ data:
             action: update
             new_name: container_$$1
 
-      # add cluster name from env variable and EKS metadata
+      # add cluster name from env variable (OTEL_RESOURCE_ATTRIBUTES)
+      # Note: the eks detector fatally fails on Fargate because IMDS
+      # is unavailable and K8S_NODE_NAME is not set.
       resourcedetection:
-        detectors: [env, eks]
+        detectors: [env]
 
       batch:
         timeout: 15s
