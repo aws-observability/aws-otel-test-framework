@@ -1,73 +1,12 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "structured log schema",
-  "description": "json schema for the cloudwatch agent k8s structured log",
+  "description": "json schema for the cloudwatch agent k8s structured log - Fargate Pod type",
   "type": "object",
-  "properties": {
-    "ClusterName": {},
-    "LaunchType": {},
-    "Namespace": {},
-    "PodName": {},
-    "Type": {},
-    "Timestamp": {},
-    "pod_cpu_usage_total": {},
-    "pod_cpu_limit": {},
-    "pod_cpu_request": {},
-    "pod_cpu_utilization_over_pod_limit": {},
-    "pod_memory_cache": {},
-    "pod_memory_failcnt": {},
-    "pod_memory_hierarchical_pgfault": {},
-    "pod_memory_hierarchical_pgmajfault": {},
-    "pod_memory_limit": {},
-    "pod_memory_max_usage": {},
-    "pod_memory_pgfault": {},
-    "pod_memory_pgmajfault": {},
-    "pod_memory_rss": {},
-    "pod_memory_swap": {},
-    "pod_memory_usage": {},
-    "pod_memory_utilization_over_pod_limit": {},
-    "pod_memory_working_set": {},
-    "pod_network_rx_bytes": {},
-    "pod_network_rx_dropped": {},
-    "pod_network_rx_errors": {},
-    "pod_network_rx_packets": {},
-    "pod_network_total_bytes": {},
-    "pod_network_tx_bytes": {},
-    "pod_network_tx_dropped": {},
-    "pod_network_tx_errors": {},
-    "pod_network_tx_packets": {},
-    "kubernetes": {
-      "type": "object",
-      "properties": {
-        "host": {},
-        "namespace_name": {},
-        "pod_name": {},
-        "pod_id": {},
-        "pod_owners": {
-          "type": "array"
-        },
-        "labels": {
-          "type": "object"
-        },
-        "service_name": {}
-      },
-      "required": ["namespace_name", "pod_name"]
-    },
-    "_aws": {
-      "type": "object",
-      "properties": {
-        "CloudWatchMetrics": {},
-        "Timestamp": {}
-      },
-      "required": ["CloudWatchMetrics", "Timestamp"]
-    }
-  },
   "required": [
     "ClusterName",
     "LaunchType",
     "Namespace",
-    "PodName",
-    "kubernetes",
-    "_aws"
+    "PodName"
   ]
 }
