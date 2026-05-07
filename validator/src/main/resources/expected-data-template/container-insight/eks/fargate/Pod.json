@@ -1,40 +1,39 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
   "title": "structured log schema",
-  "description": "json schema for the cloudwatch agent k8s structured log",
+  "description": "json schema for the cloudwatch agent k8s structured log - Fargate Pod type",
   "type": "object",
   "properties": {
-    "ClusterName":{},
-    "LaunchType":{},
+    "ClusterName": {},
+    "LaunchType": {},
     "Namespace": {},
-    "PodName":{},
-    "Timestamp":{},
-    "kubernetes":{
+    "PodName": {},
+    "NodeName": {},
+    "Type": {},
+    "Version": {},
+    "OTelLib": {},
+    "pod_memory_working_set": {},
+    "pod_memory_cache": {},
+    "pod_memory_max_usage": {},
+    "pod_memory_rss": {},
+    "pod_memory_swap": {},
+    "pod_memory_usage": {},
+    "kubernetes": {
       "type": "object",
       "properties": {
         "host": {},
-        "namespace_name":{},
-        "pod_name":{}
-      }
+        "namespace_name": {},
+        "pod_name": {}
+      },
+      "required": ["host", "namespace_name", "pod_name"]
     },
     "_aws": {
+      "type": "object",
       "properties": {
         "CloudWatchMetrics": {},
         "Timestamp": {}
       },
-      "required": [
-        "CloudWatchMetrics",
-        "Timestamp"
-      ]},
-      "kubernetes": {
-        "type": "object",
-        "properties": {
-          "host": {},
-          "namespace_name":{},
-          "pod_name":{}
-        },
-        "required": ["namespace_name"],
-        "additionalProperties": false
+      "required": ["CloudWatchMetrics", "Timestamp"]
     }
   },
   "required": [
@@ -42,6 +41,7 @@
     "LaunchType",
     "Namespace",
     "PodName",
-    "kubernetes"
+    "kubernetes",
+    "_aws"
   ]
- }
+}
