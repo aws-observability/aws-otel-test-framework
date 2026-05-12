@@ -83,7 +83,8 @@ resource "aws_iam_role_policy_attachment" "ec2-read-only-policy-attachment" {
 
 # create vpc with nat gateway so that we can use it to launch awsvpc ecs task in both ecs and fargate
 module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "~> 3.19"
 
   name = module.common.aoc_vpc_name
   cidr = "10.0.0.0/16"

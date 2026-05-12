@@ -61,6 +61,9 @@ case ${AWS_REGION} in
 esac
 
 cd ${TEST_FOLDER};
+
+terraform init -input=false -no-color || true
+
 case "$service" in
     EKS*) terraform destroy --auto-approve $opts;
     ;;

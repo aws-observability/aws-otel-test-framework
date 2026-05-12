@@ -26,6 +26,7 @@ CACHE_HIT=$(aws dynamodb get-item --region=us-west-2 --table-name ${DDB_TABLE_NA
 
 if [ -z "${CACHE_HIT}" ]; then
     echo "Cache miss for $@"
+    echo "$SERVICE $TESTCASE $ADDTL_PARAMS" >> ./.cache-misses
     exit 1
 fi
 

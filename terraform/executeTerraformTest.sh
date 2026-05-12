@@ -25,6 +25,7 @@
 # $3: For all EKS tests we expect region|clustername
 ##########################################
 
+set -o pipefail
 set -x
 
 echo "Test Case Args: $@"
@@ -44,6 +45,7 @@ if [[ -f ./testcases/$TESTCASE/parameters.tfvars ]] ; then
 fi
 
 APPLY_EXIT=0
+DESTROY_EXIT=0
 TEST_FOLDER=""
 export AWS_REGION=us-west-2
 case "$SERVICE" in
@@ -73,13 +75,31 @@ case ${AWS_REGION} in
     ;;
 esac
 
+CLEANUP_DONE=0
+cleanup() {
+    local rc=$?
+    if [ "$CLEANUP_DONE" -eq 1 ]; then
+        return
+    fi
+    echo "[cleanup] trap fired (rc=$rc), running terraform destroy"
+    case "$SERVICE" in
+        EKS*) terraform destroy --auto-approve $opts || true;
+        ;;
+        *)    terraform destroy --auto-approve            || true;
+        ;;
+    esac
+    CLEANUP_DONE=1
+    exit $rc
+}
+trap cleanup EXIT INT TERM
+
 test_framework_shortsha=$(git rev-parse --short HEAD)
 # Used as a retry mechanic.
-ATTEMPTS_LEFT=2
+ATTEMPTS_LEFT=1
 cd ${TEST_FOLDER};
 while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDTL_PARAMS; do
     terraform init;
-    if timeout -k 5m --signal=SIGINT -v 45m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$TESTCASE" ; then
+    if timeout -k 5m --signal=SIGINT -v 30m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$TESTCASE" ; then
         APPLY_EXIT=$?
         echo "Exit code: $?" 
         aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$SERVICE$TESTCASE$ADDTL_PARAMS\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
@@ -93,11 +113,19 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
 
     case "$SERVICE" in
         EKS*) terraform destroy --auto-approve $opts;
+              DESTROY_EXIT=$?;
         ;;
     *)
         terraform destroy --auto-approve;
+        DESTROY_EXIT=$?;
     ;;
     esac
+
+    if [ $DESTROY_EXIT -ne 0 ]; then
+        echo "[fatal] terraform destroy failed (exit=$DESTROY_EXIT), refusing to retry on broken state"
+        CLEANUP_DONE=1
+        exit $APPLY_EXIT
+    fi
 
     if [ $APPLY_EXIT -ne 0 ]; then
         echo "Waiting 60s before retry to allow resource cleanup..."
@@ -107,5 +135,5 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     let ATTEMPTS_LEFT=ATTEMPTS_LEFT-1
 done
 
-
+CLEANUP_DONE=1
 exit $APPLY_EXIT

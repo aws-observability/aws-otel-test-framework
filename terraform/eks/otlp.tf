@@ -273,7 +273,7 @@ resource "kubernetes_service" "mocked_server_service" {
     }
   }
   timeouts {
-    create = "20m"
+    create = "30m"
   }
 }
 
@@ -339,7 +339,7 @@ resource "kubernetes_service" "sample_app_service" {
     }
   }
   timeouts {
-    create = "20m"
+    create = "30m"
   }
 }
 

@@ -161,9 +161,11 @@ resource "null_resource" "check_patch" {
   }
 
   provisioner "local-exec" {
+    # wait-patch both instances in parallel to halve the 15m worst case
     command = <<-EOT
-     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id}" --ignore-error --timeout 15m
-     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}" --ignore-error --timeout 15m
+     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id}" --ignore-error --timeout 15m &
+     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}" --ignore-error --timeout 15m &
+     wait
     EOT
   }
 }
