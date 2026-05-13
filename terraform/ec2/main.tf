@@ -416,11 +416,10 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       "sudo amazon-linux-extras install docker -y",
       "sudo service docker start",
       "sudo usermod -a -G docker ec2-user",
-      "sudo curl -L 'https://github.com/docker/compose/releases/download/1.27.4/docker-compose-Linux-x86_64' -o /usr/local/bin/docker-compose",
-      "sudo chmod +x /usr/local/bin/docker-compose",
       "sudo `aws ecr get-login --no-include-email --region ${var.region}`",
-      "sleep 30", // sleep 30s to wait until dockerd is totally set up
-      "sudo /usr/local/bin/docker-compose -f /tmp/docker-compose.yml up -d"
+      "sleep 30",
+      "sudo docker compose -f /tmp/docker-compose.yml pull --quiet",
+      "sudo docker compose -f /tmp/docker-compose.yml up -d"
     ]
 
     connection {

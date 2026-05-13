@@ -28,6 +28,9 @@
 set -o pipefail
 set -x
 
+ts() { date -u +"%H:%M:%S"; }
+PROGRESS_FILE="${GITHUB_STEP_SUMMARY:-/dev/null}"
+
 echo "Test Case Args: $@"
 SERVICE="$1"
 TESTCASE=$2
@@ -97,19 +100,33 @@ test_framework_shortsha=$(git rev-parse --short HEAD)
 # Used as a retry mechanic.
 ATTEMPTS_LEFT=1
 cd ${TEST_FOLDER};
+
 while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDTL_PARAMS; do
+    TESTCASE_START=$(date -u +%s)
+    echo "::group::${SERVICE} ${TESTCASE} ${ADDTL_PARAMS}"
+    echo "[$(ts)] Starting: $SERVICE $TESTCASE $ADDTL_PARAMS"
+
+    echo "[$(ts)] terraform init"
     terraform init;
+
+    echo "[$(ts)] terraform apply (30m timeout)"
+
     if timeout -k 5m --signal=SIGINT -v 30m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$TESTCASE" ; then
         APPLY_EXIT=$?
-        echo "Exit code: $?" 
+        DURATION=$(( $(date -u +%s) - TESTCASE_START ))
+        echo "[$(ts)] Apply succeeded (${DURATION}s), writing cache entry"
         aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$SERVICE$TESTCASE$ADDTL_PARAMS\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
+        echo "| $SERVICE | $TESTCASE | :white_check_mark: pass | ${DURATION}s |" >> "$PROGRESS_FILE"
     else
         APPLY_EXIT=$?
-        echo "Terraform apply failed"
-        echo "Exit code: $?"
+        DURATION=$(( $(date -u +%s) - TESTCASE_START ))
+        echo "[$(ts)] Apply FAILED (exit=$APPLY_EXIT, ${DURATION}s)"
         echo "AWS_service: $SERVICE"
-        echo "Testcase: $TESTCASE" 
+        echo "Testcase: $TESTCASE"
+        echo "| $SERVICE | $TESTCASE | :x: fail (exit=$APPLY_EXIT) | ${DURATION}s |" >> "$PROGRESS_FILE"
     fi
+
+    echo "[$(ts)] terraform destroy"
 
     case "$SERVICE" in
         EKS*) terraform destroy --auto-approve $opts;
@@ -120,6 +137,9 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
         DESTROY_EXIT=$?;
     ;;
     esac
+
+    echo "[$(ts)] Destroy complete (exit=$DESTROY_EXIT)"
+    echo "::endgroup::"
 
     if [ $DESTROY_EXIT -ne 0 ]; then
         echo "[fatal] terraform destroy failed (exit=$DESTROY_EXIT), refusing to retry on broken state"
