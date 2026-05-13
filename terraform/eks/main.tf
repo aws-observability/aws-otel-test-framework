@@ -63,13 +63,16 @@ provider "kubectl" {
   load_config_file       = false
 }
 
+data "external" "kubeconfig_token" {
+  program = ["bash", "-c", "aws eks get-token --cluster-name ${var.eks_cluster_name} --region ${var.region} --output json | python3 -c \"import sys,json; t=json.load(sys.stdin); print(json.dumps({'token': t['status']['token']}))\""]
+}
+
 data "template_file" "kubeconfig_file" {
   template = file("./kubeconfig.tpl")
   vars = {
     CA_DATA : data.aws_eks_cluster.testing_cluster.certificate_authority[0].data
     SERVER_ENDPOINT : data.aws_eks_cluster.testing_cluster.endpoint
-    CLUSTER_NAME    = var.eks_cluster_name
-    REGION          = var.region
+    TOKEN           = data.external.kubeconfig_token.result["token"]
   }
 }
 
