@@ -67,29 +67,33 @@ func GithubGenerator(config RunConfig) error {
 }
 
 func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]string, error) {
-	// Group tests by platform so batches never mix platforms
-	platformGroups := make(map[string][]TestCaseInfo)
+	// Group tests by platform + variant (AMI for EC2, cluster for EKS, launch type for ECS)
+	subGroups := make(map[string][]TestCaseInfo)
 	for _, tc := range testCases {
-		platformGroups[tc.serviceType] = append(platformGroups[tc.serviceType], tc)
+		key := fmt.Sprintf("%s/%s", tc.serviceType, tc.additionalVar)
+		subGroups[key] = append(subGroups[key], tc)
 	}
 
-	// Allocate batch slots proportionally per platform
+	// Allocate batch slots proportionally per sub-group
 	batchMap := make(map[string][]string)
 	totalTests := len(testCases)
 
-	for platform, tests := range platformGroups {
-		// Proportional share of batches for this platform
+	for groupKey, tests := range subGroups {
 		share := (len(tests) * maxBatches) / totalTests
 		if share < 1 {
 			share = 1
 		}
 
-		// Calculate tests per batch for this platform
 		testsPerBatch := (len(tests) + share - 1) / share
 
 		for i, tc := range tests {
 			batchNum := i / testsPerBatch
-			id := fmt.Sprintf("%s/%d", platform, batchNum)
+			var id string
+			if testsPerBatch == 1 || len(tests) <= share {
+				id = fmt.Sprintf("%s/%s", groupKey, tc.testcaseName)
+			} else {
+				id = fmt.Sprintf("%s/%d", groupKey, batchNum)
+			}
 			val := fmt.Sprintf("%s %s %s", tc.serviceType, tc.testcaseName, tc.additionalVar)
 			batchMap[id] = append(batchMap[id], val)
 		}
