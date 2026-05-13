@@ -22,7 +22,7 @@ public enum GenericConstants {
   // retry
   SLEEP_IN_MILLISECONDS("20000"), // ms
   SLEEP_IN_SECONDS("30"),
-  MAX_RETRIES("10"),
+  MAX_RETRIES("15"),
 
   // validator env vars
   ENV_VAR_AGENT_VERSION("AGENT_VERSION"),

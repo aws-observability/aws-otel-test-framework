@@ -44,12 +44,6 @@ spec:
             - name: rootfs
               mountPath: /rootfs
               readOnly: true
-            - name: dockersock
-              mountPath: /var/run/docker.sock
-              readOnly: true
-            - name: varlibdocker
-              mountPath: /var/lib/docker
-              readOnly: true
             - name: containerdsock
               mountPath: /run/containerd/containerd.sock
             - name: sys
@@ -77,12 +71,6 @@ spec:
         - name: rootfs
           hostPath:
             path: /
-        - name: dockersock
-          hostPath:
-            path: /var/run/docker.sock
-        - name: varlibdocker
-          hostPath:
-            path: /var/lib/docker
         - name: containerdsock
           hostPath:
             path: /run/containerd/containerd.sock
