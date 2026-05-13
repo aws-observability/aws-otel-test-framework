@@ -414,6 +414,9 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
     inline = [
       "sudo yum update -y",
       "sudo amazon-linux-extras install docker -y",
+      "sudo mkdir -p /usr/local/lib/docker/cli-plugins",
+      "sudo curl -sL https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-linux-$(uname -m) -o /usr/local/lib/docker/cli-plugins/docker-compose",
+      "sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose",
       "sudo service docker start",
       "sudo usermod -a -G docker ec2-user",
       "sudo `aws ecr get-login --no-include-email --region ${var.region}`",
