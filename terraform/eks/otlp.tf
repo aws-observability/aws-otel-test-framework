@@ -258,8 +258,9 @@ resource "kubernetes_service" "mocked_server_service" {
     name      = "mocked-server"
     namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
     annotations = {
-      "qps.authentication.k8s.io"   = "100"
-      "burst.authentication.k8s.io" = "400"
+      "qps.authentication.k8s.io"                  = "100"
+      "burst.authentication.k8s.io"                = "400"
+      "service.beta.kubernetes.io/aws-load-balancer-type" = "nlb"
     }
   }
   spec {
@@ -322,8 +323,9 @@ resource "kubernetes_service" "sample_app_service" {
     name      = "sample-app"
     namespace = var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name
     annotations = {
-      "qps.authentication.k8s.io"   = "100"
-      "burst.authentication.k8s.io" = "400"
+      "qps.authentication.k8s.io"                  = "100"
+      "burst.authentication.k8s.io"                = "400"
+      "service.beta.kubernetes.io/aws-load-balancer-type" = "nlb"
     }
   }
   spec {

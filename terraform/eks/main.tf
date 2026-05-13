@@ -40,23 +40,26 @@ data "aws_caller_identity" "current" {
 data "aws_eks_cluster" "testing_cluster" {
   name = var.eks_cluster_name
 }
-data "aws_eks_cluster_auth" "testing_cluster" {
-  name = var.eks_cluster_name
-}
 
 # set up kubectl
 provider "kubernetes" {
   host                   = data.aws_eks_cluster.testing_cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.testing_cluster.token
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", var.eks_cluster_name, "--region", var.region]
+  }
 }
 
 provider "kubectl" {
-  // Note: copy from eks module. Please avoid use shorted-lived tokens when running locally.
-  // For more information: https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#exec-plugins
   host                   = data.aws_eks_cluster.testing_cluster.endpoint
   cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.testing_cluster.token
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "aws"
+    args        = ["eks", "get-token", "--cluster-name", var.eks_cluster_name, "--region", var.region]
+  }
   load_config_file       = false
 }
 
@@ -65,7 +68,8 @@ data "template_file" "kubeconfig_file" {
   vars = {
     CA_DATA : data.aws_eks_cluster.testing_cluster.certificate_authority[0].data
     SERVER_ENDPOINT : data.aws_eks_cluster.testing_cluster.endpoint
-    TOKEN = data.aws_eks_cluster_auth.testing_cluster.token
+    CLUSTER_NAME    = var.eks_cluster_name
+    REGION          = var.region
   }
 }
 
@@ -78,7 +82,11 @@ provider "helm" {
   kubernetes {
     host                   = data.aws_eks_cluster.testing_cluster.endpoint
     cluster_ca_certificate = base64decode(data.aws_eks_cluster.testing_cluster.certificate_authority[0].data)
-    token                  = data.aws_eks_cluster_auth.testing_cluster.token
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "aws"
+      args        = ["eks", "get-token", "--cluster-name", var.eks_cluster_name, "--region", var.region]
+    }
   }
 }
 

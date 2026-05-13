@@ -15,4 +15,13 @@ preferences: {}
 users:
 - name: terraform_user
   user:
-    token: ${TOKEN}
+    exec:
+      apiVersion: client.authentication.k8s.io/v1beta1
+      command: aws
+      args:
+        - eks
+        - get-token
+        - --cluster-name
+        - ${CLUSTER_NAME}
+        - --region
+        - ${REGION}
