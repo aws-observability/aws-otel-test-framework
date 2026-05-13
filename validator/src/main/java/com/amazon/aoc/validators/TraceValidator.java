@@ -46,9 +46,9 @@ public class TraceValidator extends XrayValidator {
               // prepare trace ID to retrieve from X-Ray service
               String traceId = (String) storedTrace.get("[0].trace_id");
 
-              // Retry 5 times to since segments might not be immediately available in X-Ray service
+              // Retry 10 times since segments might not be immediately available in X-Ray service
               RetryHelper.retry(
-                  5,
+                  10,
                   () -> {
                     // get retrieved trace from x-ray service
                     Map<String, Object> actualTrace = this.getActualTrace(traceId);
