@@ -13,6 +13,20 @@
       value: 200
 
 -
+  metricName: apiBytesSent_{{testingId}}
+  namespace: {{metricNamespace}}
+  dimensions:
+    -
+      name: OTelLib
+      value: aws-otel
+    -
+      name: apiName
+      value: /outgoing-http-call
+    -
+      name: statusCode
+      value: 200
+
+-
   metricName: totalApiBytesSent_{{testingId}}
   namespace: {{metricNamespace}}
   dimensions:
