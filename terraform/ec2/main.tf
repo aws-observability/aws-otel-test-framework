@@ -73,19 +73,11 @@ locals {
   runner_cidr = "${chomp(data.http.runner_ip.response_body)}/32"
 }
 
-# Per-run security group that grants the runner access to test instances
+# Per-run security group — only HTTP ports for validator access (no SSH/WinRM needed)
 resource "aws_security_group" "runner_access" {
   name_prefix = "runner-${module.common.testing_id}-"
   vpc_id      = module.basic_components.aoc_vpc_id
   description = "Ephemeral runner access for test ${module.common.testing_id}"
-
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = [local.runner_cidr]
-    description = "SSH from runner"
-  }
 
   ingress {
     from_port   = 80
@@ -101,14 +93,6 @@ resource "aws_security_group" "runner_access" {
     protocol    = "tcp"
     cidr_blocks = [local.runner_cidr]
     description = "Sample app from runner"
-  }
-
-  ingress {
-    from_port   = 5985
-    to_port     = 5985
-    protocol    = "tcp"
-    cidr_blocks = [local.runner_cidr]
-    description = "WinRM from runner"
   }
 
   tags = {
@@ -134,8 +118,6 @@ locals {
   ami_id               = data.aws_ami.selected.id
   instance_type        = lookup(local.selected_ami, "instance_type", local.ami_family["instance_type"])
   otconfig_destination = local.ami_family["otconfig_destination"]
-  login_user           = lookup(local.selected_ami, "login_user", local.ami_family["login_user"])
-  connection_type      = local.ami_family["connection_type"]
   user_data            = lookup(local.selected_ami, "user_data", local.ami_family["user_data"])
   download_command     = format(local.ami_family["download_command_pattern"], "https://${var.package_s3_bucket}.s3.amazonaws.com/${local.selected_ami["os_family"]}/${local.selected_ami["arch"]}/${var.aoc_version}/${local.ami_family["install_package"]}")
 
@@ -188,7 +170,6 @@ resource "aws_instance" "aoc" {
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
-  get_password_data           = local.connection_type == "winrm" ? true : null
   user_data                   = local.user_data
 
   tags = {
