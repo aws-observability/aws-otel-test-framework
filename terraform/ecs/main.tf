@@ -76,6 +76,11 @@ provider "aws" {
   region = var.region
 }
 
+provider "aws" {
+  alias  = "s3"
+  region = "us-east-1"
+}
+
 data "aws_caller_identity" "current" {
 }
 

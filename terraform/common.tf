@@ -75,3 +75,7 @@ variable "aoc_vpc_name" {
 variable "aoc_vpc_security_group" {
   default = "aoc-vpc-security-group"
 }
+
+variable "package_s3_bucket" {
+  default = "aws-otel-collector-test"
+}

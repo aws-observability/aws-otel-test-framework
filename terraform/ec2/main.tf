@@ -424,19 +424,20 @@ resource "null_resource" "install_cwagent" {
 ##########################################
 # Validation
 ##########################################
-resource "aws_s3_object" "validator_source" {
-  provider = aws.s3
-  count    = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
-  bucket   = var.package_s3_bucket
-  key      = "test-runs/${module.common.testing_id}/validator.tar.gz"
-  source   = data.archive_file.validator[0].output_path
-}
 
-data "archive_file" "validator" {
-  count       = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
-  type        = "zip"
-  source_dir  = "${path.module}/../../validator"
-  output_path = "${path.module}/.validator-${module.common.testing_id}.zip"
+# Build validator image locally on the runner (once), save to tarball, upload to S3
+resource "null_resource" "build_validator_image" {
+  count = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      docker build -t validator:${module.common.testing_id} ${path.module}/../../validator
+      docker save validator:${module.common.testing_id} | gzip > /tmp/validator-${module.common.testing_id}.tar.gz
+      aws s3 cp /tmp/validator-${module.common.testing_id}.tar.gz \
+        s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/validator.tar.gz \
+        --region us-east-1
+    EOT
+  }
 }
 
 resource "aws_s3_object" "validator_compose" {
@@ -473,15 +474,14 @@ resource "aws_s3_object" "validator_compose" {
 
 resource "null_resource" "validator" {
   count      = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
-  depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector, aws_s3_object.validator_source, aws_s3_object.validator_compose]
+  depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector, null_resource.build_validator_image, aws_s3_object.validator_compose]
 
   provisioner "local-exec" {
     command = <<-EOT
-      ${var.aotutil} ssm run-command ${aws_instance.sidecar.id} --timeout 20m -- \
-        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/validator.tar.gz /tmp/validator.zip" \
-        "mkdir -p /tmp/validator && cd /tmp/validator && unzip -o /tmp/validator.zip" \
-        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/validator-compose.yml /tmp/validator-compose.yml" \
-        "sudo docker compose -f /tmp/validator-compose.yml build" \
+      ${var.aotutil} ssm run-command ${aws_instance.sidecar.id} --timeout 10m -- \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/validator.tar.gz /tmp/validator.tar.gz --region us-east-1" \
+        "sudo docker load < /tmp/validator.tar.gz" \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/validator-compose.yml /tmp/validator-compose.yml --region us-east-1" \
         "sudo docker compose -f /tmp/validator-compose.yml up --abort-on-container-exit --exit-code-from validator"
     EOT
   }

@@ -99,48 +99,35 @@ resource "time_sleep" "wait_90_seconds" {
 }
 
 resource "null_resource" "mount_efs" {
-  provisioner "remote-exec" {
-    inline = [
-      "sudo mkdir -p /efs",
-      "sudo yum install amazon-efs-utils -y",
-      "sudo mount -t efs ${aws_efs_file_system.collector_efs.id}:/ /efs"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = tls_private_key.ssh_key.private_key_pem
-      host        = aws_instance.collector_efs_ec2.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.collector_efs_ec2.id} --timeout 5m -- \
+        "sudo mkdir -p /efs" \
+        "sudo yum install amazon-efs-utils -y" \
+        "sudo mount -t efs ${aws_efs_file_system.collector_efs.id}:/ /efs"
+    EOT
   }
 
   depends_on = [aws_instance.collector_efs_ec2, time_sleep.wait_90_seconds]
 }
+
+resource "aws_s3_object" "ecs_mocked_server_cert" {
+  provider = aws.s3
+  bucket   = var.package_s3_bucket
+  key      = "test-runs/${module.common.testing_id}/ca-bundle.crt"
+  content  = module.basic_components.mocked_server_cert_content
+}
+
 resource "null_resource" "scp_cert" {
-  provisioner "file" {
-    content     = module.basic_components.mocked_server_cert_content
-    destination = "/tmp/ca-bundle.crt"
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = tls_private_key.ssh_key.private_key_pem
-      host        = aws_instance.collector_efs_ec2.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.collector_efs_ec2.id} --timeout 5m -- \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/ca-bundle.crt /tmp/ca-bundle.crt" \
+        "sudo cp /tmp/ca-bundle.crt /efs/ca-bundle.crt"
+    EOT
   }
 
-  provisioner "remote-exec" {
-    inline = [
-      "sudo cp /tmp/ca-bundle.crt /efs/ca-bundle.crt"
-    ]
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = tls_private_key.ssh_key.private_key_pem
-      host        = aws_instance.collector_efs_ec2.public_ip
-    }
-  }
-
-  depends_on = [null_resource.mount_efs]
+  depends_on = [null_resource.mount_efs, aws_s3_object.ecs_mocked_server_cert]
 }
 
 output "private_key" {
