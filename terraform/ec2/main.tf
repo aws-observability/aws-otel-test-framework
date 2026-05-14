@@ -49,7 +49,7 @@ module "basic_components" {
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
-  sample_app_listen_address_host = aws_instance.sidecar.public_ip
+  sample_app_listen_address_host = aws_instance.sidecar.private_ip
 
   sample_app_listen_address_port = module.common.sample_app_lb_port
 
@@ -102,7 +102,7 @@ resource "aws_instance" "sidecar" {
   instance_type               = var.sidecar_instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
   tags = {
@@ -131,7 +131,7 @@ resource "aws_instance" "aoc" {
   instance_type               = local.instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
   user_data                   = local.user_data
@@ -423,31 +423,67 @@ resource "null_resource" "install_cwagent" {
 ##########################################
 # Validation
 ##########################################
-module "validator" {
-  count  = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
-  source = "../validation"
+resource "aws_s3_object" "validator_source" {
+  provider = aws.s3
+  count    = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
+  bucket   = var.package_s3_bucket
+  key      = "test-runs/${module.common.testing_id}/validator.tar.gz"
+  source   = data.archive_file.validator[0].output_path
+}
 
-  validation_config            = var.validation_config
-  region                       = var.region
-  testing_id                   = module.common.testing_id
-  metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-  sample_app_endpoint          = "http://${aws_instance.sidecar.public_ip}:${module.common.sample_app_lb_port}"
-  mocked_server_validating_url = "http://${aws_instance.sidecar.public_ip}/check-data"
-  canary                       = var.canary
-  testcase                     = split("/", var.testcase)[2]
-  cortex_instance_endpoint     = var.cortex_instance_endpoint
+data "archive_file" "validator" {
+  count       = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
+  type        = "zip"
+  source_dir  = "${path.module}/../../validator"
+  output_path = "${path.module}/.validator-${module.common.testing_id}.zip"
+}
 
-  account_id        = data.aws_caller_identity.current.account_id
-  availability_zone = aws_instance.aoc.availability_zone
-
-  ec2_context_json = jsonencode({
-    hostId : aws_instance.aoc.id
-    ami : aws_instance.aoc.ami
-    name : aws_instance.aoc.private_dns
-    instanceType : aws_instance.aoc.instance_type
+resource "aws_s3_object" "validator_compose" {
+  provider = aws.s3
+  count    = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
+  bucket   = var.package_s3_bucket
+  key      = "test-runs/${module.common.testing_id}/validator-compose.yml"
+  content = templatefile("${path.module}/../templates/defaults/validator_sidecar_docker_compose.tpl", {
+    region                  = var.region
+    validation_config       = var.validation_config
+    testing_id              = module.common.testing_id
+    account_id              = data.aws_caller_identity.current.account_id
+    language                = ""
+    availability_zone       = aws_instance.aoc.availability_zone
+    sample_app_port         = module.common.sample_app_lb_port
+    metric_namespace        = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+    canary                  = var.canary
+    testcase                = split("/", var.testcase)[2]
+    cloudwatch_context_json = ""
+    ecs_context_json        = ""
+    ec2_context_json = replace(jsonencode({
+      hostId       = aws_instance.aoc.id
+      ami          = aws_instance.aoc.ami
+      name         = aws_instance.aoc.private_dns
+      instanceType = aws_instance.aoc.instance_type
+    }), "\"", "\\\"")
+    cpu_alarm                = ""
+    mem_alarm                = ""
+    incoming_packets_alarm   = ""
+    cortex_instance_endpoint = var.cortex_instance_endpoint
+    rollup                   = true
   })
+}
 
-  depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector]
+resource "null_resource" "validator" {
+  count      = !var.skip_validation && !var.enable_ssm_validate ? 1 : 0
+  depends_on = [null_resource.setup_sample_app_and_mock_server, null_resource.start_collector, aws_s3_object.validator_source, aws_s3_object.validator_compose]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.sidecar.id} --timeout 20m -- \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/validator.tar.gz /tmp/validator.zip" \
+        "mkdir -p /tmp/validator && cd /tmp/validator && unzip -o /tmp/validator.zip" \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/validator-compose.yml /tmp/validator-compose.yml" \
+        "sudo docker compose -f /tmp/validator-compose.yml build" \
+        "sudo docker compose -f /tmp/validator-compose.yml up --abort-on-container-exit --exit-code-from validator"
+    EOT
+  }
 }
 
 resource "null_resource" "ssm_validation" {
@@ -474,6 +510,6 @@ resource "null_resource" "ssm_canary_metrics" {
   }
 }
 
-output "public_ip" {
-  value = aws_instance.aoc.public_ip
+output "instance_id" {
+  value = aws_instance.aoc.id
 }
