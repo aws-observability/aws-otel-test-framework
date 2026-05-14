@@ -72,7 +72,7 @@ resource "aws_instance" "collector_efs_ec2" {
   instance_type               = "c5a.large"
   subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
-  associate_public_ip_address = true
+  associate_public_ip_address = false
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = aws_key_pair.aws_ssh_key.key_name
 
@@ -136,5 +136,5 @@ output "private_key" {
 }
 
 output "efs_ip" {
-  value = aws_instance.collector_efs_ec2.public_ip
+  value = aws_instance.collector_efs_ec2.private_ip
 }
