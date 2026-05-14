@@ -64,6 +64,64 @@ provider "aws" {
 data "aws_caller_identity" "current" {
 }
 
+# Discover the runner's public IP so we can allow SSH/WinRM ingress only from it
+data "http" "runner_ip" {
+  url = "https://checkip.amazonaws.com"
+}
+
+locals {
+  runner_cidr = "${chomp(data.http.runner_ip.response_body)}/32"
+}
+
+# Per-run security group that grants the runner access to test instances
+resource "aws_security_group" "runner_access" {
+  name_prefix = "runner-${module.common.testing_id}-"
+  vpc_id      = module.basic_components.aoc_vpc_id
+  description = "Ephemeral runner access for test ${module.common.testing_id}"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [local.runner_cidr]
+    description = "SSH from runner"
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [local.runner_cidr]
+    description = "HTTP (mock server validation) from runner"
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = [local.runner_cidr]
+    description = "Sample app from runner"
+  }
+
+  ingress {
+    from_port   = 5985
+    to_port     = 5985
+    protocol    = "tcp"
+    cidr_blocks = [local.runner_cidr]
+    description = "WinRM from runner"
+  }
+
+  tags = {
+    Name      = "runner-access-${module.common.testing_id}"
+    TestID    = module.common.testing_id
+    ephemeral = "true"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 data "aws_ecr_repository" "sample_app" {
   name = module.common.sample_app_ecr_repo_name
 }
@@ -97,7 +155,7 @@ resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = var.sidecar_instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
-  vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
+  vpc_security_group_ids      = [module.basic_components.aoc_security_group_id, aws_security_group.runner_access.id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
@@ -126,7 +184,7 @@ resource "aws_instance" "aoc" {
   ami                         = local.ami_id
   instance_type               = local.instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
-  vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
+  vpc_security_group_ids      = [module.basic_components.aoc_security_group_id, aws_security_group.runner_access.id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
