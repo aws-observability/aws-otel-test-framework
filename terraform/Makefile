@@ -22,7 +22,8 @@ postBatchClean:
 
 .PHONY: checkCacheHits
 checkCacheHits:
-	cat test-case-batch | xargs -L1 -P1 ./checkCacheHit.sh
+	cat test-case-batch | xargs -L1 -P20 ./checkCacheHit.sh || true
+	@if [ -s .cache-misses ]; then echo "Cache misses found:"; cat .cache-misses; exit 1; fi
 
 .PHONY: terraformCleanup
 terraformCleanup: test-case-batch
