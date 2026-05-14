@@ -413,7 +413,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
   provisioner "remote-exec" {
     inline = [
       "sudo yum update -y --skip-broken 2>/dev/null || true",
-      "for i in 1 2 3; do sudo amazon-linux-extras install docker -y && break || sleep 10; done",
+      "for i in 1 2 3; do sudo amazon-linux-extras enable docker && sudo yum install -y docker-25.0.14-1.amzn2.0.4 && break || sleep 10; done",
       "sudo mkdir -p /usr/local/lib/docker/cli-plugins",
       "sudo curl -sL https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-linux-$(uname -m) -o /usr/local/lib/docker/cli-plugins/docker-compose",
       "sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose",
