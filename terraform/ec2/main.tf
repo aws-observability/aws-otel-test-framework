@@ -231,68 +231,38 @@ resource "null_resource" "check_patch" {
 ############################################
 # setup mocked server cert and host binding
 ############################################
+resource "aws_s3_object" "mocked_server_cert" {
+  bucket  = var.package_s3_bucket
+  key     = "test-runs/${module.common.testing_id}/ca-bundle.crt"
+  content = module.basic_components.mocked_server_cert_content
+}
+
 resource "null_resource" "setup_mocked_server_cert_for_windows" {
-  depends_on = [null_resource.check_patch]
+  depends_on = [null_resource.check_patch, aws_s3_object.mocked_server_cert]
   count      = local.selected_ami["family"] == "windows" ? 1 : 0
 
-  provisioner "file" {
-    content     = templatefile("../../mocked_servers/https/certificates/ssl/certificate.crt", {})
-    destination = "C:\\ca-bundle.crt"
-
-    connection {
-      type     = local.connection_type
-      user     = local.login_user
-      password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
-      host     = aws_instance.aoc.public_ip
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "echo ${aws_instance.sidecar.private_ip} mocked-server >> C:\\Windows\\System32\\drivers\\etc\\hosts",
-      "powershell \"Import-Certificate -FilePath 'C:\\ca-bundle.crt' -CertStoreLocation 'Cert:\\LocalMachine\\Root' -Verbose \""
-    ]
-
-    connection {
-      type     = local.connection_type
-      user     = local.login_user
-      password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
-      host     = aws_instance.aoc.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --document AWS-RunPowerShellScript --timeout 5m -- \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/ca-bundle.crt C:\\ca-bundle.crt" \
+        "Add-Content C:\\Windows\\System32\\drivers\\etc\\hosts '${aws_instance.sidecar.private_ip} mocked-server'" \
+        "Import-Certificate -FilePath 'C:\\ca-bundle.crt' -CertStoreLocation 'Cert:\\LocalMachine\\Root' -Verbose"
+    EOT
   }
 }
 
 resource "null_resource" "setup_mocked_server_cert_for_linux" {
-  depends_on = [null_resource.check_patch]
+  depends_on = [null_resource.check_patch, aws_s3_object.mocked_server_cert]
   count      = local.selected_ami["family"] != "windows" ? 1 : 0
-  provisioner "file" {
-    content     = module.basic_components.mocked_server_cert_content
-    destination = "/tmp/ca-bundle.crt"
 
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.connection_type == "ssh" ? local.private_key_content : null
-      password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      "sudo mkdir -p /etc/pki/tls/certs",
-      "sudo chmod 777 /etc/pki/tls/certs/ca-bundle.crt",
-      "sudo cp /tmp/ca-bundle.crt /etc/pki/tls/certs/ca-bundle.crt",
-      "sudo chmod 777 /etc/hosts",
-      "sudo echo '${aws_instance.sidecar.private_ip} mocked-server' >> /etc/hosts",
-    ]
-
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.private_key_content
-      host        = aws_instance.aoc.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 5m -- \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/ca-bundle.crt /tmp/ca-bundle.crt" \
+        "sudo mkdir -p /etc/pki/tls/certs" \
+        "sudo cp /tmp/ca-bundle.crt /etc/pki/tls/certs/ca-bundle.crt" \
+        "echo '${aws_instance.sidecar.private_ip} mocked-server' | sudo tee -a /etc/hosts"
+    EOT
   }
 }
 
@@ -300,20 +270,22 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
 ############################################
 # Download and Start collector
 ############################################
-resource "null_resource" "download_collector_from_local" {
-  depends_on = [null_resource.check_patch]
-  count      = var.install_package_source == "local" ? 1 : 0
-  provisioner "file" {
-    source      = var.install_package_local_path
-    destination = local.ami_family["install_package"]
+resource "aws_s3_object" "collector_package_local" {
+  count  = var.install_package_source == "local" ? 1 : 0
+  bucket = var.package_s3_bucket
+  key    = "test-runs/${module.common.testing_id}/${local.ami_family["install_package"]}"
+  source = var.install_package_local_path
+}
 
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.connection_type == "ssh" ? local.private_key_content : null
-      password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
-    }
+resource "null_resource" "download_collector_from_local" {
+  depends_on = [null_resource.check_patch, aws_s3_object.collector_package_local]
+  count      = var.install_package_source == "local" ? 1 : 0
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 5m -- \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/${local.ami_family["install_package"]} ${local.ami_family["install_package"]}"
+    EOT
   }
 }
 
@@ -321,18 +293,11 @@ resource "null_resource" "download_collector_from_s3" {
   depends_on = [null_resource.check_patch]
   count      = var.install_package_source == "s3" ? 1 : 0
 
-  provisioner "remote-exec" {
-    inline = [
-      local.download_command
-    ]
-
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.connection_type == "ssh" ? local.private_key_content : null
-      password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 5m -- \
+        "${local.download_command}"
+    EOT
   }
 }
 
@@ -345,20 +310,22 @@ module "remote_configuration" {
   testing_id = module.common.testing_id
 }
 
+resource "aws_s3_object" "otconfig" {
+  count   = var.install_package_source == "ssm" || var.configuration_source != "file" ? 0 : 1
+  bucket  = var.package_s3_bucket
+  key     = "test-runs/${module.common.testing_id}/otconfig.yml"
+  content = module.basic_components.otconfig_content
+}
+
 resource "null_resource" "collector_file_configuration" {
   count      = var.install_package_source == "ssm" || var.configuration_source != "file" ? 0 : 1
-  depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3]
-  provisioner "file" {
-    content     = module.basic_components.otconfig_content
-    destination = local.otconfig_destination
+  depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3, aws_s3_object.otconfig]
 
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.connection_type == "ssh" ? local.private_key_content : null
-      password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 5m -- \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/otconfig.yml ${local.otconfig_destination}"
+    EOT
   }
 }
 
@@ -382,24 +349,16 @@ locals {
 }
 
 resource "null_resource" "start_collector" {
-  count = var.install_package_source == "ssm" ? 0 : 1
-  # either getting the install package from s3 or from local
-  depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3]
+  count      = var.install_package_source == "ssm" ? 0 : 1
+  depends_on = [null_resource.download_collector_from_local, null_resource.download_collector_from_s3, null_resource.collector_file_configuration]
 
-  provisioner "remote-exec" {
-    inline = [
-      local.ami_family["wait_cloud_init"],
-      local.ami_family["install_command"],
-      local.start_command,
-    ]
-
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.connection_type == "ssh" ? local.private_key_content : null
-      password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 10m -- \
+        "${local.ami_family["wait_cloud_init"]}" \
+        "${local.ami_family["install_command"]}" \
+        "${local.start_command}"
+    EOT
   }
 }
 
@@ -414,18 +373,11 @@ resource "null_resource" "install_collector_from_ssm" {
   depends_on = [null_resource.check_patch, aws_ssm_parameter.setup_aoc_config]
   count      = var.install_package_source == "ssm" ? 1 : 0
 
-  provisioner "remote-exec" {
-    inline = [
-      local.ami_family["wait_cloud_init"],
-    ]
-
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.connection_type == "ssh" ? local.private_key_content : null
-      password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 5m -- \
+        "${local.ami_family["wait_cloud_init"]}"
+    EOT
   }
 
   provisioner "local-exec" {
@@ -439,102 +391,82 @@ resource "null_resource" "install_collector_from_ssm" {
 # Start Sample app and mocked server
 #########################################
 
+# Upload docker-compose to S3 for sidecar to pull via SSM
+resource "aws_s3_object" "sidecar_docker_compose" {
+  count  = var.disable_mocked_server ? 0 : 1
+  bucket = var.package_s3_bucket
+  key    = "test-runs/${module.common.testing_id}/docker-compose.yml"
+  content = templatefile(local.docker_compose_path, {
+    region                         = var.region
+    sample_app_image               = local.sample_app_image
+    sample_app_external_port       = module.common.sample_app_lb_port
+    sample_app_listen_address_port = module.common.sample_app_listen_address_port
+    listen_address                 = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
+    otel_resource_attributes       = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
+    testing_id                     = module.common.testing_id
+    grpc_endpoint                  = "${aws_instance.aoc.private_ip}:${module.common.grpc_port}"
+    udp_endpoint                   = "${aws_instance.aoc.private_ip}:${module.common.udp_port}"
+    http_endpoint                  = "${aws_instance.aoc.private_ip}:${module.common.http_port}"
+
+    mocked_server_image = local.mocked_server_image
+    data_mode           = var.soaking_data_mode
+    rate                = var.soaking_data_rate
+    data_type           = var.soaking_data_type
+  })
+}
+
 resource "null_resource" "setup_sample_app_and_mock_server" {
   count      = var.disable_mocked_server ? 0 : 1
-  depends_on = [null_resource.check_patch]
-  provisioner "file" {
-    content = templatefile(local.docker_compose_path, {
-      region                         = var.region
-      sample_app_image               = local.sample_app_image
-      sample_app_external_port       = module.common.sample_app_lb_port
-      sample_app_listen_address_port = module.common.sample_app_listen_address_port
-      listen_address                 = "${module.common.sample_app_listen_address_ip}:${module.common.sample_app_listen_address_port}"
-      otel_resource_attributes       = "service.namespace=${module.common.otel_service_namespace},service.name=${module.common.otel_service_name}"
-      testing_id                     = module.common.testing_id
-      grpc_endpoint                  = "${aws_instance.aoc.private_ip}:${module.common.grpc_port}"
-      udp_endpoint                   = "${aws_instance.aoc.private_ip}:${module.common.udp_port}"
-      http_endpoint                  = "${aws_instance.aoc.private_ip}:${module.common.http_port}"
+  depends_on = [null_resource.check_patch, aws_s3_object.sidecar_docker_compose]
 
-      mocked_server_image = local.mocked_server_image
-      data_mode           = var.soaking_data_mode
-      rate                = var.soaking_data_rate
-      data_type           = var.soaking_data_type
-    })
-    destination = "/tmp/docker-compose.yml"
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = local.private_key_content
-      host        = aws_instance.sidecar.public_ip
-    }
-  }
-  provisioner "remote-exec" {
-    inline = [
-      "sudo yum update -y --skip-broken 2>/dev/null || true",
-      "for i in 1 2 3; do sudo amazon-linux-extras enable docker && sudo yum install -y docker-25.0.14-1.amzn2.0.4 && break || sleep 10; done",
-      "sudo mkdir -p /usr/local/lib/docker/cli-plugins",
-      "sudo curl -sL https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-linux-$(uname -m) -o /usr/local/lib/docker/cli-plugins/docker-compose",
-      "sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose",
-      "sudo systemctl start docker",
-      "sudo usermod -a -G docker ec2-user",
-      "sudo `aws ecr get-login --no-include-email --region ${var.region}`",
-      "sleep 10",
-      "sudo docker compose -f /tmp/docker-compose.yml pull --quiet",
-      "sudo docker compose -f /tmp/docker-compose.yml up -d"
-    ]
-
-    connection {
-      type        = "ssh"
-      user        = "ec2-user"
-      private_key = local.private_key_content
-      host        = aws_instance.sidecar.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.sidecar.id} --timeout 10m -- \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/docker-compose.yml /tmp/docker-compose.yml" \
+        "sudo yum update -y --skip-broken 2>/dev/null || true" \
+        "for i in 1 2 3; do sudo amazon-linux-extras enable docker && sudo yum install -y docker-25.0.14-1.amzn2.0.4 && break || sleep 10; done" \
+        "sudo mkdir -p /usr/local/lib/docker/cli-plugins" \
+        "sudo curl -sL https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-linux-$(uname -m) -o /usr/local/lib/docker/cli-plugins/docker-compose" \
+        "sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose" \
+        "sudo systemctl start docker" \
+        "sudo usermod -a -G docker ec2-user" \
+        "sudo \$(aws ecr get-login --no-include-email --region ${var.region})" \
+        "sleep 10" \
+        "sudo docker compose -f /tmp/docker-compose.yml pull --quiet" \
+        "sudo docker compose -f /tmp/docker-compose.yml up -d"
+    EOT
   }
 }
 
 # install cwagent
+resource "aws_s3_object" "cwagent_config" {
+  count  = var.install_cwagent ? 1 : 0
+  bucket = var.package_s3_bucket
+  key    = "test-runs/${module.common.testing_id}/cwagent-config.json"
+  content = templatefile(local.ami_family["soaking_cwagent_config"], {
+    soaking_metric_namespace = var.soaking_metric_namespace
+    testcase                 = split("/", var.testcase)[2]
+    commit_id                = var.commit_id
+    launch_date              = var.launch_date
+    negative_soaking         = var.negative_soaking
+    data_rate                = "${var.soaking_data_mode}-${var.soaking_data_rate}"
+    instance_type            = aws_instance.aoc.instance_type
+    testing_ami              = var.testing_ami
+  })
+}
+
 resource "null_resource" "install_cwagent" {
-  count = var.install_cwagent ? 1 : 0
-  # Use the depends_on meta-argument to handle hidden resource dependencies that Terraform can't automatically infer.
-  # Explicitly specifying a dependency is only necessary when a resource relies on some other resource's behavior but doesn't access any of that resource's data in its arguments.
-  depends_on = [null_resource.start_collector]
-  // copy cwagent config to the instance
-  provisioner "file" {
-    content = templatefile(local.ami_family["soaking_cwagent_config"], {
-      soaking_metric_namespace = var.soaking_metric_namespace
-      testcase                 = split("/", var.testcase)[2]
-      commit_id                = var.commit_id
-      launch_date              = var.launch_date
-      negative_soaking         = var.negative_soaking
-      data_rate                = "${var.soaking_data_mode}-${var.soaking_data_rate}"
-      instance_type            = aws_instance.aoc.instance_type
-      testing_ami              = var.testing_ami
-    })
-    destination = local.ami_family["soaking_cwagent_config_destination"]
+  count      = var.install_cwagent ? 1 : 0
+  depends_on = [null_resource.start_collector, aws_s3_object.cwagent_config]
 
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.connection_type == "ssh" ? local.private_key_content : null
-      password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
-    }
-  }
-
-  provisioner "remote-exec" {
-    inline = [
-      local.ami_family["cwagent_download_command"],
-      local.ami_family["cwagent_install_command"],
-      local.ami_family["cwagent_start_command"]
-    ]
-
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.connection_type == "ssh" ? local.private_key_content : null
-      password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 10m -- \
+        "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/cwagent-config.json ${local.ami_family["soaking_cwagent_config_destination"]}" \
+        "${local.ami_family["cwagent_download_command"]}" \
+        "${local.ami_family["cwagent_install_command"]}" \
+        "${local.ami_family["cwagent_start_command"]}"
+    EOT
   }
 }
 
@@ -572,19 +504,12 @@ resource "null_resource" "ssm_validation" {
   depends_on = [null_resource.install_collector_from_ssm]
   count      = !var.skip_validation && var.enable_ssm_validate ? 1 : 0
 
-  provisioner "remote-exec" {
-    inline = [
-      local.ami_family["status_command"],
-      local.ami_family["ssm_validate"],
-    ]
-
-    connection {
-      type        = local.connection_type
-      user        = local.login_user
-      private_key = local.connection_type == "ssh" ? local.private_key_content : null
-      password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
-    }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 5m -- \
+        "${local.ami_family["status_command"]}" \
+        "${local.ami_family["ssm_validate"]}"
+    EOT
   }
 }
 
