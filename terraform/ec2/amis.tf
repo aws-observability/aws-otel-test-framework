@@ -101,16 +101,13 @@ EOF
     }
     ubuntu22 = {
       os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-jammy*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-ubuntu-LTS-22*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
       login_user         = "ubuntu"
-      user_data          = <<EOF
-#! /bin/bash
-sudo snap refresh amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     arm_ubuntu22 = {
       os_family          = "ubuntu"
@@ -145,23 +142,14 @@ EOF
     }
     arm_debian11 = {
       os_family          = "debian"
-      ami_search_pattern = "debian-11-arm64*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-debian-11-arm64*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
       login_user         = "admin"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_arm64/amazon-ssm-agent.deb
-while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
-   echo 'Waiting for dpkg lock...' && sleep 1
-done
-sudo dpkg -i amazon-ssm-agent.deb
-sudo systemctl enable amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     debian10 = {
       os_family          = "debian"
@@ -205,64 +193,52 @@ EOF
     #AL3
     amazonlinux3 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "al2023-ami-2023*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-x86-al2023*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
       login_user         = "ec2-user"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-EOF
+      user_data          = ""
     }
     arm_amazonlinux3 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "al2023-ami-2023*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-aarch64-al2023*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
       login_user         = "ec2-user"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-EOF
+      user_data          = ""
     }
     #AL2
     amazonlinux2 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel-5*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-al2*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
       login_user         = "ec2-user"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-EOF
+      user_data          = ""
     }
     arm_amazonlinux2 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel-5*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-arm64-al2*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
       login_user         = "ec2-user"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-EOF
+      user_data          = ""
     }
     # Windows Distribution
     windows2022 = {
       os_family          = "windows"
-      ami_search_pattern = "Windows_Server-2022-English-Full-Base*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-win-2022*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
@@ -270,8 +246,8 @@ EOF
     }
     windows2019 = {
       os_family          = "windows"
-      ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-win-2019*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
@@ -321,16 +297,13 @@ EOF
     # only patches now, no further minor-version bumps until EOL in 2029).
     redhat8 = {
       os_family          = "redhat"
-      ami_search_pattern = "RHEL-8.10.0_HVM*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-rhel8-base*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
-      user_data          = <<EOF
-#! /bin/bash
-sudo dnf install -y python3
-sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-EOF
+      login_user         = "ec2-user"
+      user_data          = ""
     }
     arm_redhat8 = {
       os_family          = "redhat"
