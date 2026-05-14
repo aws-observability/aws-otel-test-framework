@@ -15,8 +15,10 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -113,21 +115,35 @@ aotutil ssm wait-patch i-1234356 --ignore-error`,
 
 	// Run Command
 	var document string
+	var useStdin bool
 	runCommand := cobra.Command{
-		Use:   "run-command INSTANCE_ID -- COMMAND [COMMAND...]",
+		Use:   "run-command INSTANCE_ID [-- COMMAND...]",
 		Short: "Run shell commands on an instance via SSM and stream output",
 		Example: `# Run a single command on a Linux instance
 aotutil ssm run-command i-123456 -- "sudo systemctl start aws-otel-collector"
 # Run multiple commands
 aotutil ssm run-command i-123456 -- "cd /tmp" "sudo ./install.sh"
+# Read commands from stdin (one per line) - avoids shell quoting issues
+echo "whoami" | aotutil ssm run-command i-123456 --stdin
 # Run on Windows (auto-detected, or force with --document)
 aotutil ssm run-command i-123456 --document AWS-RunPowerShellScript -- "Get-Service"`,
 		Args: cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			instance := args[0]
-			commands := args[1:]
+			var commands []string
+			if useStdin {
+				scanner := bufio.NewScanner(os.Stdin)
+				for scanner.Scan() {
+					line := strings.TrimSpace(scanner.Text())
+					if line != "" {
+						commands = append(commands, line)
+					}
+				}
+			} else {
+				commands = args[1:]
+			}
 			if len(commands) == 0 {
-				logger.Fatal("No commands provided after instance ID (use -- separator)")
+				logger.Fatal("No commands provided (use -- COMMAND or --stdin)")
 			}
 			output, err := ssmWrapper.RunCommand(ctx, instance, document, commands, ssmWaitTimeout)
 			if err != nil {
@@ -141,6 +157,7 @@ aotutil ssm run-command i-123456 --document AWS-RunPowerShellScript -- "Get-Serv
 		},
 	}
 	runCommand.Flags().StringVar(&document, "document", "", "SSM document (default: auto-detect Linux/Windows)")
+	runCommand.Flags().BoolVar(&useStdin, "stdin", false, "Read commands from stdin (one per line)")
 
 	root.AddCommand(
 		&waitPatch,
@@ -255,13 +272,18 @@ func (s *SSMWrapper) RunCommand(ctx context.Context, instanceId, document string
 			document = "AWS-RunShellScript"
 		}
 	}
+	// For Linux, ensure common paths are available
+	if document == "AWS-RunShellScript" && len(commands) > 0 {
+		commands = append([]string{"export PATH=$PATH:/usr/local/bin:/usr/local/sbin:/opt/aws/bin"}, commands...)
+	}
+
 	logger.Info("Sending command", zap.String("Document", document), zap.Int("NumCommands", len(commands)))
 
 	// Send command
 	sendRes, err := s.client.SendCommand(ctx, &ssm.SendCommandInput{
-		InstanceIds:  []string{instanceId},
-		DocumentName: aws.String(document),
-		Parameters:   map[string][]string{"commands": commands},
+		InstanceIds:    []string{instanceId},
+		DocumentName:   aws.String(document),
+		Parameters:     map[string][]string{"commands": commands},
 		TimeoutSeconds: int32(timeout.Seconds()),
 	})
 	if err != nil {

@@ -302,10 +302,11 @@ resource "null_resource" "start_collector" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 10m -- \
-        "${local.ami_family["wait_cloud_init"]}" \
-        "${local.ami_family["install_command"]}" \
-        "${local.start_command}"
+      cat <<'COMMANDS' | ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 10m --stdin
+      ${local.ami_family["wait_cloud_init"]}
+      ${local.ami_family["install_command"]}
+      ${local.start_command}
+      COMMANDS
     EOT
   }
 }
@@ -492,9 +493,10 @@ resource "null_resource" "ssm_validation" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 5m -- \
-        "${local.ami_family["status_command"]}" \
-        "${local.ami_family["ssm_validate"]}"
+      cat <<'COMMANDS' | ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --timeout 5m --stdin
+      ${local.ami_family["status_command"]}
+      ${local.ami_family["ssm_validate"]}
+      COMMANDS
     EOT
   }
 }
