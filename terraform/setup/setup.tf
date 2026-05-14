@@ -129,25 +129,27 @@ resource "aws_security_group" "aoc_sg" {
   # All service ports restricted to VPC CIDR. The self=true rule above handles
   # intra-SG traffic. Runner access is granted per-run via ephemeral SGs.
 
+  # HTTP ports open to 0.0.0.0/0 — required for ALB ingress (ECS tests use
+  # public ALBs with this SG). These are non-sensitive: no auth, ephemeral.
   ingress {
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port   = 443
     to_port     = 443
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
