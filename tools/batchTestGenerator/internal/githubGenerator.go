@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // generates the batch keys and value json for github action utilization
@@ -66,11 +67,20 @@ func GithubGenerator(config RunConfig) error {
 
 }
 
+func displayKey(serviceType, additionalVar string) string {
+	if strings.Contains(additionalVar, "|") {
+		parts := strings.SplitN(additionalVar, "|", 2)
+		clusterName := strings.TrimPrefix(parts[1], "collector-ci-")
+		return fmt.Sprintf("%s/%s", serviceType, clusterName)
+	}
+	return fmt.Sprintf("%s/%s", serviceType, additionalVar)
+}
+
 func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]string, error) {
 	// Group tests by platform + variant (AMI for EC2, cluster for EKS, launch type for ECS)
 	subGroups := make(map[string][]TestCaseInfo)
 	for _, tc := range testCases {
-		key := fmt.Sprintf("%s/%s", tc.serviceType, tc.additionalVar)
+		key := displayKey(tc.serviceType, tc.additionalVar)
 		subGroups[key] = append(subGroups[key], tc)
 	}
 

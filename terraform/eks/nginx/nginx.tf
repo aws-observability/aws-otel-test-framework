@@ -45,6 +45,7 @@ resource "helm_release" "nginx_ingress" {
   repository = "https://kubernetes.github.io/ingress-nginx"
   chart      = "ingress-nginx"
   version    = "4.4.0"
+  timeout    = 600
 
   set {
     name  = "controller.metrics.enabled"
