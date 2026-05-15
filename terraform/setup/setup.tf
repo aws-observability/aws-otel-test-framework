@@ -122,8 +122,7 @@ resource "aws_security_group" "aoc_sg" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["10.0.0.0/16"]
-    description = "SSH from VPC only - runner IP added dynamically per test run"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # All service ports restricted to VPC CIDR. The self=true rule above handles

@@ -134,7 +134,7 @@ resource "aws_launch_template" "launchtemp" {
     instance_metadata_tags      = "enabled"
   }
   network_interfaces {
-    associate_public_ip_address = false
+    associate_public_ip_address = true
     security_groups             = [module.basic_components.aoc_security_group_id]
   }
   iam_instance_profile {

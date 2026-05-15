@@ -102,7 +102,7 @@ resource "aws_instance" "sidecar" {
   instance_type               = var.sidecar_instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
   tags = {
@@ -131,7 +131,7 @@ resource "aws_instance" "aoc" {
   instance_type               = local.instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
   vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
-  associate_public_ip_address = false
+  associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
   user_data                   = local.user_data

@@ -23,7 +23,7 @@ module "common" {
 locals {
   otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
 
-  subnet_ids_list = data.aws_subnets.aoc_private_subnet_ids.ids
+  subnet_ids_list = data.aws_subnets.aoc_all_public_subnet_ids.ids
 
   subnet_ids_random_index = random_id.subnetSelector.dec % length(local.subnet_ids_list)
 
