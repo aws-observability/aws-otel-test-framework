@@ -128,17 +128,14 @@ EOF
     }
     arm_ubuntu22 = {
       os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-jammy*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-ubuntu-LTS-22-arm64*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
       login_user         = "ubuntu"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-sudo snap refresh amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     # Debian Distribution
     debian11 = {
@@ -276,38 +273,24 @@ EOF
     # Suse Distribution
     suse15 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-15-sp5-v????????-hvm-ssd-x86_64"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-sles-15*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
       arch               = "amd64"
-      user_data          = <<EOF
-#! /bin/bash
-cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-sudo rpm -Uvh amazon-ssm-agent.rpm
-sudo systemctl enable amazon-ssm-agent
-sudo systemctl start amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     arm_suse15 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-15-sp5-v????????-hvm-ssd-arm64"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-sles-15-arm64*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
       arch               = "arm64"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-sudo rpm -Uvh amazon-ssm-agent.rpm
-sudo systemctl enable amazon-ssm-agent
-sudo systemctl start amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     suse12 = {
       os_family          = "suse"
@@ -339,17 +322,14 @@ EOF
     }
     arm_redhat8 = {
       os_family          = "redhat"
-      ami_search_pattern = "RHEL-8.6.0_HVM*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-rhel8-arm64*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y python3
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-EOF
+      login_user         = "ec2-user"
+      user_data          = ""
     }
   }
 }
