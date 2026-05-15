@@ -376,11 +376,12 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
         "sudo yum update -y --skip-broken 2>/dev/null || true" \
         "for i in 1 2 3; do sudo amazon-linux-extras enable docker && sudo yum install -y docker-25.0.14-1.amzn2.0.4 && break || sleep 10; done" \
         "sudo mkdir -p /usr/local/lib/docker/cli-plugins" \
-        "sudo aws s3 cp s3://aws-otel-collector-test/tools/docker-compose-linux-$(uname -m) /usr/local/lib/docker/cli-plugins/docker-compose --region us-east-1" \
+        "aws s3 cp s3://aws-otel-collector-test/tools/docker-compose-linux-$(uname -m) /tmp/docker-compose --region us-east-1 || curl -sL https://github.com/docker/compose/releases/download/v2.29.1/docker-compose-linux-$(uname -m) -o /tmp/docker-compose" \
+        "sudo mv /tmp/docker-compose /usr/local/lib/docker/cli-plugins/docker-compose" \
         "sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose" \
         "sudo systemctl start docker" \
         "sudo usermod -a -G docker ec2-user" \
-        "sudo \$(aws ecr get-login --no-include-email --region ${var.region})" \
+        "aws ecr get-login-password --region ${var.region} | sudo docker login --username AWS --password-stdin $(aws sts get-caller-identity --query Account --output text).dkr.ecr.${var.region}.amazonaws.com" \
         "sleep 10" \
         "sudo docker compose -f /tmp/docker-compose.yml pull --quiet" \
         "sudo docker compose -f /tmp/docker-compose.yml up -d"
