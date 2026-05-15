@@ -73,31 +73,59 @@ case ${AWS_REGION} in
     ;;
 esac
 
+ts() { date -u +"%H:%M:%S"; }
+PROGRESS_FILE="${GITHUB_STEP_SUMMARY:-/dev/null}"
 test_framework_shortsha=$(git rev-parse --short HEAD)
 # Used as a retry mechanic.
 ATTEMPTS_LEFT=2
 cd ${TEST_FOLDER};
+
+TEST_INDEX=${TEST_INDEX:-0}
+TEST_INDEX=$((TEST_INDEX + 1))
+export TEST_INDEX
+
 while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDTL_PARAMS; do
-    terraform init;
-    if timeout -k 5m --signal=SIGINT -v 45m terraform apply -auto-approve -lock=false $opts  -var="testcase=../testcases/$TESTCASE" ; then
+    TESTCASE_START=$(date -u +%s)
+    echo ""
+    echo "╔══════════════════════════════════════════════════════════════"
+    echo "║ TEST ${TEST_INDEX}: ${SERVICE} / ${TESTCASE} / ${ADDTL_PARAMS}"
+    echo "╚══════════════════════════════════════════════════════════════"
+    echo "::group::${SERVICE} ${TESTCASE} ${ADDTL_PARAMS}"
+
+    echo "[$(ts)] terraform init"
+    terraform init -no-color > /dev/null 2>&1;
+
+    echo "[$(ts)] terraform apply (30m timeout)"
+    export TF_IN_AUTOMATION=true
+
+    if timeout -k 5m --signal=SIGINT -v 30m terraform apply -auto-approve -lock=false -compact-warnings $opts  -var="testcase=../testcases/$TESTCASE" ; then
         APPLY_EXIT=$?
-        echo "Exit code: $?" 
+        DURATION=$(( $(date -u +%s) - TESTCASE_START ))
+        echo ""
+        echo "  ✅ PASS: ${SERVICE} / ${TESTCASE} / ${ADDTL_PARAMS} (${DURATION}s)"
+        echo ""
         aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$SERVICE$TESTCASE$ADDTL_PARAMS\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
+        echo "| $SERVICE | $TESTCASE | :white_check_mark: pass | ${DURATION}s |" >> "$PROGRESS_FILE"
     else
         APPLY_EXIT=$?
-        echo "Terraform apply failed"
-        echo "Exit code: $?"
-        echo "AWS_service: $SERVICE"
-        echo "Testcase: $TESTCASE" 
+        DURATION=$(( $(date -u +%s) - TESTCASE_START ))
+        echo ""
+        echo "  ❌ FAIL: ${SERVICE} / ${TESTCASE} / ${ADDTL_PARAMS} (exit=${APPLY_EXIT}, ${DURATION}s)"
+        echo ""
+        echo "| $SERVICE | $TESTCASE | :x: fail (exit=$APPLY_EXIT) | ${DURATION}s |" >> "$PROGRESS_FILE"
     fi
 
+    echo "[$(ts)] terraform destroy"
     case "$SERVICE" in
-        EKS*) terraform destroy --auto-approve $opts;
+        EKS*) terraform destroy --auto-approve -compact-warnings $opts > /dev/null 2>&1;
         ;;
     *)
-        terraform destroy --auto-approve;
+        terraform destroy --auto-approve -compact-warnings > /dev/null 2>&1;
     ;;
     esac
+
+    echo "[$(ts)] Destroy complete"
+    echo "::endgroup::"
 
     let ATTEMPTS_LEFT=ATTEMPTS_LEFT-1
 done
