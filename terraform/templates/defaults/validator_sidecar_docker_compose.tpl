@@ -1,7 +1,6 @@
 services:
   validator:
-    build:
-      /tmp/validator
+    image: validator:${testing_id}
     network_mode: "host"
     environment:
       - AWS_REGION=${region}
