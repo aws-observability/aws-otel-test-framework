@@ -192,7 +192,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
       ${var.aotutil} ssm run-command ${aws_instance.aoc.id} --document AWS-RunPowerShellScript --timeout 5m -- \
         "aws s3 cp s3://${var.package_s3_bucket}/test-runs/${module.common.testing_id}/ca-bundle.crt C:\\ca-bundle.crt" \
         "Add-Content C:\\Windows\\System32\\drivers\\etc\\hosts '${aws_instance.sidecar.private_ip} mocked-server'" \
-        "Import-Certificate -FilePath 'C:\\ca-bundle.crt' -CertStoreLocation 'Cert:\\LocalMachine\\Root' -Verbose"
+        "Import-Certificate -FilePath 'C:\\ca-bundle.crt' -CertStoreLocation 'Cert:\\LocalMachine\\Root'"
     EOT
   }
 }

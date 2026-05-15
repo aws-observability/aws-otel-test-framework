@@ -24,7 +24,7 @@
         "host": {}
       },
       "required": ["host"],
-      "additionalProperties": false
+      "additionalProperties": true
     }
   },
   "required": [
@@ -43,5 +43,5 @@
     "node_diskio_io_service_bytes_read",
     "node_diskio_io_service_bytes_write"
   ],
-  "additionalProperties": false
+  "additionalProperties": true
 }

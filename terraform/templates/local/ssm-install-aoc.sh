@@ -11,7 +11,12 @@ echo "Sleep 15s for EC2 become online in SSM."
 sleep 15
 
 for i in {1..30}; do
-  output=$(aws ssm describe-instance-information --filters "Key=InstanceIds,Values=$instance_id")
+  backoff=$((2 + RANDOM % 3 + i))
+  output=$(aws ssm describe-instance-information --filters "Key=InstanceIds,Values=$instance_id" 2>&1) || {
+    echo "SSM API call failed (attempt $i), retrying in ${backoff}s..."
+    sleep $backoff
+    continue
+  }
   echo ${output}
   status=$(echo ${output} | python3 -c "import sys, json; print('online') if len(json.load(sys.stdin)['InstanceInformationList']) == 1 else print('down')")
   if [[ ${status} == "online" ]]
@@ -23,7 +28,8 @@ for i in {1..30}; do
   fi
 done
 
-for j in {1..3}; do
+for j in {1..5}; do
+  backoff=$((5 * j + RANDOM % 10))
   output=$(aws ssm send-command \
     --document-name "AWS-ConfigureAWSPackage" \
     --document-version "1" \
@@ -32,7 +38,11 @@ for j in {1..3}; do
     --timeout-seconds 600 \
     --max-concurrency "50" \
     --max-errors "0" \
-    --region us-west-2)
+    --region us-west-2 2>&1) || {
+    echo "SSM send-command failed (attempt $j), retrying in ${backoff}s..."
+    sleep $backoff
+    continue
+  }
   echo ${output}
 
   command_id=$(echo ${output} | python3 -c "import sys, json; print(json.load(sys.stdin)['Command']['CommandId'])")
