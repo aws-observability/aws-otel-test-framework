@@ -357,7 +357,7 @@ data "aws_ami" "amazonlinux2" {
   filter {
     name = "name"
     values = [
-    "amzn2-ami-kernel*"]
+    "cloudwatch-agent-integration-test-al2*"]
   }
 
   filter {
@@ -372,8 +372,7 @@ data "aws_ami" "amazonlinux2" {
     values = ["x86_64"]
   }
 
-  owners = [
-  "amazon"]
+  owners = ["506463145083"]
 }
 
 
