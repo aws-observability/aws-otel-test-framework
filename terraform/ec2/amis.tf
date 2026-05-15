@@ -35,7 +35,7 @@ variable "ami_family" {
       instance_type            = "c5a.large"
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "curl %s --output aws-otel-collector.rpm"
-      install_command          = "sudo rpm -Uvh aws-otel-collector.rpm"
+      install_command          = "while sudo fuser /var/lib/rpm/.rpm.lock 2>/dev/null; do echo 'Waiting for rpm lock...' && sleep 5; done && sudo rpm -Uvh aws-otel-collector.rpm"
       start_command            = "ADOT_CONFIG_URI=$(echo -n 'CONFIGURATION_URI_PLACEHOLDER' | base64 -d)\nsudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c \"$ADOT_CONFIG_URI\" -f FEATUREGATE_PLACEHOLDER -a start"
       status_command           = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a status"
       ssm_validate             = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a status | grep running"
