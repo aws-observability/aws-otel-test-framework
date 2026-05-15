@@ -9,6 +9,8 @@ receivers:
 
 processors:
   batch:
+    send_batch_size: 1
+    timeout: 1s
 
 exporters:
   datadog:
