@@ -27,6 +27,9 @@
 
 set -x
 
+# Detect runner public IP for WinRM security group
+export TF_VAR_runner_ip="$(curl -s https://checkip.amazonaws.com)/32"
+
 echo "Test Case Args: $@"
 SERVICE="$1"
 TESTCASE=$2

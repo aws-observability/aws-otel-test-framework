@@ -92,6 +92,27 @@ locals {
   testcase_name       = split("/", var.testcase)[2]
 }
 
+# Per-run Security Group for WinRM access from CI runner (Windows only)
+resource "aws_security_group" "winrm_runner" {
+  count       = local.connection_type == "winrm" ? 1 : 0
+  name        = "aoc-winrm-${module.common.testing_id}"
+  description = "WinRM access from CI runner for test ${module.common.testing_id}"
+  vpc_id      = module.basic_components.aoc_vpc_id
+
+  ingress {
+    description = "WinRM HTTPS from CI runner"
+    from_port   = 5986
+    to_port     = 5986
+    protocol    = "tcp"
+    cidr_blocks = [var.runner_ip]
+  }
+
+  tags = {
+    Name      = "aoc-winrm-${module.common.testing_id}"
+    ephemeral = "true"
+  }
+}
+
 ## launch a sidecar instance to install data emitter and the mocked server
 resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.amazonlinux2.id
@@ -126,7 +147,7 @@ resource "aws_instance" "aoc" {
   ami                         = local.ami_id
   instance_type               = local.instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
-  vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
+  vpc_security_group_ids      = local.connection_type == "winrm" ? [module.basic_components.aoc_security_group_id, aws_security_group.winrm_runner[0].id] : [module.basic_components.aoc_security_group_id]
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name

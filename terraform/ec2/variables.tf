@@ -149,3 +149,9 @@ variable "configuration_source" {
     error_message = "Invalid configuration_source for ec2"
   }
 }
+
+variable "runner_ip" {
+  type        = string
+  description = "CIDR of the CI runner (e.g. 1.2.3.4/32) for WinRM access"
+  default     = "0.0.0.0/0"
+}
