@@ -66,11 +66,19 @@ func GithubGenerator(config RunConfig) error {
 
 }
 
+func displayVariant(serviceType, additionalVar string) string {
+	if strings.Contains(additionalVar, "|") {
+		parts := strings.SplitN(additionalVar, "|", 2)
+		return strings.TrimPrefix(parts[1], "collector-ci-")
+	}
+	return additionalVar
+}
+
 func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]string, error) {
 	// Group tests by platform + variant (AMI for EC2, cluster for EKS, launch type for ECS)
 	subGroups := make(map[string][]TestCaseInfo)
 	for _, tc := range testCases {
-		key := fmt.Sprintf("%s/%s", tc.serviceType, tc.additionalVar)
+		key := fmt.Sprintf("%s/%s", tc.serviceType, displayVariant(tc.serviceType, tc.additionalVar))
 		subGroups[key] = append(subGroups[key], tc)
 	}
 
@@ -92,7 +100,7 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 			if testsPerBatch == 1 || len(tests) <= share {
 				id = fmt.Sprintf("%s/%s", groupKey, tc.testcaseName)
 			} else {
-				id = fmt.Sprintf("%s/%d", groupKey, batchNum)
+				id = fmt.Sprintf("%s/batch-%d", groupKey, batchNum)
 			}
 			val := fmt.Sprintf("%s %s %s", tc.serviceType, tc.testcaseName, tc.additionalVar)
 			batchMap[id] = append(batchMap[id], val)
