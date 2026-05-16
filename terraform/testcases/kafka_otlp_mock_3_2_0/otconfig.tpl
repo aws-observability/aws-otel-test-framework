@@ -7,7 +7,7 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:${grpc_port}
   kafka/receiver:
-    protocol_version: "${extra_data.msk.kafka_version}"
+    protocol_version: "3.2.0"
     auth:
       tls:
         insecure: false
@@ -28,7 +28,7 @@ exporters:
     no_verify_ssl: false
     endpoint: "${mock_endpoint}"
   kafka/exporter:
-    protocol_version: "${extra_data.msk.kafka_version}"
+    protocol_version: "3.2.0"
     auth:
       tls:
         insecure: false

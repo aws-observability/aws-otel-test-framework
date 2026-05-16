@@ -80,7 +80,7 @@ ts() { date -u +"%H:%M:%S"; }
 PROGRESS_FILE="${GITHUB_STEP_SUMMARY:-/dev/null}"
 test_framework_shortsha=$(git rev-parse --short HEAD)
 # Used as a retry mechanic.
-ATTEMPTS_LEFT=2
+ATTEMPTS_LEFT=1
 cd ${TEST_FOLDER};
 
 TEST_INDEX=${TEST_INDEX:-0}
@@ -119,6 +119,22 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     fi
 
     echo "[$(ts)] terraform destroy"
+    # Capture collector logs on failure for debugging
+    if [ $APPLY_EXIT -ne 0 ] && [ "$SERVICE" = "EC2" ]; then
+        echo "::group::Collector logs (${TESTCASE})"
+        INSTANCE_ID=$(terraform output -raw collector_instance_id 2>/dev/null || true)
+        if [ -n "$INSTANCE_ID" ]; then
+            CMD_ID=$(aws ssm send-command --instance-ids "$INSTANCE_ID" --document-name "AWS-RunShellScript" \
+                --parameters 'commands=["journalctl -u aws-otel-collector --no-pager -n 100 2>/dev/null || cat /opt/aws/aws-otel-collector/logs/*.log 2>/dev/null | tail -100 || echo NO_LOGS"]' \
+                --query 'Command.CommandId' --output text --region "$AWS_REGION" 2>/dev/null || true)
+            if [ -n "$CMD_ID" ]; then
+                sleep 5
+                aws ssm get-command-invocation --command-id "$CMD_ID" --instance-id "$INSTANCE_ID" \
+                    --query 'StandardOutputContent' --output text --region "$AWS_REGION" 2>/dev/null || true
+            fi
+        fi
+        echo "::endgroup::"
+    fi
     case "$SERVICE" in
         EKS*) terraform destroy --auto-approve -compact-warnings $opts > /dev/null 2>&1;
         ;;

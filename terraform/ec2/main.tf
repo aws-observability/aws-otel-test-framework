@@ -100,8 +100,8 @@ resource "aws_security_group" "winrm_runner" {
   vpc_id      = module.basic_components.aoc_vpc_id
 
   ingress {
-    description = "WinRM HTTPS from CI runner"
-    from_port   = 5986
+    description = "WinRM from CI runner"
+    from_port   = 5985
     to_port     = 5986
     protocol    = "tcp"
     cidr_blocks = [var.runner_ip]

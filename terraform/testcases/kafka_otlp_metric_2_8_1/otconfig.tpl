@@ -7,7 +7,7 @@ receivers:
       grpc:
         endpoint: 0.0.0.0:${grpc_port}
   kafka/receiver:
-    protocol_version: "${extra_data.msk.kafka_version}"
+    protocol_version: "2.8.1"
     auth:
       tls:
         insecure: false
@@ -25,7 +25,7 @@ exporters:
   awsemf:
     region: '${region}'
   kafka/exporter:
-    protocol_version: "${extra_data.msk.kafka_version}"
+    protocol_version: "2.8.1"
     auth:
       tls:
         insecure: false

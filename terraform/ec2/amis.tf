@@ -260,6 +260,7 @@ EOF
       family             = "windows"
       arch               = "amd64"
       login_user         = "Administrator"
+      user_data          = ""
     }
     windows2019 = {
       os_family          = "windows"
@@ -269,6 +270,7 @@ EOF
       family             = "windows"
       arch               = "amd64"
       login_user         = "Administrator"
+      user_data          = ""
     }
     # Suse Distribution
     suse15 = {
