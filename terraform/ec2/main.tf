@@ -97,7 +97,7 @@ resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = var.sidecar_instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
-  vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
+  vpc_security_group_ids      = compact([module.basic_components.aoc_security_group_id, var.runner_sg_id])
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
@@ -126,7 +126,7 @@ resource "aws_instance" "aoc" {
   ami                         = local.ami_id
   instance_type               = local.instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
-  vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
+  vpc_security_group_ids      = compact([module.basic_components.aoc_security_group_id, var.runner_sg_id])
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
