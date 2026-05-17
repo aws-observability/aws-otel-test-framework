@@ -57,7 +57,7 @@ variable "ami_family" {
       user_data                = <<EOF
 <powershell>
 netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
-Set-NetFirewallProfile -Profile Public -Enabled False
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 </powershell>
 EOF
       wait_cloud_init          = "powershell -Command \"Start-Sleep -Seconds 15; Write-Host 'Windows ready'\""
