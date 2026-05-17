@@ -72,7 +72,7 @@ net start winrm
 Set-NetFirewallProfile -Profile Public -Enabled False
 </powershell>
 EOF
-      wait_cloud_init          = " "
+      wait_cloud_init          = "Start-Sleep -Seconds 30; Write-Host 'Windows ready'"
     }
   }
 }

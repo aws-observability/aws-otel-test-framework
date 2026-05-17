@@ -230,6 +230,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
 
     connection {
       type     = local.connection_type
+      timeout  = "10m"
       user     = local.login_user
       password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
       host     = aws_instance.aoc.public_dns
@@ -244,6 +245,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
 
     connection {
       type     = local.connection_type
+      timeout  = "10m"
       user     = local.login_user
       password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
       host     = aws_instance.aoc.public_dns
@@ -260,6 +262,7 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
@@ -278,6 +281,7 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.private_key_content
       host     = aws_instance.aoc.public_dns
@@ -298,6 +302,7 @@ resource "null_resource" "download_collector_from_local" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
@@ -317,6 +322,7 @@ resource "null_resource" "download_collector_from_s3" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
@@ -343,6 +349,7 @@ resource "null_resource" "collector_file_configuration" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
@@ -384,6 +391,7 @@ resource "null_resource" "start_collector" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
@@ -410,6 +418,7 @@ resource "null_resource" "install_collector_from_ssm" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
@@ -501,6 +510,7 @@ resource "null_resource" "install_cwagent" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
@@ -517,6 +527,7 @@ resource "null_resource" "install_cwagent" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
@@ -567,6 +578,7 @@ resource "null_resource" "ssm_validation" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
