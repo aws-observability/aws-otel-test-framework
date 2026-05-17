@@ -54,8 +54,14 @@ variable "ami_family" {
       status_command           = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\""
       ssm_validate             = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\" | findstr running"
       connection_type          = "winrm"
-      user_data                = ""
-      wait_cloud_init          = " "
+      user_data                = <<EOF
+<powershell>
+# Only open firewall — do NOT reconfigure or restart WinRM (AMI has it pre-configured)
+netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
+Set-NetFirewallProfile -Profile Public -Enabled False
+</powershell>
+EOF
+      wait_cloud_init          = "Start-Sleep -Seconds 15; Write-Host 'Windows ready'"
     }
   }
 }
