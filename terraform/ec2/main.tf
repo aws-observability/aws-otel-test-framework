@@ -64,6 +64,55 @@ provider "aws" {
 data "aws_caller_identity" "current" {
 }
 
+resource "aws_security_group" "runner_access" {
+  count       = var.runner_ip != "" ? 1 : 0
+  name_prefix = "runner-${module.common.testing_id}-"
+  vpc_id      = module.basic_components.aoc_vpc_id
+  description = "Runner access for test ${module.common.testing_id}"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.runner_ip]
+  }
+
+  ingress {
+    from_port   = 5985
+    to_port     = 5985
+    protocol    = "tcp"
+    cidr_blocks = [var.runner_ip]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.runner_ip]
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = [var.runner_ip]
+  }
+
+  tags = {
+    Name      = "runner-${module.common.testing_id}"
+    TestID    = module.common.testing_id
+    ephemeral = "true"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+locals {
+  runner_sg_ids = var.runner_ip != "" ? [aws_security_group.runner_access[0].id] : (var.runner_sg_id != "" ? [var.runner_sg_id] : [])
+}
+
 data "aws_ecr_repository" "sample_app" {
   name = module.common.sample_app_ecr_repo_name
 }
@@ -97,7 +146,7 @@ resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = var.sidecar_instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
-  vpc_security_group_ids      = compact([module.basic_components.aoc_security_group_id, var.runner_sg_id])
+  vpc_security_group_ids      = concat([module.basic_components.aoc_security_group_id], local.runner_sg_ids)
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
@@ -126,7 +175,7 @@ resource "aws_instance" "aoc" {
   ami                         = local.ami_id
   instance_type               = local.instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
-  vpc_security_group_ids      = compact([module.basic_components.aoc_security_group_id, var.runner_sg_id])
+  vpc_security_group_ids      = concat([module.basic_components.aoc_security_group_id], local.runner_sg_ids)
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
