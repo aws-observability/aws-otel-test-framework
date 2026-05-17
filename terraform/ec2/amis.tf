@@ -54,25 +54,8 @@ variable "ami_family" {
       status_command           = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\""
       ssm_validate             = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\" | findstr running"
       connection_type          = "winrm"
-      user_data                = <<EOF
-<powershell>
-winrm quickconfig -q
-winrm set winrm/config/winrs '@{MaxShellsPerUser="100"}'
-winrm set winrm/config/winrs '@{MaxConcurrentUsers="30"}'
-winrm set winrm/config/winrs '@{MaxProcessesPerShell="100"}'
-winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
-winrm set winrm/config '@{MaxTimeoutms="1800000"}'
-winrm set winrm/config/service '@{AllowUnencrypted="true"}'
-winrm set winrm/config/service/auth '@{Basic="true"}'
-netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
-netsh advfirewall firewall add rule name="WinRM 5986" protocol=TCP dir=in localport=5986 action=allow
-net stop winrm
-sc.exe config winrm start=auto
-net start winrm
-Set-NetFirewallProfile -Profile Public -Enabled False
-</powershell>
-EOF
-      wait_cloud_init          = "Start-Sleep -Seconds 30; Write-Host 'Windows ready'"
+      user_data                = ""
+      wait_cloud_init          = " "
     }
   }
 }
