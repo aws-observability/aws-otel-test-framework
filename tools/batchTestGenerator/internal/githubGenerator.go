@@ -88,6 +88,25 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 	totalTests := len(testCases)
 
 	for groupKey, tests := range subGroups {
+		// Separate kafka tests into their own batch (they share MSK connections)
+		var kafkaTests []TestCaseInfo
+		var otherTests []TestCaseInfo
+		for _, tc := range tests {
+			if strings.Contains(tc.testcaseName, "kafka") {
+				kafkaTests = append(kafkaTests, tc)
+			} else {
+				otherTests = append(otherTests, tc)
+			}
+		}
+		if len(kafkaTests) > 0 {
+			id := fmt.Sprintf("%s/kafka", groupKey)
+			for _, tc := range kafkaTests {
+				val := fmt.Sprintf("%s %s %s", tc.serviceType, tc.testcaseName, tc.additionalVar)
+				batchMap[id] = append(batchMap[id], val)
+			}
+		}
+		tests = otherTests
+
 		share := (len(tests) * maxBatches) / totalTests
 		if share < 1 {
 			share = 1
