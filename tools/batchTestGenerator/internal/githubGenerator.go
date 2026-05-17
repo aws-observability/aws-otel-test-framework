@@ -99,8 +99,10 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 			}
 		}
 		if len(kafkaTests) > 0 {
-			id := fmt.Sprintf("%s/kafka", groupKey)
-			for _, tc := range kafkaTests {
+			// Split kafka into batches of 2 (each test takes ~10min, 2 fits in 30m timeout)
+			for i, tc := range kafkaTests {
+				batchNum := i / 2
+				id := fmt.Sprintf("%s/kafka-%d", groupKey, batchNum)
 				val := fmt.Sprintf("%s %s %s", tc.serviceType, tc.testcaseName, tc.additionalVar)
 				batchMap[id] = append(batchMap[id], val)
 			}
