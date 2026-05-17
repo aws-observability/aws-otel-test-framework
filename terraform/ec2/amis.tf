@@ -49,19 +49,18 @@ variable "ami_family" {
       instance_type            = "c5a.large"
       otconfig_destination     = "C:\\ot-default.yml"
       download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
-      install_command          = "msiexec /i C:\\aws-otel-collector.msi"
-      start_command            = "$url = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('CONFIGURATION_URI_PLACEHOLDER'))\n. 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation $url -FeatureGates 'FEATUREGATE_PLACEHOLDER' -Action start"
+      install_command          = "msiexec /i C:\\aws-otel-collector.msi /qn /norestart"
+      start_command            = "powershell -Command \"$url = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('CONFIGURATION_URI_PLACEHOLDER')); & 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation $url -FeatureGates 'FEATUREGATE_PLACEHOLDER' -Action start\""
       status_command           = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\""
       ssm_validate             = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\" | findstr running"
       connection_type          = "winrm"
       user_data                = <<EOF
 <powershell>
-# Only open firewall — do NOT reconfigure or restart WinRM (AMI has it pre-configured)
 netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
 Set-NetFirewallProfile -Profile Public -Enabled False
 </powershell>
 EOF
-      wait_cloud_init          = "Start-Sleep -Seconds 15; Write-Host 'Windows ready'"
+      wait_cloud_init          = "powershell -Command \"Start-Sleep -Seconds 15; Write-Host 'Windows ready'\""
     }
   }
 }
