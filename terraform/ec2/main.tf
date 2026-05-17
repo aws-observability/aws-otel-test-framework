@@ -49,7 +49,7 @@ module "basic_components" {
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
-  sample_app_listen_address_host = aws_instance.sidecar.public_ip
+  sample_app_listen_address_host = aws_instance.sidecar.public_dns
 
   sample_app_listen_address_port = module.common.sample_app_lb_port
 
@@ -232,7 +232,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
       type     = local.connection_type
       user     = local.login_user
       password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
-      host     = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 
@@ -246,7 +246,7 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
       type     = local.connection_type
       user     = local.login_user
       password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
-      host     = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -263,7 +263,7 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 
@@ -280,7 +280,7 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
       type        = local.connection_type
       user        = local.login_user
       private_key = local.private_key_content
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -301,7 +301,7 @@ resource "null_resource" "download_collector_from_local" {
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -320,7 +320,7 @@ resource "null_resource" "download_collector_from_s3" {
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -346,7 +346,7 @@ resource "null_resource" "collector_file_configuration" {
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -387,7 +387,7 @@ resource "null_resource" "start_collector" {
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -413,7 +413,7 @@ resource "null_resource" "install_collector_from_ssm" {
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 
@@ -454,7 +454,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       type        = "ssh"
       user        = "ec2-user"
       private_key = local.private_key_content
-      host        = aws_instance.sidecar.public_ip
+      host        = aws_instance.sidecar.public_dns
     }
   }
   provisioner "remote-exec" {
@@ -474,7 +474,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       type        = "ssh"
       user        = "ec2-user"
       private_key = local.private_key_content
-      host        = aws_instance.sidecar.public_ip
+      host        = aws_instance.sidecar.public_dns
     }
   }
 }
@@ -504,7 +504,7 @@ resource "null_resource" "install_cwagent" {
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 
@@ -520,7 +520,7 @@ resource "null_resource" "install_cwagent" {
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -570,7 +570,7 @@ resource "null_resource" "ssm_validation" {
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
