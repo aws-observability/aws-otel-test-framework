@@ -75,6 +75,8 @@ esac
 
 ts() { date -u +"%H:%M:%S"; }
 PROGRESS_FILE="${GITHUB_STEP_SUMMARY:-/dev/null}"
+echo "| Platform | Test | Result | Duration |" >> "$PROGRESS_FILE"
+echo "|----------|------|--------|----------|" >> "$PROGRESS_FILE"
 test_framework_shortsha=$(git rev-parse --short HEAD)
 # Used as a retry mechanic.
 ATTEMPTS_LEFT=2
