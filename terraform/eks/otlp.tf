@@ -266,14 +266,11 @@ resource "kubernetes_service" "mocked_server_service" {
     selector = {
       app = local.aoc_label_selector
     }
-    type = "LoadBalancer"
+    type = "ClusterIP"
     port {
       port        = 80
       target_port = 8080
     }
-  }
-  timeouts {
-    create = "20m"
   }
 }
 
@@ -331,48 +328,13 @@ resource "kubernetes_service" "sample_app_service" {
       app = "sample-app"
     }
 
-    type = var.deployment_type == "fargate" ? "NodePort" : "LoadBalancer"
+    type = "ClusterIP"
 
     port {
       port        = module.common.sample_app_lb_port
       target_port = module.common.sample_app_listen_address_port
     }
   }
-  timeouts {
-    create = "20m"
-  }
 }
 
-resource "kubernetes_ingress" "app" {
-  count                  = var.deployment_type == "fargate" && local.is_otlp_base_scenario ? 1 : 0
-  wait_for_load_balancer = true
-  metadata {
-    name      = "sample-app-ingress"
-    namespace = kubernetes_namespace.aoc_fargate_ns.metadata[0].name
-    annotations = {
-      "kubernetes.io/ingress.class"           = "alb"
-      "alb.ingress.kubernetes.io/scheme"      = "internet-facing"
-      "alb.ingress.kubernetes.io/target-type" = "ip"
-    }
-    labels = {
-      "app" = "sample-app"
-    }
-  }
-
-  spec {
-    rule {
-      http {
-        path {
-          path = "/*"
-          backend {
-            service_name = kubernetes_service.sample_app_service[count.index].metadata[0].name
-            service_port = kubernetes_service.sample_app_service[count.index].spec[0].port[0].port
-          }
-        }
-      }
-    }
-  }
-
-  depends_on = [kubernetes_service.sample_app_service]
-}
 
