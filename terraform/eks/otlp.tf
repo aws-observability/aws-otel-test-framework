@@ -37,7 +37,7 @@ module "basic_components" {
   sample_app                     = var.sample_app
   mocked_server                  = var.mocked_server
   cortex_instance_endpoint       = var.cortex_instance_endpoint
-  sample_app_listen_address_host = var.sample_app_mode == "pull" ? kubernetes_service.sample_app_service[0].status[0].load_balancer[0].ingress[0].hostname : ""
+  sample_app_listen_address_host = var.sample_app_mode == "pull" ? kubernetes_service.sample_app_service[0].spec[0].cluster_ip : ""
   sample_app_listen_address_port = module.common.sample_app_lb_port
 
   extra_data = { msk = module.aoc_msk_cluster.cluster_data }
