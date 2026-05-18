@@ -71,8 +71,11 @@ data "aws_subnets" "aoc_public_subnet_ids" {
     name = "tag:Name"
     values = [
       "${module.common.aoc_vpc_name}-public-${var.region}a",
+      "${module.common.aoc_vpc_name}-public-${var.region}a-*",
       "${module.common.aoc_vpc_name}-public-${var.region}b",
+      "${module.common.aoc_vpc_name}-public-${var.region}b-*",
       "${module.common.aoc_vpc_name}-public-${var.region}c",
+      "${module.common.aoc_vpc_name}-public-${var.region}c-*",
     ]
   }
 }
