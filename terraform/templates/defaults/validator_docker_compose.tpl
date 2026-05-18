@@ -3,6 +3,7 @@ version: '3.8'
 services:
   validator:
     image: aoc-validator:local
+    network_mode: host
     volumes:
       - ~/.aws:/root/.aws
       - ./output:/var/output
