@@ -8,9 +8,11 @@ fmt:
 check-fmt:
 	terraform fmt -recursive -check
 
+BATCH_PARALLELISM ?= 1
+
 .PHONY: execute-batch-test
 execute-batch-test: test-case-batch
-	cat test-case-batch | xargs -L1 -P1 ./executeTerraformTest.sh
+	cat test-case-batch | xargs -L1 -P$(BATCH_PARALLELISM) ./executeTerraformTest.sh
 
 .PHONY: test-case-batch-test
 test-case-batch-test: test-case-batch

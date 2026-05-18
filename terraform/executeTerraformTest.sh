@@ -78,6 +78,14 @@ PROGRESS_FILE="${GITHUB_STEP_SUMMARY:-/dev/null}"
 echo "| Platform | Test | Result | Duration |" >> "$PROGRESS_FILE"
 echo "|----------|------|--------|----------|" >> "$PROGRESS_FILE"
 test_framework_shortsha=$(git rev-parse --short HEAD)
+
+# Pre-build validator image once (reused across all tests in this batch)
+if ! docker image inspect aoc-validator:local > /dev/null 2>&1; then
+  echo "[$(ts)] Building validator image..."
+  docker build -t aoc-validator:local ../validator > /dev/null 2>&1
+  echo "[$(ts)] Validator image built"
+fi
+
 # Used as a retry mechanic.
 ATTEMPTS_LEFT=2
 cd ${TEST_FOLDER};
@@ -95,6 +103,8 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     echo "::group::${SERVICE} ${TESTCASE} ${ADDTL_PARAMS}"
 
     echo "[$(ts)] terraform init"
+    export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
+    mkdir -p "$TF_PLUGIN_CACHE_DIR"
     terraform init -no-color > /dev/null 2>&1;
 
     echo "[$(ts)] terraform apply (30m timeout)"
@@ -135,8 +145,8 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     echo "::endgroup::"
 
     if [ $APPLY_EXIT -ne 0 ]; then
-        echo "Waiting 60s before retry to allow resource cleanup..."
-        sleep 60
+        echo "Waiting 10s before retry..."
+        sleep 10
     fi
 
     let ATTEMPTS_LEFT=ATTEMPTS_LEFT-1

@@ -2,8 +2,7 @@ version: '3.8'
 
 services:
   validator:
-    build:
-      ../../validator
+    image: aoc-validator:local
     volumes:
       - ~/.aws:/root/.aws
       - ./output:/var/output
