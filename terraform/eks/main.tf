@@ -210,11 +210,12 @@ resource "null_resource" "port_forward" {
       export KUBECONFIG=${abspath("./${local_file.kubeconfig.filename}")}
       NS="${var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name}"
       kubectl -n "$NS" wait --for=condition=ready pod -l app=${local.aoc_label_selector} --timeout=300s || true
-      kubectl -n "$NS" port-forward svc/mocked-server 18081:80 &
+      nohup kubectl -n "$NS" port-forward svc/mocked-server 18081:80 > /dev/null 2>&1 &
       echo $! > /tmp/pf_mocked.pid
-      kubectl -n "$NS" port-forward svc/sample-app 18080:${module.common.sample_app_lb_port} &
+      nohup kubectl -n "$NS" port-forward svc/sample-app 18080:${module.common.sample_app_lb_port} > /dev/null 2>&1 &
       echo $! > /tmp/pf_sample.pid
-      sleep 3
+      sleep 2
+      curl -sf http://localhost:18081/ > /dev/null || echo "WARN: mocked-server port-forward not ready"
     EOT
   }
 
