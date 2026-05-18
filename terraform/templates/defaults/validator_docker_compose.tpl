@@ -4,6 +4,7 @@ services:
   validator:
     build:
       ../../validator
+    network_mode: host
     volumes:
       - ~/.aws:/root/.aws
       - ./output:/var/output
