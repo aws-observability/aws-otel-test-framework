@@ -103,9 +103,8 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     echo "::group::${SERVICE} ${TESTCASE} ${ADDTL_PARAMS}"
 
     echo "[$(ts)] terraform init"
-    export TF_PLUGIN_CACHE_DIR="$HOME/.terraform.d/plugin-cache"
-    mkdir -p "$TF_PLUGIN_CACHE_DIR"
-    terraform init -no-color > /dev/null 2>&1;
+    rm -f kubeconfig
+    terraform init -reconfigure -no-color > /dev/null 2>&1;
 
     echo "[$(ts)] terraform apply (30m timeout)"
     export TF_IN_AUTOMATION=true
