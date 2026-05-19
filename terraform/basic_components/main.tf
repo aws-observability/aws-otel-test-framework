@@ -23,7 +23,7 @@ module "common" {
 locals {
   otconfig_path = fileexists("${var.testcase}/otconfig.tpl") ? "${var.testcase}/otconfig.tpl" : module.common.default_otconfig_path
 
-  subnet_ids_list = data.aws_subnets.aoc_public_subnet_ids.ids
+  subnet_ids_list = data.aws_subnets.aoc_instance_subnet_ids.ids
 
   subnet_ids_random_index = random_id.subnetSelector.dec % length(local.subnet_ids_list)
 
@@ -61,7 +61,7 @@ data "aws_subnets" "aoc_private_subnet_ids" {
   }
 }
 
-# return public subnets
+# return public subnets (one per AZ — used for ALBs/ECS which require exactly one subnet per AZ)
 data "aws_subnets" "aoc_public_subnet_ids" {
   filter {
     name   = "vpc-id"
@@ -73,6 +73,20 @@ data "aws_subnets" "aoc_public_subnet_ids" {
       "${module.common.aoc_vpc_name}-public-${var.region}a",
       "${module.common.aoc_vpc_name}-public-${var.region}b",
       "${module.common.aoc_vpc_name}-public-${var.region}c",
+    ]
+  }
+}
+
+# return all public subnets (used for EC2 instance placement — more IPs available)
+data "aws_subnets" "aoc_instance_subnet_ids" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.aoc_vpc.id]
+  }
+  filter {
+    name = "tag:Name"
+    values = [
+      "${module.common.aoc_vpc_name}-public-*",
     ]
   }
 }

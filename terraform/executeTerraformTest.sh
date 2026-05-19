@@ -25,8 +25,6 @@
 # $3: For all EKS tests we expect region|clustername
 ##########################################
 
-set -x
-
 echo "Test Case Args: $@"
 SERVICE="$1"
 TESTCASE=$2
@@ -75,6 +73,10 @@ esac
 
 ts() { date -u +"%H:%M:%S"; }
 PROGRESS_FILE="${GITHUB_STEP_SUMMARY:-/dev/null}"
+if ! grep -q "Platform" "$PROGRESS_FILE" 2>/dev/null; then
+  echo "| Platform | Test | Result | Duration |" >> "$PROGRESS_FILE"
+  echo "|----------|------|--------|----------|" >> "$PROGRESS_FILE"
+fi
 test_framework_shortsha=$(git rev-parse --short HEAD)
 # Used as a retry mechanic.
 ATTEMPTS_LEFT=2
@@ -93,13 +95,15 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     echo "::group::${SERVICE} ${TESTCASE} ${ADDTL_PARAMS}"
 
     echo "[$(ts)] terraform init"
-    terraform init -no-color > /dev/null 2>&1;
+    terraform init -no-color 2>&1 | tail -5
 
     echo "[$(ts)] terraform apply (30m timeout)"
     export TF_IN_AUTOMATION=true
 
-    if timeout -k 5m --signal=SIGINT -v 30m terraform apply -auto-approve -lock=false -compact-warnings $opts  -var="testcase=../testcases/$TESTCASE" ; then
-        APPLY_EXIT=$?
+    timeout -k 5m --signal=SIGINT -v 30m terraform apply -auto-approve -lock=false -compact-warnings $opts -var="testcase=../testcases/$TESTCASE" 2>&1 | tee /tmp/tf_apply.log | sed 's/\x1b\[[0-9;]*m//g' | grep --line-buffered -E "Creation complete|Error|Still creating.*[0-9]0s elapsed" || true
+    TF_EXIT=${PIPESTATUS[0]}
+    if [ $TF_EXIT -eq 0 ]; then
+        APPLY_EXIT=0
         DURATION=$(( $(date -u +%s) - TESTCASE_START ))
         echo ""
         echo "  ✅ PASS: ${SERVICE} / ${TESTCASE} / ${ADDTL_PARAMS} (${DURATION}s)"
@@ -107,11 +111,12 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
         aws dynamodb put-item --region=us-west-2 --table-name ${DDB_TABLE_NAME} --item {\"TestId\":{\"S\":\"$SERVICE$TESTCASE$ADDTL_PARAMS\"}\,\"aoc_version\":{\"S\":\"$DDB_SK_PREFIX$test_framework_shortsha\"}\,\"TimeToExist\":{\"N\":\"${TTL_DATE}\"}} --return-consumed-capacity TOTAL
         echo "| $SERVICE | $TESTCASE | :white_check_mark: pass | ${DURATION}s |" >> "$PROGRESS_FILE"
     else
-        APPLY_EXIT=$?
+        APPLY_EXIT=$TF_EXIT
         DURATION=$(( $(date -u +%s) - TESTCASE_START ))
         echo ""
         echo "  ❌ FAIL: ${SERVICE} / ${TESTCASE} / ${ADDTL_PARAMS} (exit=${APPLY_EXIT}, ${DURATION}s)"
         echo ""
+        grep -E "Error:|validator" /tmp/tf_apply.log | tail -20
         echo "| $SERVICE | $TESTCASE | :x: fail (exit=$APPLY_EXIT) | ${DURATION}s |" >> "$PROGRESS_FILE"
     fi
 
@@ -128,8 +133,8 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     echo "::endgroup::"
 
     if [ $APPLY_EXIT -ne 0 ]; then
-        echo "Waiting 60s before retry to allow resource cleanup..."
-        sleep 60
+        echo "Waiting 10s before retry..."
+        sleep 10
     fi
 
     let ATTEMPTS_LEFT=ATTEMPTS_LEFT-1
