@@ -20,7 +20,7 @@ NAMESPACE=${NAMESPACE:-""}
 SERVICE_NAME=${SERVICE_NAME:-""}
 
 service_wait() {
-  timeout=60
+  timeout=300
   until [[ $timeout -eq 0 ]]; do
     external_ip=$(kubectl --kubeconfig=$KUBECONFIG get service -n$NAMESPACE $SERVICE_NAME --no-headers | awk {'print $4'})
     if [ -z "$external_ip" ]; then
