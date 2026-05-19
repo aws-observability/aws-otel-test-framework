@@ -75,3 +75,12 @@ variable "aoc_vpc_name" {
 variable "aoc_vpc_security_group" {
   default = "aoc-vpc-security-group"
 }
+
+variable "runner_sg_id" {
+  default = ""
+}
+
+variable "runner_ip" {
+  description = "CIDR of the CI runner (e.g. 1.2.3.4/32) for WinRM/SSH access"
+  default     = ""
+}

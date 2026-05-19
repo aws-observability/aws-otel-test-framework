@@ -1,10 +1,10 @@
 package internal
 
 import (
-	"container/ring"
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // generates the batch keys and value json for github action utilization
@@ -67,89 +67,68 @@ func GithubGenerator(config RunConfig) error {
 
 }
 
+func displayVariant(serviceType, additionalVar string) string {
+	if strings.Contains(additionalVar, "|") {
+		parts := strings.SplitN(additionalVar, "|", 2)
+		return strings.TrimPrefix(parts[1], "collector-ci-")
+	}
+	return additionalVar
+}
+
 func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]string, error) {
-	var numBatches int
-	if len(testCases) <= maxBatches {
-		numBatches = len(testCases)
-	} else {
-		numBatches = maxBatches
-	}
-
-	nonParallelTestSet := map[string][]TestCaseInfo{
-		"EKS_ADOT_OPERATOR":       {},
-		"EKS_ADOT_OPERATOR_ARM64": {},
-		"EKS_FARGATE":             {},
-	}
-
-	if numBatches == 1 {
-		nonParallelTestSet = map[string][]TestCaseInfo{}
-	} else if numBatches-len(nonParallelTestSet) <= 0 {
-		numBatches = 1
-	} else {
-		numBatches -= len(nonParallelTestSet)
-	}
-
-	// circular linked list to distribute values
-	// we reach for a circular LL to evenly distrubute values since no
-	// weighting is being done during the batching process. We just want the
-	// easiest way to distribute test cases.
-	testContainers := ring.New(numBatches)
-	for i := 0; i < numBatches; i++ {
-		testContainers.Value = make([]TestCaseInfo, 0)
-		testContainers = testContainers.Next()
-	}
-
-	// distribute tests into containers
+	// Group tests by platform + variant (AMI for EC2, cluster for EKS, launch type for ECS)
+	subGroups := make(map[string][]TestCaseInfo)
 	for _, tc := range testCases {
-		if _, ok := nonParallelTestSet[tc.serviceType]; ok {
-			nonParallelTestSet[tc.serviceType] = append(nonParallelTestSet[tc.serviceType], tc)
-		} else {
-			testContainers.Value = append(testContainers.Value.([]TestCaseInfo), tc)
-			testContainers = testContainers.Next()
-		}
-
+		key := fmt.Sprintf("%s/%s", tc.serviceType, displayVariant(tc.serviceType, tc.additionalVar))
+		subGroups[key] = append(subGroups[key], tc)
 	}
 
-	// assign containers to a batch
+	// Allocate batch slots proportionally per sub-group
 	batchMap := make(map[string][]string)
+	totalTests := len(testCases)
 
-	batch := 0
-	// non-parallel tests
-	for _, npts := range nonParallelTestSet {
-		if len(npts) == 0 {
-			continue
+	for groupKey, tests := range subGroups {
+		// Separate kafka tests into their own batch (they share MSK connections)
+		var kafkaTests []TestCaseInfo
+		var otherTests []TestCaseInfo
+		for _, tc := range tests {
+			if strings.Contains(tc.testcaseName, "kafka") {
+				kafkaTests = append(kafkaTests, tc)
+			} else {
+				otherTests = append(otherTests, tc)
+			}
+		}
+		if len(kafkaTests) > 0 {
+			// Split kafka into batches of 2 (each test takes ~10min, 2 fits in 30m timeout)
+			for i, tc := range kafkaTests {
+				batchNum := i / 2
+				id := fmt.Sprintf("%s/kafka-%d", groupKey, batchNum)
+				val := fmt.Sprintf("%s %s %s", tc.serviceType, tc.testcaseName, tc.additionalVar)
+				batchMap[id] = append(batchMap[id], val)
+			}
+		}
+		tests = otherTests
+
+		share := (len(tests) * maxBatches) / totalTests
+		if share < 1 {
+			share = 1
 		}
 
-		nptsStringArray, err := generateBachValuesStringArray(npts)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create non parallel test set string array: %w", err)
-		}
-		id := fmt.Sprintf("batch%d", batch)
-		batchMap[id] = append(batchMap[id], nptsStringArray...)
-		if batch < maxBatches {
-			batch++
-		}
-	}
+		testsPerBatch := (len(tests) + share - 1) / share
 
-	//assign following batches
-	for i := 0; i < numBatches; i++ {
-		ts := testContainers.Value.([]TestCaseInfo)
-		if len(ts) == 0 {
-			testContainers = testContainers.Next()
-			continue
-		}
-
-		batchValueStringArray, err := generateBachValuesStringArray(ts)
-		if err != nil {
-			return nil, fmt.Errorf("failed to create batchValueString: %w", err)
-		}
-		id := fmt.Sprintf("batch%d", batch)
-		batchMap[id] = append(batchMap[id], batchValueStringArray...)
-		testContainers = testContainers.Next()
-		if batch < maxBatches {
-			batch++
+		for i, tc := range tests {
+			batchNum := i / testsPerBatch
+			var id string
+			if testsPerBatch == 1 || len(tests) <= share {
+				id = fmt.Sprintf("%s/%s", groupKey, tc.testcaseName)
+			} else {
+				id = fmt.Sprintf("%s/batch-%d", groupKey, batchNum)
+			}
+			val := fmt.Sprintf("%s %s %s", tc.serviceType, tc.testcaseName, tc.additionalVar)
+			batchMap[id] = append(batchMap[id], val)
 		}
 	}
 
 	return batchMap, nil
 }
+

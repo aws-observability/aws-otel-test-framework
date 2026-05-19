@@ -71,32 +71,28 @@ resource "helm_release" "nginx_ingress" {
   }
 }
 
-data "kubernetes_service" "nginx_ingress_sample" {
-  metadata {
-    name      = "${helm_release.nginx_ingress.name}-ingress-nginx-controller"
-    namespace = kubernetes_namespace.nginx_ns.metadata[0].name
-  }
-  depends_on = [helm_release.nginx_ingress]
-}
-
-data "template_file" "traffic_deployment_file" {
-  template = file("./nginx/nginx_traffic_sample.tpl")
-  vars = {
-    NAMESPACE   = kubernetes_namespace.traffic_ns.metadata[0].name
-    EXTERNAL_IP = data.kubernetes_service.nginx_ingress_sample.status[0].load_balancer[0].ingress[0].hostname
-  }
-}
-
-resource "local_file" "traffic_deployment" {
-  filename = "nginx_traffic_sample_${var.testing_id}.yaml"
-  content  = data.template_file.traffic_deployment_file.rendered
-}
-
 resource "null_resource" "apply_traffic_deployment" {
-  triggers = {
-    config_contents = md5(local_file.traffic_deployment.content)
-  }
+  depends_on = [helm_release.nginx_ingress]
+
   provisioner "local-exec" {
-    command = "kubectl --kubeconfig=${var.kubeconfig} apply -f ${local_file.traffic_deployment.filename}"
+    command = <<-EOT
+      # Wait for LB hostname
+      for i in $(seq 1 150); do
+        EXTERNAL_IP=$(kubectl --kubeconfig=$KUBECONFIG get svc -n$NS $SVC -o jsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
+        if [ -n "$EXTERNAL_IP" ]; then break; fi
+        sleep 2
+      done
+      if [ -z "$EXTERNAL_IP" ]; then echo "ERROR: nginx LB hostname not available after 300s"; exit 1; fi
+      echo "Nginx LB: $EXTERNAL_IP"
+      export NAMESPACE EXTERNAL_IP
+      envsubst < ./nginx/nginx_traffic_sample.tpl | kubectl --kubeconfig=$KUBECONFIG apply -f -
+    EOT
+
+    environment = {
+      KUBECONFIG = var.kubeconfig
+      NS         = kubernetes_namespace.nginx_ns.metadata[0].name
+      SVC        = "${helm_release.nginx_ingress.name}-ingress-nginx-controller"
+      NAMESPACE  = kubernetes_namespace.traffic_ns.metadata[0].name
+    }
   }
 }

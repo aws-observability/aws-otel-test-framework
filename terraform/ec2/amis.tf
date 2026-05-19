@@ -22,7 +22,7 @@ variable "ami_family" {
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "wget %s"
       install_command          = "while sudo fuser /var/cache/apt/archives/lock /var/lib/apt/lists/lock /var/lib/dpkg/lock /var/lib/dpkg/lock-frontend; do echo 'Waiting for dpkg lock...' && sleep 1; done; echo 'No dpkg lock and install collector.' && sudo dpkg -i aws-otel-collector.deb"
-      start_command            = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c \"$(echo -n 'CONFIGURATION_URI_PLACEHOLDER' | base64 -d)\" -f FEATUREGATE_PLACEHOLDER -a start"
+      start_command            = "ADOT_CONFIG_URI=$(echo -n 'CONFIGURATION_URI_PLACEHOLDER' | base64 -d)\nsudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c \"$ADOT_CONFIG_URI\" -f FEATUREGATE_PLACEHOLDER -a start"
       status_command           = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a status"
       ssm_validate             = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a status | grep running"
       connection_type          = "ssh"
@@ -36,7 +36,7 @@ variable "ami_family" {
       otconfig_destination     = "/tmp/ot-default.yml"
       download_command_pattern = "curl %s --output aws-otel-collector.rpm"
       install_command          = "sudo rpm -Uvh aws-otel-collector.rpm"
-      start_command            = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c \"$(echo -n 'CONFIGURATION_URI_PLACEHOLDER' | base64 -d)\" -f FEATUREGATE_PLACEHOLDER -a start"
+      start_command            = "ADOT_CONFIG_URI=$(echo -n 'CONFIGURATION_URI_PLACEHOLDER' | base64 -d)\nsudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -c \"$ADOT_CONFIG_URI\" -f FEATUREGATE_PLACEHOLDER -a start"
       status_command           = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a status"
       ssm_validate             = "sudo /opt/aws/aws-otel-collector/bin/aws-otel-collector-ctl -a status | grep running"
       connection_type          = "ssh"
@@ -49,30 +49,18 @@ variable "ami_family" {
       instance_type            = "c5a.large"
       otconfig_destination     = "C:\\ot-default.yml"
       download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
-      install_command          = "msiexec /i C:\\aws-otel-collector.msi"
-      start_command            = "powershell -command \"&{ $url = \\\"$([System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('CONFIGURATION_URI_PLACEHOLDER')))\\\"; . 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation \\\"$url\\\" -FeatureGates \\\"FEATUREGATE_PLACEHOLDER\\\" -Action start}\""
+      install_command          = "msiexec /i C:\\aws-otel-collector.msi /qn /norestart"
+      start_command            = "powershell -Command \"$url = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('CONFIGURATION_URI_PLACEHOLDER')); & 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation $url -FeatureGates 'FEATUREGATE_PLACEHOLDER' -Action start\""
       status_command           = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\""
       ssm_validate             = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\" | findstr running"
       connection_type          = "winrm"
       user_data                = <<EOF
 <powershell>
-winrm quickconfig -q
-winrm set winrm/config/winrs '@{MaxShellsPerUser="100"}'
-winrm set winrm/config/winrs '@{MaxConcurrentUsers="30"}'
-winrm set winrm/config/winrs '@{MaxProcessesPerShell="100"}'
-winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
-winrm set winrm/config '@{MaxTimeoutms="1800000"}'
-winrm set winrm/config/service '@{AllowUnencrypted="true"}'
-winrm set winrm/config/service/auth '@{Basic="true"}'
 netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
-netsh advfirewall firewall add rule name="WinRM 5986" protocol=TCP dir=in localport=5986 action=allow
-net stop winrm
-sc.exe config winrm start=auto
-net start winrm
-Set-NetFirewallProfile -Profile Public -Enabled False
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 </powershell>
 EOF
-      wait_cloud_init          = " "
+      wait_cloud_init          = "powershell -Command \"Start-Sleep -Seconds 15; Write-Host 'Windows ready'\""
     }
   }
 }
@@ -118,30 +106,24 @@ EOF
     }
     ubuntu22 = {
       os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-jammy*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-ubuntu-LTS-22*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
       login_user         = "ubuntu"
-      user_data          = <<EOF
-#! /bin/bash
-sudo snap refresh amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     arm_ubuntu22 = {
       os_family          = "ubuntu"
-      ami_search_pattern = "ubuntu/images/hvm-ssd/ubuntu-jammy*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-ubuntu-LTS-22-arm64*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
       login_user         = "ubuntu"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-sudo snap refresh amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     # Debian Distribution
     debian11 = {
@@ -165,23 +147,14 @@ EOF
     }
     arm_debian11 = {
       os_family          = "debian"
-      ami_search_pattern = "debian-11-arm64*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-debian-11-arm64*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
       login_user         = "admin"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/debian_arm64/amazon-ssm-agent.deb
-while sudo fuser {/var/{lib/{dpkg,apt/lists},cache/apt/archives}/lock,/var/lib/dpkg/lock-frontend}; do
-   echo 'Waiting for dpkg lock...' && sleep 1
-done
-sudo dpkg -i amazon-ssm-agent.deb
-sudo systemctl enable amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     debian10 = {
       os_family          = "debian"
@@ -225,64 +198,52 @@ EOF
     #AL3
     amazonlinux3 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "al2023-ami-2023*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-x86-al2023*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
       login_user         = "ec2-user"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-EOF
+      user_data          = ""
     }
     arm_amazonlinux3 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "al2023-ami-2023*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-aarch64-al2023*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
       login_user         = "ec2-user"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-EOF
+      user_data          = ""
     }
     #AL2
     amazonlinux2 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel-5*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-al2*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
       login_user         = "ec2-user"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-EOF
+      user_data          = ""
     }
     arm_amazonlinux2 = {
       os_family          = "amazon_linux"
-      ami_search_pattern = "amzn2-ami-kernel-5*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-arm64-al2*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
       login_user         = "ec2-user"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-EOF
+      user_data          = ""
     }
     # Windows Distribution
     windows2022 = {
       os_family          = "windows"
-      ami_search_pattern = "Windows_Server-2022-English-Full-Base*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-win-2022*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
@@ -290,8 +251,8 @@ EOF
     }
     windows2019 = {
       os_family          = "windows"
-      ami_search_pattern = "Windows_Server-2019-English-Full-Base-*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-win-2019*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
@@ -300,38 +261,24 @@ EOF
     # Suse Distribution
     suse15 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-15-sp5-v????????-hvm-ssd-x86_64"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-sles-15*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
       arch               = "amd64"
-      user_data          = <<EOF
-#! /bin/bash
-cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-sudo rpm -Uvh amazon-ssm-agent.rpm
-sudo systemctl enable amazon-ssm-agent
-sudo systemctl start amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     arm_suse15 = {
       os_family          = "suse"
-      ami_search_pattern = "suse-sles-15-sp5-v????????-hvm-ssd-arm64"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-sles-15-arm64*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
       arch               = "arm64"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-cd /tmp
-sudo wget https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-sudo rpm -Uvh amazon-ssm-agent.rpm
-sudo systemctl enable amazon-ssm-agent
-sudo systemctl start amazon-ssm-agent
-EOF
+      user_data          = ""
     }
     suse12 = {
       os_family          = "suse"
@@ -353,30 +300,24 @@ EOF
     # Redhat Distribution
     redhat8 = {
       os_family          = "redhat"
-      ami_search_pattern = "RHEL-8.6.0_HVM*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-rhel8-base*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
-      user_data          = <<EOF
-#! /bin/bash
-sudo dnf install -y python3
-sudo dnf install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-EOF
+      login_user         = "ec2-user"
+      user_data          = ""
     }
     arm_redhat8 = {
       os_family          = "redhat"
-      ami_search_pattern = "RHEL-8.6.0_HVM*"
-      ami_owner          = "amazon"
+      ami_search_pattern = "cloudwatch-agent-integration-test-rhel8-arm64*"
+      ami_owner          = "506463145083"
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
       instance_type      = "c6g.large"
-      user_data          = <<EOF
-#! /bin/bash
-sudo yum install -y python3
-sudo yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm
-EOF
+      login_user         = "ec2-user"
+      user_data          = ""
     }
   }
 }

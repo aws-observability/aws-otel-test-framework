@@ -18,11 +18,11 @@ output "aoc_vpc_id" {
 }
 
 output "aoc_private_subnet_ids" {
-  value = data.aws_subnet_ids.aoc_private_subnet_ids.ids
+  value = data.aws_subnets.aoc_private_subnet_ids.ids
 }
 
 output "aoc_public_subnet_ids" {
-  value = data.aws_subnet_ids.aoc_public_subnet_ids.ids
+  value = data.aws_subnets.aoc_public_subnet_ids.ids
 }
 
 output "aoc_security_group_id" {
@@ -38,7 +38,8 @@ output "otconfig_content" {
 }
 
 output "mocked_server_cert_content" {
-  value = local.mocked_server_cert_rendered_template
+  value     = local.mocked_server_cert_rendered_template
+  sensitive = true
 }
 
 output "sample_app_image_repo" {

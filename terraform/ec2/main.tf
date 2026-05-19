@@ -49,7 +49,7 @@ module "basic_components" {
 
   cortex_instance_endpoint = var.cortex_instance_endpoint
 
-  sample_app_listen_address_host = aws_instance.sidecar.public_ip
+  sample_app_listen_address_host = aws_instance.sidecar.public_dns
 
   sample_app_listen_address_port = module.common.sample_app_lb_port
 
@@ -62,6 +62,55 @@ provider "aws" {
 }
 
 data "aws_caller_identity" "current" {
+}
+
+resource "aws_security_group" "runner_access" {
+  count       = var.runner_ip != "" ? 1 : 0
+  name_prefix = "runner-${module.common.testing_id}-"
+  vpc_id      = module.basic_components.aoc_vpc_id
+  description = "Runner access for test ${module.common.testing_id}"
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = [var.runner_ip]
+  }
+
+  ingress {
+    from_port   = 5985
+    to_port     = 5985
+    protocol    = "tcp"
+    cidr_blocks = [var.runner_ip]
+  }
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.runner_ip]
+  }
+
+  ingress {
+    from_port   = 8080
+    to_port     = 8080
+    protocol    = "tcp"
+    cidr_blocks = [var.runner_ip]
+  }
+
+  tags = {
+    Name      = "runner-${module.common.testing_id}"
+    TestID    = module.common.testing_id
+    ephemeral = "true"
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+locals {
+  runner_sg_ids = var.runner_ip != "" ? [aws_security_group.runner_access[0].id] : (var.runner_sg_id != "" ? [var.runner_sg_id] : [])
 }
 
 data "aws_ecr_repository" "sample_app" {
@@ -97,7 +146,7 @@ resource "aws_instance" "sidecar" {
   ami                         = data.aws_ami.amazonlinux2.id
   instance_type               = var.sidecar_instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
-  vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
+  vpc_security_group_ids      = concat([module.basic_components.aoc_security_group_id], local.runner_sg_ids)
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
@@ -126,7 +175,7 @@ resource "aws_instance" "aoc" {
   ami                         = local.ami_id
   instance_type               = local.instance_type
   subnet_id                   = module.basic_components.random_subnet_instance_id
-  vpc_security_group_ids      = [module.basic_components.aoc_security_group_id]
+  vpc_security_group_ids      = concat([module.basic_components.aoc_security_group_id], local.runner_sg_ids)
   associate_public_ip_address = true
   iam_instance_profile        = module.common.aoc_iam_role_name
   key_name                    = local.ssh_key_name
@@ -162,8 +211,8 @@ resource "null_resource" "check_patch" {
 
   provisioner "local-exec" {
     command = <<-EOT
-     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id}" --ignore-error
-     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}" --ignore-error
+     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.sidecar_id}" --ignore-error --timeout 15m
+     "${self.triggers.aotutil}" ssm wait-patch "${self.triggers.aoc_id}" --ignore-error --timeout 15m
     EOT
   }
 }
@@ -181,9 +230,10 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
 
     connection {
       type     = local.connection_type
+      timeout  = "10m"
       user     = local.login_user
       password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
-      host     = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 
@@ -195,9 +245,10 @@ resource "null_resource" "setup_mocked_server_cert_for_windows" {
 
     connection {
       type     = local.connection_type
+      timeout  = "10m"
       user     = local.login_user
       password = rsadecrypt(aws_instance.aoc.password_data, local.private_key_content)
-      host     = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -211,10 +262,11 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 
@@ -229,9 +281,10 @@ resource "null_resource" "setup_mocked_server_cert_for_linux" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.private_key_content
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -249,10 +302,11 @@ resource "null_resource" "download_collector_from_local" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -268,10 +322,11 @@ resource "null_resource" "download_collector_from_s3" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -294,10 +349,11 @@ resource "null_resource" "collector_file_configuration" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -335,10 +391,11 @@ resource "null_resource" "start_collector" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -361,10 +418,11 @@ resource "null_resource" "install_collector_from_ssm" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 
@@ -405,7 +463,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       type        = "ssh"
       user        = "ec2-user"
       private_key = local.private_key_content
-      host        = aws_instance.sidecar.public_ip
+      host        = aws_instance.sidecar.public_dns
     }
   }
   provisioner "remote-exec" {
@@ -425,7 +483,7 @@ resource "null_resource" "setup_sample_app_and_mock_server" {
       type        = "ssh"
       user        = "ec2-user"
       private_key = local.private_key_content
-      host        = aws_instance.sidecar.public_ip
+      host        = aws_instance.sidecar.public_dns
     }
   }
 }
@@ -452,10 +510,11 @@ resource "null_resource" "install_cwagent" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 
@@ -468,10 +527,11 @@ resource "null_resource" "install_cwagent" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }
@@ -518,10 +578,11 @@ resource "null_resource" "ssm_validation" {
 
     connection {
       type        = local.connection_type
+      timeout     = "10m"
       user        = local.login_user
       private_key = local.connection_type == "ssh" ? local.private_key_content : null
       password    = local.connection_type == "winrm" ? rsadecrypt(aws_instance.aoc.password_data, local.private_key_content) : null
-      host        = aws_instance.aoc.public_ip
+      host     = aws_instance.aoc.public_dns
     }
   }
 }

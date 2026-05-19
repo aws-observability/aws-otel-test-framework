@@ -28,7 +28,6 @@ spec:
           command:
             - "/awscollector"
             - "--config=/conf/adot-collector-config.yaml"
-            - "--feature-gates=-processor.resourcedetection.propagateerrors"
           env:
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: "ClusterName=${ClusterName}"

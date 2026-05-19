@@ -22,7 +22,7 @@ postBatchClean:
 
 .PHONY: checkCacheHits
 checkCacheHits:
-	cat test-case-batch | xargs -L1 -P1 ./checkCacheHit.sh
+	cat test-case-batch | xargs -L1 -P10 ./checkCacheHit.sh
 
 .PHONY: terraformCleanup
 terraformCleanup: test-case-batch

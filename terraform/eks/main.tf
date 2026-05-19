@@ -194,20 +194,49 @@ module "adot_operator" {
 
 
 ##########################################
+# Port-forward for ClusterIP services
+##########################################
+resource "null_resource" "port_forward" {
+  count = local.is_otlp_base_scenario ? 1 : 0
+
+  depends_on = [
+    kubernetes_service.mocked_server_service,
+    kubernetes_service.sample_app_service,
+    kubernetes_deployment.aoc_deployment,
+  ]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      export KUBECONFIG=${abspath("./${local_file.kubeconfig.filename}")}
+      NS="${var.deployment_type == "fargate" ? kubernetes_namespace.aoc_fargate_ns.metadata[0].name : kubernetes_namespace.aoc_ns.metadata[0].name}"
+      kubectl -n "$NS" wait --for=condition=ready pod -l app=${local.aoc_label_selector} --timeout=300s || true
+      nohup kubectl -n "$NS" port-forward svc/mocked-server 18081:80 > /dev/null 2>&1 &
+      echo $! > /tmp/pf_mocked.pid
+      nohup kubectl -n "$NS" port-forward svc/sample-app 18080:${module.common.sample_app_lb_port} > /dev/null 2>&1 &
+      echo $! > /tmp/pf_sample.pid
+      sleep 2
+      curl -sf http://localhost:18081/ > /dev/null || echo "WARN: mocked-server port-forward not ready"
+    EOT
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "kill $(cat /tmp/pf_mocked.pid 2>/dev/null) $(cat /tmp/pf_sample.pid 2>/dev/null) 2>/dev/null || true"
+  }
+}
+
+##########################################
 # Validation
 ##########################################
 module "validator" {
   source = "../validation"
 
-  validation_config = var.validation_config
-  region            = var.region
-  testing_id        = module.common.testing_id
-  metric_namespace  = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
-  sample_app_endpoint = (length(kubernetes_ingress.app) > 0 && var.deployment_type == "fargate" ? "http://${kubernetes_ingress.app[0].status[0].load_balancer[0].ingress[0].hostname}:${var.fargate_sample_app_lb_port}" : (
-    length(kubernetes_service.sample_app_service) > 0 ? "http://${kubernetes_service.sample_app_service[0].status[0].load_balancer[0].ingress[0].hostname}:${module.common.sample_app_lb_port}" : ""
-    )
-  )
-  mocked_server_validating_url = length(kubernetes_service.mocked_server_service) > 0 ? "http://${kubernetes_service.mocked_server_service[0].status[0].load_balancer[0].ingress[0].hostname}/check-data" : ""
+  validation_config            = var.validation_config
+  region                       = var.region
+  testing_id                   = module.common.testing_id
+  metric_namespace             = "${module.common.otel_service_namespace}/${module.common.otel_service_name}"
+  sample_app_endpoint          = length(kubernetes_service.sample_app_service) > 0 ? "http://localhost:18080" : ""
+  mocked_server_validating_url = length(kubernetes_service.mocked_server_service) > 0 ? "http://localhost:18081/check-data" : ""
   cloudwatch_context_json = var.aoc_base_scenario == "prometheus" ? jsonencode({
     clusterName : var.eks_cluster_name
     #    appMesh : {
@@ -247,5 +276,6 @@ module "validator" {
     null_resource.prom_base_ready_check,
     kubectl_manifest.aoc_deployment_adot_operator,
     kubernetes_deployment.aoc_deployment,
+    null_resource.port_forward,
   ]
 }

@@ -12,8 +12,8 @@ data:
       prometheus:
         config:
           global:
-            scrape_interval: 1m
-            scrape_timeout: 50s
+            scrape_interval: 15s
+            scrape_timeout: 10s
 
           scrape_configs:
           - job_name: 'kubelets-cadvisor-metrics'
@@ -287,6 +287,7 @@ data:
 
       # converts cumulative sum to delta
       cumulativetodelta:
+        initial_value: keep
         include:
             metrics:
                 - new_container_cpu_usage_seconds_total
@@ -401,12 +402,14 @@ data:
             action: update
             new_name: container_$$1
 
-      # add cluster name from env variable and EKS metadata
+      # add cluster name from env variable (OTEL_RESOURCE_ATTRIBUTES)
+      # Note: the eks detector fatally fails on Fargate because IMDS
+      # is unavailable and K8S_NODE_NAME is not set.
       resourcedetection:
-        detectors: [env, eks]
+        detectors: [env]
 
       batch:
-        timeout: 60s
+        timeout: 15s
 
     exporters:
       awsemf:
