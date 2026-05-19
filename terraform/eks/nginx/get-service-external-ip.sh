@@ -23,9 +23,9 @@ service_wait() {
   timeout=300
   until [[ $timeout -eq 0 ]]; do
     external_ip=$(kubectl --kubeconfig=$KUBECONFIG get service -n$NAMESPACE $SERVICE_NAME --no-headers | awk {'print $4'})
-    if [ -z "$external_ip" ]; then
-      sleep 1
-      timeout=$(( timeout - 1 ))
+    if [ -z "$external_ip" ] || [ "$external_ip" = "<pending>" ] || [ "$external_ip" = "<none>" ]; then
+      sleep 2
+      timeout=$(( timeout - 2 ))
     else
       echo "get external ip $external_ip"
       return 0
