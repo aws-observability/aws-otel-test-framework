@@ -38,7 +38,8 @@ output "otconfig_content" {
 }
 
 output "mocked_server_cert_content" {
-  value = local.mocked_server_cert_rendered_template
+  value     = local.mocked_server_cert_rendered_template
+  sensitive = true
 }
 
 output "sample_app_image_repo" {
