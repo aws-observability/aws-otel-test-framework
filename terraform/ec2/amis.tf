@@ -49,30 +49,17 @@ variable "ami_family" {
       instance_type            = "c5a.large"
       otconfig_destination     = "C:\\ot-default.yml"
       download_command_pattern = "powershell -command \"Invoke-WebRequest -Uri %s -OutFile C:\\aws-otel-collector.msi\""
-      install_command          = "msiexec /i C:\\aws-otel-collector.msi"
-      start_command            = "$url = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('CONFIGURATION_URI_PLACEHOLDER'))\n. 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation $url -FeatureGates 'FEATUREGATE_PLACEHOLDER' -Action start"
+      install_command          = "msiexec /i C:\\aws-otel-collector.msi /qn /norestart"
+      start_command            = "powershell -Command \"$url = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String('CONFIGURATION_URI_PLACEHOLDER')); & 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -ConfigLocation $url -FeatureGates 'FEATUREGATE_PLACEHOLDER' -Action start; Start-Sleep -Seconds 15\""
       status_command           = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\""
       ssm_validate             = "powershell \"& 'C:\\Program Files\\Amazon\\AwsOtelCollector\\aws-otel-collector-ctl.ps1' -Action status\" | findstr running"
       connection_type          = "winrm"
       user_data                = <<EOF
 <powershell>
-winrm quickconfig -q
-winrm set winrm/config/winrs '@{MaxShellsPerUser="100"}'
-winrm set winrm/config/winrs '@{MaxConcurrentUsers="30"}'
-winrm set winrm/config/winrs '@{MaxProcessesPerShell="100"}'
-winrm set winrm/config/winrs '@{MaxMemoryPerShellMB="1024"}'
-winrm set winrm/config '@{MaxTimeoutms="1800000"}'
-winrm set winrm/config/service '@{AllowUnencrypted="true"}'
-winrm set winrm/config/service/auth '@{Basic="true"}'
-netsh advfirewall firewall add rule name="WinRM 5985" protocol=TCP dir=in localport=5985 action=allow
-netsh advfirewall firewall add rule name="WinRM 5986" protocol=TCP dir=in localport=5986 action=allow
-net stop winrm
-sc.exe config winrm start=auto
-net start winrm
-Set-NetFirewallProfile -Profile Public -Enabled False
+Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
 </powershell>
 EOF
-      wait_cloud_init          = " "
+      wait_cloud_init          = "powershell -Command \"w32tm /resync /force; $i=0; while($i -lt 30) { $o = w32tm /stripchart /computer:169.254.169.123 /samples:1 /dataonly 2>&1; if($o -match '[+-]\\d+\\.\\d+s' -and [math]::Abs([double]($Matches[0] -replace 's','')) -lt 5) { break }; Start-Sleep 2; $i++ }; Write-Host 'Clock synced'\""
     }
   }
 }

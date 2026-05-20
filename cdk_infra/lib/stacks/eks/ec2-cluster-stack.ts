@@ -69,6 +69,8 @@ export class EC2Stack extends Stack {
       instanceTypes: props.instanceTypes,
       cluster: this.cluster,
       minSize: 2,
+      maxSize: 4,
+      desiredSize: 3,
       subnets: { subnetType: ec2.SubnetType.PUBLIC },
       launchTemplateSpec: {
         id: lt.launchTemplateId as string,

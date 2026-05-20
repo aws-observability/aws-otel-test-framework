@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // generates the batch keys and value json for github action utilization
@@ -66,11 +67,19 @@ func GithubGenerator(config RunConfig) error {
 
 }
 
+func displayVariant(serviceType, additionalVar string) string {
+	if strings.Contains(additionalVar, "|") {
+		parts := strings.SplitN(additionalVar, "|", 2)
+		return strings.TrimPrefix(parts[1], "collector-ci-")
+	}
+	return additionalVar
+}
+
 func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]string, error) {
 	// Group tests by platform + variant (AMI for EC2, cluster for EKS, launch type for ECS)
 	subGroups := make(map[string][]TestCaseInfo)
 	for _, tc := range testCases {
-		key := fmt.Sprintf("%s/%s", tc.serviceType, tc.additionalVar)
+		key := fmt.Sprintf("%s/%s", tc.serviceType, displayVariant(tc.serviceType, tc.additionalVar))
 		subGroups[key] = append(subGroups[key], tc)
 	}
 
@@ -79,12 +88,44 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 	totalTests := len(testCases)
 
 	for groupKey, tests := range subGroups {
+		// Separate kafka and flaky tests into their own batches
+		var kafkaTests []TestCaseInfo
+		var otherTests []TestCaseInfo
+		for _, tc := range tests {
+			if strings.Contains(tc.testcaseName, "kafka") {
+				kafkaTests = append(kafkaTests, tc)
+			} else if strings.Contains(groupKey, "windows") && tc.testcaseName == "otlp_metric_amp" {
+				// otlp_metric_amp is flaky on Windows (sigv4auth race) — isolate it
+				id := fmt.Sprintf("%s/otlp_metric_amp", groupKey)
+				val := fmt.Sprintf("%s %s %s", tc.serviceType, tc.testcaseName, tc.additionalVar)
+				batchMap[id] = append(batchMap[id], val)
+			} else {
+				otherTests = append(otherTests, tc)
+			}
+		}
+		if len(kafkaTests) > 0 {
+			// Split kafka into batches of 2 (each test takes ~10min, 2 fits in 30m timeout)
+			for i, tc := range kafkaTests {
+				batchNum := i / 2
+				id := fmt.Sprintf("%s/kafka-%d", groupKey, batchNum)
+				val := fmt.Sprintf("%s %s %s", tc.serviceType, tc.testcaseName, tc.additionalVar)
+				batchMap[id] = append(batchMap[id], val)
+			}
+		}
+		tests = otherTests
+
 		share := (len(tests) * maxBatches) / totalTests
 		if share < 1 {
 			share = 1
 		}
 
 		testsPerBatch := (len(tests) + share - 1) / share
+		if strings.HasPrefix(groupKey, "ECS") && testsPerBatch > 2 {
+			testsPerBatch = 2
+		}
+		if strings.Contains(groupKey, "windows") && testsPerBatch > 3 {
+			testsPerBatch = 3
+		}
 
 		for i, tc := range tests {
 			batchNum := i / testsPerBatch
@@ -92,7 +133,7 @@ func createBatchMap(maxBatches int, testCases []TestCaseInfo) (map[string][]stri
 			if testsPerBatch == 1 || len(tests) <= share {
 				id = fmt.Sprintf("%s/%s", groupKey, tc.testcaseName)
 			} else {
-				id = fmt.Sprintf("%s/%d", groupKey, batchNum)
+				id = fmt.Sprintf("%s/batch-%d", groupKey, batchNum)
 			}
 			val := fmt.Sprintf("%s %s %s", tc.serviceType, tc.testcaseName, tc.additionalVar)
 			batchMap[id] = append(batchMap[id], val)
