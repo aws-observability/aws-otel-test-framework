@@ -34,9 +34,7 @@ output "metric_dimension_namespace" {
 
 locals {
   traffic_generator_image = "${var.sample_app_image_repo}:traffic-generator"
-  # Use the :jmx-latest tag produced by terraform/imagebuild (built from
-  # sample-apps/jmx/Dockerfile) so the deployed image tracks the maintained,
-  # CI-rebuilt artifact instead of the stale hand-pushed :tomcatapp tag.
+  # :jmx-latest is built/pushed by terraform/imagebuild from sample-apps/jmx/Dockerfile.
   jmx_sample_app_image = "${var.sample_app_image_repo}:jmx-latest"
 }
 

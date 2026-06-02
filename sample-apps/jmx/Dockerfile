@@ -1,16 +1,11 @@
 # Build the war file
-# Build with JDK 17 (source/target stays 1.8 via the pom) on a maintained base image.
 FROM --platform=$BUILDPLATFORM maven:3.9-eclipse-temurin-17 AS build
 
 WORKDIR /app
 COPY . .
 RUN mvn package
 
-# Tomcat w/ war
-# Stay on the Tomcat 9.0 line: the sample app targets javax.servlet (Servlet 4.0);
-# Tomcat 10+ moved to the jakarta namespace and would require an app migration.
-# Use a current, supported base (Ubuntu 24.04 "noble" + Temurin JRE 21) to clear the
-# Debian 10 (EOL) OS CVEs and pick up the latest Tomcat 9.0.x patch release.
+# Tomcat w/ war (stay on 9.0 line: app targets javax.servlet / Servlet 4.0)
 FROM tomcat:9.0-jre21-temurin-noble
 ARG AGENT_VER=0.12.0
 
