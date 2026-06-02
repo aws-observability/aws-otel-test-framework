@@ -25,6 +25,8 @@ variable "mock_endpoint" {
 // To rebuild images, please follow the documents:
 // appmesh: https://github.com/aws/aws-app-mesh-examples/tree/master/walkthroughs/howto-k8s-http-headers
 // jmx: https://docs.aws.amazon.com/AmazonCloudWatch/latest/monitoring/ContainerInsights-Prometheus-Sample-Workloads-javajmx.html
+// The :tomcatapp image is built from sample-apps/jmx/Dockerfile. Rebuild and re-push it
+// periodically to pick up base-image security patches (it is scanned by Inspector / CVM).
 // Don't forget to re-tag the images to ${sample_app_image_repo}:(feapp|colorapp|tomcatapp) before pushing to remote.
 variable "sample_app_image_repo" {
   default = "611364707713.dkr.ecr.us-west-2.amazonaws.com/otel-test/container-insight-samples"
