@@ -34,8 +34,10 @@ output "metric_dimension_namespace" {
 
 locals {
   traffic_generator_image = "${var.sample_app_image_repo}:traffic-generator"
-  # :jmx-latest is built/pushed by terraform/imagebuild from sample-apps/jmx/Dockerfile.
-  jmx_sample_app_image = "${var.sample_app_image_repo}:jmx-latest"
+  # terraform/imagebuild pushes :jmx-latest to the otel-test/sample-apps repo, so resolve
+  # the jmx app image there (traffic-generator still lives in container-insight-samples).
+  jmx_app_image_repo   = replace(var.sample_app_image_repo, "/container-insight-samples", "/sample-apps")
+  jmx_sample_app_image = "${local.jmx_app_image_repo}:jmx-latest"
 }
 
 resource "kubernetes_namespace" "jmx_ns" {
