@@ -38,7 +38,8 @@ import lombok.extern.log4j.Log4j2;
 
 @Log4j2
 public class PrometheusStaticMetricValidator implements IValidator {
-  private static final int MAX_RETRY_COUNT = 30;
+  // ~10s per retry; higher budget absorbs AMP ingestion lag on slow runners.
+  private static final int MAX_RETRY_COUNT = 45;
 
   private final MustacheHelper mustacheHelper = new MustacheHelper();
   private Context context;
