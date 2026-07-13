@@ -99,6 +99,21 @@ resource "time_sleep" "wait_until_metrics_collected" {
   depends_on      = [module.ec2_setup]
 }
 
+# performance_validation.yml is generated above and baked into the validator
+# image at build time (the Dockerfile COPYs src/), so the image must be built
+# after the config file exists and before the validator container runs.
+resource "null_resource" "build_validator_image" {
+  triggers = {
+    validation_config = local_file.validation_config_file.content
+  }
+
+  provisioner "local-exec" {
+    command = "docker build -t aoc-validator:local ../../validator"
+  }
+
+  depends_on = [local_file.validation_config_file]
+}
+
 module "validator" {
   source = "../validation"
 
@@ -107,5 +122,5 @@ module "validator" {
   testing_id        = module.ec2_setup.testing_id
   metric_namespace  = var.performance_metric_namespace
 
-  depends_on = [time_sleep.wait_until_metrics_collected]
+  depends_on = [time_sleep.wait_until_metrics_collected, null_resource.build_validator_image]
 }
