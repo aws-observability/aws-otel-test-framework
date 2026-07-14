@@ -50,6 +50,12 @@ module "ec2_setup" {
   skip_validation   = false
   canary            = true
 
+  # Forward the CI runner CIDR so the ec2 module creates the runner_access
+  # security group (SSH/WinRM/HTTP ingress). TF_VAR_runner_ip only reaches the
+  # root module; child modules need it forwarded explicitly.
+  runner_ip    = var.runner_ip
+  runner_sg_id = var.runner_sg_id
+
   # install cwagent
   install_cwagent = false
 
