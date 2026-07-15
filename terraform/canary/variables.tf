@@ -61,3 +61,8 @@ variable "enable_ssm_validate" {
   type    = bool
   default = false
 }
+
+variable "patch" {
+  type        = bool
+  default     = true
+}
