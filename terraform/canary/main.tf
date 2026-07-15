@@ -59,7 +59,7 @@ module "ec2_setup" {
   # install cwagent
   install_cwagent = false
 
-  patch = true
+  patch = var.patch
 
   ssm_package_name       = "AWSDistroOTel-Collector"
   install_package_source = var.install_package_source
