@@ -111,6 +111,11 @@ while [ $ATTEMPTS_LEFT -gt 0 ] && ! ../checkCacheHit.sh $SERVICE $TESTCASE $ADDT
     echo "╚══════════════════════════════════════════════════════════════"
     echo "::group::${SERVICE} ${TESTCASE} ${ADDTL_PARAMS}${RETRY_NOTE}"
 
+    if [[ "$TESTCASE" == *"_adot_operator"* ]] && [ -f "./cleanup-otel-orphans.sh" ]; then
+        echo "[$(ts)] cleanup-otel-orphans"
+        ./cleanup-otel-orphans.sh "${region}" "${clustername}"
+    fi
+
     echo "[$(ts)] terraform init"
     terraform init -no-color 2>&1 | tail -5
 
