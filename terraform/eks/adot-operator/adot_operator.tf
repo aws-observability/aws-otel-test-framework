@@ -41,6 +41,12 @@ resource "kubernetes_namespace" "adot_operator_ns" {
   }
 }
 
+resource "null_resource" "cleanup_stale_otel" {
+  provisioner "local-exec" {
+    command = "/bin/bash ./adot-operator/cleanup-stale-otel.sh ${abspath(var.kubeconfig)} ${var.testing_id}"
+  }
+}
+
 resource "helm_release" "adot-operator" {
   name = "adot-operator-${var.testing_id}"
 
@@ -75,5 +81,5 @@ resource "helm_release" "adot-operator" {
     value = var.aoc_image_repo
   }
 
-  depends_on = [kubernetes_namespace.adot_operator_ns]
+  depends_on = [kubernetes_namespace.adot_operator_ns, null_resource.cleanup_stale_otel]
 }
