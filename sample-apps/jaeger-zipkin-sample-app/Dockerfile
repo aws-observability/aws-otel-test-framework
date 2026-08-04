@@ -14,6 +14,8 @@ RUN tar -xvf build/distributions/jaeger-zipkin-sample-app-${VER}.tar
 
 FROM amazoncorretto:17
 
+RUN dnf install -y findutils && dnf clean all
+
 WORKDIR /app
 ARG VER=1.0
 COPY --from=builder /app/jaeger-zipkin-sample-app-${VER} .
