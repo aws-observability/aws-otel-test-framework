@@ -9,6 +9,8 @@ RUN tar -xvf build/distributions/app.tar
 
 FROM amazoncorretto:17
 
+RUN dnf install -y findutils && dnf clean all
+
 WORKDIR /app
 COPY --from=build /app/app .
 
