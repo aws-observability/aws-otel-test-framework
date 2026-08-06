@@ -9,6 +9,10 @@ on:
       - release/v*
       - dev*
 
+
+permissions:
+  contents: read
+
 jobs:
   validator-build:
     runs-on: ubuntu-latest
