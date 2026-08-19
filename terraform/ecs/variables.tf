@@ -79,3 +79,15 @@ variable "configuration_source" {
     error_message = "Invalid configuration_source for ecs"
   }
 }
+
+variable "ignore_empty_dim_set" {
+  type    = bool
+  default = false
+
+  description = "Toggles whether or not the validator will ignore an empty EMF dimension set"
+}
+
+variable "rollup" {
+  type    = bool
+  default = true
+}

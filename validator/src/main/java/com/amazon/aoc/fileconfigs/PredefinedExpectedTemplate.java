@@ -38,6 +38,7 @@ public enum PredefinedExpectedTemplate implements FileConfig {
       "/expected-data-template/container-insight/ecs/prometheus"),
   FARGATE_EXPECTED_METRIC("/expected-data-template/EKSFargateCWCIExpectedMetric.mustache"),
   STANDARD_EXPECTED_METRIC("/expected-data-template/standard/standardExpectedMetric.mustache"),
+  EC2_RESOURCE_DETECT_EXPECTED_METRIC("/expected-data-template/ec2ResourceDetectMetric.mustache"),
 
   /** trace template, defined in resources. */
   // not use default expected trace any more
