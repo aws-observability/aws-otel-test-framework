@@ -2,3 +2,19 @@ kubeRBACProxy:
   image:
     repository: public.ecr.aws/aws-observability/mirror-kube-rbac-proxy
     tag: "v0.20.1"
+
+manager:
+  # Operator v0.158.0+ enables the operator.networkpolicy feature gate by default
+  # (open-telemetry/opentelemetry-operator#5394). Under Helm-based installs the gate
+  # crashes the operator at startup: it requires a NAMESPACE env var this chart
+  # version (0.100.0) does not set, and it hardcodes the kustomize deployment name
+  # 'opentelemetry-operator-controller-manager'
+  # (open-telemetry/opentelemetry-operator#5493).
+  # The upstream chart for operator v0.158.0 (chart 0.122.0) disables this gate by
+  # default for the same reason, so disabling it here matches the shipped
+  # configuration. operand.networkpolicy is intentionally left at its default
+  # (enabled since v0.158.0) for parity with what customers get.
+  # NOTE: chart 0.100.0's values schema does not allow this gate under
+  # featureGatesMap, so the (deprecated but schema-valid) featureGates string is
+  # used instead.
+  featureGates: "-operator.networkpolicy"
