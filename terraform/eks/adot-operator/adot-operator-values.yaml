@@ -5,7 +5,8 @@ kubeRBACProxy:
 
 manager:
   # Operator v0.158.0+ enables the operator.networkpolicy feature gate by default
-  # (open-telemetry/opentelemetry-operator#5394). Under Helm-based installs the gate
+  # (promoted to beta in open-telemetry/opentelemetry-operator#5461, tracking
+  # issue open-telemetry/opentelemetry-operator#5394). Under Helm-based installs the gate
   # crashes the operator at startup: it requires a NAMESPACE env var this chart
   # version (0.100.0) does not set, and it hardcodes the kustomize deployment name
   # 'opentelemetry-operator-controller-manager'
