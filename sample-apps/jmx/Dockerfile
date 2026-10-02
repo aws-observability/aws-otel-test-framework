@@ -9,10 +9,19 @@ RUN mvn package
 FROM tomcat:9.0-jre21-temurin-noble
 ARG AGENT_VER=0.12.0
 
+# Pick up OS package updates published after the base image was built, and remove the
+# tools the sample app does not use at runtime (the exporter jar below is fetched with
+# ADD, so neither curl nor wget is needed in the image).
+RUN export DEBIAN_FRONTEND=noninteractive \
+    && apt-get update \
+    && apt-get upgrade -y \
+    && apt-get purge -y --auto-remove curl wget gnupg \
+    && rm -rf /var/lib/apt/lists/*
+
 # Download JMX exporter agent
 RUN mkdir -p /opt/jmx_exporter
 # visit https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/ to find other versions
-RUN wget https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${AGENT_VER}/jmx_prometheus_javaagent-${AGENT_VER}.jar -O /opt/jmx_exporter/jmx_prometheus_javaagent.jar
+ADD --chmod=0644 https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${AGENT_VER}/jmx_prometheus_javaagent-${AGENT_VER}.jar /opt/jmx_exporter/jmx_prometheus_javaagent.jar
 COPY config.yaml /opt/jmx_exporter
 COPY setenv.sh /usr/local/tomcat/bin
 RUN chmod  o+x /usr/local/tomcat/bin/setenv.sh

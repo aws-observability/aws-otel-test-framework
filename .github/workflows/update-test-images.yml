@@ -7,6 +7,10 @@ concurrency:
 
 on:
   workflow_dispatch:
+  schedule:
+    # Weekly rebuild (Mondays 03:17 UTC) so the images pick up OS package security
+    # updates even when their sources have not changed.
+    - cron: '17 3 * * 1'
   push:
     branches: ['terraform']
 
