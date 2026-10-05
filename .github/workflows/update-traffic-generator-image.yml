@@ -1,7 +1,7 @@
 name: Update Traffic Generator Image
 
 # Rebuilds and pushes the multi-arch traffic-generator image (used by the EKS jmx test module) so that it
-# picks up OS package security updates even when its sources have not changed.
+# picks up OS package updates even when its sources have not changed.
 
 # We should execute only one workflow run at a time
 concurrency:
