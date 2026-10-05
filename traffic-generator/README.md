@@ -9,7 +9,7 @@
 
 The image is rebuilt and pushed by the `Update Traffic Generator Image` workflow
 (`.github/workflows/update-traffic-generator-image.yml`) every Monday and whenever this directory changes on the
-`terraform` branch, so it picks up Alpine security updates. The base image is pinned to an Alpine release series in the
+`terraform` branch, so it picks up Alpine updates. The base image is pinned to an Alpine release series in the
 `Dockerfile`; bump it before that series reaches end of life. The manual command below still works for ad-hoc builds.
 
 ## Build the container with amd and arm images
