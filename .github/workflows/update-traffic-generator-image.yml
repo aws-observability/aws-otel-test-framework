@@ -1,0 +1,48 @@
+name: Update Traffic Generator Image
+
+# Rebuilds and pushes the multi-arch traffic-generator image (used by the EKS jmx test module) so that it
+# picks up OS package security updates even when its sources have not changed.
+
+# We should execute only one workflow run at a time
+concurrency:
+  group: traffic_generator_image_concurrency
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly rebuild (Mondays 03:47 UTC), offset from the Update Test Images schedule (03:17 UTC).
+    - cron: '47 3 * * 1'
+  push:
+    branches: ['terraform']
+
+    # List of paths that should be considered when triggering the workflow
+    paths: ['traffic-generator/**']
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push-traffic-generator:
+    runs-on: ${{ vars.ADOTLARGERUNNERS || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.TEST_FW_ASSUMABLE_ROLE_ARN }}
+          aws-region: us-west-2
+          role-duration-seconds: 7200
+      - name: Build and push the multi-arch image
+        working-directory: traffic-generator
+        run: |
+          set -euo pipefail
+          REPO_URI=$(aws ecr describe-repositories --region us-west-2 \
+            --repository-names otel-test/container-insight-samples \
+            --query 'repositories[0].repositoryUri' --output text)
+          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin "${REPO_URI%%/*}"
+          trap 'docker buildx rm trafficgenbuilder || true' EXIT
+          docker buildx create --use --name trafficgenbuilder --platform=linux/arm64,linux/amd64 --driver docker-container --bootstrap
+          docker buildx build --builder=trafficgenbuilder --pull --no-cache --push \
+            --platform=linux/amd64,linux/arm64 -t "${REPO_URI}:traffic-generator" .
