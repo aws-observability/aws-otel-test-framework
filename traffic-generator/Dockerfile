@@ -1,4 +1,4 @@
-FROM alpine:3.24
+FROM alpine:latest
 
 # Pick up fixes published after the base image was built. The image is rebuilt weekly by
 # .github/workflows/update-traffic-generator-image.yml, so the series above only needs a bump
