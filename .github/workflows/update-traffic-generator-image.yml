@@ -1,0 +1,57 @@
+name: Update Traffic Generator Image
+
+# Rebuilds and pushes the multi-arch traffic-generator image (used by the EKS jmx test module) so that it
+# picks up OS package updates even when its sources have not changed.
+
+# We should execute only one workflow run at a time
+concurrency:
+  group: traffic_generator_image_concurrency
+  cancel-in-progress: false
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly rebuild (Mondays 03:47 UTC), offset from the Update Test Images schedule (03:17 UTC).
+    - cron: '47 3 * * 1'
+  push:
+    branches: ['terraform']
+
+    # List of paths that should be considered when triggering the workflow
+    paths: ['traffic-generator/**']
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build-and-push-traffic-generator:
+    runs-on: ${{ vars.ADOTLARGERUNNERS || 'ubuntu-latest' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.TEST_FW_ASSUMABLE_ROLE_ARN }}
+          aws-region: us-west-2
+          role-duration-seconds: 7200
+      - name: Smoke-test an amd64 build, then build and push the multi-arch image
+        working-directory: traffic-generator
+        run: |
+          set -euo pipefail
+          REPO_URI=$(aws ecr describe-repositories --region us-west-2 \
+            --repository-names otel-test/container-insight-samples \
+            --query 'repositories[0].repositoryUri' --output text)
+          aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin "${REPO_URI%%/*}"
+          trap 'docker buildx rm trafficgenbuilder || true' EXIT
+          docker buildx create --use --name trafficgenbuilder --platform=linux/arm64,linux/amd64 --driver docker-container --bootstrap
+          # Smoke test: exercise what terraform/eks/jmx/jmx.tf actually runs (bash, curl, $[...] arithmetic)
+          # before anything is pushed, so a broken weekly build cannot replace the tag the jmx module pulls.
+          docker buildx build --builder=trafficgenbuilder --pull --no-cache --load \
+            --platform=linux/amd64 -t tg-smoke .
+          docker run --rm tg-smoke /bin/bash -c 'curl --version >/dev/null && echo $[1+1]'
+          # Also push an immutable date tag so a bad weekly build can be rolled back by re-tagging.
+          TAG_DATE=$(date -u +%Y%m%d)
+          docker buildx build --builder=trafficgenbuilder --pull --no-cache --push \
+            --platform=linux/amd64,linux/arm64 \
+            -t "${REPO_URI}:traffic-generator" \
+            -t "${REPO_URI}:traffic-generator-${TAG_DATE}" .
