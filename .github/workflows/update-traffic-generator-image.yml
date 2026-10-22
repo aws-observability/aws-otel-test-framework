@@ -34,7 +34,7 @@ jobs:
           role-to-assume: ${{ secrets.TEST_FW_ASSUMABLE_ROLE_ARN }}
           aws-region: us-west-2
           role-duration-seconds: 7200
-      - name: Build and push the multi-arch image
+      - name: Smoke-test an amd64 build, then build and push the multi-arch image
         working-directory: traffic-generator
         run: |
           set -euo pipefail
@@ -44,5 +44,14 @@ jobs:
           aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin "${REPO_URI%%/*}"
           trap 'docker buildx rm trafficgenbuilder || true' EXIT
           docker buildx create --use --name trafficgenbuilder --platform=linux/arm64,linux/amd64 --driver docker-container --bootstrap
+          # Smoke test: exercise what terraform/eks/jmx/jmx.tf actually runs (bash, curl, $[...] arithmetic)
+          # before anything is pushed, so a broken weekly build cannot replace the tag the jmx module pulls.
+          docker buildx build --builder=trafficgenbuilder --pull --no-cache --load \
+            --platform=linux/amd64 -t tg-smoke .
+          docker run --rm tg-smoke /bin/bash -c 'curl --version >/dev/null && echo $[1+1]'
+          # Also push an immutable date tag so a bad weekly build can be rolled back by re-tagging.
+          TAG_DATE=$(date -u +%Y%m%d)
           docker buildx build --builder=trafficgenbuilder --pull --no-cache --push \
-            --platform=linux/amd64,linux/arm64 -t "${REPO_URI}:traffic-generator" .
+            --platform=linux/amd64,linux/arm64 \
+            -t "${REPO_URI}:traffic-generator" \
+            -t "${REPO_URI}:traffic-generator-${TAG_DATE}" .
