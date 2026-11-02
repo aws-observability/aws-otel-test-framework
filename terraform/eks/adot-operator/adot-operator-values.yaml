@@ -1,0 +1,6 @@
+kubeRBACProxy:
+  image:
+    repository: public.ecr.aws/aws-observability/mirror-kube-rbac-proxy
+    tag: "v0.20.1"
+manager:
+  featureGates: "-operator.networkpolicy,-operand.networkpolicy"
