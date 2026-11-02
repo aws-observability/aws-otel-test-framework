@@ -41,12 +41,46 @@ resource "kubernetes_namespace" "adot_operator_ns" {
   }
 }
 
+# The operator discovers the Kubernetes API server at startup by listing the
+# EndpointSlices of the kubernetes service in the default namespace. The chart's
+# bundled manager role does not grant this, so add it out of band, scoped to this
+# test's operator service account.
+resource "kubernetes_cluster_role" "adot_operator_endpointslices" {
+  metadata {
+    name = "adot-operator-${var.testing_id}-endpointslices"
+  }
+
+  rule {
+    api_groups = ["discovery.k8s.io"]
+    resources  = ["endpointslices"]
+    verbs      = ["get", "list"]
+  }
+}
+
+resource "kubernetes_cluster_role_binding" "adot_operator_endpointslices" {
+  metadata {
+    name = "adot-operator-${var.testing_id}-endpointslices"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = kubernetes_cluster_role.adot_operator_endpointslices.metadata[0].name
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = "opentelemetry-operator"
+    namespace = kubernetes_namespace.adot_operator_ns.metadata[0].name
+  }
+}
+
 resource "helm_release" "adot-operator" {
   name = "adot-operator-${var.testing_id}"
 
   repository = "https://open-telemetry.github.io/opentelemetry-helm-charts"
   chart      = "opentelemetry-operator"
-  version    = "0.122.1"
+  version    = "0.100.0"
   namespace  = "adot-operator-${var.testing_id}-ns"
   wait       = true
   timeout    = 600
@@ -75,5 +109,8 @@ resource "helm_release" "adot-operator" {
     value = var.aoc_image_repo
   }
 
-  depends_on = [kubernetes_namespace.adot_operator_ns]
+  depends_on = [
+    kubernetes_namespace.adot_operator_ns,
+    kubernetes_cluster_role_binding.adot_operator_endpointslices,
+  ]
 }

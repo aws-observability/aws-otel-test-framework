@@ -1,0 +1,10 @@
+kubeRBACProxy:
+  image:
+    repository: public.ecr.aws/aws-observability/mirror-kube-rbac-proxy
+    tag: "v0.20.1"
+manager:
+  extraEnvs:
+    - name: NAMESPACE
+      valueFrom:
+        fieldRef:
+          fieldPath: metadata.namespace
