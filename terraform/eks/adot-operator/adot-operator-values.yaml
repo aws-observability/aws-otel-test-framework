@@ -1,0 +1,7 @@
+kubeRBACProxy:
+  image:
+    repository: public.ecr.aws/aws-observability/mirror-kube-rbac-proxy
+    tag: "v0.20.1"
+manager:
+  # Disable operator.networkpolicy for the e2e operator deploy
+  featureGates: "-operator.networkpolicy"
