@@ -61,6 +61,11 @@ case ${AWS_REGION} in
 esac
 
 cd ${TEST_FOLDER};
+
+if [[ "$2" == *"_adot_operator"* ]] && [ -f "./cleanup-otel-orphans.sh" ]; then
+    ./cleanup-otel-orphans.sh "${region}" "${clustername}"
+fi
+
 case "$service" in
     EKS*) terraform destroy --auto-approve $opts;
     ;;
