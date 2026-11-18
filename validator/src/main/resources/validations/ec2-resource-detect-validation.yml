@@ -1,0 +1,6 @@
+-
+  validationType: "cw-metric"
+  httpPath: "/outgoing-http-call"
+  httpMethod: "get"
+  callingType: "http"
+  expectedMetricTemplate: "EC2_RESOURCE_DETECT_EXPECTED_METRIC"

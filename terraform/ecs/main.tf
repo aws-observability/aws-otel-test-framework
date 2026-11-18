@@ -528,6 +528,12 @@ module "validator" {
     ecsLaunchType : aws_ecs_service.aoc[0].launch_type
   })
 
+  cloudwatch_context_json = jsonencode({
+    ignoreEmptyDimSet : var.ignore_empty_dim_set
+  })
+
+  rollup = var.rollup
+
   depends_on = [aws_ecs_service.aoc]
 }
 
