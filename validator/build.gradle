@@ -85,6 +85,8 @@ jib {
     image = "public.ecr.aws/u0d6r4y4/aws-otel-test-validator:alpha"
   }
   from {
+    // The published validator image picks up base image updates (e.g. JDK patches)
+    // only when it is rebuilt. main-build.yml rebuilds it on every push to terraform.
     image = "public.ecr.aws/u0d6r4y4/amazoncorretto-distroless:alpha"
   }
 }
