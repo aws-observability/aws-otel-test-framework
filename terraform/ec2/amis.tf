@@ -69,7 +69,7 @@ EOF
 ##
 ## os_family, which will be used to construct the downloading url of collector on s3
 ## ami_search_pattern, which will be used to search the amis from aws
-## ami_owner, could be "amazon", "aws-marketplace", or a dedicated account number, for example, redhat amis are distributed by this account 309956199498(Redhat Inc)
+## ami_owner, could be "amazon", "aws-marketplace", a dedicated account number, or a list of these, for example, redhat amis are distributed by this account 309956199498(Redhat Inc)
 ## family, could be "linux", "debian", "windows"
 ## arch, which will be used to construct the downloading url of collector on s3
 ## login_user, which will be taken first, if null then the take from family.
@@ -106,7 +106,7 @@ EOF
     ubuntu22 = {
       os_family          = "ubuntu"
       ami_search_pattern = "cloudwatch-agent-integration-test-ubuntu-LTS-22*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "debian"
       arch               = "amd64"
@@ -116,7 +116,7 @@ EOF
     arm_ubuntu22 = {
       os_family          = "ubuntu"
       ami_search_pattern = "cloudwatch-agent-integration-test-ubuntu-LTS-22-arm64*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
@@ -147,7 +147,7 @@ EOF
     arm_debian11 = {
       os_family          = "debian"
       ami_search_pattern = "cloudwatch-agent-integration-test-debian-11-arm64*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "debian"
       arch               = "arm64"
@@ -198,7 +198,7 @@ EOF
     amazonlinux3 = {
       os_family          = "amazon_linux"
       ami_search_pattern = "cloudwatch-agent-integration-test-x86-al2023*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
@@ -208,7 +208,7 @@ EOF
     arm_amazonlinux3 = {
       os_family          = "amazon_linux"
       ami_search_pattern = "cloudwatch-agent-integration-test-aarch64-al2023*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
@@ -220,7 +220,7 @@ EOF
     amazonlinux2 = {
       os_family          = "amazon_linux"
       ami_search_pattern = "cloudwatch-agent-integration-test-al2*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
@@ -230,7 +230,7 @@ EOF
     arm_amazonlinux2 = {
       os_family          = "amazon_linux"
       ami_search_pattern = "cloudwatch-agent-integration-test-arm64-al2*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
@@ -242,7 +242,7 @@ EOF
     windows2022 = {
       os_family          = "windows"
       ami_search_pattern = "cloudwatch-agent-integration-test-win-2022*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
@@ -251,7 +251,7 @@ EOF
     windows2019 = {
       os_family          = "windows"
       ami_search_pattern = "cloudwatch-agent-integration-test-win-2019*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "windows"
       arch               = "amd64"
@@ -261,7 +261,7 @@ EOF
     suse15 = {
       os_family          = "suse"
       ami_search_pattern = "cloudwatch-agent-integration-test-sles-15*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
@@ -271,7 +271,7 @@ EOF
     arm_suse15 = {
       os_family          = "suse"
       ami_search_pattern = "cloudwatch-agent-integration-test-sles-15-arm64*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "linux"
       login_user         = "ec2-user"
@@ -300,7 +300,7 @@ EOF
     redhat8 = {
       os_family          = "redhat"
       ami_search_pattern = "cloudwatch-agent-integration-test-rhel8-base*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "linux"
       arch               = "amd64"
@@ -310,7 +310,7 @@ EOF
     arm_redhat8 = {
       os_family          = "redhat"
       ami_search_pattern = "cloudwatch-agent-integration-test-rhel8-arm64*"
-      ami_owner          = "506463145083"
+      ami_owner          = ["506463145083", "073708760838"]
       ami_product_code   = []
       family             = "linux"
       arch               = "arm64"
@@ -329,8 +329,9 @@ locals {
 data "aws_ami" "selected" {
   most_recent = true
 
-  owners = [
-  var.amis[var.testing_ami]["ami_owner"]]
+  # ami_owner is one owner or a list of owners; the newest matching image across them is used.
+  owners = flatten([
+  var.amis[var.testing_ami]["ami_owner"]])
 
   filter {
     name = "name"
